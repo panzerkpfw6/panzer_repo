@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fopenmp -g    CMakeFiles/modeling_original.dir/modeling_original.c.o  -o modeling_original ../src/libsimwave.a -lm -lstdc++ /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread -fopenmp 

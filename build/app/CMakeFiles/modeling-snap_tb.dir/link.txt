@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fopenmp -g    CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o  -o modeling-snap_tb ../src/libsimwave.a -lm -lstdc++ /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread -fopenmp 

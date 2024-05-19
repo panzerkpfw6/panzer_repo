@@ -1,0 +1,15 @@
+n1=676
+n2=676
+n3=201
+in=models/salt3d_676x676x201_xyz.raw
+dx=10
+dy=10
+dz=10
+dcdp=10
+dline=10
+ddepth=10
+drcv=10
+dshot=300
+src_depth=0
+rcv_depth=0
+iter=5000
