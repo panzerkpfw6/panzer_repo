@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/rtm.dir/rtm.c.o"
-  "rtm.pdb"
+  "CMakeFiles/rtm.dir/rtm.c.o.d"
   "rtm"
+  "rtm.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

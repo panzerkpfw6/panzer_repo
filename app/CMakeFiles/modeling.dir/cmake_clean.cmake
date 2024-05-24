@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/modeling.dir/modeling.c.o"
-  "modeling.pdb"
+  "CMakeFiles/modeling.dir/modeling.c.o.d"
   "modeling"
+  "modeling.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

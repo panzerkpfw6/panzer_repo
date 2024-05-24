@@ -2198,7 +2198,7 @@ static inline void intra_diamond_resolve(tb_t *ctx,
     }
   }
 
-  MSG("... t0=: %d\n", t0 );
+//  MSG("... t0=: %d\n", t0 );
   intra_diamond_mwd_comp(ctx, data, timer, u0, v0, roc2, yb, ye, b_inc, e_inc,
                          0, ctx->t_dim * 2 + 1, t0, iifwd, groupid);
 

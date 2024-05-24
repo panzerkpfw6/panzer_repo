@@ -1,15 +1,17 @@
 #!/bin/bash
 ###********* SLURM CONFIGURATION **********###
-#SBATCH -N 1
-#SBATCH --job-name=tests_2nd_order
-#SBATCH --output=logs/modelling.%J.out
-#SBATCH --error=logs/modelling.%J.err
-#SBATCH --cpus-per-task=32
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=pavel.plotnitskii@kaust.edu.sa
-#SBATCH --time=6:50:00
-#SBATCH --partition=workq
-#SBATCH -A k1205
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --threads-per-core=1
+#SBATCH --mem=50GB
+#SBATCH --time=24:00:00
+#SBATCH --partition=7773X  # Milan-X 128
+#SBATCH --job-name=test_rtm_2nd
+#SBATCH --output=logs/rtm.%J.out
+#SBATCH --error=logs/rtm.%J.err
+#SBATCH --cpus-per-task=128
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** HORODATED LOG WRITING *********###
@@ -17,46 +19,49 @@ exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=128
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
-#!!!!!!!!!
-export CFLAGS=-xHost
-export CXXFLAGS=-xHost
+export granularity=fine
+export KMP_AFFINITY=compact
+export KMP_HW_SUBSET=1t
 
 ###********** MODULES & COMPILING *********###
-echo preloaded_modules
-module list
-#module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5    #intel compiler: newer is better  #intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-#module load intel/2022.1.0
-#module load intel
-#module load intel-oneapi/2021.4.0
-#module load intel-classic/2021.4.0
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load icc/2020.2.254
 module load cmake
-module list
 
 #####mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-#rm ./app/rtm
-#CC=icc CXX=icpc cmake .
-#make clean
-#make VERBOSE=1
-#make install
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
-mode=2
 #timesteps=2000
 timesteps=300
 export size=512
 #export size=256
+
 #####*********** SB tests ************###
 #numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1310
-#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1310
-
-#####*********** SB tests fast ************###
+numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+#####*********** SB tests ************###
 numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+
+#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+
+#####*********** TB tests ************########***********
+#export FIRST_TOUCH=1m
+#srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size  --n2 $size --n3 512 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf   --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
+mode=2
+th_x=8
+th_y=2
+th_z=1
+t_dim=7
+num_wf=64
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
 
 ####*********** RUNNING SIMWAVE ************###
 ## iterate on parameters values

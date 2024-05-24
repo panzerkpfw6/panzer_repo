@@ -974,3 +974,47 @@ Makefile:126: recipe for target 'cmTC_21ad9/fast' failed
 make: *** [cmTC_21ad9/fast] Error 2
 
 
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_48291/fast && /usr/bin/make  -f CMakeFiles/cmTC_48291.dir/build.make CMakeFiles/cmTC_48291.dir/build
+make[1]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_48291.dir/src.c.o
+/sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc -DCMAKE_HAVE_LIBC_PTHREAD  -fPIC  -MD -MT CMakeFiles/cmTC_48291.dir/src.c.o -MF CMakeFiles/cmTC_48291.dir/src.c.o.d -o CMakeFiles/cmTC_48291.dir/src.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_48291
+/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/cmTC_48291.dir/link.txt --verbose=1
+/sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc -fPIC  CMakeFiles/cmTC_48291.dir/src.c.o -o cmTC_48291 
+CMakeFiles/cmTC_48291.dir/src.c.o: In function `main':
+src.c:(.text+0x3b): undefined reference to `pthread_create'
+src.c:(.text+0x44): undefined reference to `pthread_detach'
+src.c:(.text+0x4d): undefined reference to `pthread_cancel'
+src.c:(.text+0x58): undefined reference to `pthread_join'
+src.c:(.text+0x63): undefined reference to `pthread_atfork'
+CMakeFiles/cmTC_48291.dir/build.make:99: recipe for target 'cmTC_48291' failed
+make[1]: *** [cmTC_48291] Error 1
+make[1]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles/CMakeTmp'
+Makefile:127: recipe for target 'cmTC_48291/fast' failed
+make: *** [cmTC_48291/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+

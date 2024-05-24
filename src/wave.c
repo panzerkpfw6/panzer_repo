@@ -700,12 +700,17 @@ void wave_read_sismos(sismap_t *s, shot_t *shot, float *sismos) {
     FILE *fd;
     size_t sz = s->rcv_len * s->time_steps * sizeof(float);
     sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SISMOS_BASE, shot->id);
-    fd = fopen(tmp, "rb");
-    CHK(fd == NULL,
-        "sismos file not found, aborting (run modeling to generate it)");
-    CHK(fread(sismos, sz, 1, fd) != 1,
-        "failed to properly read sismos");
-    fclose(fd);
+    MSG("OUTDIR (%s)",OUTDIR);
+    MSG("SISMOS_BASE (%s)",SISMOS_BASE);
+    MSG("tmp=%s",tmp);
+
+    MSG("before fd = fopen(tmp, \"rb\");");
+//    fd = fopen(tmp, "rb");
+//    CHK(fd == NULL,"sismos file not found, aborting (run modeling to generate it)");
+//    CHK(fread(sismos, sz, 1, fd) != 1,"failed to properly read sismos");
+//    MSG("before fclose(fd);");
+//    fclose(fd);
+    MSG("end of wave_read_sismos function");
 }
 
 /// @brief save the final image.

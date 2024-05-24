@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/gather.dir/gather.c.o"
-  "gather.pdb"
+  "CMakeFiles/gather.dir/gather.c.o.d"
   "gather"
+  "gather.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

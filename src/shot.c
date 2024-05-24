@@ -26,19 +26,20 @@
 #include <simwave/shot.h>
 
 void shot_init(shot_t *shot, bool cpu, bool modeling) {
-  char tmp[512];
-  sprintf(tmp, "mkdir -p %s", OUTDIR);
-  system(tmp);
-  sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SNAP_BASE, shot->id);
-  if (!modeling) {
-    shot->fd_snap = fopen(tmp, "wb+");
-    CHK(shot->fd_snap == NULL, "failed to open snapshot file");
-  } else {
-    shot->fd_snap = NULL;
-  }
+    char tmp[512];
+    sprintf(tmp, "mkdir -p %s", OUTDIR);
+    system(tmp);
+    sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SNAP_BASE, shot->id);
+    MSG("tmp in shot_init=%s",tmp);
+    if (!modeling) {
+        shot->fd_snap = fopen(tmp, "wb+");
+        CHK(shot->fd_snap == NULL, "failed to open snapshot file");
+    } else {
+        shot->fd_snap = NULL;
+    }
 
-  #ifdef __DEBUG
-  shot->fd_fwd = NULL;
+#ifdef __DEBUG
+    shot->fd_fwd = NULL;
   shot->fd_bwd = NULL;
 
   if (cpu)
@@ -55,25 +56,25 @@ void shot_init(shot_t *shot, bool cpu, bool modeling) {
     shot->fd_bwd = fopen(tmp, "wb");
     CHK(shot->fd_bwd == NULL, "bwd snapshot file impossible to open");
   }
-  #endif // __DEBUG
+#endif // __DEBUG
 
-  shot->fd_img = NULL;
-  shot->fd_ilm = NULL;
-  if (!modeling) {
-    if (cpu)
-      sprintf(tmp, "%s/%s_%d.raw", OUTDIR, IMG_BASE, shot->id);
-    else
-      sprintf(tmp, "%s/gpu_%s_%d.raw", OUTDIR, IMG_BASE, shot->id);
-    shot->fd_img = fopen(tmp, "wb");
-    CHK(shot->fd_img == NULL, "img file impossible to open, aborting");
-    if (cpu)
-      sprintf(tmp, "%s/%s_%d.raw", OUTDIR, ILM_BASE, shot->id);
-    else
-      sprintf(tmp, "%s/gpu_%s_%d.raw", OUTDIR, ILM_BASE, shot->id);
-    shot->fd_ilm = fopen(tmp, "wb");
-    CHK(shot->fd_ilm == NULL, "ilm file impossible to open, aborting");
-  }
-  MSG("... dealing with shot number %u (source @ %u).", shot->id, shot->srcidx);
+    shot->fd_img = NULL;
+    shot->fd_ilm = NULL;
+    if (!modeling) {
+        if (cpu)
+            sprintf(tmp, "%s/%s_%d.raw", OUTDIR, IMG_BASE, shot->id);
+        else
+            sprintf(tmp, "%s/gpu_%s_%d.raw", OUTDIR, IMG_BASE, shot->id);
+        shot->fd_img = fopen(tmp, "wb");
+        CHK(shot->fd_img == NULL, "img file impossible to open, aborting");
+        if (cpu)
+            sprintf(tmp, "%s/%s_%d.raw", OUTDIR, ILM_BASE, shot->id);
+        else
+            sprintf(tmp, "%s/gpu_%s_%d.raw", OUTDIR, ILM_BASE, shot->id);
+        shot->fd_ilm = fopen(tmp, "wb");
+        CHK(shot->fd_ilm == NULL, "ilm file impossible to open, aborting");
+    }
+    MSG("... dealing with shot number %u (source @ %u).", shot->id, shot->srcidx);
 }
 
 void shot_release(shot_t *shot) {

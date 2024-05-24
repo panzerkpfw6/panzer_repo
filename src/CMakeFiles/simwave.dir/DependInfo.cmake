@@ -1,26 +1,24 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
 # The set of languages for which implicit dependencies are needed:
 set(CMAKE_DEPENDS_LANGUAGES
-  "C"
   )
-# The set of files for implicit dependencies of each language:
-set(CMAKE_DEPENDS_CHECK_C
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/bwriter.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/bwriter.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/interp.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/interp.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/mlbs.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/mlbs.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/parser.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/parser.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/pml.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/pml.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/shot.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/shot.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/source.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/source.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/velocity.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/velocity.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/wave.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave_tb.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/wave_tb.c.o"
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wtime.c" "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/CMakeFiles/simwave.dir/wtime.c.o"
-  )
-set(CMAKE_C_COMPILER_ID "Intel")
 
-# The include file search paths:
-set(CMAKE_C_TARGET_INCLUDE_PATH
-  "include"
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/bwriter.c" "src/CMakeFiles/simwave.dir/bwriter.c.o" "gcc" "src/CMakeFiles/simwave.dir/bwriter.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/interp.c" "src/CMakeFiles/simwave.dir/interp.c.o" "gcc" "src/CMakeFiles/simwave.dir/interp.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/mlbs.c" "src/CMakeFiles/simwave.dir/mlbs.c.o" "gcc" "src/CMakeFiles/simwave.dir/mlbs.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/parser.c" "src/CMakeFiles/simwave.dir/parser.c.o" "gcc" "src/CMakeFiles/simwave.dir/parser.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/pml.c" "src/CMakeFiles/simwave.dir/pml.c.o" "gcc" "src/CMakeFiles/simwave.dir/pml.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/shot.c" "src/CMakeFiles/simwave.dir/shot.c.o" "gcc" "src/CMakeFiles/simwave.dir/shot.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/source.c" "src/CMakeFiles/simwave.dir/source.c.o" "gcc" "src/CMakeFiles/simwave.dir/source.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/velocity.c" "src/CMakeFiles/simwave.dir/velocity.c.o" "gcc" "src/CMakeFiles/simwave.dir/velocity.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/wave.c" "src/CMakeFiles/simwave.dir/wave.c.o" "gcc" "src/CMakeFiles/simwave.dir/wave.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/wave_tb.c" "src/CMakeFiles/simwave.dir/wave_tb.c.o" "gcc" "src/CMakeFiles/simwave.dir/wave_tb.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/wtime.c" "src/CMakeFiles/simwave.dir/wtime.c.o" "gcc" "src/CMakeFiles/simwave.dir/wtime.c.o.d"
   )
 
 # Targets to which this target links.

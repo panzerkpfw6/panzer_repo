@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o"
-  "modeling-snap_tb.pdb"
+  "CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o.d"
   "modeling-snap_tb"
+  "modeling-snap_tb.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
