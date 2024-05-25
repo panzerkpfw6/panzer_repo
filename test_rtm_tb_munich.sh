@@ -29,6 +29,8 @@ export KMP_HW_SUBSET=1t
 
 ###********** MODULES & COMPILING *********###
 module load icc/2020.2.254
+#module load icc/2020.2.254-MKL_2019.5
+#module load icc/2019.5.281
 module load cmake
 
 #####
