@@ -39,10 +39,10 @@ module list
 
 #####mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 #rm ./app/rtm
-#CC=icc CXX=icpc cmake .
-#make clean
-#make VERBOSE=1
-#make install
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
@@ -56,7 +56,7 @@ export size=512
 #numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1310
 
 #####*********** SB tests fast ************###
-numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
 
 ####*********** RUNNING SIMWAVE ************###
 ## iterate on parameters values

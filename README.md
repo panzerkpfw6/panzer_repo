@@ -30,5 +30,7 @@ OPTIONS
 	    --taper        V0,V1,...   PML tapers.
 	-e, --epsilon      VALUE       the margin of floating point errors.
 We are compiling the project with cmake software.
-Please, edit the CMakeCache.txt file to mention the source file directory.
+#### CMAKE requirements
+Please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in ./Makefile  
+Also please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in CMakeFiles/Makefile2
 ```
