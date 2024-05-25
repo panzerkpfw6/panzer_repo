@@ -57,7 +57,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = .
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_BINARY_DIR = /home/ltaief/pavel/stencil_rtm
 
 #=============================================================================
 # Directory level rules for the build root directory

@@ -31,7 +31,8 @@ OPTIONS
 	-e, --epsilon      VALUE       the margin of floating point errors.
 We are compiling the project with cmake software.
 #### CMAKE requirements
-Please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in Makefile
+Please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in ./Makefile  
+Also please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in CMakeFiles/Makefile2
 [//]: # (It is required to have 2 files: CMakeCache.txt, CMakeLists.txt)
 
 [//]: # (Please, edit the CMakeCache.txt file to mention the source file directory, specifically)
