@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="simwave"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\app\;CMake Files\cmake\;CMake Files\cmake\modules\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/shared/simwave/simwave/src"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="simwave">
+				<Option output="/shared/simwave/simwave/src/libsimwave.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/src"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 simwave"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="simwave/fast">
+				<Option output="/shared/simwave/simwave/src/libsimwave.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/src"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 simwave/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/shared/simwave/simwave/src/bwriter.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/interp.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/mlbs.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/parser.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/pml.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/shot.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/source.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/velocity.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/wave.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/wave_tb.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/wtime.c">
+			<Option target="simwave"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/app/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\app\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/cmake/modules/intel_c.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

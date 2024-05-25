@@ -1,0 +1,14 @@
+vel_dimx=676
+vel_dimy=1
+vel_dimz=676
+vel=models/salt3d_676x676x201_xyz_slice25.raw
+dx=20
+dy=1
+dz=20
+dcdp=20
+dline=1
+ddepth=20
+drcv=2
+dshot=40
+src_depth=0
+rcv_depth=10

@@ -1,0 +1,1 @@
+/usr/bin/gcc  -fopenmp -g    CMakeFiles/gather.dir/gather.c.o  -o gather ../src/libsimwave.a -lm -lstdc++ /usr/lib/gcc/x86_64-linux-gnu/7/libgomp.so -lpthread -fopenmp 
