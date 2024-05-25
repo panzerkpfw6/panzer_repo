@@ -31,8 +31,10 @@ export KMP_HW_SUBSET=1t
 module load icc/2020.2.254
 module load cmake
 
-#####mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+#####
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
+
 make clean
 make VERBOSE=1
 make install
