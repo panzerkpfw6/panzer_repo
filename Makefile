@@ -252,19 +252,6 @@ rtm/fast:
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
 .PHONY : rtm/fast
 
-#=============================================================================
-# Target rules for targets named modeling_original
-
-# Build rule for target.
-modeling_original: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling_original
-.PHONY : modeling_original
-
-# fast build rule for target.
-modeling_original/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/build
-.PHONY : modeling_original/fast
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -282,7 +269,6 @@ help:
 	@echo "... modeling"
 	@echo "... modeling-snap_end"
 	@echo "... modeling-snap_tb"
-	@echo "... modeling_original"
 	@echo "... rtm"
 	@echo "... simwave"
 .PHONY : help
