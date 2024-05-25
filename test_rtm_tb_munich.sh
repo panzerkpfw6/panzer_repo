@@ -38,7 +38,6 @@ CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
 make install
-
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
 #timesteps=2000

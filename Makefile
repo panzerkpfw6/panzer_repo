@@ -57,7 +57,7 @@ RM = /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_SOURCE_DIR = /home/hltaief/pavel/stencil_rtm
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/hltaief/pavel/stencil_rtm
