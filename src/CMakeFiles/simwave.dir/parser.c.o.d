@@ -1,5 +1,5 @@
 src/CMakeFiles/simwave.dir/parser.c.o: \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/parser.c \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/parser.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
@@ -17,7 +17,7 @@ src/CMakeFiles/simwave.dir/parser.c.o: \
  /usr/include/strings.h /usr/include/ctype.h /usr/include/endian.h \
  /usr/include/bits/endian.h /usr/include/bits/byteswap.h \
  /usr/include/bits/byteswap-16.h /usr/include/bits/uintn-identity.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/parser.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/parser.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
  /usr/include/bits/waitstatus.h /usr/include/bits/floatn.h \

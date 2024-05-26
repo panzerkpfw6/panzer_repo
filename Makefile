@@ -57,10 +57,10 @@ RM = /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

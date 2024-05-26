@@ -1,5 +1,5 @@
 src/CMakeFiles/simwave.dir/pml.c.o: \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/pml.c \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/pml.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
@@ -35,13 +35,13 @@ src/CMakeFiles/simwave.dir/pml.c.o: \
  /usr/include/bits/mathinline.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/math_common_define.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/math_common_undefine.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/config.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/config.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/omp.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdint.h \
  /usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h /usr/include/stdint.h \
  /usr/include/bits/wchar.h /usr/include/bits/stdint-uintn.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/macros.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/pml.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/sismap.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/macros.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/pml.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/sismap.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/shot.h
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/shot.h

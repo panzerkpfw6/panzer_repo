@@ -1,8 +1,8 @@
-# Install script for directory: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app
+# Install script for directory: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm")
+  set(CMAKE_INSTALL_PREFIX "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -49,7 +49,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/gather"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/gather")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/gather")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/gather" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/gather")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -65,7 +65,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_end"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling-snap_end")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_end")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_end" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_end")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -81,7 +81,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_tb"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling-snap_tb")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_tb")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_tb" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling-snap_tb")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -97,7 +97,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -113,7 +113,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling_original"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling_original")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling_original")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling_original" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/modeling_original")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -129,7 +129,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/rtm"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/rtm")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/rtm" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/rtm")
     if(CMAKE_INSTALL_DO_STRIP)

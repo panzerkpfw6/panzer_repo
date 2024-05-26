@@ -1,5 +1,5 @@
 src/CMakeFiles/simwave.dir/wave_tb.c.o: \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/wave_tb.c \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c \
  /usr/include/stdc-predef.h /usr/include/sched.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
@@ -52,13 +52,13 @@ src/CMakeFiles/simwave.dir/wave_tb.c.o: \
  /usr/include/bits/iscanonical.h /usr/include/bits/mathinline.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/math_common_define.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/math_common_undefine.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/macros.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/sismap.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/macros.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/sismap.h \
  /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/config.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/shot.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/parser.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/wave_tb.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/mlbs.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/bwriter.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/wtime.h
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/config.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/shot.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/parser.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/wave_tb.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/mlbs.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/bwriter.h \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/wtime.h

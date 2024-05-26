@@ -53,10 +53,10 @@ RM = /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 # Include any dependencies generated for this target.
 include app/CMakeFiles/modeling.dir/depend.make
@@ -72,16 +72,16 @@ include app/CMakeFiles/modeling.dir/flags.make
 app/CMakeFiles/modeling.dir/modeling.c.o: app/CMakeFiles/modeling.dir/flags.make
 app/CMakeFiles/modeling.dir/modeling.c.o: app/modeling.c
 app/CMakeFiles/modeling.dir/modeling.c.o: app/CMakeFiles/modeling.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object app/CMakeFiles/modeling.dir/modeling.c.o"
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object app/CMakeFiles/modeling.dir/modeling.c.o"
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c
 
 app/CMakeFiles/modeling.dir/modeling.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/modeling.dir/modeling.c.i"
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling.c > CMakeFiles/modeling.dir/modeling.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c > CMakeFiles/modeling.dir/modeling.c.i
 
 app/CMakeFiles/modeling.dir/modeling.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/modeling.dir/modeling.c.s"
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/modeling.c -o CMakeFiles/modeling.dir/modeling.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c -o CMakeFiles/modeling.dir/modeling.c.s
 
 # Object files for target modeling
 modeling_OBJECTS = \
@@ -96,18 +96,18 @@ app/modeling: src/libsimwave.a
 app/modeling: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so
 app/modeling: /usr/lib/x86_64-linux-gnu/libpthread.so
 app/modeling: app/CMakeFiles/modeling.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable modeling"
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable modeling"
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 app/CMakeFiles/modeling.dir/build: app/modeling
 .PHONY : app/CMakeFiles/modeling.dir/build
 
 app/CMakeFiles/modeling.dir/clean:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && $(CMAKE_COMMAND) -P CMakeFiles/modeling.dir/cmake_clean.cmake
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && $(CMAKE_COMMAND) -P CMakeFiles/modeling.dir/cmake_clean.cmake
 .PHONY : app/CMakeFiles/modeling.dir/clean
 
 app/CMakeFiles/modeling.dir/depend:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : app/CMakeFiles/modeling.dir/depend
 

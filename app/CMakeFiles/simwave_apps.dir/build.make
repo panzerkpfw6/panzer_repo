@@ -53,10 +53,10 @@ RM = /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_SOURCE_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm
+CMAKE_BINARY_DIR = /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
 
 # Utility rule file for simwave_apps.
 
@@ -74,10 +74,10 @@ app/CMakeFiles/simwave_apps.dir/build: simwave_apps
 .PHONY : app/CMakeFiles/simwave_apps.dir/build
 
 app/CMakeFiles/simwave_apps.dir/clean:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app && $(CMAKE_COMMAND) -P CMakeFiles/simwave_apps.dir/cmake_clean.cmake
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && $(CMAKE_COMMAND) -P CMakeFiles/simwave_apps.dir/cmake_clean.cmake
 .PHONY : app/CMakeFiles/simwave_apps.dir/clean
 
 app/CMakeFiles/simwave_apps.dir/depend:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/CMakeFiles/simwave_apps.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/simwave_apps.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : app/CMakeFiles/simwave_apps.dir/depend
 

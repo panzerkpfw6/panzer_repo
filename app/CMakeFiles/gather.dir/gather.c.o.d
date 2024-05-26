@@ -1,5 +1,5 @@
 app/CMakeFiles/gather.dir/gather.c.o: \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/gather.c \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/gather.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
@@ -25,34 +25,4 @@ app/CMakeFiles/gather.dir/gather.c.o: \
  /usr/include/string.h /usr/include/bits/types/locale_t.h \
  /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
  /usr/include/dirent.h /usr/include/bits/dirent.h /usr/include/bits/posix1_lim.h \
- /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/parser.h \
- /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
- /usr/include/stdlib.h /usr/include/bits/waitflags.h \
- /usr/include/bits/waitstatus.h /usr/include/sys/types.h \
- /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
- /usr/include/bits/types/time_t.h /usr/include/bits/types/timer_t.h \
- /usr/include/bits/stdint-intn.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/bits/byteswap.h /usr/include/bits/byteswap-16.h \
- /usr/include/bits/uintn-identity.h /usr/include/sys/select.h \
- /usr/include/bits/select.h /usr/include/bits/types/sigset_t.h \
- /usr/include/bits/types/__sigset_t.h /usr/include/bits/types/struct_timeval.h \
- /usr/include/bits/types/struct_timespec.h /usr/include/sys/sysmacros.h \
- /usr/include/bits/sysmacros.h /usr/include/bits/pthreadtypes.h \
- /usr/include/bits/thread-shared-types.h /usr/include/bits/pthreadtypes-arch.h \
- /usr/include/alloca.h /usr/include/bits/stdlib-bsearch.h \
- /usr/include/bits/stdlib-float.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/simwave.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/config.h \
- /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/omp.h \
- /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/../../compiler/include/icc/stdint.h \
- /usr/lib/gcc/x86_64-linux-gnu/7/include/stdint.h /usr/include/stdint.h \
- /usr/include/bits/wchar.h /usr/include/bits/stdint-uintn.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/macros.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/sismap.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/shot.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/source.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/velocity.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/pml.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/wave.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/gpu_wave.h
+ /usr/include/bits/local_lim.h /usr/include/linux/limits.h

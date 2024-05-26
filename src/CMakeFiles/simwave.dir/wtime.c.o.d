@@ -1,5 +1,5 @@
 src/CMakeFiles/simwave.dir/wtime.c.o: \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/wtime.c \
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wtime.c \
  /usr/include/stdc-predef.h /usr/include/stdlib.h \
  /usr/include/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
@@ -30,4 +30,4 @@ src/CMakeFiles/simwave.dir/wtime.c.o: \
  /usr/include/bits/time.h /usr/include/bits/types/struct_tm.h \
  /usr/include/bits/types/struct_itimerspec.h /usr/include/bits/types/locale_t.h \
  /usr/include/bits/types/__locale_t.h \
- /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/include/simwave/wtime.h
+ /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include/simwave/wtime.h

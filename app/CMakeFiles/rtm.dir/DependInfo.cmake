@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/app/rtm.c" "app/CMakeFiles/rtm.dir/rtm.c.o" "gcc" "app/CMakeFiles/rtm.dir/rtm.c.o.d"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c" "app/CMakeFiles/rtm.dir/rtm.c.o" "gcc" "app/CMakeFiles/rtm.dir/rtm.c.o.d"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm/src/CMakeFiles/simwave.dir/DependInfo.cmake"
+  "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/CMakeFiles/simwave.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
