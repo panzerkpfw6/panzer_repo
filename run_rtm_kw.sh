@@ -37,8 +37,8 @@ module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load cmake
 module list
 
-#####mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-#rm ./app/rtm
+#####
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
