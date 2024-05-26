@@ -49,7 +49,7 @@ export size2=512
 #####*********** SB tests ************###
 echo !!SB!!
 #numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --dshot 1 --first 1301 --last 1301 --nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
 #####*********** SB tests ************###
 echo !!TB default!!
 #numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
@@ -64,7 +64,7 @@ th_z=1
 tgs=16
 t_dim=7
 num_wf=64
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
 
 ####*********** RUNNING SIMWAVE ************###
 ## iterate on parameters values
