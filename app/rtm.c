@@ -642,7 +642,7 @@ int main(int argc, char *argv[]) {
 
     int ncpus=get_nprocs();
     printf("ncpus : %d\n",ncpus);
-    cout << "# THREADS " << omp_get_max_threads() << "\n";
+    printf("# THREADS : %d\n",omp_get_max_threads());
 
     /// contains the velocity values of the traversed mediums.
     float *vel;
