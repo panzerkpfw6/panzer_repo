@@ -54,7 +54,6 @@ echo !!TB default!!
 numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
 
 #numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
-
 #####*********** TB tests ************########***********
 echo !!TB with parameters!!
 #export FIRST_TOUCH=1m

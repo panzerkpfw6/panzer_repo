@@ -4,7 +4,7 @@
 # compile C with /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc
 C_DEFINES = 
 
-C_INCLUDES = 
+C_INCLUDES = -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include
 
-C_FLAGS =  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99 
+C_FLAGS = -xHost -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99 
 

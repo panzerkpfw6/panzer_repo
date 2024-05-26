@@ -229,15 +229,15 @@ void wave_init_acquisition(sismap_t *s) {
     int a = 0;
     s->rcv_len = 0;
     /// don't put receivers on the PML region.
-    MSG(" s->dim2, %d\n", s->dim2);
-    MSG(" s->pmly, %d\n", s->pmly);
-    MSG(" s->drcv, %d\n", s->drcv);
-    MSG(" s->dtrpy, %d\n", s->dtrpy);
-    MSG(" s->pmlx, %d\n", s->pmlx);
-    MSG(" s->dtrpx, %d\n", s->dtrpx);
-    MSG(" s->rcv_len, %d\n", s->rcv_len);
-    MSG(" s->dimy, %d\n", s->dimy);
-    MSG(" s->pmly, %d\n", s->pmly);
+//    MSG(" s->dim2, %d\n", s->dim2);
+//    MSG(" s->pmly, %d\n", s->pmly);
+//    MSG(" s->drcv, %d\n", s->drcv);
+//    MSG(" s->dtrpy, %d\n", s->dtrpy);
+//    MSG(" s->pmlx, %d\n", s->pmlx);
+//    MSG(" s->dtrpx, %d\n", s->dtrpx);
+//    MSG(" s->rcv_len, %d\n", s->rcv_len);
+//    MSG(" s->dimy, %d\n", s->dimy);
+//    MSG(" s->pmly, %d\n", s->pmly);
 
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {

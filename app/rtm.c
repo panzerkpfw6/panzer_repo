@@ -135,7 +135,7 @@ void run_rtm_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
   int nb_fwd_snap = (s->time_steps+1 + s->nb_snap - 1) / s->nb_snap;
   printf("s->time_steps %d, nb_snap %d\n",s->time_steps, s->nb_snap);
   printf("Nb of snapshots in FWD: %d\n", nb_fwd_snap);
-  printf("debug point 3\n");
+//  printf("debug point 3\n");
 
   if (s->mode == 2) {
     fwd_all = calloc(nb_fwd_snap,sizeof(float*));
@@ -154,14 +154,14 @@ void run_rtm_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
 
     /// retrieve the shot descriptor.
     shot = s->shots[sidx];
-    printf("debug point 2\n");
+//    printf("debug point 2\n");
     /// initialize the current shot.
     shot_init(shot, true, s->modeling);
-    printf("debug point 0\n");
+//    printf("debug point 0\n");
     /// load the seismic traces for the shot.
     wave_read_sismos(s, shot, sismos);
 
-    printf("debug point 1\n");
+//    printf("debug point 1\n");
     wave_min_max("sismos", sismos, s->rcv_len*(s->time_steps+1));
 
     /// reset buffers for the shot (forward).
@@ -606,89 +606,93 @@ void run_rtm_gpu(sismap_t *s, float* vel, float *source, float *pml_tab) {
 /// GPU wave descriptor (@ref gpu_wave_t):
 /// - simulation on the GPU (default behavior)
 /// - check the GPU results if asked by the user
-int main(int argc, char* argv[]) {
-  /// structure to maintain the user choices.
-  sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
-  /// create a parser.
-  parser *p = parser_create("Reverse Time Migration using simwave");
-  /// parse command line arguments.
-  PARSER_BOOTSTRAP(p);
-  parser_parse(p, argc, argv);
-  s->verbose    = parser_get_bool(p, "verbose");
-  s->cpu        = parser_get_bool(p, "cpu");
-  s->time_steps = parser_get_int(p, "iter");
-  s->cfl        = parser_get_float(p, "cfl");
-  s->fmax       = parser_get_float(p, "fmax");
-  s->vel_file   = parser_get_string(p, "in");
-  s->vel_dimx   = parser_get_int(p, "n1");
-  s->vel_dimy   = parser_get_int(p, "n2");
-  s->vel_dimz   = parser_get_int(p, "n3");
-  s->dx         = parser_get_int(p, "dx");
-  s->dy         = parser_get_int(p, "dy");
-  s->dz         = parser_get_int(p, "dz");
-  s->dcdp       = parser_get_int(p, "dcdp");
-  s->dline      = parser_get_int(p, "dline");
-  s->drcv       = parser_get_int(p, "drcv");
-  s->dshot      = parser_get_int(p, "dshot");
-  s->ddepth     = parser_get_int(p, "ddepth");
-  s->device     = parser_get_int(p, "device");
-  s->first      = parser_get_int(p, "first");
-  s->last       = parser_get_int(p, "last");
-  s->src_depth  = parser_get_int(p, "src_depth");
-  s->rcv_depth  = parser_get_int(p, "rcv_depth");
-  s->modeling   = false;
-  s->nb_snap    = parser_get_int(p, "nbsnap");
-  s->mode       = parser_get_int(p, "mode");
+int main(int argc, char *argv[]) {
+    /// structure to maintain the user choices.
+    sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
+    /// create a parser.
+    parser *p = parser_create("Reverse Time Migration using simwave");
+    /// parse command line arguments.
+    PARSER_BOOTSTRAP(p);
+    parser_parse(p, argc, argv);
+    s->verbose = parser_get_bool(p, "verbose");
+    s->cpu = parser_get_bool(p, "cpu");
+    s->time_steps = parser_get_int(p, "iter");
+    s->cfl = parser_get_float(p, "cfl");
+    s->fmax = parser_get_float(p, "fmax");
+    s->vel_file = parser_get_string(p, "in");
+    s->vel_dimx = parser_get_int(p, "n1");
+    s->vel_dimy = parser_get_int(p, "n2");
+    s->vel_dimz = parser_get_int(p, "n3");
+    s->dx = parser_get_int(p, "dx");
+    s->dy = parser_get_int(p, "dy");
+    s->dz = parser_get_int(p, "dz");
+    s->dcdp = parser_get_int(p, "dcdp");
+    s->dline = parser_get_int(p, "dline");
+    s->drcv = parser_get_int(p, "drcv");
+    s->dshot = parser_get_int(p, "dshot");
+    s->ddepth = parser_get_int(p, "ddepth");
+    s->device = parser_get_int(p, "device");
+    s->first = parser_get_int(p, "first");
+    s->last = parser_get_int(p, "last");
+    s->src_depth = parser_get_int(p, "src_depth");
+    s->rcv_depth = parser_get_int(p, "rcv_depth");
+    s->modeling = false;
+    s->nb_snap = parser_get_int(p, "nbsnap");
+    s->mode = parser_get_int(p, "mode");
 
-  /// contains the velocity values of the traversed mediums.
-  float* vel;
-  /// contains the terms of the source.
-  float* source;
-  /// contains the PML coefficients.
-  float* pml_tab;
-  /// get velocity min max from file and setup numerics.
-  wave_init_numerics(s);
-  /// initialize the velocity and the compute sizes.
-  wave_init_dimensions(s);
-  wave_init_damp(s);
-  /// initialize the geometry.
-  wave_init_acquisition(s);
-  /// initialize the simulation buffers.
-  if (s->cpu) {
-    CREATE_BUFFER(vel, s->size_eff);
-  } else {
-    CREATE_BUFFER_ONLY(vel, s->size_eff);
-    array_openmp_inner_init(vel,s);
-  }
-  CREATE_BUFFER(source, s->time_steps+1);
-  CREATE_BUFFER(pml_tab, (s->dimx+2)*(s->dimy+2)*(s->dimz+2));
-  /// load/generate the velocity model.
-  velocity_load_model(s, vel);
-  /// compute PML parameters.
-  pml_compute_coefs(s, pml_tab);
-  /// generate the Ricker source.
-  source_ricker_wavelet(s, source);
-  source[s->time_steps] = 0.0f; // an extra time step for girih.
-  /// print info if needed.
-  if (s->verbose) wave_print(s);
-  /// run RTM on CPU or GPU.
-  if(s->cpu) {
-    run_rtm_tb_cpu(s, vel, source, pml_tab,p);
-  } else {
-    run_rtm_cpu(s, vel, source, pml_tab);
+    int ncpus=get_nprocs();
+    printf("ncpus : %d\n",ncpus);
+    cout << "# THREADS " << omp_get_max_threads() << "\n";
+
+    /// contains the velocity values of the traversed mediums.
+    float *vel;
+    /// contains the terms of the source.
+    float *source;
+    /// contains the PML coefficients.
+    float *pml_tab;
+    /// get velocity min max from file and setup numerics.
+    wave_init_numerics(s);
+    /// initialize the velocity and the compute sizes.
+    wave_init_dimensions(s);
+    wave_init_damp(s);
+    /// initialize the geometry.
+    wave_init_acquisition(s);
+    /// initialize the simulation buffers.
+    if (s->cpu) {
+        CREATE_BUFFER(vel, s->size_eff);
+    } else {
+        CREATE_BUFFER_ONLY(vel, s->size_eff);
+        array_openmp_inner_init(vel, s);
+    }
+    CREATE_BUFFER(source, s->time_steps + 1);
+    CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
+    /// load/generate the velocity model.
+    velocity_load_model(s, vel);
+    /// compute PML parameters.
+    pml_compute_coefs(s, pml_tab);
+    /// generate the Ricker source.
+    source_ricker_wavelet(s, source);
+    source[s->time_steps] = 0.0f; // an extra time step for girih.
+    /// print info if needed.
+    if (s->verbose) wave_print(s);
+    /// run RTM on CPU or GPU.
+    if (s->cpu) {
+        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
+    } else {
+        run_rtm_cpu(s, vel, source, pml_tab);
 //    run_rtm_gpu(s, vel, source, pml_tab);
-  }
-  /// free the simulation buffers.
-  DELETE_BUFFER(vel);
-  DELETE_BUFFER(source);
-  DELETE_BUFFER(pml_tab);
-  /// release simwave.
-  wave_release(s);
-  /// release the simulation structure.
-  free(s);
-  /// delete the parser.
-  parser_delete(p);
-  MSG("RTM HALAS");
-  return EXIT_SUCCESS;
-  MSG("RTM HALAS");
+    }
+    /// free the simulation buffers.
+    DELETE_BUFFER(vel);
+    DELETE_BUFFER(source);
+    DELETE_BUFFER(pml_tab);
+    /// release simwave.
+    wave_release(s);
+    /// release the simulation structure.
+    free(s);
+    /// delete the parser.
+    parser_delete(p);
+    MSG("RTM HALAS");
+    return EXIT_SUCCESS;
+    MSG("RTM HALAS");
 }
