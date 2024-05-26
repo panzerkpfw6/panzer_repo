@@ -41,8 +41,8 @@ make install
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
 #timesteps=2000
-timesteps=2000
-nb_snap=100
+timesteps=500
+#nb_snap=100
 export size1=2048
 export size2=512
 #export size=256
