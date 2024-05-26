@@ -34,21 +34,21 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project (simwave_apps LANGUAGES C CXX)
 
-## Check whether CUDA is detected:
-## - The CUDA library queered in usual directories
-## - This behavior can be changed with env setting:
-##   CUDA_INCLUDE_DIRS  : contains the CUDA headers
-##   CUDA_LIBRARIES_DIR : contains the CUDA runtime libraries
-find_package (CUDA REQUIRED)
-
-## Include the simwave headers
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-## include headers.
-include_directories(${CUDA_INCLUDE_DIRS})
-
-## add CUDA compile options.
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo ")
+### Check whether CUDA is detected:
+### - The CUDA library queered in usual directories
+### - This behavior can be changed with env setting:
+###   CUDA_INCLUDE_DIRS  : contains the CUDA headers
+###   CUDA_LIBRARIES_DIR : contains the CUDA runtime libraries
+#find_package (CUDA REQUIRED)
+#
+### Include the simwave headers
+#include_directories(${CMAKE_SOURCE_DIR}/include)
+#
+### include headers.
+#include_directories(${CUDA_INCLUDE_DIRS})
+#
+### add CUDA compile options.
+#set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -lineinfo ")
 
 ## wildcard source files.
 file(GLOB C_SRCS "*.c")
