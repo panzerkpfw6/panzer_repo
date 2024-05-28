@@ -56,6 +56,12 @@ t[2] =   -1. /   5.;            \
 t[3] =    8. / 315.;            \
 t[4] =   -1. / 560.;
 
+#define SETUP_STENCIL_COEFFS_1st(t) \
+t[0] =    1225. /   1024.;            \
+t[1] =   -245. /   3072.;            \
+t[2] =    49. / 5120.;            \
+t[3] =   -5. / 7168.;
+
 #define SCALE_STENCIL_COEFFS(delta, t) \
 t[0] /= pow(delta,2);                  \
 t[1] /= pow(delta,2);                  \
@@ -63,6 +69,11 @@ t[2] /= pow(delta,2);                  \
 t[3] /= pow(delta,2);                  \
 t[4] /= pow(delta,2);
 
+#define SCALE_STENCIL_COEFFS_1st(delta, t) \
+t[0] /= pow(delta,2);                  \
+t[1] /= pow(delta,2);                  \
+t[2] /= pow(delta,2);                  \
+t[3] /= pow(delta,2);
 
 void array_openmp_init(float *u, sismap_t *s) {
     const int nnx = s->dimx + 2 * s->sx;
@@ -137,16 +148,33 @@ void wave_init_numerics(sismap_t *s) {
     CREATE_BUFFER(s->coefx, 2 * s->sx + 1);
     CREATE_BUFFER(s->coefy, 2 * s->sy + 1);
     CREATE_BUFFER(s->coefz, 2 * s->sz + 1);
-    SETUP_STENCIL_COEFFS(s->coefx);
-    if (!s->dim2) {
-        SETUP_STENCIL_COEFFS(s->coefy);
+
+    if (s->order==1) {
+        MSG("initialize 1st order scheme coefs");
+        SETUP_STENCIL_COEFFS_1st(s->coefx);
+        if (!s->dim2) {
+            SETUP_STENCIL_COEFFS_1st(s->coefy);
+        } else {
+            for (i = 0; i < (2 * s->sy + 1); i++) s->coefy[i] = 0.0;
+        }
+        SETUP_STENCIL_COEFFS_1st(s->coefz);
+        SCALE_STENCIL_COEFFS_1st(s->dx, s->coefx);
+        if (!s->dim2) SCALE_STENCIL_COEFFS_1st(s->dy, s->coefy);
+        SCALE_STENCIL_COEFFS_1st(s->dz, s->coefz);
     } else {
-        for (i = 0; i < (2 * s->sy + 1); i++) s->coefy[i] = 0.0;
+        MSG("initialize 2nd order scheme coefs");
+        SETUP_STENCIL_COEFFS(s->coefx);
+        if (!s->dim2) {
+            SETUP_STENCIL_COEFFS(s->coefy);
+        } else {
+            for (i = 0; i < (2 * s->sy + 1); i++) s->coefy[i] = 0.0;
+        }
+        SETUP_STENCIL_COEFFS(s->coefz);
+        SCALE_STENCIL_COEFFS(s->dx, s->coefx);
+        if (!s->dim2) SCALE_STENCIL_COEFFS(s->dy, s->coefy);
+        SCALE_STENCIL_COEFFS(s->dz, s->coefz);
     }
-    SETUP_STENCIL_COEFFS(s->coefz);
-    SCALE_STENCIL_COEFFS(s->dx, s->coefx);
-    if (!s->dim2) SCALE_STENCIL_COEFFS(s->dy, s->coefy);
-    SCALE_STENCIL_COEFFS(s->dz, s->coefz);
+
     s->pmlx = PML_TAPER * s->lambda / s->dx;
     s->pmly = s->dim2 ? 0 : PML_TAPER * s->lambda / s->dy;
     s->pmlz = PML_TAPER * s->lambda / s->dz;
@@ -381,6 +409,28 @@ ux[x] = 2.0f * vx[x] - ux[x]                                                   \
                                + s->coefy[4] * (vx[x+4*nnx ] + vx[x-4*nnx ])   \
                                + s->coefz[4] * (vx[x+4*nnxy] + vx[x-4*nnxy]))  \
 
+#define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v()                        \
+vx0[x] = vx0[x]                                                                \
+      + rx[x] * (coef0 * vx[x] + s->coefx[0] * (pr0[x+1] + pr0[x])   \
+                               + s->coefy[1] * (pr0[x+nnx   ] + pr0[x-nnx   ])   \
+                               + s->coefz[2] * (pr0[x+nnxy  ] + pr0[x-nnxy  ])   \
+                               + s->coefz[3] * (pr0[x+4*nnxy] + pr0[x-4*nnxy]));
+
+                                                                                     \
+#define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p()                        \
+ux[x] = 2.0f * vx[x] - ux[x]                                                   \
+      + rx[x] * (coef0 * vx[x] + s->coefx[1] * (vx[x+1     ] + vx[x-1     ])   \
+                               + s->coefy[1] * (vx[x+nnx   ] + vx[x-nnx   ])   \
+                               + s->coefz[1] * (vx[x+nnxy  ] + vx[x-nnxy  ])   \
+                               + s->coefx[2] * (vx[x+2     ] + vx[x-2     ])   \
+                               + s->coefy[2] * (vx[x+2*nnx ] + vx[x-2*nnx ])   \
+                               + s->coefz[2] * (vx[x+2*nnxy] + vx[x-2*nnxy])   \
+                               + s->coefx[3] * (vx[x+3     ] + vx[x-3     ])   \
+                               + s->coefy[3] * (vx[x+3*nnx ] + vx[x-3*nnx ])   \
+                               + s->coefz[3] * (vx[x+3*nnxy] + vx[x-3*nnxy])   \
+                               + s->coefx[4] * (vx[x+4     ] + vx[x-4     ])   \
+                               + s->coefy[4] * (vx[x+4*nnx ] + vx[x-4*nnx ])   \
+                               + s->coefz[4] * (vx[x+4*nnxy] + vx[x-4*nnxy]))
 
 #define WAVE_UPDATE_PML_FIELDS()                                            \
   U1(z,y,x) =                                                               \
@@ -502,6 +552,66 @@ void wave_update_fields_block_bis(sismap_t *s,
         }
     }
 }
+
+void wave_update_fields_block_1st(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict vx,
+                                  float *restrict vy,
+                                  float *restrict vz,
+                                  float *restrict roc2,
+                                  float *restrict phi,
+                                  float *restrict eta) {
+    unsigned int z, y, x;
+    float laplacian;
+    float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
+    unsigned int zmin, zmax, ymin, ymax;
+
+    const int nnx = s->dimx + 2 * s->sx;
+    const int nny = s->dimy + 2 * s->sy;
+    const int nnxy = nnx * nny;
+    float *restrict
+    pr0;
+    float *restrict
+    vx0;
+    float *restrict
+    vy0;
+    float *restrict
+    vz0;
+    float *restrict
+    rx;
+#pragma omp parallel for collapse(2) private(laplacian, zmin, zmax, ymin, ymax,pr0,vx0,vy0,vz0,rx)
+    for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+        for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+            zmax = zmin + BLOCKZ;
+            if (zmax > s->dimz) zmax = s->dimz;
+            ymax = ymin + BLOCKY;
+            if (ymax > s->dimy) ymax = s->dimy;
+
+            for (int z = zmin; z < zmax; z++) {
+                for (int y = ymin; y < ymax; y++) {
+                    pr0 = &(u0[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
+                    vx0 = &(vx[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
+                    vy0 = &(vy[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
+                    vz0 = &(vz[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
+                    rx = &(roc2[1ULL * z * s->dimx * s->dimy + y * s->dimx]);
+//           #pragma simd
+                    for (int x = 0; x < s->dimx; x++) {
+                        //            WAVE_COMPUTE_LAPLACIAN();
+                        //            WAVE_UPDATE_INNER_FIELDS();
+                        //            U1(z,y,x) = s->dampx[x+s->sx] * U1(z,y,x) + (1 - s->dampx[x+s->sx]) * U0(z,y,x);
+                        //            U1(z,y,x) = s->dampy[y+s->sy] * U1(z,y,x) + (1 - s->dampy[y+s->sy]) * U0(z,y,x);
+                        //            U1(z,y,x) = s->dampz[z+s->sz] * U1(z,y,x) + (1 - s->dampz[z+s->sz]) * U0(z,y,x);
+                        WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
+                        ux[x] = s->dampx[x + s->sx] * ux[x] + (1 - s->dampx[x + s->sx]) * vx[x];
+                        ux[x] = s->dampy[y + s->sy] * ux[x] + (1 - s->dampy[y + s->sy]) * vx[x];
+                        ux[x] = s->dampz[z + s->sz] * ux[x] + (1 - s->dampz[z + s->sz]) * vx[x];
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void wave_update_fields_block_tri(sismap_t *s,
                                   float *restrict u0,

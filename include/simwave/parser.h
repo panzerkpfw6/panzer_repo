@@ -301,6 +301,7 @@ parser_put(p, INT,                                                      \
 parser_put(p, INT,                                                      \
            0, "fwd_steps", "1","save wavefield every fwd_steps diamonds");\
 parser_put(p, STRING,                                                   \
-           0, "tb_affinity", "NONE", "Affinity setup file");
-
+           0, "tb_affinity", "NONE", "Affinity setup file");            \
+parser_put(p, INT,                                                      \
+           0, "order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
 #endif //  __SIMWAVE_PARSER_H_
