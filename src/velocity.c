@@ -31,6 +31,7 @@
 #define __DUMP_VEL
 
 void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
+    MSG("__________________________Inside function velocity_generate_model__________________________");
     unsigned int x, y, z, i;
     float delta = layers == 1 ? (s->vmax - s->vmin) :
                   (s->vmax - s->vmin) / (layers - 1);
@@ -48,8 +49,13 @@ void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
     for (z = 0; z < s->dimz; z++)
         for (y = 0; y < s->dimy; y++)
             for (x = 0; x < s->dimx; x++)
-                vtab[s->dimx * (s->dimy * z + y) + x] =
-                        pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x], 2);
+                if (s->order==1) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            pow(s->dt, 1) * pow(vtab[s->dimx * (s->dimy * z + y) + x], 2);}
+                else{
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x], 2);}
+
 
 //    MSG("vtab=%f\n", vtab[100]);
 //    MSG("vtab=%f\n", vtab[1000]);
@@ -71,277 +77,281 @@ void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
 }
 
 void velocity_query_model(sismap_t *s) {
-  if (strcmp("NONE", s->vel_file) == 0) {
-    s->vmin = 1500.0;
-    s->vmax = 4500.0;
-  } else {
-    size_t vel_size = 1LL*s->vel_dimx*s->vel_dimy*s->vel_dimz;
-    float f, *tmp = (float*)malloc(vel_size*sizeof(float));
+    MSG("__________________________Inside function velocity_query_model__________________________");
+    if (strcmp("NONE", s->vel_file) == 0) {
+        s->vmin = 1500.0;
+        s->vmax = 4500.0;
+    } else {
+        size_t vel_size = 1LL * s->vel_dimx * s->vel_dimy * s->vel_dimz;
+        float f, *tmp = (float *) malloc(vel_size * sizeof(float));
 
-    FILE   *fd = fopen(s->vel_file, "rb");
-    MSG("velocity file name : %s\n",s->vel_file);
-    MSG("velocity file dim : %d %d %d\n",s->vel_dimx,s->vel_dimy,s->vel_dimz);
-    CHK(fd == NULL, "failed to open the velocity file");
-    CHK(fread(tmp, sizeof(float), vel_size, fd)!=vel_size,
-      "failed to read from the velocity file");
-    fclose(fd);
-    /// search for vmin and vmax.
-    s->vmin = FLT_MAX;
-    s->vmax = FLT_MIN;
-    for (unsigned int z=0; z < s->vel_dimz; z++) {
-      for (unsigned int y=0; y < s->vel_dimy; y++) {
-        for (unsigned int x=0; x < s->vel_dimx; x++) {
-          f = tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x];
-          if (f>s->vmax) s->vmax = f;
-          if (f<s->vmin) s->vmin = f;
+        FILE *fd = fopen(s->vel_file, "rb");
+        MSG("velocity file name : %s\n", s->vel_file);
+        MSG("velocity file dim : %d %d %d\n", s->vel_dimx, s->vel_dimy, s->vel_dimz);
+        CHK(fd == NULL, "failed to open the velocity file");
+        CHK(fread(tmp, sizeof(float), vel_size, fd) != vel_size,
+            "failed to read from the velocity file");
+        fclose(fd);
+        /// search for vmin and vmax.
+        s->vmin = FLT_MAX;
+        s->vmax = FLT_MIN;
+        for (unsigned int z = 0; z < s->vel_dimz; z++) {
+            for (unsigned int y = 0; y < s->vel_dimy; y++) {
+                for (unsigned int x = 0; x < s->vel_dimx; x++) {
+                    f = tmp[1ULL * s->vel_dimx * (s->vel_dimy * z + y) + x];
+                    if (f > s->vmax) s->vmax = f;
+                    if (f < s->vmin) s->vmin = f;
+                }
+            }
         }
-      }
+        free(tmp);
     }
-    free(tmp);
-  }
 }
 
-#define V(z,x) vtab[s->dimx*(z) + (x+s->pmlx)]
-#define TMP(z,x) tmp[(s->vel_dimx+1)*(z) + x]
+#define V(z, x) vtab[s->dimx*(z) + (x+s->pmlx)]
+#define TMP(z, x) tmp[(s->vel_dimx+1)*(z) + x]
 
-void velocity_load_model_2d(sismap_t *s, float* vtab) {
-  FILE *fd;
-  float *vtmp, *tmp;
-  if (strcmp("NONE", s->vel_file) == 0) {
-    velocity_generate_model(s, vtab, 4);
-  } else {
-    size_t vel_size = s->vel_dimx*s->vel_dimz;
-    vtmp = (float*)malloc(vel_size*sizeof(float));
-    tmp  = (float*)malloc((s->vel_dimx+1)*(s->vel_dimz+1)*sizeof(float));
-    fd   = fopen(s->vel_file, "rb");
-    CHK(fd == NULL, "failed to open the velocity file");
-    CHK(fread(vtmp, vel_size*sizeof(float), 1, fd)!=1,
-        "failed to read from the velocity file");
-    fclose(fd);
+void velocity_load_model_2d(sismap_t *s, float *vtab) {
+    MSG("__________________________Inside function velocity_load_model_2d__________________________");
+    FILE *fd;
+    float *vtmp, *tmp;
+    if (strcmp("NONE", s->vel_file) == 0) {
+        velocity_generate_model(s, vtab, 4);
+    } else {
+        size_t vel_size = s->vel_dimx * s->vel_dimz;
+        vtmp = (float *) malloc(vel_size * sizeof(float));
+        tmp = (float *) malloc((s->vel_dimx + 1) * (s->vel_dimz + 1) * sizeof(float));
+        fd = fopen(s->vel_file, "rb");
+        CHK(fd == NULL, "failed to open the velocity file");
+        CHK(fread(vtmp, vel_size * sizeof(float), 1, fd) != 1,
+            "failed to read from the velocity file");
+        fclose(fd);
 
-    for (unsigned int z=0; z < s->vel_dimz; z++){
-      for (unsigned int x=0; x < s->vel_dimx; x++){
-        tmp[(s->vel_dimx+1)*z + x] =
-          pow(s->dt, 2) * pow(vtmp[s->vel_dimx*z + x], 2);
-      }
-    }
-    for (unsigned int x=0; x < s->vel_dimx; x++){
-      tmp[(s->vel_dimx+1)*(s->vel_dimz) + x] =
-          pow(s->dt, 2) * pow(vtmp[s->vel_dimx*(s->vel_dimz-1) + x], 2);
-    }
-    for (unsigned int z=0; z < s->vel_dimz; z++){
-      tmp[(s->vel_dimx+1)*z + (s->vel_dimx)] =
-          pow(s->dt, 2) * pow(vtmp[s->vel_dimx*z + (s->vel_dimx-1)], 2);
-    }
-    free(vtmp);
-
-    /// load the velocity in vtab after interpolation.
-    for (unsigned int z=0; z < s->vel_dimz; z++){
-      for (unsigned int x=0; x < s->vel_dimx; x++){
-        vtab[s->dimx*(z*s->dtrpz) + ((x*s->dtrpx)+s->pmlx)] =
-          tmp[(s->vel_dimx+1)*z + x];
-        for (unsigned int iz=0; iz < s->dtrpz; iz++){
-          for (unsigned int ix=0; ix < s->dtrpx; ix++){
-            unsigned int zidx = (z*s->dtrpz)+iz;
-            unsigned int xidx = (x*s->dtrpx)+ix;
-            if ((zidx < s->dimz) && (xidx < s->dimx)) {
-                float c00 = TMP(z,x);
-                float c01 = TMP(z,x+1);
-                float c10 = TMP(z+1,x);
-                float c11 = TMP(z+1,x+1);
-                float tx  = (float)ix/(float)s->dtrpx;
-                float tz  = (float)iz/(float)s->dtrpz;
-                V(zidx, xidx) = bilinearinterp(c00, c01, c10, c11, tx, tz);
+        for (unsigned int z = 0; z < s->vel_dimz; z++) {
+            for (unsigned int x = 0; x < s->vel_dimx; x++) {
+                tmp[(s->vel_dimx + 1) * z + x] =
+                        pow(s->dt, 2) * pow(vtmp[s->vel_dimx * z + x], 2);
             }
-          }
         }
-      }
-    }
+        for (unsigned int x = 0; x < s->vel_dimx; x++) {
+            tmp[(s->vel_dimx + 1) * (s->vel_dimz) + x] =
+                    pow(s->dt, 2) * pow(vtmp[s->vel_dimx * (s->vel_dimz - 1) + x], 2);
+        }
+        for (unsigned int z = 0; z < s->vel_dimz; z++) {
+            tmp[(s->vel_dimx + 1) * z + (s->vel_dimx)] =
+                    pow(s->dt, 2) * pow(vtmp[s->vel_dimx * z + (s->vel_dimx - 1)], 2);
+        }
+        free(vtmp);
 
-    /// extend to the Z PML regions.
-    for (unsigned int z=s->dimz-s->pmlz; z < s->dimz; z++){
-      for (unsigned int y=0; y < s->dimy; y++){
-        for (unsigned int x=0; x < s->dimx; x++){
-          vtab[s->dimx*(s->dimy*z + y) + x] =
-            vtab[s->dimx*(s->dimy*(s->dimz-s->pmlz-1) + y) + x];
+        /// load the velocity in vtab after interpolation.
+        for (unsigned int z = 0; z < s->vel_dimz; z++) {
+            for (unsigned int x = 0; x < s->vel_dimx; x++) {
+                vtab[s->dimx * (z * s->dtrpz) + ((x * s->dtrpx) + s->pmlx)] =
+                        tmp[(s->vel_dimx + 1) * z + x];
+                for (unsigned int iz = 0; iz < s->dtrpz; iz++) {
+                    for (unsigned int ix = 0; ix < s->dtrpx; ix++) {
+                        unsigned int zidx = (z * s->dtrpz) + iz;
+                        unsigned int xidx = (x * s->dtrpx) + ix;
+                        if ((zidx < s->dimz) && (xidx < s->dimx)) {
+                            float c00 = TMP(z, x);
+                            float c01 = TMP(z, x + 1);
+                            float c10 = TMP(z + 1, x);
+                            float c11 = TMP(z + 1, x + 1);
+                            float tx = (float) ix / (float) s->dtrpx;
+                            float tz = (float) iz / (float) s->dtrpz;
+                            V(zidx, xidx) = bilinearinterp(c00, c01, c10, c11, tx, tz);
+                        }
+                    }
+                }
+            }
         }
-      }
+
+        /// extend to the Z PML regions.
+        for (unsigned int z = s->dimz - s->pmlz; z < s->dimz; z++) {
+            for (unsigned int y = 0; y < s->dimy; y++) {
+                for (unsigned int x = 0; x < s->dimx; x++) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            vtab[s->dimx * (s->dimy * (s->dimz - s->pmlz - 1) + y) + x];
+                }
+            }
+        }
+        /// extend to the Y PML regions.
+        for (unsigned int z = 0; z < s->dimz - s->pmlz; z++) {
+            for (unsigned int y = 0; y < s->pmly; y++) {
+                for (unsigned int x = s->pmlx; x < s->dimx - s->pmlx; x++) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            vtab[s->dimx * (s->dimy * z + s->pmly) + x];
+                }
+            }
+            for (unsigned int y = s->dimy - s->pmly; y < s->dimy; y++) {
+                for (unsigned int x = s->pmlx; x < s->dimx - s->pmlx; x++) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            vtab[s->dimx * (s->dimy * z + (s->dimy - s->pmly - 1)) + x];
+                }
+            }
+        }
+        /// extend to the X PML regions.
+        for (unsigned int z = 0; z < s->dimz - s->pmlz; z++) {
+            for (unsigned int y = s->pmly; y < s->dimy - s->pmly; y++) {
+                for (unsigned int x = 0; x < s->pmlx; x++) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            vtab[s->dimx * (s->dimy * (z) + y) + s->pmlx];
+                }
+                for (unsigned int x = s->dimx - s->pmlx; x < s->dimx; x++) {
+                    vtab[s->dimx * (s->dimy * z + y) + x] =
+                            vtab[s->dimx * (s->dimy * (z) + y) + s->dimx - s->pmlx - 1];
+                }
+            }
+        }
+        free(tmp);
     }
-    /// extend to the Y PML regions.
-    for (unsigned int z=0; z < s->dimz-s->pmlz; z++) {
-      for (unsigned int y=0; y < s->pmly; y++) {
-        for (unsigned int x=s->pmlx; x < s->dimx-s->pmlx; x++) {
-          vtab[s->dimx*(s->dimy*z + y) + x] =
-            vtab[s->dimx*(s->dimy*z + s->pmly) + x];
-        }
-      }
-      for (unsigned int y=s->dimy-s->pmly; y < s->dimy; y++) {
-        for (unsigned int x=s->pmlx; x < s->dimx-s->pmlx; x++) {
-          vtab[s->dimx*(s->dimy*z + y) + x] =
-            vtab[s->dimx*(s->dimy*z + (s->dimy-s->pmly-1)) + x];
-        }
-      }
-    }
-    /// extend to the X PML regions.
-    for (unsigned int z=0; z < s->dimz-s->pmlz; z++){
-      for (unsigned int y=s->pmly; y < s->dimy-s->pmly; y++){
-        for (unsigned int x=0; x < s->pmlx; x++){
-          vtab[s->dimx*(s->dimy*z + y) + x] =
-            vtab[s->dimx*(s->dimy*(z) + y) + s->pmlx];
-        }
-        for (unsigned int x=s->dimx-s->pmlx; x < s->dimx; x++){
-          vtab[s->dimx*(s->dimy*z + y) + x] =
-            vtab[s->dimx*(s->dimy*(z) + y) + s->dimx-s->pmlx-1];
-        }
-      }
-    }
-    free(tmp);
-  }
-  #ifdef __DUMP_VEL
+#ifdef __DUMP_VEL
     char stmp[512];
     sprintf(stmp, "mkdir -p %s", OUTDIR);
     CHK(system(stmp), "failed to create output directory for snapshots");
     sprintf(stmp, "%s/augmented_vel.raw", OUTDIR);
-    fd  = fopen(stmp, "wb");
-    CHK(fwrite(vtab, s->size_eff*sizeof(float), 1, fd)!=1,
+    fd = fopen(stmp, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd) != 1,
         "failed to write the velocity file");
     fclose(fd);
-  #endif //__DUMP_VEL
+#endif //__DUMP_VEL
 }
 
 #undef V
 #undef TMP
-#define V(z,y,x) vtab[s->dimx*(s->dimy*(z) + (y+s->pmly)) + (x+s->pmlx)]
-#define TMP(z,y,x) tmp[s->vel_dimx*(s->vel_dimy*(z) + y) + x]
+#define V(z, y, x) vtab[s->dimx*(s->dimy*(z) + (y+s->pmly)) + (x+s->pmlx)]
+#define TMP(z, y, x) tmp[s->vel_dimx*(s->vel_dimy*(z) + y) + x]
 
-void velocity_load_model_3d(sismap_t *s, float* vtab) {
-  FILE *fd;
-  if (strcmp("NONE", s->vel_file) == 0) {
-    velocity_generate_model(s, vtab, 4);
-  } else {
-    size_t vel_size = 1LL*s->vel_dimx*s->vel_dimy*s->vel_dimz;
-    float *tmp = (float*)malloc(vel_size*sizeof(float));
+void velocity_load_model_3d(sismap_t *s, float *vtab) {
+    MSG("__________________________Inside function velocity_load_model_3d__________________________");
+    FILE *fd;
+    if (strcmp("NONE", s->vel_file) == 0) {
+        velocity_generate_model(s, vtab, 4);
+    } else {
+        size_t vel_size = 1LL * s->vel_dimx * s->vel_dimy * s->vel_dimz;
+        float *tmp = (float *) malloc(vel_size * sizeof(float));
 
-    fd = fopen(s->vel_file, "rb");
-    CHK(fd == NULL, "failed to open the velocity file");
-    CHK(fread(tmp, vel_size*sizeof(float), 1, fd)!=1,
-      "failed to read from the velocity file");
-    fclose(fd);
-    //#define __TRANSP_VEL
-    #ifdef __TRANSP_VEL
-    char ktmp[512];
-    sprintf(ktmp, "mkdir -p %s", OUTDIR);
-    CHK(system(ktmp), "failed to create output directory for snapshots");
-    sprintf(ktmp, "%s/transp_vel.raw", OUTDIR);
-    fd  = fopen(ktmp, "wb");
-    // CHK(fwrite(tab, s->size_eff*sizeof(float), 1, fd)!=1,
-    //     "failed to write the velocity file");
-    unsigned int vx = s->vel_dimx;
-    unsigned int vy = s->vel_dimy;
-    unsigned int vz = s->vel_dimz;
-    printf("vx vy vz %u %u %u\n", vx, vy, vz);
-    for (unsigned int x=0; x < vx ; x++)
-      for (unsigned int y=0; y < vy ; y++)
-        for (unsigned int z=0; z < vz ; z++)
-          fwrite(&tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x], sizeof(float), 1, fd);
-    fclose(fd);
-    #endif // __TRANSP_VEL
-    for (unsigned int z=0; z < s->vel_dimz; z++){
-      for (unsigned int y=0; y < s->vel_dimy; y++){
-        for (unsigned int x=0; x < s->vel_dimx; x++){
-          tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x] =
-            pow(s->dt, 2) * pow(tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x], 2);
-        }
-      }
-    }
-
-    /// load the velocity in vtab after interpolation (not done yet).
-    for (unsigned int z=0; z < s->vel_dimz-1; z++){
-      for (unsigned int y=0; y < s->vel_dimy-1; y++){
-        for (unsigned int x=0; x < s->vel_dimx-1; x++){
-          vtab[1ULL*s->dimx*(s->dimy*(z*s->dtrpz) +
-                               ((y*s->dtrpy)+s->pmly)) +
-                               ((x*s->dtrpx)+s->pmlx)] =
-            tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x];
-          for (unsigned int iz=0; iz < s->dtrpz; iz++){
-            for (unsigned int iy=0; iy < s->dtrpy; iy++){
-              for (unsigned int ix=0; ix < s->dtrpx; ix++){
-                float c000 = TMP(z,y,x);
-                float c001 = TMP(z,y,x+1);
-                float c010 = TMP(z,y+1,x);
-                float c011 = TMP(z,y+1,x+1);
-                float c100 = TMP(z+1,y,x);
-                float c101 = TMP(z+1,y,x+1);
-                float c110 = TMP(z+1,y+1,x);
-                float c111 = TMP(z+1,y+1,x+1);
-                float tx   = (float)ix/(float)s->dtrpx;
-                float ty   = (float)iy/(float)s->dtrpy;
-                float tz   = (float)iz/(float)s->dtrpz;
-                V((z*s->dtrpz)+iz,
-                  (y*s->dtrpy)+iy,
-                  (x*s->dtrpx)+ix) = trilinearinterp(c000, c001,
-                                                     c010, c011,
-                                                     c100, c101,
-                                                     c110, c111, tx, ty, tz);
-              }
+        fd = fopen(s->vel_file, "rb");
+        CHK(fd == NULL, "failed to open the velocity file");
+        CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,
+            "failed to read from the velocity file");
+        fclose(fd);
+        //#define __TRANSP_VEL
+#ifdef __TRANSP_VEL
+        char ktmp[512];
+        sprintf(ktmp, "mkdir -p %s", OUTDIR);
+        CHK(system(ktmp), "failed to create output directory for snapshots");
+        sprintf(ktmp, "%s/transp_vel.raw", OUTDIR);
+        fd  = fopen(ktmp, "wb");
+        // CHK(fwrite(tab, s->size_eff*sizeof(float), 1, fd)!=1,
+        //     "failed to write the velocity file");
+        unsigned int vx = s->vel_dimx;
+        unsigned int vy = s->vel_dimy;
+        unsigned int vz = s->vel_dimz;
+        printf("vx vy vz %u %u %u\n", vx, vy, vz);
+        for (unsigned int x=0; x < vx ; x++)
+          for (unsigned int y=0; y < vy ; y++)
+            for (unsigned int z=0; z < vz ; z++)
+              fwrite(&tmp[1ULL*s->vel_dimx*(s->vel_dimy*z + y) + x], sizeof(float), 1, fd);
+        fclose(fd);
+#endif // __TRANSP_VEL
+        for (unsigned int z = 0; z < s->vel_dimz; z++) {
+            for (unsigned int y = 0; y < s->vel_dimy; y++) {
+                for (unsigned int x = 0; x < s->vel_dimx; x++) {
+                    tmp[1ULL * s->vel_dimx * (s->vel_dimy * z + y) + x] =
+                            pow(s->dt, 2) * pow(tmp[1ULL * s->vel_dimx * (s->vel_dimy * z + y) + x], 2);
+                }
             }
-          }
         }
-      }
-    }
 
-    /// extend to the Z PML regions.
-    for (unsigned int z=s->dimz-s->pmlz; z < s->dimz; z++){
-      for (unsigned int y=0; y < s->dimy; y++){
-        for (unsigned int x=0; x < s->dimx; x++){
-          vtab[1ULL*s->dimx*(s->dimy*z + y) + x] =
-            vtab[1ULL*s->dimx*(s->dimy*(s->dimz-s->pmlz-1) + y) + x];
+        /// load the velocity in vtab after interpolation (not done yet).
+        for (unsigned int z = 0; z < s->vel_dimz - 1; z++) {
+            for (unsigned int y = 0; y < s->vel_dimy - 1; y++) {
+                for (unsigned int x = 0; x < s->vel_dimx - 1; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * (z * s->dtrpz) +
+                                           ((y * s->dtrpy) + s->pmly)) +
+                         ((x * s->dtrpx) + s->pmlx)] =
+                            tmp[1ULL * s->vel_dimx * (s->vel_dimy * z + y) + x];
+                    for (unsigned int iz = 0; iz < s->dtrpz; iz++) {
+                        for (unsigned int iy = 0; iy < s->dtrpy; iy++) {
+                            for (unsigned int ix = 0; ix < s->dtrpx; ix++) {
+                                float c000 = TMP(z, y, x);
+                                float c001 = TMP(z, y, x + 1);
+                                float c010 = TMP(z, y + 1, x);
+                                float c011 = TMP(z, y + 1, x + 1);
+                                float c100 = TMP(z + 1, y, x);
+                                float c101 = TMP(z + 1, y, x + 1);
+                                float c110 = TMP(z + 1, y + 1, x);
+                                float c111 = TMP(z + 1, y + 1, x + 1);
+                                float tx = (float) ix / (float) s->dtrpx;
+                                float ty = (float) iy / (float) s->dtrpy;
+                                float tz = (float) iz / (float) s->dtrpz;
+                                V((z * s->dtrpz) + iz,
+                                  (y * s->dtrpy) + iy,
+                                  (x * s->dtrpx) + ix) = trilinearinterp(c000, c001,
+                                                                         c010, c011,
+                                                                         c100, c101,
+                                                                         c110, c111, tx, ty, tz);
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+
+        /// extend to the Z PML regions.
+        for (unsigned int z = s->dimz - s->pmlz; z < s->dimz; z++) {
+            for (unsigned int y = 0; y < s->dimy; y++) {
+                for (unsigned int x = 0; x < s->dimx; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * z + y) + x] =
+                            vtab[1ULL * s->dimx * (s->dimy * (s->dimz - s->pmlz - 1) + y) + x];
+                }
+            }
+        }
+        /// extend to the Y PML regions.
+        for (unsigned int z = 0; z < s->dimz - s->pmlz; z++) {
+            for (unsigned int y = 0; y < s->pmly; y++) {
+                for (unsigned int x = s->pmlx; x < s->dimx - s->pmlx; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * z + y) + x] =
+                            vtab[1ULL * s->dimx * (s->dimy * z + s->pmly) + x];
+                }
+            }
+            for (unsigned int y = s->dimy - s->pmly; y < s->dimy; y++) {
+                for (unsigned int x = s->pmlx; x < s->dimx - s->pmlx; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * z + y) + x] =
+                            vtab[1ULL * s->dimx * (s->dimy * z + (s->dimy - s->pmly - 1)) + x];
+                }
+            }
+        }
+        /// extend to the X PML regions.
+        for (unsigned int z = 0; z < s->dimz - s->pmlz; z++) {
+            for (unsigned int y = s->pmly; y < s->dimy - s->pmly; y++) {
+                for (unsigned int x = 0; x < s->pmlx; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * z + y) + x] =
+                            vtab[1ULL * s->dimx * (s->dimy * (z) + y) + s->pmlx];
+                }
+                for (unsigned int x = s->dimx - s->pmlx; x < s->dimx; x++) {
+                    vtab[1ULL * s->dimx * (s->dimy * z + y) + x] =
+                            vtab[1ULL * s->dimx * (s->dimy * (z) + y) + s->dimx - s->pmlx - 1];
+                }
+            }
+        }
+        free(tmp);
     }
-    /// extend to the Y PML regions.
-    for (unsigned int z=0; z < s->dimz-s->pmlz; z++) {
-      for (unsigned int y=0; y < s->pmly; y++) {
-        for (unsigned int x=s->pmlx; x < s->dimx-s->pmlx; x++) {
-          vtab[1ULL*s->dimx*(s->dimy*z + y) + x] =
-            vtab[1ULL*s->dimx*(s->dimy*z + s->pmly) + x];
-        }
-      }
-      for (unsigned int y=s->dimy-s->pmly; y < s->dimy; y++) {
-        for (unsigned int x=s->pmlx; x < s->dimx-s->pmlx; x++) {
-          vtab[1ULL*s->dimx*(s->dimy*z + y) + x] =
-            vtab[1ULL*s->dimx*(s->dimy*z + (s->dimy-s->pmly-1)) + x];
-        }
-      }
-    }
-    /// extend to the X PML regions.
-    for (unsigned int z=0; z < s->dimz-s->pmlz; z++){
-      for (unsigned int y=s->pmly; y < s->dimy-s->pmly; y++){
-        for (unsigned int x=0; x < s->pmlx; x++){
-          vtab[1ULL*s->dimx*(s->dimy*z + y) + x] =
-            vtab[1ULL*s->dimx*(s->dimy*(z) + y) + s->pmlx];
-        }
-        for (unsigned int x=s->dimx-s->pmlx; x < s->dimx; x++){
-          vtab[1ULL*s->dimx*(s->dimy*z + y) + x] =
-            vtab[1ULL*s->dimx*(s->dimy*(z) + y) + s->dimx-s->pmlx-1];
-        }
-      }
-    }
-    free(tmp);
-  }
-  #ifdef __DUMP_VEL
+#ifdef __DUMP_VEL
     char vtmp[512];
     sprintf(vtmp, "mkdir -p %s", OUTDIR);
     CHK(system(vtmp), "failed to create output directory for snapshots");
     sprintf(vtmp, "%s/augmented_vel.raw", OUTDIR);
-    fd  = fopen(vtmp, "wb");
-    CHK(fwrite(vtab, 1ULL*s->size_eff*sizeof(float), 1, fd)!=1,
+    fd = fopen(vtmp, "wb");
+    CHK(fwrite(vtab, 1ULL * s->size_eff * sizeof(float), 1, fd) != 1,
         "failed to write the velocity file");
     fclose(fd);
-  #endif //__DUMP_VEL
+#endif //__DUMP_VEL
 }
 
-void velocity_load_model(sismap_t *s, float* vtab) {
-  if (s->dim2) velocity_load_model_2d(s, vtab);
-  else velocity_load_model_3d(s, vtab);
+void velocity_load_model(sismap_t *s, float *vtab) {
+    MSG("__________________________Inside function velocity_load_model__________________________");
+    if (s->dim2) velocity_load_model_2d(s, vtab);
+    else velocity_load_model_3d(s, vtab);
 }

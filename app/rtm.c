@@ -1042,11 +1042,11 @@ int main(int argc, char *argv[]) {
     if (s->verbose) wave_print(s);
     /// run RTM on CPU or GPU.
     if (s->cpu) {
-//        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
-        run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
+        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
+//        run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
     } else {
-//        run_rtm_cpu(s, vel, source, pml_tab);
-        run_rtm_1st_cpu(s, vel, source, pml_tab);
+        run_rtm_cpu(s, vel, source, pml_tab);
+//        run_rtm_1st_cpu(s, vel, source, pml_tab);
 //    run_rtm_gpu(s, vel, source, pml_tab);
     }
     /// free the simulation buffers.

@@ -178,6 +178,12 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
 void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
     /// contains the fields pressure value at time step t.
     float* u0;
+    /// contains the fields (particle velocity across x direction) value at time step t.
+    float* vx;
+    /// contains the fields (particle velocity across y direction) value at time step t.
+    float* vy;
+    /// contains the fields (particle velocity across z direction) value at time step t.
+    float* vz;
     /// seismic traces for a given shot.
     float *sismos;
     /// PML temporary tab.
@@ -310,7 +316,9 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     }
     /// free the simulation buffers.
     DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
+    DELETE_BUFFER(vx);
+    DELETE_BUFFER(vy);
+    DELETE_BUFFER(vz);
     DELETE_BUFFER(sismos);
     DELETE_BUFFER(pml_tmp);
 }

@@ -31,70 +31,70 @@
 
 /// @brief A data structure that contains fields related to the physics.
 typedef struct __sismap_t {
-  ///
-  /// velocity meta-data:
-  ///
-  char *vel_file;
-  unsigned int vel_dimx, vel_dimy, vel_dimz;
-  unsigned int dcdp, dline, ddepth;
-  ///
-  /// acquisition meta-data:
-  ///
-  unsigned int drcv, dshot;
-  unsigned int src_depth, rcv_depth;
-  unsigned int rcv_len;
-  unsigned int *rcv;
-  int nb_shots;
-  int    first;
-  int     last;
-  shot_t **shots;
-  ///
-  /// simulation meta-data:
-  ///
-  float courant_number, vmin, vmax, fmax;
-  float hdx2, hdy2, hdz2;
-  float dt;
-  float lambda;
-  float cfl;
-  ///
-  /// compute grids meta-data:
-  ///
-  unsigned int img_dimx, img_dimy, img_dimz;
-  unsigned int dimx, dimy, dimz;
-  unsigned int dx, dy, dz;
-  unsigned int dtrpx, dtrpy, dtrpz;
-  unsigned int sx, sy, sz;
-  unsigned int pmlx, pmly, pmlz;
-  unsigned int snap_idx;
-  unsigned int nb_snap;
-  unsigned int nyquist_sampling;
-  unsigned int next_snap;
-  int time_steps;
-  size_t size;
-  size_t size_eff;
-  size_t size_img;
-  ///
-  /// read-only arrays that won't changed during the simulation:
-  ///
-  /// the stencil coefficients.
-  float *coefx, *coefy, *coefz;
+    ///
+    /// velocity meta-data:
+    ///
+    char *vel_file;
+    unsigned int vel_dimx, vel_dimy, vel_dimz;
+    unsigned int dcdp, dline, ddepth;
+    ///
+    /// acquisition meta-data:
+    ///
+    unsigned int drcv, dshot;
+    unsigned int src_depth, rcv_depth;
+    unsigned int rcv_len;
+    unsigned int *rcv;
+    int nb_shots;
+    int first;
+    int last;
+    shot_t **shots;
+    ///
+    /// simulation meta-data:
+    ///
+    float courant_number, vmin, vmax, fmax;
+    float hdx2, hdy2, hdz2;
+    float dt;
+    float lambda;
+    float cfl;
+    ///
+    /// compute grids meta-data:
+    ///
+    unsigned int img_dimx, img_dimy, img_dimz;
+    unsigned int dimx, dimy, dimz;
+    unsigned int dx, dy, dz;
+    unsigned int dtrpx, dtrpy, dtrpz;
+    unsigned int sx, sy, sz;
+    unsigned int pmlx, pmly, pmlz;
+    unsigned int snap_idx;
+    unsigned int nb_snap;
+    unsigned int nyquist_sampling;
+    unsigned int next_snap;
+    int time_steps;
+    size_t size;
+    size_t size_eff;
+    size_t size_img;
+    ///
+    /// read-only arrays that won't changed during the simulation:
+    ///
+    /// the stencil coefficients.
+    float *coefx, *coefy, *coefz;
 
-  // damping coefficients
-  float *dampx, *dampy, *dampz;
-  ///
-  /// GPUs meta-data:
-  ///
-  int device;
-  //dim3 g, g_img, o, l;
-  float *d_coefx, *d_coefy, *d_coefz;
-  /// receivers.
-  unsigned int *d_rcv;
-  ///
-  /// control flags:
-  ///
-  bool modeling, verbose, cpu, check, dim2;
-
-  int mode;
+    // damping coefficients
+    float *dampx, *dampy, *dampz;
+    ///
+    /// GPUs meta-data:
+    ///
+    int device;
+    //dim3 g, g_img, o, l;
+    float *d_coefx, *d_coefy, *d_coefz;
+    /// receivers.
+    unsigned int *d_rcv;
+    ///
+    /// control flags:
+    ///
+    bool modeling, verbose, cpu, check, dim2;
+    int mode;
+    int order;
 } sismap_t;
 
 #endif // __SIMWAVE_WAVE_H_
