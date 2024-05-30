@@ -44,13 +44,16 @@ timesteps=500
 #nb_snap=100
 nx=512;ny=512;nz=512;
 #nx=2048;ny=2048;nz=512;
-
+####*********** Directories ************###
+fld=./logs2
+mkdir $fld
+rm $fld/*
 #####*********** SB tests ************###
 echo !!SB!!
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > SB_mod_1st.log #--nbsnap $nb_snap
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > SB_mod_2nd.log #--nbsnap $nb_snap
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > SB_rtm_1st.log #--nbsnap $nb_snap
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > SB_rtm_2nd.log #--nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > $fld/SB_mod_1st.log #--nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > $fld/SB_mod_2nd.log #--nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > $fld/SB_rtm_1st.log #--nbsnap $nb_snap
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > $fld/SB_rtm_2nd.log #--nbsnap $nb_snap
 
 #####*********** TB tests ************########***********
 echo !!TB with parameters!!
@@ -63,11 +66,11 @@ th_z=1
 tgs=16
 t_dim=7
 num_wf=64
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 1 > TB_mod_1st.log
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 2 > TB_mod_2nd.log
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 1 > $fld/TB_mod_1st.log
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 2 > $fld/TB_mod_2nd.log
 
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 1 > TB_rtm_1st.log
-srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 2 > TB_rtm_2nd.log
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 1 > $fld/TB_rtm_1st.log
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 2 > $fld/TB_rtm_2nd.log
 
 ####*********** RUNNING SIMWAVE ************###
 ## iterate on parameters values
