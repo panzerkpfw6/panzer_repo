@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include
 
-C_FLAGS = -xHost -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99 
+C_FLAGS =  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99 
 
