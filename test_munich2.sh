@@ -50,6 +50,9 @@ mkdir $fld
 rm $fld/*
 #####*********** SB tests ************###
 echo !!SB!!
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2
+srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1
+
 srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > $fld/SB_mod_2nd.log #--nbsnap $nb_snap
 srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > $fld/SB_mod_1st.log #--nbsnap $nb_snap
 srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > $fld/SB_rtm_1st.log #--nbsnap $nb_snap
