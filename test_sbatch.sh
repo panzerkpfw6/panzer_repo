@@ -8,9 +8,9 @@
 #SBATCH --mem=50GB
 #SBATCH --time=24:00:00
 #SBATCH --partition=7773X  # Milan-X 128
-#SBATCH --job-name=test_rtm_2nd
-#SBATCH --output=logs/rtm.%J.out
-#SBATCH --error=logs/rtm.%J.err
+#SBATCH --job-name=test
+#SBATCH --output=logs/test.%J.out
+#SBATCH --error=logs/test.%J.err
 #SBATCH --cpus-per-task=128
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
