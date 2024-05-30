@@ -681,99 +681,111 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
 /// GPU wave descriptor (@ref gpu_wave_t):
 /// - simulation on the GPU (default behavior)
 /// - check the GPU results if asked by the user
-int main(int argc, char* argv[]) {
-  /// structure to maintain the user choices.
-  sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
-  /// create a parser.
-  parser *p = parser_create("Seismic Modelling using simwave");
-  /// parse command line arguments.
-  PARSER_BOOTSTRAP(p);
-  parser_parse(p, argc, argv);
-  s->verbose    = parser_get_bool(p, "verbose");
-  s->cpu        = parser_get_bool(p, "cpu");
-  s->time_steps = parser_get_int(p, "iter");
-  s->cfl        = parser_get_float(p, "cfl");
-  s->fmax       = parser_get_float(p, "fmax");
-  s->vel_file   = parser_get_string(p, "in");
-  s->vel_dimx   = parser_get_int(p, "n1");
-  s->vel_dimy   = parser_get_int(p, "n2");
-  s->vel_dimz   = parser_get_int(p, "n3");
-  s->dx         = parser_get_int(p, "dx");
-  s->dy         = parser_get_int(p, "dy");
-  s->dz         = parser_get_int(p, "dz");
-  s->dcdp       = parser_get_int(p, "dcdp");
-  s->dline      = parser_get_int(p, "dline");
-  s->ddepth     = parser_get_int(p, "ddepth");
-  s->drcv       = parser_get_int(p, "drcv");
-  s->dshot      = parser_get_int(p, "dshot");
-  s->device     = parser_get_int(p, "device");
-  s->first      = parser_get_int(p, "first");
-  s->last       = parser_get_int(p, "last");
-  s->src_depth  = parser_get_int(p, "src_depth");
-  s->rcv_depth  = parser_get_int(p, "rcv_depth");
-  s->modeling   = true;
-  /// Nyquist sampling.
-  s->nb_snap    = parser_get_int(p, "nbsnap");
-  s->mode       = parser_get_int(p, "mode");
-  s->order      = parser_get_int(p, "order");
+int main(int argc, char *argv[]) {
+    /// structure to maintain the user choices.
+    sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
+    /// create a parser.
+    parser *p = parser_create("Seismic Modelling using simwave");
+    /// parse command line arguments.
+    PARSER_BOOTSTRAP(p);
+    parser_parse(p, argc, argv);
+    s->verbose = parser_get_bool(p, "verbose");
+    s->cpu = parser_get_bool(p, "cpu");
+    s->time_steps = parser_get_int(p, "iter");
+    s->cfl = parser_get_float(p, "cfl");
+    s->fmax = parser_get_float(p, "fmax");
+    s->vel_file = parser_get_string(p, "in");
+    s->vel_dimx = parser_get_int(p, "n1");
+    s->vel_dimy = parser_get_int(p, "n2");
+    s->vel_dimz = parser_get_int(p, "n3");
+    s->dx = parser_get_int(p, "dx");
+    s->dy = parser_get_int(p, "dy");
+    s->dz = parser_get_int(p, "dz");
+    s->dcdp = parser_get_int(p, "dcdp");
+    s->dline = parser_get_int(p, "dline");
+    s->ddepth = parser_get_int(p, "ddepth");
+    s->drcv = parser_get_int(p, "drcv");
+    s->dshot = parser_get_int(p, "dshot");
+    s->device = parser_get_int(p, "device");
+    s->first = parser_get_int(p, "first");
+    s->last = parser_get_int(p, "last");
+    s->src_depth = parser_get_int(p, "src_depth");
+    s->rcv_depth = parser_get_int(p, "rcv_depth");
+    s->modeling = true;
+    /// Nyquist sampling.
+    s->nb_snap = parser_get_int(p, "nbsnap");
+    s->mode = parser_get_int(p, "mode");
+    s->order = parser_get_int(p, "order");
 
-  /// contains the velocity values of the traversed mediums.
-  float* vel;
-  /// contains the terms of the source.
-  float* source;
-  /// contains the PML coefficients.
-  float* pml_tab;
-  /// get velocity min max from file and setup numerics.
-  MSG("... cpu=: %d\n", s->cpu);
-  wave_init_numerics(s);
-  /// initialize the velocity and the compute sizes.
-  wave_init_dimensions(s);
-  wave_init_damp(s);
-  /// initialize the geometry.
-  wave_init_acquisition(s);
-  /// initialize the simulation buffers.
+    /// contains the velocity values of the traversed mediums.
+    float *vel;
+    /// contains the terms of the source.
+    float *source;
+    /// contains the PML coefficients.
+    float *pml_tab;
+    /// get velocity min max from file and setup numerics.
+    MSG("... cpu=: %d\n", s->cpu);
+    wave_init_numerics(s);
+    /// initialize the velocity and the compute sizes.
+    wave_init_dimensions(s);
+    wave_init_damp(s);
+    /// initialize the geometry.
+    wave_init_acquisition(s);
+    /// initialize the simulation buffers.
 
-  if (s->cpu) {
-    CREATE_BUFFER(vel, s->size_eff);
-  } else {
-    CREATE_BUFFER_ONLY(vel, s->size_eff);
-    array_openmp_inner_init(vel,s);
-  }
-  CREATE_BUFFER(source, s->time_steps+1);
-  CREATE_BUFFER(pml_tab, (s->dimx+2)*(s->dimy+2)*(s->dimz+2));
-  /// load/generate the velocity model.
-  velocity_load_model(s, vel);
+    if (s->cpu) {
+        CREATE_BUFFER(vel, s->size_eff);
+    } else {
+        CREATE_BUFFER_ONLY(vel, s->size_eff);
+        array_openmp_inner_init(vel, s);
+    }
+    CREATE_BUFFER(source, s->time_steps + 1);
+    CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
+    /// load/generate the velocity model.
+    velocity_load_model(s, vel);
 
-  /// compute PML parameters.
-  pml_compute_coefs(s, pml_tab);
-  /// generate the ricker source.
-  source_ricker_wavelet(s, source);
-  source[s->time_steps] = 0.0f; // an extra time step for girih.
-  /// print info if needed.
-  if (s->verbose) wave_print(s);
-  /// run RTM on CPU or GPU.
-  if(s->cpu) {
-//    run_modeling_tb_cpu(s, vel, source, p);
-    run_modeling_1st_tb_cpu(s, vel, source, p);
-  } else {
-//    run_modeling_cpu(s, vel, source, pml_tab);
-    run_modeling_1st_cpu(s, vel, source, pml_tab);
+    /// compute PML parameters.
+    pml_compute_coefs(s, pml_tab);
+    /// generate the ricker source.
+    source_ricker_wavelet(s, source);
+    source[s->time_steps] = 0.0f; // an extra time step for girih.
+    /// print info if needed.
+    if (s->verbose) wave_print(s);
+    /// run RTM on CPU or GPU.
+
+
+    if (s->cpu) {
+        if (s->order==1) {
+            MSG("run 1st order TB");
+            run_modeling_1st_tb_cpu(s, vel, source, p);
+        } else {
+            MSG("run 2nd order TB");
+            run_modeling_tb_cpu(s, vel, source, p);
+        }
+    } else {
+        if (s->order==1) {
+            MSG("run 1st order SB");
+            run_modeling_1st_cpu(s, vel, source, pml_tab);
+        } else {
+            MSG("run 2nd order SB");
+            run_modeling_cpu(s, vel, source, pml_tab);
+        }
 //    run_modeling_gpu(s, vel, source, pml_tab);
-  }
-  /// free the simulation buffers.
+    }
+    /// free the simulation buffers.
     MSG(" s->sx, %d\n", s->sx);
     MSG(" s->sy, %d\n", s->sy);
     MSG(" s->sz, %d\n", s->sz);
-  DELETE_BUFFER(vel);
-  DELETE_BUFFER(source);
-  DELETE_BUFFER(pml_tab);
-  /// release simwave.
-  wave_release(s);
-  /// release the sismap structure.
-  free(s);
-  /// delete the parser.
-  parser_delete(p);
+    DELETE_BUFFER(vel);
+    DELETE_BUFFER(source);
+    DELETE_BUFFER(pml_tab);
+    /// release simwave.
+    wave_release(s);
+    /// release the sismap structure.
+    free(s);
+    /// delete the parser.
+    parser_delete(p);
 
-  MSG("END\n");
-  return EXIT_SUCCESS;
+    MSG("END\n");
+    return EXIT_SUCCESS;
 }

@@ -13,7 +13,7 @@
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
+exec > >(while read line; do echo "$(date): $line"; done | tee log-modelling.log) 2>&1
 echo $hostname
 #lscpu
 ###********** OPENMP PARAMETERS ***********###
@@ -48,17 +48,36 @@ make install
 ###********** mode, grid, time steps ***********###
 mode=2
 #timesteps=2000
-timesteps=300
-export size=512
-#export size=256
-#####*********** SB tests ************###
-#numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1310
-#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1310
+timesteps=500
+nx=512;ny=512;nz=512;
+#nx=2048;ny=2048;nz=512;
+#####***********#####***********#####***********#####***********
+###*********** RUNNING SIMWAVE ************###
+rm SB.log
+rm TB.log
+rm data/SB-final_snap.raw
+rm data/TB-final_snap.raw
 
-#####*********** SB tests fast ************###
-#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+#numactl --interleave=all ./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > SB1st.log
+#numactl --interleave=all ./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > SB2nd.log
+./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 1 > SB1st.log
+./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 --order 2 > SB2nd.log
+mv SB_lastshot_u0 data/SB-final_snap.raw
 
-####*********** RUNNING SIMWAVE ************###
+#numactl --interleave=all ./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz  --iter $timesteps  --tb_thread_group_size 4 --tb_nb_thread_groups 9 --tb_th_x 1 --tb_th_y 2 --tb_th_z 2 --tb_t_dim 3 --tb_num_wf 21 --dshot 1 --first 1301 --last 1301 -c > TB2nd.log
+./bin/modeling  --verbose --n1 $nx --n2 $ny --n3 $nz  --iter $timesteps  --tb_thread_group_size 4 --tb_nb_thread_groups 9 --tb_th_x 1 --tb_th_y 2 --tb_th_z 2 --tb_t_dim 3 --tb_num_wf 21 --dshot 1 --first 1301 --last 1301 -c > TB2nd.log
+mv TB_lastshot_u0 data/TB-final_snap.raw
+#rm lastshot_u1
+
+###*********** CHECKING RESULTS ***********###
+./scripts/isnan data/TB-final_snap.raw
+./scripts/isnan data/SB-final_snap.raw
+./scripts/diff_to data/TB-final_snap.raw data/SB-final_snap.raw
+#####***********#####***********#####***********#####***********
+
+
+
+#####*********** RUNNING SIMWAVE ************###
 ## iterate on parameters values
 #echo "CSV: size ; timesteps ; OMP_NUM_THREADS ; tgs ; ntg ; (th_x, th_y, th_z) ; t_dim ; num_wf ; mode ; tb or sb"
 #size=512
@@ -93,4 +112,4 @@ export size=512
 #srun --unbuffered numactl --interleave=all ./bin/modeling_original --verbose --n1 $size  --n2 $size --n3 512 --iter $timesteps --dshot 1 --first 1301 --last 1301
 ##numactl --interleave=all ./bin/modeling_original --verbose --n1 $size  --n2 $size --n3 512 --iter $timesteps --dshot 1 --first 1301 --last 1301
 ##sleep 600
-#
+
