@@ -28,8 +28,8 @@ export KMP_AFFINITY=compact
 #export KMP_HW_SUBSET=1t
 
 ###********** MODULES & COMPILING *********###
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-#module load icc/2020.2.254
+#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load icc/2020.2.254
 module load cmake
 
 #####
