@@ -30,9 +30,7 @@
 #include <simwave/wave_tb.h>
 #include <simwave/wtime.h>
 #include <simwave/macros.h>
-
 //#include <nccl.h>
-
 //#include <cuda_runtime.h>
 /// Modeling on CPU.
 ///
@@ -323,6 +321,365 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     DELETE_BUFFER(pml_tmp);
 }
 
+/// Modeling TB.
+///
+///
+
+void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
+  /// contains the fields pressure value at time step t.
+  float* u0;
+  /// contains the fields pressure value at time step t+1.
+  float* u1;
+  /// seismic traces for a given shot.
+  float *sismos;
+  /// PML temporary tab.
+  float *pml_tmp;
+  CREATE_BUFFER(u0, s->size);
+  CREATE_BUFFER(u1, s->size);
+  CREATE_BUFFER(pml_tmp, s->size_eff);
+  shot_t *shot;
+
+  wtime_init();
+
+  tb_t * ctx         = (tb_t*)       malloc(sizeof(tb_t));
+  tb_data_t * data   = (tb_data_t*)  malloc(sizeof(tb_data_t));
+  tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
+
+  wave_tb_init(ctx,s,p);
+// @louis contribution. NUMA first touch. disabled. bug with memory.
+//    //@MODIF: NUMA First touch policy, do it if FIRST_TOUCH==1
+//    char* value = getenv("FIRST_TOUCH");
+//    int intValue;
+//    if (value != NULL && sscanf(value, "%d", &intValue) == 1 && intValue == 1){
+//        int zmin, zmax;
+//        int ymin, ymax;
+//        int xmin, xmax;
+//    #pragma omp parallel for collapse(3) private(zmin,zmax,ymin,ymax,xmin,xmax)
+//        for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+//            for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+//                for(int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+//                    zmax = zmin+BLOCKZ;
+//                    ymax = ymin+BLOCKY;
+//                    xmax = xmin+BLOCKX;
+//                    for(int z = zmin; z < zmax ; z++) {
+//                        for(int y = ymin; y < ymax; y++) {
+//                            for(int x = xmin; x < xmax; x++) {
+//                                u0[x] = 0.;
+//                                u1[x] = 0.;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//  source = realloc(source,sizeof(float)*(s->time_steps+1));
+
+  wave_tb_info(ctx);
+  wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
+  CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
+
+  MSG("loop over the shots");
+  printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
+
+  /// loop over the shots.
+  for (int sidx = s->first; sidx <= s->last; sidx++) {
+    MSG("Processing shot %d",sidx);
+    /// retrieve the shot descriptor.
+    shot = s->shots[sidx];
+    /// initialize the current shot.
+    shot_init(shot, true, s->modeling);
+    /// reset some buffers for the shot.
+    NULIFY_BUFFER(u0, s->size);
+    NULIFY_BUFFER(u1, s->size);
+    NULIFY_BUFFER(pml_tmp, s->size_eff);
+    NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1)); // add one time step
+
+    // setup tb_data
+    wave_tb_data_init(data,ctx,s,ctx->num_thread_groups,shot->id,
+                      1ULL*ctx->nnx * ctx->nny * ctx->diam_width);
+    data->flag_fwd = 1;
+    data->flag_bwd = 0;
+    data->fwd = NULL;
+    data->ilm = NULL;
+    data->img = NULL;
+
+    //  Pavel's modification
+//    data->fwd = 1.0;
+
+    /// forward modeling.
+    wave_tb_timer_clear(timer);
+
+    wave_tb_data_set_src(data,s,shot->srcidx,source);
+    wave_tb_data_set_rcv(data,s,sismos);
+    wave_tb_data_info(data);
+
+    wave_tb_forward(ctx,data,timer,u0,u1,vel);
+    wave_tb_save_lastshot(s,shot,u0,u1,vel);
+
+    wave_tb_data_unset_src(data);
+    wave_tb_data_unset_rcv(data);
+
+    wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
+
+    /// save the seismic traces for the shot.
+    wave_save_sismos(s, shot, sismos);
+
+    /// release/close the resources related to the current shot.
+    shot_release(shot);
+    wave_tb_data_free(data,ctx->num_thread_groups);
+  }
+
+  wave_tb_free(ctx);
+  wave_tb_timer_free(timer);
+  /// free the simulation buffers.
+
+  free(ctx);   ctx = NULL;
+  free(data);  data = NULL;
+  free(timer); timer = NULL;
+
+  DELETE_BUFFER(u0);
+  DELETE_BUFFER(u1);
+  DELETE_BUFFER(sismos);
+  DELETE_BUFFER(pml_tmp);
+}
+
+void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
+    /// contains the fields pressure value at time step t.
+    float* u0;
+    /// contains the fields (particle velocity across x direction) value at time step t.
+    float* vx;
+    /// contains the fields (particle velocity across y direction) value at time step t.
+    float* vy;
+    /// contains the fields (particle velocity across z direction) value at time step t.
+    float* vz;
+    /// seismic traces for a given shot.
+    float *sismos;
+    /// PML temporary tab.
+    float *pml_tmp;
+    CREATE_BUFFER(u0,s->size);
+    CREATE_BUFFER(vx,s->size);
+    CREATE_BUFFER(vy,s->size);
+    CREATE_BUFFER(vz,s->size);
+    CREATE_BUFFER(pml_tmp,s->size_eff);
+    shot_t *shot;
+
+    wtime_init();
+
+    tb_t * ctx         = (tb_t*)       malloc(sizeof(tb_t));
+    tb_data_t * data   = (tb_data_t*)  malloc(sizeof(tb_data_t));
+    tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
+
+    wave_tb_init(ctx,s,p);
+
+    wave_tb_info(ctx);
+    wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
+    CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
+
+    MSG("loop over the shots");
+    printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
+
+    /// loop over the shots.
+    for (int sidx = s->first; sidx <= s->last; sidx++) {
+        MSG("Processing shot %d",sidx);
+        /// retrieve the shot descriptor.
+        shot = s->shots[sidx];
+        /// initialize the current shot.
+        shot_init(shot, true, s->modeling);
+        /// reset some buffers for the shot.
+        NULIFY_BUFFER(u0, s->size);
+        NULIFY_BUFFER(vx, s->size);
+        NULIFY_BUFFER(vy, s->size);
+        NULIFY_BUFFER(vz, s->size);
+        NULIFY_BUFFER(pml_tmp, s->size_eff);
+        NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1)); // add one time step
+
+        // setup tb_data
+        wave_tb_data_init(data,ctx,s,ctx->num_thread_groups,shot->id,
+                          1ULL*ctx->nnx * ctx->nny * ctx->diam_width);
+        data->flag_fwd = 1;
+        data->flag_bwd = 0;
+        data->fwd = NULL;
+        data->ilm = NULL;
+        data->img = NULL;
+
+        /// forward modeling.
+        wave_tb_timer_clear(timer);
+
+        wave_tb_data_set_src(data,s,shot->srcidx,source);
+        wave_tb_data_set_rcv(data,s,sismos);
+        wave_tb_data_info(data);
+
+        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel);
+        wave_tb_save_lastshot_1st(s,shot,u0,vel);
+
+        wave_tb_data_unset_src(data);
+        wave_tb_data_unset_rcv(data);
+
+        wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
+
+        /// save the seismic traces for the shot.
+        wave_save_sismos(s, shot, sismos);
+
+        /// release/close the resources related to the current shot.
+        shot_release(shot);
+        wave_tb_data_free(data,ctx->num_thread_groups);
+    }
+
+    wave_tb_free(ctx);
+    wave_tb_timer_free(timer);
+    /// free the simulation buffers.
+
+    free(ctx);   ctx = NULL;
+    free(data);  data = NULL;
+    free(timer); timer = NULL;
+
+    DELETE_BUFFER(u0);
+    DELETE_BUFFER(vx);
+    DELETE_BUFFER(vy);
+    DELETE_BUFFER(vz);
+    DELETE_BUFFER(sismos);
+    DELETE_BUFFER(pml_tmp);
+}
+
+/// @brief The main function of the first part of \b simwave
+/// @param argc the number of user's options
+/// @param argv contains the user options
+/// @return 0 on success
+///
+///
+/// User options parser:
+/// - \b p is an options @ref parser
+/// - it parses the user's command line or from file options
+/// - check if saving snapshots is enabled
+/// - get the snapshot frequency
+/// - check if the GPU results have to be compared to those of the CPU
+/// - check if verbose mode is enabled
+/// - check if the execution on the CPU is disabled
+///
+/// GPU environment:
+/// - create an GPU resources descriptor (@ref gpu_engine_t)
+/// - print informations about the GPU environment
+/// - allocate resources before the GPU runs
+/// - deallocate resources after the GPU runs
+///
+/// CPU wave descriptor (@ref wave_t):
+/// - print informations about the wave
+/// - simulation on the CPU if enabled
+///
+/// GPU wave descriptor (@ref gpu_wave_t):
+/// - simulation on the GPU (default behavior)
+/// - check the GPU results if asked by the user
+int main(int argc, char* argv[]) {
+    /// structure to maintain the user choices.
+    sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
+    /// create a parser.
+    parser *p = parser_create("Seismic Modelling using simwave");
+    /// parse command line arguments.
+    PARSER_BOOTSTRAP(p);
+    parser_parse(p, argc, argv);
+    s->verbose = parser_get_bool(p, "verbose");
+    s->cpu = parser_get_bool(p, "cpu");
+    s->time_steps = parser_get_int(p, "iter");
+    s->cfl = parser_get_float(p, "cfl");
+    s->fmax = parser_get_float(p, "fmax");
+    s->vel_file = parser_get_string(p, "in");
+    s->vel_dimx = parser_get_int(p, "n1");
+    s->vel_dimy = parser_get_int(p, "n2");
+    s->vel_dimz = parser_get_int(p, "n3");
+    s->dx = parser_get_int(p, "dx");
+    s->dy = parser_get_int(p, "dy");
+    s->dz = parser_get_int(p, "dz");
+    s->dcdp = parser_get_int(p, "dcdp");
+    s->dline = parser_get_int(p, "dline");
+    s->ddepth = parser_get_int(p, "ddepth");
+    s->drcv = parser_get_int(p, "drcv");
+    s->dshot = parser_get_int(p, "dshot");
+    s->device = parser_get_int(p, "device");
+    s->first = parser_get_int(p, "first");
+    s->last = parser_get_int(p, "last");
+    s->src_depth = parser_get_int(p, "src_depth");
+    s->rcv_depth = parser_get_int(p, "rcv_depth");
+    s->modeling = true;
+    /// Nyquist sampling.
+    s->nb_snap = parser_get_int(p, "nbsnap");
+    s->mode = parser_get_int(p, "mode");
+    s->order = parser_get_int(p, "order");
+
+    /// contains the velocity values of the traversed mediums.
+    float* vel;
+    /// contains the terms of the source.
+    float* source;
+    /// contains the PML coefficients.
+    float* pml_tab;
+    /// get velocity min max from file and setup numerics.
+    MSG("... cpu=: %d\n", s->cpu);
+    wave_init_numerics(s);
+    /// initialize the velocity and the compute sizes.
+    wave_init_dimensions(s);
+    wave_init_damp(s);
+    /// initialize the geometry.
+    wave_init_acquisition(s);
+    /// initialize the simulation buffers.
+
+    if (s->cpu) {
+        CREATE_BUFFER(vel, s->size_eff);
+    } else {
+        CREATE_BUFFER_ONLY(vel, s->size_eff);
+        array_openmp_inner_init(vel, s);
+    }
+    CREATE_BUFFER(source, s->time_steps + 1);
+    CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
+    /// load/generate the velocity model.
+    velocity_load_model(s, vel);
+
+    /// compute PML parameters.
+    pml_compute_coefs(s, pml_tab);
+    /// generate the ricker source.
+    source_ricker_wavelet(s, source);
+    source[s->time_steps] = 0.0f; // an extra time step for girih.
+    /// print info if needed.
+    if (s->verbose) wave_print(s);
+    /// run RTM on CPU or GPU.
+
+
+    if (s->cpu) {
+////        run_modeling_tb_cpu(s, vel, source, p);
+        if (s->order==1) {
+            MSG("run 1st order TB");
+            run_modeling_1st_tb_cpu(s, vel, source, p);
+        } else {
+            MSG("run 2nd order TB");
+            run_modeling_tb_cpu(s, vel, source, p);
+        }
+    } else {
+////      run_modeling_cpu(s, vel, source, pml_tab);
+        if (s->order==1) {
+            MSG("run 1st order SB");
+            run_modeling_1st_cpu(s, vel, source, pml_tab);
+        } else {
+            MSG("run 2nd order SB");
+            run_modeling_cpu(s, vel, source, pml_tab);
+        }
+////        run_modeling_gpu(s, vel, source, pml_tab);
+    }
+    /// free the simulation buffers.
+    MSG(" s->sx, %d\n", s->sx);
+    MSG(" s->sy, %d\n", s->sy);
+    MSG(" s->sz, %d\n", s->sz);
+    DELETE_BUFFER(vel);
+    DELETE_BUFFER(source);
+    DELETE_BUFFER(pml_tab);
+    /// release simwave.
+    wave_release(s);
+    /// release the sismap structure.
+    free(s);
+    /// delete the parser.
+    parser_delete(p);
+
+    MSG("END\n");
+    return EXIT_SUCCESS;
+}
 
 /// Modeling on GPU.
 ///
@@ -411,381 +768,3 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
 //  gpu_wave_unset();
 //}
 //
-//
-
-/// Modeling on CPU.
-///
-///
-
-void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
-  /// contains the fields pressure value at time step t.
-  float* u0;
-  /// contains the fields pressure value at time step t+1.
-  float* u1;
-  /// seismic traces for a given shot.
-  float *sismos;
-  /// PML temporary tab.
-  float *pml_tmp;
-  CREATE_BUFFER(u0, s->size);
-  CREATE_BUFFER(u1, s->size);
-  CREATE_BUFFER(pml_tmp, s->size_eff);
-  shot_t *shot;
-
-  wtime_init();
-
-  tb_t * ctx         = (tb_t*)       malloc(sizeof(tb_t));
-  tb_data_t * data   = (tb_data_t*)  malloc(sizeof(tb_data_t));
-  tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
-
-  wave_tb_init(ctx,s,p);
-    //@MODIF: NUMA First touch policy, do it if FIRST_TOUCH==1
-    char* value = getenv("FIRST_TOUCH");
-    int intValue;
-    if (value != NULL && sscanf(value, "%d", &intValue) == 1 && intValue == 1){
-        int zmin, zmax;
-        int ymin, ymax;
-        int xmin, xmax;
-    #pragma omp parallel for collapse(3) private(zmin,zmax,ymin,ymax,xmin,xmax)
-        for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-            for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-                for(int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-                    zmax = zmin+BLOCKZ;
-                    ymax = ymin+BLOCKY;
-                    xmax = xmin+BLOCKX;
-                    for(int z = zmin; z < zmax ; z++) {
-                        for(int y = ymin; y < ymax; y++) {
-                            for(int x = xmin; x < xmax; x++) {
-                                u0[x] = 0.;
-                                u1[x] = 0.;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-  source = realloc(source,sizeof(float)*(s->time_steps+1));
-
-  wave_tb_info(ctx);
-  wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
-  CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
-
-  MSG("loop over the shots");
-  printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
-
-  /// loop over the shots.
-  for (int sidx = s->first; sidx <= s->last; sidx++) {
-    MSG("Processing shot %d",sidx);
-    /// retrieve the shot descriptor.
-    shot = s->shots[sidx];
-    /// initialize the current shot.
-    shot_init(shot, true, s->modeling);
-    /// reset some buffers for the shot.
-    NULIFY_BUFFER(u0, s->size);
-    NULIFY_BUFFER(u1, s->size);
-    NULIFY_BUFFER(pml_tmp, s->size_eff);
-    NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1)); // add one time step
-
-    // setup tb_data
-    wave_tb_data_init(data,ctx,s,ctx->num_thread_groups,shot->id,
-                      1ULL*ctx->nnx * ctx->nny * ctx->diam_width);
-    data->flag_fwd = 1;
-    data->flag_bwd = 0;
-    data->fwd = NULL;
-    data->ilm = NULL;
-    data->img = NULL;
-
-    //  Pavel's modification
-//    data->fwd = 1.0;
-
-    /// forward modeling.
-    wave_tb_timer_clear(timer);
-
-    wave_tb_data_set_src(data,s,shot->srcidx,source);
-    wave_tb_data_set_rcv(data,s,sismos);
-    wave_tb_data_info(data);
-
-    wave_tb_forward(ctx,data,timer,u0,u1,vel);
-    wave_tb_save_lastshot(s,shot,u0,u1,vel);
-
-    wave_tb_data_unset_src(data);
-    wave_tb_data_unset_rcv(data);
-
-    wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
-
-    /// save the seismic traces for the shot.
-    wave_save_sismos(s, shot, sismos);
-
-    /// release/close the resources related to the current shot.
-    shot_release(shot);
-    wave_tb_data_free(data,ctx->num_thread_groups);
-  }
-
-  wave_tb_free(ctx);
-  wave_tb_timer_free(timer);
-  /// free the simulation buffers.
-
-  free(ctx);   ctx = NULL;
-  free(data);  data = NULL;
-  free(timer); timer = NULL;
-
-  DELETE_BUFFER(u0);
-  DELETE_BUFFER(u1);
-  DELETE_BUFFER(sismos);
-  DELETE_BUFFER(pml_tmp);
-}
-
-void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
-    /// contains the fields pressure value at time step t.
-    float* u0;
-    /// contains the fields pressure value at time step t+1.
-    float* u1;
-    /// seismic traces for a given shot.
-    float *sismos;
-    /// PML temporary tab.
-    float *pml_tmp;
-    CREATE_BUFFER(u0, s->size);
-    CREATE_BUFFER(u1, s->size);
-    CREATE_BUFFER(pml_tmp, s->size_eff);
-    shot_t *shot;
-
-    wtime_init();
-
-    tb_t * ctx         = (tb_t*)       malloc(sizeof(tb_t));
-    tb_data_t * data   = (tb_data_t*)  malloc(sizeof(tb_data_t));
-    tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
-
-    wave_tb_init(ctx,s,p);
-    //@MODIF: NUMA First touch policy, do it if FIRST_TOUCH==1
-    char* value = getenv("FIRST_TOUCH");
-    int intValue;
-    if (value != NULL && sscanf(value, "%d", &intValue) == 1 && intValue == 1){
-        int zmin, zmax;
-        int ymin, ymax;
-        int xmin, xmax;
-#pragma omp parallel for collapse(3) private(zmin,zmax,ymin,ymax,xmin,xmax)
-        for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-            for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-                for(int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-                    zmax = zmin+BLOCKZ;
-                    ymax = ymin+BLOCKY;
-                    xmax = xmin+BLOCKX;
-                    for(int z = zmin; z < zmax ; z++) {
-                        for(int y = ymin; y < ymax; y++) {
-                            for(int x = xmin; x < xmax; x++) {
-                                u0[x] = 0.;
-                                u1[x] = 0.;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    source = realloc(source,sizeof(float)*(s->time_steps+1));
-
-    wave_tb_info(ctx);
-    wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
-    CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
-
-    MSG("loop over the shots");
-    printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
-
-    /// loop over the shots.
-    for (int sidx = s->first; sidx <= s->last; sidx++) {
-        MSG("Processing shot %d",sidx);
-        /// retrieve the shot descriptor.
-        shot = s->shots[sidx];
-        /// initialize the current shot.
-        shot_init(shot, true, s->modeling);
-        /// reset some buffers for the shot.
-        NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
-        NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1)); // add one time step
-
-        // setup tb_data
-        wave_tb_data_init(data,ctx,s,ctx->num_thread_groups,shot->id,
-                          1ULL*ctx->nnx * ctx->nny * ctx->diam_width);
-        data->flag_fwd = 1;
-        data->flag_bwd = 0;
-        data->fwd = NULL;
-        data->ilm = NULL;
-        data->img = NULL;
-
-        //  Pavel's modification
-//    data->fwd = 1.0;
-
-        /// forward modeling.
-        wave_tb_timer_clear(timer);
-
-        wave_tb_data_set_src(data,s,shot->srcidx,source);
-        wave_tb_data_set_rcv(data,s,sismos);
-        wave_tb_data_info(data);
-
-        wave_tb_forward(ctx,data,timer,u0,u1,vel);
-        wave_tb_save_lastshot(s,shot,u0,u1,vel);
-
-        wave_tb_data_unset_src(data);
-        wave_tb_data_unset_rcv(data);
-
-        wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
-
-        /// save the seismic traces for the shot.
-        wave_save_sismos(s, shot, sismos);
-
-        /// release/close the resources related to the current shot.
-        shot_release(shot);
-        wave_tb_data_free(data,ctx->num_thread_groups);
-    }
-
-    wave_tb_free(ctx);
-    wave_tb_timer_free(timer);
-    /// free the simulation buffers.
-
-    free(ctx);   ctx = NULL;
-    free(data);  data = NULL;
-    free(timer); timer = NULL;
-
-    DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
-    DELETE_BUFFER(sismos);
-    DELETE_BUFFER(pml_tmp);
-}
-
-/// @brief The main function of the first part of \b simwave
-/// @param argc the number of user's options
-/// @param argv contains the user options
-/// @return 0 on success
-///
-///
-/// User options parser:
-/// - \b p is an options @ref parser
-/// - it parses the user's command line or from file options
-/// - check if saving snapshots is enabled
-/// - get the snapshot frequency
-/// - check if the GPU results have to be compared to those of the CPU
-/// - check if verbose mode is enabled
-/// - check if the execution on the CPU is disabled
-///
-/// GPU environment:
-/// - create an GPU resources descriptor (@ref gpu_engine_t)
-/// - print informations about the GPU environment
-/// - allocate resources before the GPU runs
-/// - deallocate resources after the GPU runs
-///
-/// CPU wave descriptor (@ref wave_t):
-/// - print informations about the wave
-/// - simulation on the CPU if enabled
-///
-/// GPU wave descriptor (@ref gpu_wave_t):
-/// - simulation on the GPU (default behavior)
-/// - check the GPU results if asked by the user
-int main(int argc, char *argv[]) {
-    /// structure to maintain the user choices.
-    sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
-    /// create a parser.
-    parser *p = parser_create("Seismic Modelling using simwave");
-    /// parse command line arguments.
-    PARSER_BOOTSTRAP(p);
-    parser_parse(p, argc, argv);
-    s->verbose = parser_get_bool(p, "verbose");
-    s->cpu = parser_get_bool(p, "cpu");
-    s->time_steps = parser_get_int(p, "iter");
-    s->cfl = parser_get_float(p, "cfl");
-    s->fmax = parser_get_float(p, "fmax");
-    s->vel_file = parser_get_string(p, "in");
-    s->vel_dimx = parser_get_int(p, "n1");
-    s->vel_dimy = parser_get_int(p, "n2");
-    s->vel_dimz = parser_get_int(p, "n3");
-    s->dx = parser_get_int(p, "dx");
-    s->dy = parser_get_int(p, "dy");
-    s->dz = parser_get_int(p, "dz");
-    s->dcdp = parser_get_int(p, "dcdp");
-    s->dline = parser_get_int(p, "dline");
-    s->ddepth = parser_get_int(p, "ddepth");
-    s->drcv = parser_get_int(p, "drcv");
-    s->dshot = parser_get_int(p, "dshot");
-    s->device = parser_get_int(p, "device");
-    s->first = parser_get_int(p, "first");
-    s->last = parser_get_int(p, "last");
-    s->src_depth = parser_get_int(p, "src_depth");
-    s->rcv_depth = parser_get_int(p, "rcv_depth");
-    s->modeling = true;
-    /// Nyquist sampling.
-    s->nb_snap = parser_get_int(p, "nbsnap");
-    s->mode = parser_get_int(p, "mode");
-    s->order = parser_get_int(p, "order");
-
-    /// contains the velocity values of the traversed mediums.
-    float *vel;
-    /// contains the terms of the source.
-    float *source;
-    /// contains the PML coefficients.
-    float *pml_tab;
-    /// get velocity min max from file and setup numerics.
-    MSG("... cpu=: %d\n", s->cpu);
-    wave_init_numerics(s);
-    /// initialize the velocity and the compute sizes.
-    wave_init_dimensions(s);
-    wave_init_damp(s);
-    /// initialize the geometry.
-    wave_init_acquisition(s);
-    /// initialize the simulation buffers.
-
-    if (s->cpu) {
-        CREATE_BUFFER(vel, s->size_eff);
-    } else {
-        CREATE_BUFFER_ONLY(vel, s->size_eff);
-        array_openmp_inner_init(vel, s);
-    }
-    CREATE_BUFFER(source, s->time_steps + 1);
-    CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
-    /// load/generate the velocity model.
-    velocity_load_model(s, vel);
-
-    /// compute PML parameters.
-    pml_compute_coefs(s, pml_tab);
-    /// generate the ricker source.
-    source_ricker_wavelet(s, source);
-    source[s->time_steps] = 0.0f; // an extra time step for girih.
-    /// print info if needed.
-    if (s->verbose) wave_print(s);
-    /// run RTM on CPU or GPU.
-
-
-    if (s->cpu) {
-        if (s->order==1) {
-            MSG("run 1st order TB");
-            run_modeling_1st_tb_cpu(s, vel, source, p);
-        } else {
-            MSG("run 2nd order TB");
-            run_modeling_tb_cpu(s, vel, source, p);
-        }
-    } else {
-        if (s->order==1) {
-            MSG("run 1st order SB");
-            run_modeling_1st_cpu(s, vel, source, pml_tab);
-        } else {
-            MSG("run 2nd order SB");
-            run_modeling_cpu(s, vel, source, pml_tab);
-        }
-//    run_modeling_gpu(s, vel, source, pml_tab);
-    }
-    /// free the simulation buffers.
-    MSG(" s->sx, %d\n", s->sx);
-    MSG(" s->sy, %d\n", s->sy);
-    MSG(" s->sz, %d\n", s->sz);
-    DELETE_BUFFER(vel);
-    DELETE_BUFFER(source);
-    DELETE_BUFFER(pml_tab);
-    /// release simwave.
-    wave_release(s);
-    /// release the sismap structure.
-    free(s);
-    /// delete the parser.
-    parser_delete(p);
-
-    MSG("END\n");
-    return EXIT_SUCCESS;
-}

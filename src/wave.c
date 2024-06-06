@@ -128,9 +128,7 @@ void array_openmp_inner_init(float *u, sismap_t *s) {
 }
 
 void wave_init_numerics(sismap_t *s) {
-    MSG("point1");
     unsigned int i;
-    MSG("point2");
     s->dim2 = (s->vel_dimy == 1);
     s->sx = 4;
     s->sy = 4;
@@ -326,7 +324,6 @@ void wave_release(sismap_t *s) {
     free(s->rcv);
     for (int idx = 0; idx < s->nb_shots; idx++) free(s->shots[idx]);
     free(s->shots);
-
     free(s->dampx);
     free(s->dampy);
     free(s->dampz);
@@ -411,10 +408,10 @@ ux[x] = 2.0f * vx[x] - ux[x]                                                   \
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v()                        \
 vx0[x] = vx0[x]                                                                \
-      + rx[x] * (                s->coefx[0] * (pr0[x+1] - pr0[x])   \
-                               + s->coefy[1] * (pr0[x+2] - pr0[x-1])   \
-                               + s->coefz[2] * (pr0[x+3] - pr0[x-2])   \
-                               + s->coefz[3] * (pr0[x+4] - pr0[x-3]));  \
+      + rx[x] * (    s->coefx[0] * (pr0[x+1] - pr0[x])   \
+                   + s->coefy[1] * (pr0[x+2] - pr0[x-1])   \
+                   + s->coefz[2] * (pr0[x+3] - pr0[x-2])   \
+                   + s->coefz[3] * (pr0[x+4] - pr0[x-3]));  \
 vy0[x] = vy0[x]                                                                \
       + rx[x] * (                s->coefx[0] * (pr0[x+1*nnx] - pr0[x])   \
                                + s->coefy[1] * (pr0[x+2*nnx] - pr0[x-1*nnx])   \
@@ -431,16 +428,16 @@ vz0[x] = vz0[x]                                                         \
 pr0[x] = pr0[x]                                                   \
       + rx[x] * (    s->coefx[0] * (vx0[x]          + vx0[x-1     ])   \
                    + s->coefy[0] * (vy0[x]          + vy0[x-nnx   ])   \
-                   + s->coefz[0] * (vx[x]           + vx[x-nnxy  ])   \
+                   + s->coefz[0] * (vz0[x]           +vz0[x-nnxy  ])   \
                    + s->coefx[1] * (vx0[x+1     ]   + vx0[x-2     ])   \
                    + s->coefy[1] * (vy0[x+1*nnx ]   + vy0[x-2*nnx ])   \
-                   + s->coefz[1] * (vx[x+1*nnxy]    + vx[x-2*nnxy])   \
+                   + s->coefz[1] * (vz0[x+1*nnxy]    +vz0[x-2*nnxy])   \
                    + s->coefx[2] * (vx0[x+2     ]   + vx0[x-3     ])   \
                    + s->coefy[2] * (vy0[x+2*nnx ]   + vy0[x-3*nnx ])   \
-                   + s->coefz[2] * (vx[x +2*nnxy]    + vx[x-3*nnxy])   \
+                   + s->coefz[2] * (vz0[x +2*nnxy]   +vz0[x-3*nnxy])   \
                    + s->coefx[3] * (vx0[x+3     ]   + vx0[x-4     ])   \
                    + s->coefy[3] * (vy0[x+3*nnx ]   + vy0[x-4*nnx ])   \
-                   + s->coefz[3] * (vx[x+ 3*nnxy]    + vx[x-4*nnxy]))
+                   + s->coefz[3] * (vz0[x+ 3*nnxy]    +vz0[x-4*nnxy]))
 
 #define WAVE_UPDATE_PML_FIELDS()                                            \
   U1(z,y,x) =                                                               \

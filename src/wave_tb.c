@@ -35,10 +35,10 @@ ux[i] = 2.0f * vx[i] - ux[i]                                                \
                                + coefx[4] * (vx[i+4     ] + vx[i-4     ])   \
                                + coefy[4] * (vx[i+4*nnx ] + vx[i-4*nnx ])   \
                                + coefz[4] * (vx[i+4*nnxy] + vx[i-4*nnxy])); \
+ux[i] = dampx[i] * ux[i] + (1 - dampx[i]) * vx[i];                          \
+ux[i] = dampy[j] * ux[i] + (1 - dampy[j]) * vx[i];                          \
+ux[i] = dampz[k] * ux[i] + (1 - dampz[k]) * vx[i];                          \
 }
-//ux[i] = dampx[i] * ux[i] + (1 - dampx[i]) * vx[i];                          \
-//ux[i] = dampy[j] * ux[i] + (1 - dampy[j]) * vx[i];                          \
-//ux[i] = dampz[k] * ux[i] + (1 - dampz[k]) * vx[i];                          \
 
 #else
 #define FUNC_BODY() {                                                       \
@@ -57,6 +57,41 @@ ux[i] = 2.0f * vx[i] - ux[i]                                                \
                                + coefz[4] * (vx[i+4*nnxy] + vx[i-4*nnxy])); \
 }
 #endif
+#define FUNC_BODY_1st_ord_Psweep() {   \
+ux[i] = ux[i]                                                \
+      + rx[i] * (        coefx[0] * (vx_x[i     ] + vx_x[i-1])   \
+                       + coefy[0] * (vy_x[i   ] +   vy_x[i-nnx])   \
+                       + coefz[0] * (vz_x[i  ] +    vz_x[i-nnxy])   \
+                       + coefx[1] * (vx_x[i+1]+     vx_x[i-2])   \
+                       + coefy[1] * (vy_x[i+1*nnx ]+vy_x[i-2*nnx ])   \
+                       + coefz[1] * (vz_x[i+1*nnxy]+vz_x[i-2*nnxy])   \
+                       + coefx[2] * (vx_x[i+2     ]+  vx_x[i-3])   \
+                       + coefy[2] * (vy_x[i+2*nnx ] + vy_x[i-3*nnx ])   \
+                       + coefz[2] * (vz_x[i+2*nnxy] + vz_x[i-3*nnxy])   \
+                       + coefx[3] * (vx_x[i+3     ]+  vx_x[i-4])   \
+                       + coefy[3] * (vy_x[[i+3*nnx ] +vy_x[i-4*nnx ])   \
+                       + coefz[3] * (vz_x[i+3*nnxy] + vz_x[i-4*nnxy])); \
+ux[i] = dampx[i] * ux[i];                          \
+ux[i] = dampy[j] * ux[i];                          \
+ux[i] = dampz[k] * ux[i];                          \
+}
+#define FUNC_BODY_1st_ord_Vsweep() {                                        \
+vx_x[i] = vx_x[i] \
+      + rx[x] * (     coefx[0] * (ux[i+1] - ux[i])    \
+                    + coefy[1] * (ux[i+2] - ux[i-1])   \
+                    + coefz[2] * (ux[i+3] - ux[i-2])   \
+                    + coefz[3] * (ux[i+4] - ux[i-3]));  \
+vy_x[i] = vy_x[i] \
+      + rx[x] * (     coefx[0] * (ux[i+1*nnx] - ux[i])   \
+                   +  coefy[1] * (ux[i+2*nnx] - ux[i-1*nnx])   \
+                   +  coefz[2] * (ux[i+3*nnx] - ux[i-2*nnx])   \
+                   +  coefz[3] * (ux[i+4*nnx] - ux[i-3*nnx]));  \
+vz_x[i] = vz_x[i] \
+      + rx[i] * (    coefx[0] * (ux[i+1*nnxy] - ux[i])   \
+                   + coefy[1] * (ux[i+2*nnxy] - ux[i-1*nnxy])   \
+                   + coefz[2] * (ux[i+3*nnxy] - ux[i-2*nnxy])   \
+                   + coefz[3] * (ux[i+4*nnxy] - ux[i-3*nnxy]))
+}
 
 void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const int nnz,
                                            const int xb,  int yb_r, const int* zb,
@@ -92,6 +127,7 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
 
   float *restrict ux;
   const float *restrict vx;
+
   const float *restrict rx;
   float *restrict wx;
   float *restrict imgx;
@@ -156,32 +192,26 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
     }
 
     #pragma omp barrier
-
     yb = yb_r;
     ye = ye_r;
-
     for(int t = tb; t < te; t++) {
-
       if(t % 2 == 1) {
         u = u_r; v = v_r;
       } else {
-        u = v_r; v = u_r;
+        u=v_r;
+        v=u_r;
       }
-
       #pragma omp for schedule(static)
       for(int k = zb[t]; k < ze[t]; k++) {
         for(int j = yb;j < ye; j++) {
-
           // compute
           ux = &(   u[1ULL*k*nnxy + j*nnx]);
           vx = &(   v[1ULL*k*nnxy + j*nnx]);
-          //          rx = &(roc2[1ULL*k*nnxy + j*nnx]);
+          //rx = &(roc2[1ULL*k*nnxy + j*nnx]);
           rx = &(roc2[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
-
           for(int i = xb; i < xe; i++) {
             FUNC_BODY()
           }
-
           if (data->flag_bwd == 1) {
             // add sismos
             if (k == data->rcv_depth) {
@@ -192,7 +222,6 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
               }
             }
           }
-
           if (data->flag_fwd == 1) {
             // save sismos
             if (k == data->rcv_depth) {
@@ -205,7 +234,7 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
             // add source
             if (k == data->src_depth) {
               if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
-                ux[data->src_x] += data->source[t0+(t-tb)];
+                ux[data->src_x]+=data->source[t0+(t-tb)];
               }
             }
           }
@@ -219,15 +248,11 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
         yb += b_inc;
         ye -= e_inc;
       }
-
       #pragma omp barrier
     }
-
     if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
-
       yb = yb_r;
       ye = ye_r;
-
       for(int t = tb; t < te; t++) {
 
         if(t % 2 == 1) {
@@ -268,15 +293,285 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
           yb += b_inc;
           ye -= e_inc;
         }
-
         #pragma omp barrier
-
       }
-
     }
-
   } // openmp
 }
+
+void kernel_spatial_blocking_separate_mode_1st(const int nnx, const int nny, const int nnz,
+                                               const int xb,  int yb_r, const int* zb,
+                                               const int xe,  int ye_r, const int* ze,
+                                               const float * restrict coefx,
+                                               const float * restrict coefy,
+                                               const float * restrict coefz,
+                                               const float * restrict dampx,
+                                               const float * restrict dampy,
+                                               const float * restrict dampz,
+                                               float * restrict u_r,
+                                               float * restrict vx_r,
+                                               float * restrict vy_r,
+                                               float * restrict vz_r,
+                                               const float * restrict roc2,
+                                               const int t_dim,
+                                               int b_inc,
+                                               int e_inc,
+                                               const int stencilr,
+                                               const int tb,
+                                               const int te,
+                                               const int thread_group_size,
+                                               const int groupid,
+                                               const int setsize,
+                                               cpu_set_t ** bind_masks,
+                                               const tb_data_t* data,
+                                               const int t0,
+                                               const int ifwd,
+                                               tb_timer_t* timer) {
+    const int nnxy  = nnx * nny;
+    const int64_t nnxyz = 1ULL * nnx * nny * nnz;
+
+    float *restrict u;
+    float *restrict ux;
+
+    float *restrict vx;
+    float *restrict vx_x;
+
+    float *restrict vy;
+    float *restrict vy_x;
+
+    float *restrict vz;
+    float *restrict vz_x;
+
+    const float *restrict rx;
+    float *restrict wx;
+    float *restrict imgx;
+    float *restrict ilmx;
+
+#pragma omp parallel default(shared) private(rx,vx,ux,wx,imgx,ilmx) num_threads(thread_group_size)
+    {
+        int tid  = 0;
+        int gtid = 0;
+#if defined(_OPENMP)
+        tid = omp_get_thread_num();
+    gtid = tid + groupid * thread_group_size;
+#endif
+        int err = sched_setaffinity(0, setsize, bind_masks[gtid]);
+        if(err == -1) printf("WARNING: Could not set CPU Affinity (%d %d %d)\n",groupid,tid,gtid);
+
+        int yb,ye;
+        // backward
+        if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
+            yb = yb_r;
+            ye = ye_r;
+            for(int t = tb; t < te; t++) {
+                u = u_r;
+                if (t <= t_dim) {
+#pragma omp for schedule(static)
+                    for(int k = zb[t]; k < ze[t]; k++) {
+                        for(int j = yb; j < ye; j++) {
+                            // load fwd wavefield
+                            // left most and right most
+                            if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                ux   = &(        u[1ULL*k*nnxy + j*nnx]);
+                                wx   = &(data->fwd[1ULL*ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                imgx = &(data->img[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                ilmx = &(data->ilm[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                for (int i = xb; i < xe; i++) {
+                                    imgx[i] += ux[i]*wx[i];
+                                    ilmx[i] += wx[i]*wx[i];
+                                }
+                            }
+                        }
+                    }
+#pragma omp barrier
+                }
+                if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // trapezoid  (or upper half of the diamond)
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+            }
+        }
+
+        #pragma omp barrier
+        yb = yb_r;
+        ye = ye_r;
+
+        for(int t = tb; t < te; t++) {
+            int mod = (t)%2;
+            if(mod){    // compute v from p
+                u = u_r;
+                vx=vx_r;
+                vy=vy_r;
+                vz=vz_r;
+                #pragma omp for schedule(static)
+                for(int k = zb[t]; k < ze[t]; k++) {
+                    for(int j = yb;j < ye; j++) {
+                        // compute
+                        ux =   &(u [1ULL*k*nnxy + j*nnx]);
+                        vx_x = &(vx[1ULL*k*nnxy + j*nnx]);
+                        vy_x = &(vy[1ULL*k*nnxy + j*nnx]);
+                        vz_x = &(vz[1ULL*k*nnxy + j*nnx]);
+//                    vx = &(   v[1ULL*k*nnxy + j*nnx]);
+                        //          rx = &(roc2[1ULL*k*nnxy + j*nnx]);
+                        rx = &(roc2[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                        for(int i = xb; i < xe; i++)
+                        {
+                            FUNC_BODY_1st_ord_Vsweep();
+//                            FUNC_BODY_1st_ord_Psweep();
+                        }
+                        if (data->flag_bwd == 1) {
+                            // add sismos
+                            if (k == data->rcv_depth) {
+                                for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                    if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                        ux[data->ix[ir]] += data->sismos[data->rcv_len*(t0-(t-tb))+ir];
+                                    }
+                                }
+                            }
+                        }
+                        if (data->flag_fwd == 1) {
+                            // save sismos
+                            if (k == data->rcv_depth) {
+                                for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                    if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                        data->sismos[data->rcv_len*(t0+(t-tb))+ir] = ux[data->ix[ir]];
+                                    }
+                                }
+                            }
+                            // add source
+                            if (k == data->src_depth) {
+                                if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
+                                    ux[data->src_x] += data->source[t0+(t-tb)];
+                                }
+                            }
+                        }
+                    }
+                }
+                if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // trapezoid  (or upper half of the diamond)
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+                #pragma omp barrier
+                }
+
+
+            } else  // compute p from v
+            {
+                u = u_r;
+                vx=vx_r;
+                vy=vy_r;
+                vz=vz_r;
+            }
+            /////
+            u = u_r;
+            vx=vx_r;
+            vy=vy_r;
+            vz=vz_r;
+            #pragma omp for schedule(static)
+            for(int k = zb[t]; k < ze[t]; k++) {
+                for(int j = yb;j < ye; j++) {
+                    // compute
+                    ux =   &(u [1ULL*k*nnxy + j*nnx]);
+                    vx_x = &(vx[1ULL*k*nnxy + j*nnx]);
+                    vy_x = &(vy[1ULL*k*nnxy + j*nnx]);
+                    vz_x = &(vz[1ULL*k*nnxy + j*nnx]);
+//                    vx = &(   v[1ULL*k*nnxy + j*nnx]);
+                    //          rx = &(roc2[1ULL*k*nnxy + j*nnx]);
+                    rx = &(roc2[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                    for(int i = xb; i < xe; i++)
+                    {
+                        FUNC_BODY_1st_ord_Vsweep();
+                        FUNC_BODY_1st_ord_Psweep();
+                    }
+                    if (data->flag_bwd == 1) {
+                        // add sismos
+                        if (k == data->rcv_depth) {
+                            for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                    ux[data->ix[ir]] += data->sismos[data->rcv_len*(t0-(t-tb))+ir];
+                                }
+                            }
+                        }
+                    }
+                    if (data->flag_fwd == 1) {
+                        // save sismos
+                        if (k == data->rcv_depth) {
+                            for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                    data->sismos[data->rcv_len*(t0+(t-tb))+ir] = ux[data->ix[ir]];
+                                }
+                            }
+                        }
+                        // add source
+                        if (k == data->src_depth) {
+                            if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
+                                ux[data->src_x] += data->source[t0+(t-tb)];
+                            }
+                        }
+                    }
+                }
+            }
+            if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                yb -= b_inc;
+                ye += e_inc;
+            } else { // trapezoid  (or upper half of the diamond)
+                yb += b_inc;
+                ye -= e_inc;
+            }
+            #pragma omp barrier
+        }
+
+        // forward
+        if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
+            yb = yb_r;
+            ye = ye_r;
+
+            for(int t = tb; t < te; t++) {
+                u = u_r;
+                if (t >= t_dim) {
+                    #pragma omp for schedule(static)
+                    for(int k = zb[t]; k < ze[t]; k++) {
+                        for(int j = yb; j < ye; j++) {
+                            // save fwd
+                            // left most and right most
+                            if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                ux = &(   u[1ULL*k*nnxy + j*nnx]);
+                                wx = &(   data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                for (int i = xb; i < xe; i++) {
+                                    wx[i] = ux[i];
+                                }
+
+                                if (k == data->src_depth) {
+                                    if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
+                                        wx[data->src_x] -= data->source[t0+(t-tb)];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // trapezoid  (or upper half of the diamond)
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+                #pragma omp barrier
+            }
+        }
+    } // openmp
+}
+
 
 void kernel_spatial_blocking_separate_mode_io(const int nnx, const int nny, const int nnz,
                                               const int xb,  int yb_r, const int* zb,
@@ -1398,7 +1693,6 @@ void kernel_tiling_blocking_separate_mode_io(const int nnx, const int nny, const
     } // wavefront loop
 
     #pragma omp barrier
-
 //    MSG("... fwd=: %d\n", data->fwd );
 //    MSG("... flag_fwd=: %d\n", data->flag_fwd );
 //    MSG("... ifwd=: %d\n", ifwd );
@@ -1525,7 +1819,6 @@ static void cpu_bind(tb_t *ctx) {
 void wave_tb_init(tb_t* ctx,
                   sismap_t* s,
                   parser *p) {
-
   // get thread info
   ctx->thread_group_size = parser_get_int(p, "tb_thread_group_size");
   ctx->num_thread_groups = parser_get_int(p, "tb_nb_thread_groups");
@@ -1552,8 +1845,14 @@ void wave_tb_init(tb_t* ctx,
     break;
 
     case 2:
-    ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode;
-    ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode;
+    if (s->order==2){
+        ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode;
+        ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode;
+        else
+    } else {
+        ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode_1st;
+        ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode_1st;
+    }
     break;
 
     case 3:
@@ -1665,7 +1964,6 @@ void wave_tb_init(tb_t* ctx,
     ctx->dampy[ctx->nny-1-i-ctx->r] = tabdamp[i];
     ctx->dampz[ctx->nnz-1-i-ctx->r] = tabdamp[i];
   }
-
 }
 
 void wave_tb_info(tb_t * ctx) {
@@ -1715,22 +2013,38 @@ void wave_tb_save_lastshot(sismap_t* s,
     MSG("inside wave_tb_save_lastshot");
     FILE * fd;
 
-  fd = fopen("TB_lastshot_u0", "wb+");
-  CHK(fd == NULL, "failed to open snapshot file");
-  CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,
+    fd = fopen("TB_lastshot_u0", "wb+");
+    CHK(fd == NULL, "failed to open snapshot file");
+    CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,
       "failed to write snapshot");
-  CHK(fclose(fd)!=0,"failed to close snapshot file");
-  if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
+    CHK(fclose(fd)!=0,"failed to close snapshot file");
+    if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
 
-  fd = 0;
+    fd = 0;
 
-  fd = fopen("TB_lastshot_u1", "wb+");
-  CHK(fd == NULL, "failed to open snapshot file");
-  CHK(fwrite(u1, sizeof(float), s->size, fd) != s->size,
+    fd = fopen("TB_lastshot_u1", "wb+");
+    CHK(fd == NULL, "failed to open snapshot file");
+    CHK(fwrite(u1, sizeof(float), s->size, fd) != s->size,
       "failed to write snapshot");
-  CHK(fclose(fd)!=0,"failed to close snapshot file");
-  if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
-  fd = 0;
+    CHK(fclose(fd)!=0,"failed to close snapshot file");
+    if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
+    fd = 0;
+}
+
+void wave_tb_save_lastshot_1st(sismap_t* s,
+                           shot_t *shot,
+                           float* u0,
+                           unsigned int t) {
+    MSG("inside wave_tb_save_lastshot");
+    FILE * fd;
+
+    fd = fopen("TB_lastshot_u0", "wb+");
+    CHK(fd == NULL, "failed to open snapshot file");
+    CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,
+      "failed to write snapshot");
+    CHK(fclose(fd)!=0,"failed to close snapshot file");
+    if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
+    fd = 0;
 }
 
 void wave_sb_save_lastshot(sismap_t* s,
@@ -2053,6 +2367,115 @@ static void intra_diamond_mwd_comp(tb_t * ctx,
   timer->t_wf_epilogue[groupid] += t4-t3;
 }
 
+static void intra_diamond_mwd_comp_1st(tb_t * ctx,
+                                       tb_data_t *data,
+                                       tb_timer_t* timer,
+                                       float * restrict u0,
+                                       float * restrict vx,
+                                       float * restrict vy,
+                                       float * restrict vz,
+                                       const float * restrict roc2,
+                                       int yb_r,
+                                       int ye_r,
+                                       int b_inc,
+                                       int e_inc,
+                                       int tb,
+                                       int te,
+                                       int t0,
+                                       int ifwd,
+                                       const int groupid) {
+    int t, z, zb, ze;
+    int yb, ye;
+    int xb, xe;
+    int zb_array[ctx->t_dim*2+1];
+    int ze_array[ctx->t_dim*2+1];
+
+
+    int time_len = te-tb;
+    double t1,t2,t3,t4;
+
+    t1 = wtime();
+
+    // wavefront prologue
+    yb = yb_r;
+    ye = ye_r;
+    xb = ctx->r;
+    xe = ctx->stencilx + ctx->r;
+
+    for(t = tb; t < te-1; t++) {
+        zb_array[t] = ctx->r;
+        ze_array[t] = ctx->r * (time_len - (t-tb));
+    }
+
+    ctx->kernel_spatial_blocking(ctx->nnx, ctx->nny, ctx->nnz,
+                                 ctx->r,                 yb, zb_array,
+                                 ctx->r + ctx->stencilx, ye, ze_array,
+                                 ctx->coefx, ctx->coefy, ctx->coefz,
+                                 ctx->dampx, ctx->dampy, ctx->dampz,
+                                 u0, vx,vy,vz, roc2,
+                                 ctx->t_dim, b_inc, e_inc, ctx->r, tb, te - 1,
+                                 ctx->thread_group_size,
+                                 groupid,ctx->setsize,ctx->bind_masks,
+                                 data,t0, ifwd, timer);
+    t2 = wtime();
+
+    // wavefront main loop
+    yb = yb_r;
+    ye = ye_r;
+    zb = (te-tb) * ctx->r;
+    ze = ctx->stencilz + ctx->r;
+
+    ctx->kernel_tiling_blocking(ctx->nnx, ctx->nny, ctx->nnz,
+                                ctx->r,                 yb, zb,
+                                ctx->r + ctx->stencilx, ye, ze,
+                                ctx->coefx, ctx->coefy, ctx->coefz,
+                                ctx->dampx, ctx->dampy, ctx->dampz,
+                                u0, vx,vy,vz, roc2,
+                                ctx->t_dim, b_inc, e_inc, ctx->r, tb, te,
+                                ctx->num_wf, ctx->thread_group_size,
+                                ctx->th_x,ctx->th_y,ctx->th_z,
+                                groupid,ctx->setsize, ctx->bind_masks,
+                                data, t0, ifwd, timer);
+
+    t3 = wtime();
+
+    // wavefront epilogue
+    yb = yb_r;
+    ye = ye_r;
+    xb = ctx->r;
+    xe = ctx->r + ctx->stencilx;
+
+    if(tb < ctx->t_dim) { // lower half of the diamond
+        yb -= b_inc;
+        ye += e_inc;
+    } else { // upper half of the diamond
+        yb += b_inc;
+        ye -= e_inc;
+    }
+
+    for(t = tb + 1; t < te; t++){
+        ze_array[t] = ctx->stencilz + ctx->r;
+        zb_array[t] = ctx->stencilz + ctx->r - (t-tb) * ctx->r;
+    }
+
+    ctx->kernel_spatial_blocking(ctx->nnx, ctx->nny, ctx->nnz,
+                                 ctx->r,                 yb, zb_array,
+                                 ctx->r + ctx->stencilx, ye, ze_array,
+                                 ctx->coefx, ctx->coefy, ctx->coefz,
+                                 ctx->dampx, ctx->dampy, ctx->dampz,
+                                 u0, vx,vy,vz, roc2,
+                                 ctx->t_dim, b_inc, e_inc, ctx->r, tb + 1, te,
+                                 ctx->thread_group_size,
+                                 groupid,ctx->setsize,ctx->bind_masks,
+                                 data,t0, ifwd, timer);
+
+    t4 = wtime();
+
+    timer->t_wf_prologue[groupid] += t2-t1;
+    timer->t_wf_mainloop[groupid] += t3-t2;
+    timer->t_wf_epilogue[groupid] += t4-t3;
+}
+
 
 static inline void intra_diamond_get_info(tb_t *ctx,
                                           tb_timer_t * timer,
@@ -2227,6 +2650,37 @@ static inline void dynamic_intra_diamond_prologue(tb_t * ctx,
                                                   float * restrict v0,
                                                   const float * restrict roc2) {
   int i, yb, ye, ifwd;
+  ifwd = -1;
+  #pragma omp parallel num_threads(ctx->num_thread_groups)
+  {
+    int b_inc = ctx->r;
+    int e_inc = ctx->r;
+
+    int groupid = 0;
+    #if defined(_OPENMP)
+    groupid = omp_get_thread_num();
+    #endif
+
+    #pragma omp for schedule(dynamic) private(i,yb,ye)
+    for(i = 0; i < ctx->y_len_l; i++){
+      yb = ctx->r + i * ctx->diam_width + ctx->r;
+      ye = yb + ctx->diam_width - 2*ctx->r;
+      intra_diamond_mwd_comp(ctx, data, timer, u0, v0, roc2, yb, ye, b_inc, e_inc,
+                             ctx->t_dim + 1, ctx->t_dim * 2 + 1, 1,
+                             ifwd, groupid);
+    }
+  }
+}
+
+static inline void dynamic_intra_diamond_prologue_1st(tb_t * ctx,
+                                                  tb_data_t *data,
+                                                  tb_timer_t* timer,
+                                                  float * restrict u0,
+                                                  float * restrict vx,
+                                                  float * restrict vy,
+                                                  float * restrict vz,
+                                                  const float * restrict roc2) {
+  int i, yb, ye, ifwd;
 
   ifwd = -1;
 
@@ -2244,7 +2698,7 @@ static inline void dynamic_intra_diamond_prologue(tb_t * ctx,
     for(i = 0; i < ctx->y_len_l; i++){
       yb = ctx->r + i * ctx->diam_width + ctx->r;
       ye = yb + ctx->diam_width - 2*ctx->r;
-      intra_diamond_mwd_comp(ctx, data, timer, u0, v0, roc2, yb, ye, b_inc, e_inc,
+      intra_diamond_mwd_comp_1st(ctx,data,timer,u0,vx,vy,vz, roc2, yb, ye, b_inc, e_inc,
                              ctx->t_dim + 1, ctx->t_dim * 2 + 1, 1,
                              ifwd, groupid);
     }
@@ -2285,6 +2739,46 @@ static inline void dynamic_intra_diamond_prologue_full(tb_t * ctx,
 
 
 static inline void dynamic_intra_diamond_epilogue(tb_t* ctx,
+                                                  tb_data_t *data,
+                                                  tb_timer_t* timer,
+                                                  float * restrict u0,
+                                                  float * restrict v0,
+                                                  const float * restrict roc2) {
+  int i, yb, ye, ifwd;
+  int t0;
+  if (data->flag_fwd == 1) {
+    ifwd = -1;
+    t0 = ctx->t_len*(ctx->t_dim+1) + 1;
+  }
+
+  if (data->flag_bwd == 1) {
+    ifwd = -1;
+    t0 = ctx->t_dim - 1;
+  }
+
+  #pragma omp parallel num_threads(ctx->num_thread_groups)
+  {
+    int b_inc = ctx->r;
+    int e_inc = ctx->r;
+    int yb_r = ctx->r + ctx->diam_width/2 - ctx->r;
+    int ye_r = yb_r + 2 * ctx->r;
+    int groupid = 0;
+    #if defined(_OPENMP)
+    groupid = omp_get_thread_num();
+    #endif
+
+    #pragma omp for schedule(dynamic) private(i,yb,ye)
+    for(i = 0; i < ctx->y_len_l; i++){
+      yb = yb_r + i * ctx->diam_width;
+      ye = ye_r + i * ctx->diam_width;
+      intra_diamond_mwd_comp(ctx, data, timer, u0, v0, roc2, yb, ye, b_inc, e_inc,
+                             0, ctx->t_dim + 1, t0, ifwd, groupid);
+    }
+  }
+}
+
+
+static inline void dynamic_intra_diamond_epilogue_1st(tb_t* ctx,
                                                   tb_data_t *data,
                                                   tb_timer_t* timer,
                                                   float * restrict u0,
@@ -2458,30 +2952,126 @@ void dynamic_intra_diamond_mainloop(tb_t* ctx,
   }
 }
 
+void dynamic_intra_diamond_mainloop_1st(tb_t* ctx,
+                                    tb_data_t *data,
+                                    tb_timer_t* timer,
+                                    float * restrict u0,
+                                    float * restrict v0,
+                                    const float * restrict roc2) {
+  int not_complete, th_y_coord, i, groupid;
+  double t1;
+  uint64_t il;
+  uint64_t num_diamonds = ctx->y_len_l *  (ctx->t_len-1)/2
+  + ctx->y_len_r * ((ctx->t_len-1)/2 +1);
+
+  for(i = 0; i < ctx->y_len_r; i++){
+    ctx->avail_list[i] = i;
+  }
+
+  wave_tb_head = ctx->y_len_r;
+  wave_tb_tail = 0;
+
+  for(i = 0; i < ctx->y_len_r; i++) {
+    ctx->t_pos[i] = 0;
+  }
+
+#pragma omp parallel num_threads(ctx->num_thread_groups) \
+  shared(wave_tb_head, wave_tb_tail) private(groupid)
+  {
+
+   groupid = 0;
+#if defined(_OPENMP)
+   groupid =  omp_get_thread_num();
+
+   int gtid = groupid * ctx->thread_group_size;
+   int err = sched_setaffinity(0, ctx->setsize, ctx->bind_masks[gtid]);
+   if(err == -1) printf("WARNING: Could not set CPU Affinity (%d %d)\n",groupid,gtid);
+
+#endif
+
+
+#pragma omp for schedule(dynamic) private(il, th_y_coord, not_complete,t1)//shared(head,tail)
+   for (il = 0; il < num_diamonds; il++){
+
+    not_complete = 1;
+    th_y_coord = -1;
+    while(not_complete)
+    {
+      t1 = wtime();
+        while(wave_tb_head - wave_tb_tail < 1); // spin-wait for available tasks
+        timer->t_group_wait[groupid] += wtime() - t1;
+
+#pragma omp critical// (consumer)
+        {
+#pragma omp flush (wave_tb_head, wave_tb_tail)
+          if(wave_tb_head - wave_tb_tail > 0){ // make sure there is still available work
+            th_y_coord = ctx->avail_list[wave_tb_tail % ctx->y_len_r]; //acquire task
+            wave_tb_tail ++;
+          }
+        }
+        if(th_y_coord >= 0){
+          intra_diamond_resolve(ctx, data, timer, th_y_coord, groupid, u0, v0, roc2);
+#pragma omp critical// (producer)
+          {
+#pragma omp flush (wave_tb_head)
+            update_state(ctx, th_y_coord);
+          }
+          not_complete = 0;
+        }
+      }
+    }
+
+  }
+}
+
 void wave_tb_forward(tb_t* ctx,
                      tb_data_t * data,
                      tb_timer_t* timer,
                      float * restrict u0,
                      float * restrict v0,
                      const float * restrict roc2) {
+    double t1,t2,t3,t4;
+    if (data->src_depth !=-1) {
+        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
+    }
 
-  double t1,t2,t3,t4;
+    t1 = wtime();
+    dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
+    t2 = wtime();
+    dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
+    t3 = wtime();
+    dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
+    t4 = wtime();
 
-  if (data->src_depth !=-1) {
-    u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
-  }
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+}
 
-  t1 = wtime();
-  dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
-  t2 = wtime();
-  dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
-  t3 = wtime();
-  dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
-  t4 = wtime();
+void wave_tb_forward_1st(tb_t* ctx,
+                     tb_data_t * data,
+                     tb_timer_t* timer,
+                     float * restrict u0,
+                     float * restrict vx,
+                     float * restrict vy,
+                     float * restrict vz,
+                     const float * restrict roc2) {
+    double t1,t2,t3,t4;
+    if (data->src_depth !=-1) {
+        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
+    }
 
-  timer->ts_main   += (t3-t2);
-  timer->ts_others += (t2-t1) + (t4-t3);
-  timer->total     += timer->ts_main + timer->ts_others;
+    t1 = wtime();
+    dynamic_intra_diamond_prologue_1st(ctx, data, timer, u0, v0, roc2);
+    t2 = wtime();
+    dynamic_intra_diamond_mainloop_1st(ctx, data, timer, u0, v0, roc2);
+    t3 = wtime();
+    dynamic_intra_diamond_epilogue_1st(ctx, data, timer, u0, v0, roc2);
+    t4 = wtime();
+
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
 }
 
 
