@@ -78,7 +78,7 @@ struct tb_s {
 
   // function pointer
   int mode;
-  void (*kernel_spatial_blocking)(const int nnx, const int nny, const int nnz,
+  void (*kernel_spatial_blocking_1st)(const int nnx, const int nny, const int nnz,
                                   const int xb,  int yb_r, const int* zb,
                                   const int xe,  int ye_r, const int* ze,
                                   const float * restrict coefx,
@@ -88,7 +88,9 @@ struct tb_s {
                                   const float * restrict dampy,
                                   const float * restrict dampz,
                                   float * restrict u_r,
-                                  float * restrict v_r,
+                                  float * restrict vx_r,
+                                  float * restrict vy_r,
+                                  float * restrict vz_r,
                                   const float * restrict roc2,
                                   const int t_dim,
                                   int b_inc,int e_inc,
@@ -100,7 +102,7 @@ struct tb_s {
                                   const int t0,const int ifwd,
                                   tb_timer_t* timer);
 
-  void (*kernel_tiling_blocking)(const int nnx, const int nny, const int nnz,
+  void (*kernel_tiling_blocking_1st)(const int nnx, const int nny, const int nnz,
                                  const int xb, const int yb_r0, const int zb,
                                  const int xe, const int ye_r0, const int ze,
                                  const float * restrict coefx,
@@ -109,7 +111,10 @@ struct tb_s {
                                  const float * restrict dampx,
                                  const float * restrict dampy,
                                  const float * restrict dampz,
-                                 float * restrict u, float * restrict v,
+                                 float * restrict u_r,
+                                 float * restrict vx_r,
+                                 float * restrict vy_r,
+                                 float * restrict vz_r,
                                  const float * restrict roc2,
                                  const int t_dim,
                                  int b_inc, int e_inc,
@@ -123,6 +128,51 @@ struct tb_s {
                                  tb_data_t* data,
                                  const int t0, const int ifwd,
                                  tb_timer_t* timer);
+    void (*kernel_spatial_blocking)(const int nnx, const int nny, const int nnz,
+                                    const int xb,  int yb_r, const int* zb,
+                                    const int xe,  int ye_r, const int* ze,
+                                    const float * restrict coefx,
+                                    const float * restrict coefy,
+                                    const float * restrict coefz,
+                                    const float * restrict dampx,
+                                    const float * restrict dampy,
+                                    const float * restrict dampz,
+                                    float * restrict u_r,
+                                    float * restrict v_r,
+                                    const float * restrict roc2,
+                                    const int t_dim,
+                                    int b_inc,int e_inc,
+                                    const int stencilr,
+                                    const int tb,const int te,
+                                    const int thread_group_size,const int groupid,
+                                    const int setsize,cpu_set_t ** bind_masks,
+                                    const tb_data_t* data,
+                                    const int t0,const int ifwd,
+                                    tb_timer_t* timer);
+
+    void (*kernel_tiling_blocking)(const int nnx, const int nny, const int nnz,
+                                   const int xb, const int yb_r0, const int zb,
+                                   const int xe, const int ye_r0, const int ze,
+                                   const float * restrict coefx,
+                                   const float * restrict coefy,
+                                   const float * restrict coefz,
+                                   const float * restrict dampx,
+                                   const float * restrict dampy,
+                                   const float * restrict dampz,
+                                   float * restrict u, float * restrict v,
+                                   const float * restrict roc2,
+                                   const int t_dim,
+                                   int b_inc, int e_inc,
+                                   const int stencilr,
+                                   const int tb, const int te,
+                                   const int num_wf,
+                                   const int thread_group_size, const int threadx,
+                                   const int thready, const int threadz,
+                                   const int groupid,
+                                   const int setsize, cpu_set_t ** bind_masks,
+                                   tb_data_t* data,
+                                   const int t0, const int ifwd,
+                                   tb_timer_t* timer);
 };
 
 struct tb_data_s {
@@ -255,10 +305,28 @@ void wave_tb_forward(tb_t* ctx,
                      const float * restrict roc2);
 
 void wave_tb_backward(tb_t* ctx,
+                      tb_data_t* data,
+                      tb_timer_t* timer,
+                      float * restrict u0,
+                      float * restrict v0,
+                      const float * restrict roc2);
+
+void wave_tb_forward_1st(tb_t* ctx,
                      tb_data_t* data,
                      tb_timer_t* timer,
                      float * restrict u0,
-                     float * restrict v0,
+                     float * restrict vx,
+                     float * restrict vy,
+                     float * restrict vz,
+                     const float * restrict roc2);
+
+void wave_tb_backward_1st(tb_t* ctx,
+                     tb_data_t* data,
+                     tb_timer_t* timer,
+                     float * restrict u0,
+                     float * restrict vx,
+                     float * restrict vy,
+                     float * restrict vz,
                      const float * restrict roc2);
 
 #endif

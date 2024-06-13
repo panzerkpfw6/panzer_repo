@@ -288,9 +288,7 @@ void wave_init_acquisition(sismap_t *s) {
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
              x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
 //            MSG("x=%d,y=%d\n",x,y);
-//            s->rcv[ir++] = (s->sy + y) * (s->dimx + 2 * s->sx) + (x + s->sx);
             s->rcv[ir++] = (s->sx + x) * (s->dimy + 2 * s->sy) + (y + s->sy);
-//      MSG("s->sy+y,s->dimx+2*s->sx,x+s->sx,s->rcv[ir++]=, [[%d,%d,%d,%d]]\n",s->sy+y,s->dimx+2*s->sx,x+s->sx,s->rcv[ir++] );
             fprintf(fd, "rec %3d in [%3d, %3d, %3d]\n", ir, x, y, s->rcv_depth);
         }
         fprintf(fd, "\n");
@@ -570,22 +568,16 @@ void wave_update_fields_block_1st(sismap_t *s,
                                   float *restrict eta) {
     unsigned int z, y, x;
     float laplacian;
-    float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
     unsigned int zmin, zmax, ymin, ymax;
 
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnxy = nnx * nny;
-    float *restrict
-    pr0;
-    float *restrict
-    vx0;
-    float *restrict
-    vy0;
-    float *restrict
-    vz0;
-    float *restrict
-    rx;
+    float *restrict pr0;
+    float *restrict vx0;
+    float *restrict vy0;
+    float *restrict vz0;
+    float *restrict rx;
 
     // loop on the blocks .velocity
 #pragma omp parallel for collapse(2) private(laplacian, zmin, zmax, ymin, ymax,pr0,vx0,vy0,vz0,rx)
