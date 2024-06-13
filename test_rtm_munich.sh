@@ -16,7 +16,7 @@
 
 ###******** HORODATED LOG WRITING *********###
 #exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
-exec > >(while read line; do echo "$(date): $line"; done | tee log-modelling.log) 2>&1
+exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
 ###********** OPENMP PARAMETERS ***********###

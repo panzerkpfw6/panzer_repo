@@ -311,8 +311,12 @@ void run_rtm_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
 void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
     /// contains the fields pressure value at time step t.
     float* u0;
-    /// contains the fields pressure value at time step t+1.
-    float* u1;
+    /// contains the fields (particle velocity across x direction) value at time step t.
+    float* vx;
+    /// contains the fields (particle velocity across y direction) value at time step t.
+    float* vy;
+    /// contains the fields (particle velocity across z direction) value at time step t.
+    float* vz;
     /// forward wave-field for RTM.
     float* fwd;
     float** fwd_all;
@@ -325,10 +329,12 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
     /// wave-field arrays.
     CREATE_BUFFER_ONLY(u0, s->size);
     array_openmp_init(u0,s);
-    CREATE_BUFFER_ONLY(u1, s->size);
-    array_openmp_init(u1,s);
-    CREATE_BUFFER_ONLY(fwd, s->size);
-    array_openmp_init(fwd,s);
+    CREATE_BUFFER_ONLY(vx, s->size);
+    array_openmp_init(vx,s);
+    CREATE_BUFFER_ONLY(vy, s->size);
+    array_openmp_init(vy,s);
+    CREATE_BUFFER_ONLY(vz,s->size);
+    array_openmp_init(vz,s);
 
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
     CREATE_BUFFER_ONLY(img_shot, s->size_img);
@@ -377,7 +383,6 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
         /// reset buffers for the shot (forward).
         s->snap_idx = 0;
         NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
         NULIFY_BUFFER(pml_tmp, s->size_eff);
         /// forward modeling.
 
@@ -405,26 +410,26 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
         wave_update_source(s, shot, u0, source[0]);
         for(int t = 0; t < s->time_steps; ++t) {
             t0 = wtime();
-            wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
             if (s->mode == 2) {
                 if ((t+1)%s->nb_snap == 0) {
-                    memcpy_omp(fwd_all[s->snap_idx],u1,s);
+                    memcpy_omp(fwd_all[s->snap_idx],u0,s);
                     if (s->verbose) MSG("... saving snapshot %d t=%u", s->snap_idx, t+1);
                     s->snap_idx ++;
                 }
             } else {
-                wave_save_snapshot(s, shot, u1, t+1);
+                wave_save_snapshot(s, shot, u0, t+1);
             }
             t_snap += wtime() - t0;
 
             t0 = wtime();
-            wave_update_source(s, shot, u1, source[t+1]);
+            wave_update_source(s, shot, u0, source[t+1]);
             t_sismos += wtime() - t0;
 
-            WAVE_SWAP_POINTERS(u0, u1);
+//            WAVE_SWAP_POINTERS(u0, u1);
         }
         t2 = wtime();
 
@@ -440,7 +445,6 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
         /// reset buffers for the shot (backward).
         s->snap_idx = s->snap_idx-1;
         NULIFY_BUFFER(u0,       s->size);
-        NULIFY_BUFFER(u1,       s->size);
         NULIFY_BUFFER(pml_tmp,  s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
@@ -474,14 +478,14 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
             t_image += wtime() - t0;
 
             t0 = wtime();
-            wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
-            wave_inject_sismos(s, u1, t, sismos);
+            wave_inject_sismos(s, u0, t, sismos);
             t_sismos += wtime() - t0;
 
-            WAVE_SWAP_POINTERS(u0, u1);
+//            WAVE_SWAP_POINTERS(u0, u1);
         }
 
 
@@ -1042,11 +1046,11 @@ int main(int argc, char *argv[]) {
     if (s->verbose) wave_print(s);
     /// run RTM on CPU or GPU.
     if (s->cpu) {
-        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
-//        run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
+//        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
+        run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
     } else {
-        run_rtm_cpu(s, vel, source, pml_tab);
-//        run_rtm_1st_cpu(s, vel, source, pml_tab);
+//        run_rtm_cpu(s, vel, source, pml_tab);
+        run_rtm_1st_cpu(s, vel, source, pmltab);
 //    run_rtm_gpu(s, vel, source, pml_tab);
     }
     /// free the simulation buffers.
