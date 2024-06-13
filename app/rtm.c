@@ -335,6 +335,8 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
     array_openmp_init(vy,s);
     CREATE_BUFFER_ONLY(vz,s->size);
     array_openmp_init(vz,s);
+    CREATE_BUFFER_ONLY(fwd, s->size);
+    array_openmp_init(fwd,s);
 
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
     CREATE_BUFFER_ONLY(img_shot, s->size_img);
@@ -514,7 +516,9 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
     }
     /// free the simulation buffers.
     DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
+    DELETE_BUFFER(vx);
+    DELETE_BUFFER(vy);
+    DELETE_BUFFER(vz);
     DELETE_BUFFER(fwd);
     DELETE_BUFFER(img_shot);
     DELETE_BUFFER(ilm_shot);
@@ -684,8 +688,13 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
                     parser *p) {
     /// contains the fields pressure value at time step t.
     float *u0;
-    /// contains the fields pressure value at time step t+1.
-    float *u1;
+    /// contains the fields (particle velocity across x direction) value at time step t.
+    float* vx;
+    /// contains the fields (particle velocity across y direction) value at time step t.
+    float* vy;
+    /// contains the fields (particle velocity across z direction) value at time step t.
+    float* vz;
+
     /// forward wave-field for RTM.
     float *fwd, *fwd_io;
     /// seismic traces for a given shot.
@@ -695,9 +704,11 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     /// PML tmp tab.
     float *pml_tmp;
     /// wave-field arrays.
-    printf("allcoation\n");
+    printf("allocation\n");
     CREATE_BUFFER(u0, s->size);
-    CREATE_BUFFER(u1, s->size);
+    CREATE_BUFFER(vx, s->size);
+    CREATE_BUFFER(vy, s->size);
+    CREATE_BUFFER(vz, s->size);
     CREATE_BUFFER(img_shot, s->size_img);
     CREATE_BUFFER(ilm_shot, s->size_img);
     CREATE_BUFFER(pml_tmp, s->size_eff);
@@ -746,7 +757,6 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 
         /// reset buffers for the shot (forward).
         NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
         if (ctx->mode == 1 || ctx->mode == 2) {
             NULIFY_BUFFER(fwd, s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
             fwd_io = NULL;
@@ -773,7 +783,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
 
-        wave_tb_forward(ctx, data, timer, u0, u1, vel);
+        wave_tb_forward_1st(ctx, data, timer, u0, vx,vy,vz, vel);
 
         wave_tb_data_unset_src(data);
 
@@ -791,7 +801,6 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 
         /// reset buffers for the shot (backward).
         NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
         NULIFY_BUFFER(pml_tmp, s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
@@ -799,9 +808,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
         wave_tb_data_set_rcv(data, s, sismos);
 
         wave_inject_sismos(s, u0, s->time_steps, sismos);
-        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
-        wave_inject_sismos(s, u1, s->time_steps - 1, sismos);
-        wave_tb_backward(ctx, data, timer, u0, u1, vel);
+//        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
+        wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
+        wave_tb_backward_1st(ctx, data, timer, u0,vx,vy,vz, vel);
 
         wave_tb_data_unset_rcv(data);
 
@@ -829,152 +838,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     /// free the simulation buffers.
     DELETE_BUFFER(fwd);
     DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
     DELETE_BUFFER(img_shot);
     DELETE_BUFFER(ilm_shot);
     DELETE_BUFFER(sismos);
     DELETE_BUFFER(pml_tmp);
 }
 
-
-/*
-///
-/// Reverse Time Migration on GPU.
-///
-///
-void run_rtm_gpu(sismap_t *s, float* vel, float *source, float *pml_tab) {
-  /// u0 on the GPU.
-  float* d_u0;
-  /// u1 on the GPU.
-  float* d_u1;
-  /// vel on the GPU.
-  float* d_vel;
-  /// sismos on the GPU.
-  float* d_sismos, *sismos;
-  /// the fwd wave-field on the GPU.
-  float *d_fwd, *fwd;
-  /// the final image on the GPU.
-  float *d_img_shot, *d_ilm_shot;
-  /// PML GPU arrays.
-  float *d_pml_tab, *d_pml_tmp;
-  gpu_wave_set(s->device);
-  GPU_CHK(cudaMalloc((void**)&d_u0,  s->size*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_u1,  s->size*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_fwd, s->size*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_img_shot, s->size_img*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_ilm_shot, s->size_img*sizeof(float)));
-  GPU_CHK(cudaMemset(d_u0,  0, s->size*sizeof(float)));
-  GPU_CHK(cudaMemset(d_u1,  0, s->size*sizeof(float)));
-  GPU_CHK(cudaMemset(d_fwd, 0, s->size*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_vel, s->size_eff*sizeof(float)));
-  GPU_CHK(cudaMemcpy(d_vel, vel,
-                     s->dimx*s->dimy*s->dimz*sizeof(float),
-                     cudaMemcpyHostToDevice));
-  GPU_CHK(cudaMalloc((void**)&d_sismos,
-                     s->rcv_len*s->time_steps*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_pml_tab, (s->dimx+2)*(s->dimy+2)*
-                                         (s->dimz+2)*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_pml_tmp,
-                             s->dimx*s->dimy*s->dimz*sizeof(float)));
-  GPU_CHK(cudaMemcpy(d_pml_tab, pml_tab,
-                    (s->dimx+2)*(s->dimy+2)*(s->dimz+2)*sizeof(float),
-                    cudaMemcpyHostToDevice));
-  CREATE_BUFFER(sismos, s->rcv_len*s->time_steps);
-  CREATE_BUFFER(fwd, s->size);
-  float *tmp;
-  CREATE_BUFFER(tmp,  s->size_img);
-  gpu_wave_init(s);
-
-  if (s->verbose) gpu_wave_info(s);
-
-  shot_t *shot;
-
-  /// loop over the shots.
-  for (int sidx = s->first; sidx <= s->last; sidx++) {
-    /// retrieve the shot descriptor.
-    shot = s->shots[sidx];
-    /// initialize the current shot.
-    shot_init(shot, false, s->modeling);
-    /// load the seismic traces for the shot.
-    gpu_wave_read_sismos(s, shot, d_sismos, sismos);
-    /// reset the buffers for the shot.
-    s->snap_idx = 0;
-    GPU_CHK(cudaMemset(d_u0,     0,     s->size*sizeof(float)));
-    GPU_CHK(cudaMemset(d_u1,     0,     s->size*sizeof(float)));
-    GPU_CHK(cudaMemset(d_pml_tmp, 0, s->size_eff*sizeof(float)));
-    /// forward modeling.
-    for(int t = 0; t < s->time_steps; ++t) {
-      gpu_wave_update_source(s, shot, d_u0, source[t]);
-      gpu_wave_update_fields(s, d_u0, d_u1, d_vel, d_pml_tmp, d_pml_tab);
-      gpu_wave_save_snapshot(s, shot, d_u1, fwd, t);
-      GPU_WAVE_SWAP_POINTERS(d_u0, d_u1);
-    }
-    /// reset buffers for the shot (backward).
-    GPU_CHK(cudaDeviceSynchronize());
-    s->snap_idx = s->snap_idx-1;
-    GPU_CHK(cudaMemset(d_u0, 0, s->size*sizeof(float)));
-    GPU_CHK(cudaMemset(d_u1, 0, s->size*sizeof(float)));
-    GPU_CHK(cudaMemset(d_pml_tmp, 0, s->size_eff*sizeof(float)));
-    GPU_CHK(cudaMemset(d_img_shot, 0, s->size_img*sizeof(float)));
-    GPU_CHK(cudaMemset(d_ilm_shot, 0, s->size_img*sizeof(float)));
-    /// backward modeling and imaging.
-    for(int t = s->time_steps-1; t>=0 ; --t) {
-      gpu_wave_read_snapshot(s, shot, d_fwd, fwd, t);
-      gpu_wave_inject_sismos(s, d_u0, t, d_sismos);
-      gpu_wave_update_fields(s, d_u0, d_u1, d_vel, d_pml_tmp, d_pml_tab);
-      gpu_wave_image_condition(s, d_u1, d_fwd, d_img_shot, d_ilm_shot, t);
-      WAVE_SWAP_POINTERS(d_u0, d_u1);
-    }
-    /// save the img and ilm of the shot:
-    gpu_wave_save_img(s, shot, d_img_shot, d_ilm_shot, tmp);
-    /// release/close the resources related to the current shot.
-    shot_release(shot);
-  }
-  DELETE_BUFFER(fwd);
-  DELETE_BUFFER(tmp);
-  DELETE_BUFFER(sismos);
-  GPU_CHK(cudaFree(d_u0));
-  GPU_CHK(cudaFree(d_u1));
-  GPU_CHK(cudaFree(d_vel));
-  GPU_CHK(cudaFree(d_fwd));
-  GPU_CHK(cudaFree(d_img_shot));
-  GPU_CHK(cudaFree(d_ilm_shot));
-  GPU_CHK(cudaFree(d_sismos));
-  GPU_CHK(cudaFree(d_pml_tmp));
-  GPU_CHK(cudaFree(d_pml_tab));
-  gpu_wave_release(s);
-  gpu_wave_unset();
-}
-*/
-
-/// @brief The main function of the first part of \b simwave
-/// @param argc the number of user's options
-/// @param argv contains the user options
-/// @return 0 on success
-///
-///
-/// User options parser:
-/// - \b p is an options @ref parser
-/// - it parses the user's command line or from file options
-/// - check if saving snapshots is enabled
-/// - get the snapshot frequency
-/// - check if the GPU results have to be compared to those of the CPU
-/// - check if verbose mode is enabled
-/// - check if the execution on the CPU is disabled
-///
-/// GPU environment:
-/// - create an GPU resources descriptor (@ref gpu_engine_t)
-/// - print informations about the GPU environment
-/// - allocate resources before the GPU runs
-/// - deallocate resources after the GPU runs
-///
-/// CPU wave descriptor (@ref wave_t):
-/// - print informations about the wave
-/// - simulation on the CPU if enabled
-///
-/// GPU wave descriptor (@ref gpu_wave_t):
-/// - simulation on the GPU (default behavior)
-/// - check the GPU results if asked by the user
 int main(int argc, char *argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
@@ -1014,11 +883,11 @@ int main(int argc, char *argv[]) {
     printf("# THREADS : %d\n",omp_get_max_threads());
 
     /// contains the velocity values of the traversed mediums.
-    float *vel;
+    float* vel;
     /// contains the terms of the source.
-    float *source;
+    float* source;
     /// contains the PML coefficients.
-    float *pml_tab;
+    float* pml_tab;
     /// get velocity min max from file and setup numerics.
     wave_init_numerics(s);
     /// initialize the velocity and the compute sizes.
@@ -1050,7 +919,7 @@ int main(int argc, char *argv[]) {
         run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
     } else {
 //        run_rtm_cpu(s, vel, source, pml_tab);
-        run_rtm_1st_cpu(s, vel, source, pmltab);
+        run_rtm_1st_cpu(s, vel, source, pml_tab);
 //    run_rtm_gpu(s, vel, source, pml_tab);
     }
     /// free the simulation buffers.

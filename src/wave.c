@@ -34,6 +34,18 @@
 
 #define U0(z, y, x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define DAMPX(z, y, x)   (s->dampx[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define DAMPY(z, y, x)   (s->dampy[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define DAMPZ(z, y, x)   (s->dampz[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define VX(z, y, x)   (vx[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define VY(z, y, x)   (vy[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define VZ(z, y, x)   (vz[(x+s->sx) + (2*s->sx + s->dimx) * \
+                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define U1(z, y, x)   (u1[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define FWD(z, y, x)  (fwd[(x+s->sx) + (2*s->sx + s->dimx) * \
@@ -386,6 +398,23 @@ void wave_print(sismap_t *s) {
     + s->coefy[4]*( U0(z,   y+4, x  ) + U0(z,   y-4, x  ))  \
     + s->coefz[4]*( U0(z+4, y,   x  ) + U0(z-4, y,   x  ))
 
+#define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index()                            \
+    VX(z, y, x) = VX(z, y, x)+ROC2(z, y, x)*  \
+        (s->coefx[0]*( U0(z,   y,   x+1) - U0(z,y,x))  \
+        + s->coefx[1]*( U0(z,   y,   x+2) - U0(z,   y,   x-1))  \
+        + s->coefx[2]*( U0(z,   y,   x+3) - U0(z,   y,   x-2))  \
+        + s->coefx[3]*( U0(z,   y,   x+4) - U0(z,   y,   x-3))  );\
+    VY(z, y, x) = VY(z, y, x)+ROC2(z, y, x)*  \
+        (s->coefy[0]*( U0(z,   y+1, x  ) - U0(z,   y, x  ))  \
+        + s->coefy[1]*( U0(z,   y+2, x  ) - U0(z,   y-1, x  ))  \
+        + s->coefy[2]*( U0(z,   y+3, x  ) - U0(z,   y-2, x  ))  \
+        + s->coefy[3]*( U0(z,   y+4, x  ) - U0(z,   y-3, x  )));\
+    VZ(z, y, x) = VZ(z, y, x)+ROC2(z, y, x)*  \
+        (s->coefz[0]*( U0(z+1, y,   x  ) - U0(z, y,   x  ))  \
+        + s->coefz[1]*( U0(z+2, y,   x  ) - U0(z-1, y,   x  ))  \
+        + s->coefz[2]*( U0(z+3, y,   x  ) - U0(z-2, y,   x  ))  \
+        + s->coefz[3]*( U0(z+4, y,   x  ) - U0(z-3, y,   x  )))
+
 #define WAVE_UPDATE_INNER_FIELDS() \
   U1(z,y,x) = 2.0f * U0(z,y,x) - U1(z,y,x) + ROC2(z,y,x) * laplacian
 
@@ -407,21 +436,34 @@ ux[x] = 2.0f * vx[x] - ux[x]                                                   \
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v()                        \
 vx0[x] = vx0[x]                                                                \
       + rx[x] * (    s->coefx[0] * (pr0[x+1] - pr0[x])   \
-                   + s->coefy[1] * (pr0[x+2] - pr0[x-1])   \
-                   + s->coefz[2] * (pr0[x+3] - pr0[x-2])   \
-                   + s->coefz[3] * (pr0[x+4] - pr0[x-3]));  \
+                   + s->coefx[1] * (pr0[x+2] - pr0[x-1])   \
+                   + s->coefx[2] * (pr0[x+3] - pr0[x-2])   \
+                   + s->coefx[3] * (pr0[x+4] - pr0[x-3]));  \
 vy0[x] = vy0[x]                                                                \
-      + rx[x] * (                s->coefx[0] * (pr0[x+1*nnx] - pr0[x])   \
+      + rx[x] * (                s->coefy[0] * (pr0[x+1*nnx] - pr0[x])   \
                                + s->coefy[1] * (pr0[x+2*nnx] - pr0[x-1*nnx])   \
-                               + s->coefz[2] * (pr0[x+3*nnx] - pr0[x-2*nnx])   \
-                               + s->coefz[3] * (pr0[x+4*nnx] - pr0[x-3*nnx]));  \
+                               + s->coefy[2] * (pr0[x+3*nnx] - pr0[x-2*nnx])   \
+                               + s->coefy[3] * (pr0[x+4*nnx] - pr0[x-3*nnx]));  \
 vz0[x] = vz0[x]                                                         \
-      + rx[x] * (                s->coefx[0] * (pr0[x+1*nnxy] - pr0[x])   \
-                               + s->coefy[1] * (pr0[x+2*nnxy] - pr0[x-1*nnxy])   \
+      + rx[x] * (                s->coefz[0] * (pr0[x+1*nnxy] - pr0[x])   \
+                               + s->coefz[1] * (pr0[x+2*nnxy] - pr0[x-1*nnxy])   \
                                + s->coefz[2] * (pr0[x+3*nnxy] - pr0[x-2*nnxy])   \
                                + s->coefz[3] * (pr0[x+4*nnxy] - pr0[x-3*nnxy]))
-
-                                                                                     \
+#define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p_index() \
+    U0(z, y, x) = U0(z, y, x)+ROC2(z, y, x)*  \
+        ( s->coefx[0]*( VX(z,   y,   x) - VX(z,y,x-1))                \
+        + s->coefy[0]*( VY(z,   y,   x) - VY(z,y-1,x))                \
+        + s->coefz[0]*( VZ(z,   y,   x) - VZ(z-1,y,x))                \
+        + s->coefx[1]*( VX(z,   y,   x+1) - VX(z,   y,   x-2))  \
+        + s->coefy[1]*( VY(z,   y+1,   x) - VY(z,   y-2,   x))  \
+        + s->coefz[1]*( VZ(z+1,   y,   x) - VZ(z-2,   y,   x))      \
+        + s->coefx[2]*( VX(z,   y,   x+2) - VX(z,y,x-3))                \
+        + s->coefy[2]*( VY(z,   y+2,   x) - VY(z,y-3,x))                \
+        + s->coefz[2]*( VZ(z+2,   y,   x) - VZ(z-3,y,x))  \
+        + s->coefx[3]*( VX(z,   y,   x+3) - VX(z,   y,   x-4))  \
+        + s->coefy[3]*( VY(z,   y+3,   x) - VY(z,   y-4,   x))      \
+        + s->coefz[3]*( VZ(z+3,   y,   x) - VZ(z-4,y,x)));          \
+    U0(z, y, x) = U0(z, y, x)*DAMPX(z, y, x)*DAMPY(z, y, x)*DAMPZ(z, y, x)
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p()                        \
 pr0[x] = pr0[x]                                                   \
       + rx[x] * (    s->coefx[0] * (vx0[x]          + vx0[x-1     ])   \
@@ -473,6 +515,30 @@ void wave_update_fields(sismap_t *s,
     }
 }
 
+void wave_update_fields_1st(sismap_t *s,
+                        float *u0, float *vx,float *vy,float *vz,
+                        float *roc2, float *phi, float *eta) {
+    unsigned int z, y, x;
+    float laplacian;
+// v loop
+#pragma omp parallel for private(laplacian, z, y, x)
+    for (z = 0; z < s->dimz; z++) {
+        for (y = 0; y < s->dimy; y++) {
+            for (x = 0; x < s->dimx; x++)   {
+                WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index();
+            }
+        }
+    }
+// p loop
+#pragma omp parallel for private(laplacian, z, y, x)
+    for (z = 0; z < s->dimz; z++) {
+        for (y = 0; y < s->dimy; y++) {
+            for (x = 0; x < s->dimx; x++) {
+                WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p_index();
+            }
+        }
+    }
+}
 void wave_update_fields_block(sismap_t *s,
                               float *u0, float *u1,
                               float *roc2, float *phi, float *eta) {
@@ -636,6 +702,7 @@ void wave_update_fields_block_1st(sismap_t *s,
             }
         }
     }
+
 }
 
 
