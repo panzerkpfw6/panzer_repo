@@ -1,408 +1,287 @@
-Thu Jun 13 23:42:40 +03 2024: 
-Thu Jun 13 23:42:40 +03 2024: Autoloading ncurses/6.2/intel-20.0.4-utqf7mb
-Thu Jun 13 23:42:40 +03 2024: Autoloading openssl/1.1.1l/intel-20.0.4-bqezj56
-Thu Jun 13 23:42:40 +03 2024: Autoloading zlib/1.2.11/intel-20.0.4-y7c2i3c
-Thu Jun 13 23:42:41 +03 2024: -- The C compiler identification is Intel 2021.4.0.20210910
-Thu Jun 13 23:42:41 +03 2024: -- Detecting C compiler ABI info
-Thu Jun 13 23:42:42 +03 2024: -- Detecting C compiler ABI info - done
-Thu Jun 13 23:42:42 +03 2024: -- Check for working C compiler: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc - skipped
-Thu Jun 13 23:42:42 +03 2024: -- Detecting C compile features
-Thu Jun 13 23:42:42 +03 2024: -- Detecting C compile features - done
-Thu Jun 13 23:42:43 +03 2024: -- Found OpenMP_C: -qopenmp (found version "5.0")
-Thu Jun 13 23:42:43 +03 2024: -- Found OpenMP: TRUE (found version "5.0")
-Thu Jun 13 23:42:43 +03 2024: -- Found OpenMP_C: -qopenmp (found version "5.0")
-Thu Jun 13 23:42:43 +03 2024: -- The CXX compiler identification is Intel 2021.4.0.20210910
-Thu Jun 13 23:42:43 +03 2024: -- Detecting CXX compiler ABI info
-Thu Jun 13 23:42:43 +03 2024: -- Detecting CXX compiler ABI info - done
-Thu Jun 13 23:42:43 +03 2024: -- Check for working CXX compiler: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icpc - skipped
-Thu Jun 13 23:42:43 +03 2024: -- Detecting CXX compile features
-Thu Jun 13 23:42:43 +03 2024: -- Detecting CXX compile features - done
-Thu Jun 13 23:42:43 +03 2024: -- Configuring done
-Thu Jun 13 23:42:44 +03 2024: -- Generating done
-Thu Jun 13 23:42:44 +03 2024: -- Build files have been written to: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
-Thu Jun 13 23:42:44 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -S/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich -B/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich --check-build-system CMakeFiles/Makefile.cmake 0
-Thu Jun 13 23:42:44 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich//CMakeFiles/progress.marks
-Thu Jun 13 23:42:44 +03 2024: make  -f CMakeFiles/Makefile2 all
-Thu Jun 13 23:42:44 +03 2024: make[1]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:44 +03 2024: make  -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/depend
-Thu Jun 13 23:42:44 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:44 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/CMakeFiles/simwave.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:44 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:44 +03 2024: make  -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/build
-Thu Jun 13 23:42:44 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:44 +03 2024: [  4%] Building C object src/CMakeFiles/simwave.dir/bwriter.c.o
-Thu Jun 13 23:42:44 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/bwriter.c.o -MF CMakeFiles/simwave.dir/bwriter.c.o.d -o CMakeFiles/simwave.dir/bwriter.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/bwriter.c
-Thu Jun 13 23:42:44 +03 2024: [  8%] Building C object src/CMakeFiles/simwave.dir/interp.c.o
-Thu Jun 13 23:42:44 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/interp.c.o -MF CMakeFiles/simwave.dir/interp.c.o.d -o CMakeFiles/simwave.dir/interp.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/interp.c
-Thu Jun 13 23:42:44 +03 2024: [ 12%] Building C object src/CMakeFiles/simwave.dir/mlbs.c.o
-Thu Jun 13 23:42:44 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/mlbs.c.o -MF CMakeFiles/simwave.dir/mlbs.c.o.d -o CMakeFiles/simwave.dir/mlbs.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/mlbs.c
-Thu Jun 13 23:42:45 +03 2024: [ 16%] Building C object src/CMakeFiles/simwave.dir/parser.c.o
-Thu Jun 13 23:42:45 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/parser.c.o -MF CMakeFiles/simwave.dir/parser.c.o.d -o CMakeFiles/simwave.dir/parser.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/parser.c
-Thu Jun 13 23:42:45 +03 2024: [ 20%] Building C object src/CMakeFiles/simwave.dir/pml.c.o
-Thu Jun 13 23:42:45 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/pml.c.o -MF CMakeFiles/simwave.dir/pml.c.o.d -o CMakeFiles/simwave.dir/pml.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/pml.c
-Thu Jun 13 23:42:45 +03 2024: [ 25%] Building C object src/CMakeFiles/simwave.dir/shot.c.o
-Thu Jun 13 23:42:45 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/shot.c.o -MF CMakeFiles/simwave.dir/shot.c.o.d -o CMakeFiles/simwave.dir/shot.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/shot.c
-Thu Jun 13 23:42:46 +03 2024: [ 29%] Building C object src/CMakeFiles/simwave.dir/source.c.o
-Thu Jun 13 23:42:46 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/source.c.o -MF CMakeFiles/simwave.dir/source.c.o.d -o CMakeFiles/simwave.dir/source.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/source.c
-Thu Jun 13 23:42:46 +03 2024: [ 33%] Building C object src/CMakeFiles/simwave.dir/velocity.c.o
-Thu Jun 13 23:42:46 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/velocity.c.o -MF CMakeFiles/simwave.dir/velocity.c.o.d -o CMakeFiles/simwave.dir/velocity.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/velocity.c
-Thu Jun 13 23:42:47 +03 2024: [ 37%] Building C object src/CMakeFiles/simwave.dir/wave.c.o
-Thu Jun 13 23:42:47 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wave.c.o -MF CMakeFiles/simwave.dir/wave.c.o.d -o CMakeFiles/simwave.dir/wave.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave.c
-Thu Jun 13 23:42:50 +03 2024: [ 41%] Building C object src/CMakeFiles/simwave.dir/wave_tb.c.o
-Thu Jun 13 23:42:50 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wave_tb.c.o -MF CMakeFiles/simwave.dir/wave_tb.c.o.d -o CMakeFiles/simwave.dir/wave_tb.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c
-Thu Jun 13 23:42:50 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c(1665): warning #556: a value of type "void (*)(const int, const int, const int, const int, int, const int *, const int, int, const int *, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, const float
-Thu Jun 13 23:42:50 +03 2024: *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, cpu_set_t **, const tb_data_t *, const int, const int, tb_timer_t *)" cannot be assigned to an entity of type "void (*)(const int, const int, const int, const int, int, const int *, const int, int, const int *, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float
-Thu Jun 13 23:42:50 +03 2024: *__restrict__, float *__restrict__, const float *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, cpu_set_t **, const tb_data_t *, const int, const int, tb_timer_t *)"
-Thu Jun 13 23:42:50 +03 2024: ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode;
-Thu Jun 13 23:42:50 +03 2024: ^
-Thu Jun 13 23:42:50 +03 2024: 
-Thu Jun 13 23:42:50 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c(1666): warning #556: a value of type "void (*)(const int, const int, const int, const int, const int, const int, const int, const int, const int, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, const float
-Thu Jun 13 23:42:50 +03 2024: *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, const int, const int, const int, const int, cpu_set_t **, tb_data_t *, const int, const int, tb_timer_t *)" cannot be assigned to an entity of type "void (*)(const int, const int, const int, const int, const int, const int, const int, const int, const int, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float
-Thu Jun 13 23:42:50 +03 2024: *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, const float *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, const int, const int, const int, const int, cpu_set_t **, tb_data_t *, const int, const int, tb_timer_t *)"
-Thu Jun 13 23:42:50 +03 2024: ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode;
-Thu Jun 13 23:42:50 +03 2024: ^
-Thu Jun 13 23:42:50 +03 2024: 
-Thu Jun 13 23:42:54 +03 2024: [ 45%] Building C object src/CMakeFiles/simwave.dir/wtime.c.o
-Thu Jun 13 23:42:54 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wtime.c.o -MF CMakeFiles/simwave.dir/wtime.c.o.d -o CMakeFiles/simwave.dir/wtime.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wtime.c
-Thu Jun 13 23:42:54 +03 2024: [ 50%] Linking C static library libsimwave.a
-Thu Jun 13 23:42:54 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P CMakeFiles/simwave.dir/cmake_clean_target.cmake
-Thu Jun 13 23:42:55 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/simwave.dir/link.txt --verbose=1
-Thu Jun 13 23:42:55 +03 2024: /usr/bin/ar qc libsimwave.a CMakeFiles/simwave.dir/bwriter.c.o CMakeFiles/simwave.dir/interp.c.o CMakeFiles/simwave.dir/mlbs.c.o CMakeFiles/simwave.dir/parser.c.o CMakeFiles/simwave.dir/pml.c.o CMakeFiles/simwave.dir/shot.c.o CMakeFiles/simwave.dir/source.c.o CMakeFiles/simwave.dir/velocity.c.o CMakeFiles/simwave.dir/wave.c.o CMakeFiles/simwave.dir/wave_tb.c.o CMakeFiles/simwave.dir/wtime.c.o
-Thu Jun 13 23:42:55 +03 2024: /usr/bin/ranlib libsimwave.a
-Thu Jun 13 23:42:55 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:55 +03 2024: [ 50%] Built target simwave
-Thu Jun 13 23:42:55 +03 2024: make  -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/depend
-Thu Jun 13 23:42:55 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:55 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/gather.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:55 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:55 +03 2024: make  -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
-Thu Jun 13 23:42:55 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:55 +03 2024: [ 54%] Building C object app/CMakeFiles/gather.dir/gather.c.o
-Thu Jun 13 23:42:55 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/gather.dir/gather.c.o -MF CMakeFiles/gather.dir/gather.c.o.d -o CMakeFiles/gather.dir/gather.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/gather.c
-Thu Jun 13 23:42:55 +03 2024: [ 58%] Linking C executable gather
-Thu Jun 13 23:42:55 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/gather.dir/link.txt --verbose=1
-Thu Jun 13 23:42:55 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/gather.dir/gather.c.o -o gather  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:42:55 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:56 +03 2024: [ 58%] Built target gather
-Thu Jun 13 23:42:56 +03 2024: make  -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/depend
-Thu Jun 13 23:42:56 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:56 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:56 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:56 +03 2024: make  -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
-Thu Jun 13 23:42:56 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:56 +03 2024: [ 62%] Building C object app/CMakeFiles/modeling.dir/modeling.c.o
-Thu Jun 13 23:42:56 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c
-Thu Jun 13 23:42:56 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c(266): warning #266: function "wave_update_fields_block_1st" declared implicitly
-Thu Jun 13 23:42:56 +03 2024: wave_update_fields_block_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
-Thu Jun 13 23:42:56 +03 2024: ^
-Thu Jun 13 23:42:56 +03 2024: 
-Thu Jun 13 23:42:56 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c(395): warning #266: function "wave_tb_save_lastshot_1st" declared implicitly
-Thu Jun 13 23:42:56 +03 2024: wave_tb_save_lastshot_1st(s,shot,u0,vel);
-Thu Jun 13 23:42:56 +03 2024: ^
-Thu Jun 13 23:42:56 +03 2024: 
-Thu Jun 13 23:42:56 +03 2024: [ 66%] Linking C executable modeling
-Thu Jun 13 23:42:56 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=1
-Thu Jun 13 23:42:56 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling.dir/modeling.c.o -o modeling  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:42:57 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: [ 66%] Built target modeling
-Thu Jun 13 23:42:57 +03 2024: make  -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/depend
-Thu Jun 13 23:42:57 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling-snap_end.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:57 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: make  -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/build
-Thu Jun 13 23:42:57 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: [ 70%] Building C object app/CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o
-Thu Jun 13 23:42:57 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -MF CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o.d -o CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_end.c
-Thu Jun 13 23:42:57 +03 2024: [ 75%] Linking C executable modeling-snap_end
-Thu Jun 13 23:42:57 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling-snap_end.dir/link.txt --verbose=1
-Thu Jun 13 23:42:57 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -o modeling-snap_end  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:42:57 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: [ 75%] Built target modeling-snap_end
-Thu Jun 13 23:42:57 +03 2024: make  -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/depend
-Thu Jun 13 23:42:57 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling-snap_tb.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:57 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: make  -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/build
-Thu Jun 13 23:42:57 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:57 +03 2024: [ 79%] Building C object app/CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o
-Thu Jun 13 23:42:57 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -MF CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o.d -o CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_tb.c
-Thu Jun 13 23:42:58 +03 2024: [ 83%] Linking C executable modeling-snap_tb
-Thu Jun 13 23:42:58 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling-snap_tb.dir/link.txt --verbose=1
-Thu Jun 13 23:42:58 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -o modeling-snap_tb  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:42:58 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:58 +03 2024: [ 83%] Built target modeling-snap_tb
-Thu Jun 13 23:42:58 +03 2024: make  -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/depend
-Thu Jun 13 23:42:58 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:58 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/rtm.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:58 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:58 +03 2024: make  -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
-Thu Jun 13 23:42:58 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:58 +03 2024: [ 87%] Building C object app/CMakeFiles/rtm.dir/rtm.c.o
-Thu Jun 13 23:42:58 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/rtm.dir/rtm.c.o -MF CMakeFiles/rtm.dir/rtm.c.o.d -o CMakeFiles/rtm.dir/rtm.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c
-Thu Jun 13 23:42:58 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(415): warning #266: function "wave_update_fields_block_1st" declared implicitly
-Thu Jun 13 23:42:58 +03 2024: wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
-Thu Jun 13 23:42:58 +03 2024: ^
-Thu Jun 13 23:42:58 +03 2024: 
-Thu Jun 13 23:42:58 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(483): warning #266: function "wave_update_fields_block_1st" declared implicitly
-Thu Jun 13 23:42:58 +03 2024: wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
-Thu Jun 13 23:42:58 +03 2024: ^
-Thu Jun 13 23:42:58 +03 2024: 
-Thu Jun 13 23:42:58 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(812): warning #266: function "wave_update_fields_1st" declared implicitly
-Thu Jun 13 23:42:58 +03 2024: wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
-Thu Jun 13 23:42:58 +03 2024: ^
-Thu Jun 13 23:42:58 +03 2024: 
-Thu Jun 13 23:42:58 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(881): warning #266: function "get_nprocs" declared implicitly
-Thu Jun 13 23:42:58 +03 2024: int ncpus=get_nprocs();
-Thu Jun 13 23:42:58 +03 2024: ^
-Thu Jun 13 23:42:58 +03 2024: 
-Thu Jun 13 23:42:59 +03 2024: [ 91%] Linking C executable rtm
-Thu Jun 13 23:42:59 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/rtm.dir/link.txt --verbose=1
-Thu Jun 13 23:42:59 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/rtm.dir/rtm.c.o -o rtm  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:42:59 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:59 +03 2024: [ 91%] Built target rtm
-Thu Jun 13 23:42:59 +03 2024: make  -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/depend
-Thu Jun 13 23:42:59 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:59 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling_original.dir/DependInfo.cmake --color=
-Thu Jun 13 23:42:59 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:59 +03 2024: make  -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/build
-Thu Jun 13 23:42:59 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:42:59 +03 2024: [ 95%] Building C object app/CMakeFiles/modeling_original.dir/modeling_original.c.o
-Thu Jun 13 23:42:59 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling_original.dir/modeling_original.c.o -MF CMakeFiles/modeling_original.dir/modeling_original.c.o.d -o CMakeFiles/modeling_original.dir/modeling_original.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling_original.c
-Thu Jun 13 23:43:00 +03 2024: [100%] Linking C executable modeling_original
-Thu Jun 13 23:43:00 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling_original.dir/link.txt --verbose=1
-Thu Jun 13 23:43:00 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling_original.dir/modeling_original.c.o -o modeling_original  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
-Thu Jun 13 23:43:00 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:43:00 +03 2024: [100%] Built target modeling_original
-Thu Jun 13 23:43:00 +03 2024: make[1]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
-Thu Jun 13 23:43:00 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles 0
-Thu Jun 13 23:43:00 +03 2024: Consolidate compiler generated dependencies of target simwave
-Thu Jun 13 23:43:00 +03 2024: [ 50%] Built target simwave
-Thu Jun 13 23:43:00 +03 2024: Consolidate compiler generated dependencies of target gather
-Thu Jun 13 23:43:00 +03 2024: [ 58%] Built target gather
-Thu Jun 13 23:43:00 +03 2024: Consolidate compiler generated dependencies of target modeling
-Thu Jun 13 23:43:00 +03 2024: [ 66%] Built target modeling
-Thu Jun 13 23:43:00 +03 2024: Consolidate compiler generated dependencies of target modeling-snap_end
-Thu Jun 13 23:43:01 +03 2024: [ 75%] Built target modeling-snap_end
-Thu Jun 13 23:43:01 +03 2024: Consolidate compiler generated dependencies of target modeling-snap_tb
-Thu Jun 13 23:43:01 +03 2024: [ 83%] Built target modeling-snap_tb
-Thu Jun 13 23:43:01 +03 2024: Consolidate compiler generated dependencies of target rtm
-Thu Jun 13 23:43:01 +03 2024: [ 91%] Built target rtm
-Thu Jun 13 23:43:01 +03 2024: Consolidate compiler generated dependencies of target modeling_original
-Thu Jun 13 23:43:01 +03 2024: [100%] Built target modeling_original
-Thu Jun 13 23:43:01 +03 2024: Install the project...
-Thu Jun 13 23:43:01 +03 2024: -- Install configuration: "Release"
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/lib/libsimwave.a
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/gather
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling-snap_end
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling-snap_tb
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling_original
-Thu Jun 13 23:43:01 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/rtm
-Thu Jun 13 23:43:01 +03 2024: mkdir: cannot create directory ‘./logs2’: File exists
-Thu Jun 13 23:43:01 +03 2024: rm: cannot remove './logs2/*': No such file or directory
-Thu Jun 13 23:43:01 +03 2024: SB_mod_1st
-Thu Jun 13 23:43:01 +03 2024: OMP: Warning #182: OMP_PROC_BIND: ignored because KMP_AFFINITY has been defined
-Thu Jun 13 23:43:01 +03 2024: OMP: Info #268: OMP_NESTED variable deprecated, please use OMP_MAX_ACTIVE_LEVELS instead.
-Thu Jun 13 23:43:01 +03 2024: OMP: Warning #182: OMP_PLACES: ignored because KMP_AFFINITY has been defined
-Thu Jun 13 23:45:11 +03 2024: ncpus : 48
-Thu Jun 13 23:45:11 +03 2024: # THREADS : 16
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:before velocity_query_model
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_query_model__________________________
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:wave_init_numerics. point1
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:initialize 2nd order scheme coefs
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... setting nb_snap = Nyquist sampling: 25
-Thu Jun 13 23:45:11 +03 2024: 
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]: s->rcv_len, 2601
-Thu Jun 13 23:45:11 +03 2024: 
-Thu Jun 13 23:45:11 +03 2024: data/acquisition.txt
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model__________________________
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model_3d__________________________
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_generate_model__________________________
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... simwave information:
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... velocity size       = 512 x 512 x 512
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... velocity min/max    = 1500.000000 - 4500.000000
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... compute domain size = 512 x 512 x 512 (134.094238 MB)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... imaging domain size = 512 x 512 x 512 (128.000000 MB)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... cdp,line,depth      = 10 x 10 x 10
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dS                  = 10 x 10 x 10
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dtrp                = 1 x 1 x 1
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dt                  = 0.000805077
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... stencil size        = 9 x 9 x 9
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... pml damping         = 0 x 0 x 0
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... source depth        = 0
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefx               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefy               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefz               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... time steps          = 500
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... acquisition geometry:
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... number of receivers              = 2601
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... depth of the receivers           = 5
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... space between 2 receivers        = 10
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... number of shots                  = 2601
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:45:11 +03 2024: s->time_steps 500, nb_snap 25
-Thu Jun 13 23:45:11 +03 2024: Nb of snapshots in FWD: 21
-Thu Jun 13 23:45:11 +03 2024: MODE MEM
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Start of Shot (1301)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:tmp in shot_init=data/snap_1301.raw
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dealing with shot number 1301 (source @ 142228).
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:OUTDIR (data)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SISMOS_BASE (sismos)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:tmp=data/sismos_1301.raw
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:before fd = fopen(tmp, "rb");
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:end of wave_read_sismos function
-Thu Jun 13 23:45:11 +03 2024: ... sismos min max 0.000000 0.000000
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 0 t=25
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 1 t=50
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 2 t=75
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 3 t=100
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 4 t=125
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 5 t=150
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 6 t=175
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 7 t=200
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 8 t=225
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 9 t=250
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 10 t=275
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 11 t=300
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 12 t=325
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 13 t=350
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 14 t=375
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 15 t=400
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 16 t=425
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 17 t=450
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 18 t=475
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 19 t=500
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:forward timer (1301)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Total:        86.145779 (s)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SNAP:         0.779591 (s)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:PROP:         85.365624 (s)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SISMOS:       0.000305 (s)
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Speed:        779.015112 Mstencils/s
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:PropSpeed:    786.134519 Mstencils/s
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 19 t=500
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 18 t=475
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 17 t=450
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 16 t=425
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 15 t=400
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 14 t=375
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 13 t=350
-Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 12 t=325
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 11 t=300
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 10 t=275
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 9 t=250
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 8 t=225
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 7 t=200
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 6 t=175
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 5 t=150
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 4 t=125
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 3 t=100
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 2 t=75
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 1 t=50
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 0 t=25
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:backward timer (1301)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:Total:        87.170667 (s)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:SNAP:         0.688459 (s)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:PROP:         85.297919 (s)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:SISMOS:       0.018633 (s)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:IMAGE COND:   1.165259 (s)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:Speed:        769.856033 Mstencils/s
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:PropSpeed:    786.758514 Mstencils/s
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:End of Shot (1301)
-Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:RTM HALAS
-Thu Jun 13 23:46:04 +03 2024: !!TB with parameters!!
-Thu Jun 13 23:46:04 +03 2024: TB_mod_1st
-Thu Jun 13 23:46:05 +03 2024: OMP: Warning #182: OMP_PROC_BIND: ignored because KMP_AFFINITY has been defined
-Thu Jun 13 23:46:05 +03 2024: OMP: Info #268: OMP_NESTED variable deprecated, please use OMP_MAX_ACTIVE_LEVELS instead.
-Thu Jun 13 23:46:05 +03 2024: OMP: Warning #182: OMP_PLACES: ignored because KMP_AFFINITY has been defined
-Thu Jun 13 23:47:36 +03 2024: ncpus : 48
-Thu Jun 13 23:47:36 +03 2024: # THREADS : 16
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:before velocity_query_model
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_query_model__________________________
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:wave_init_numerics. point1
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:initialize 2nd order scheme coefs
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... setting nb_snap = Nyquist sampling: 25
-Thu Jun 13 23:47:36 +03 2024: 
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]: s->rcv_len, 2601
-Thu Jun 13 23:47:36 +03 2024: 
-Thu Jun 13 23:47:36 +03 2024: data/acquisition.txt
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model__________________________
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model_3d__________________________
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_generate_model__________________________
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... simwave information:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... velocity size       = 512 x 512 x 512
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... velocity min/max    = 1500.000000 - 4500.000000
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... compute domain size = 512 x 512 x 512 (134.094238 MB)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... imaging domain size = 512 x 512 x 512 (128.000000 MB)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... cdp,line,depth      = 10 x 10 x 10
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dS                  = 10 x 10 x 10
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dtrp                = 1 x 1 x 1
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dt                  = 0.000805077
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... stencil size        = 9 x 9 x 9
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... pml damping         = 0 x 0 x 0
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... source depth        = 0
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefx               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefy               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefz               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... time steps          = 500
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... acquisition geometry:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... number of receivers              = 2601
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... depth of the receivers           = 5
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... space between 2 receivers        = 10
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... number of shots                  = 2601
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:47:36 +03 2024: allocation
-Thu Jun 13 23:47:36 +03 2024: all
-Thu Jun 13 23:47:36 +03 2024: tb_init
-Thu Jun 13 23:47:36 +03 2024: ncpus : 48
-Thu Jun 13 23:47:36 +03 2024: errno001 : Success
-Thu Jun 13 23:47:36 +03 2024: errno001 : Success
-Thu Jun 13 23:47:36 +03 2024: ntg 1, tgs 16
-Thu Jun 13 23:47:36 +03 2024: Threads binding (tid->OS tid): 0->0 1->1 2->2 3->3 4->4 5->5 6->6 7->7 8->8 9->9 10->10 11->11 12->12 13->13 14->14 15->15
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:INFO: Modified nt from 500 to 512 for the intra-diamond method
-Thu Jun 13 23:47:36 +03 2024: 
-Thu Jun 13 23:47:36 +03 2024: tb_info
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:wave temporal blocking info
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:thread group : (8,2,1)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:group size: 16 num_group : 1
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:temporal blocking
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:t_dim : 7, num_wf : 64, diam_width : 64
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:scheduling info
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:t_len : 63, y_len_l : 8, y_lenr : 9
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:grid info
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:stride       : (520,520,520)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:stencil grid : (512,512,512)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:halo : 4
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:mode info
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:MODE (2) : SEPARATE MODE
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: tb_timer
-Thu Jun 13 23:47:36 +03 2024: Nb of snapshots in FWD: 21
-Thu Jun 13 23:47:36 +03 2024: rcv_len 2601, time_steps 512
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:loop over the shots between 1301 and 1301
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Processing shot 1301 (BEGIN)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:tmp in shot_init=data/snap_1301.raw
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dealing with shot number 1301 (source @ 142228).
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:OUTDIR (data)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:SISMOS_BASE (sismos)
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:tmp=data/sismos_1301.raw
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:before fd = fopen(tmp, "rb");
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:end of wave_read_sismos function
-Thu Jun 13 23:47:36 +03 2024: ... sismos min max 0.000000 0.000000
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:FWD STEP 1301
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Global info:
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Total:        68.372293 (s) -100.00%
-Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:mainloop:     67.152929 (s) -098.22%
-Thu Jun 13 23:47:38 +03 2024: [SIMWAVE MSG]:ptest_munich3_kw_rtm.sh: line 69: 41928 Segmentation fault      (core dumped) ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode --dshot 1 --first 1301 --last 1301 --fwd_steps 3 -c
+Fri Jun 14 04:15:05 +03 2024: 
+Fri Jun 14 04:15:05 +03 2024: -- The C compiler identification is Intel 2021.4.0.20210910
+Fri Jun 14 04:15:05 +03 2024: -- Detecting C compiler ABI info
+Fri Jun 14 04:15:06 +03 2024: -- Detecting C compiler ABI info - done
+Fri Jun 14 04:15:06 +03 2024: -- Check for working C compiler: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc - skipped
+Fri Jun 14 04:15:06 +03 2024: -- Detecting C compile features
+Fri Jun 14 04:15:06 +03 2024: -- Detecting C compile features - done
+Fri Jun 14 04:15:07 +03 2024: -- Found OpenMP_C: -qopenmp (found version "5.0")
+Fri Jun 14 04:15:07 +03 2024: -- Found OpenMP: TRUE (found version "5.0")
+Fri Jun 14 04:15:07 +03 2024: -- Found OpenMP_C: -qopenmp (found version "5.0")
+Fri Jun 14 04:15:07 +03 2024: -- The CXX compiler identification is Intel 2021.4.0.20210910
+Fri Jun 14 04:15:07 +03 2024: -- Detecting CXX compiler ABI info
+Fri Jun 14 04:15:08 +03 2024: -- Detecting CXX compiler ABI info - done
+Fri Jun 14 04:15:08 +03 2024: -- Check for working CXX compiler: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icpc - skipped
+Fri Jun 14 04:15:08 +03 2024: -- Detecting CXX compile features
+Fri Jun 14 04:15:08 +03 2024: -- Detecting CXX compile features - done
+Fri Jun 14 04:15:08 +03 2024: -- Configuring done
+Fri Jun 14 04:15:08 +03 2024: -- Generating done
+Fri Jun 14 04:15:08 +03 2024: -- Build files have been written to: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich
+Fri Jun 14 04:15:08 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -S/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich -B/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich --check-build-system CMakeFiles/Makefile.cmake 0
+Fri Jun 14 04:15:08 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich//CMakeFiles/progress.marks
+Fri Jun 14 04:15:08 +03 2024: make  -f CMakeFiles/Makefile2 all
+Fri Jun 14 04:15:08 +03 2024: make[1]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:08 +03 2024: make  -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/depend
+Fri Jun 14 04:15:08 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:08 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/CMakeFiles/simwave.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:08 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:08 +03 2024: make  -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/build
+Fri Jun 14 04:15:08 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:08 +03 2024: [  4%] Building C object src/CMakeFiles/simwave.dir/bwriter.c.o
+Fri Jun 14 04:15:08 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/bwriter.c.o -MF CMakeFiles/simwave.dir/bwriter.c.o.d -o CMakeFiles/simwave.dir/bwriter.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/bwriter.c
+Fri Jun 14 04:15:08 +03 2024: [  8%] Building C object src/CMakeFiles/simwave.dir/interp.c.o
+Fri Jun 14 04:15:08 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/interp.c.o -MF CMakeFiles/simwave.dir/interp.c.o.d -o CMakeFiles/simwave.dir/interp.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/interp.c
+Fri Jun 14 04:15:08 +03 2024: [ 12%] Building C object src/CMakeFiles/simwave.dir/mlbs.c.o
+Fri Jun 14 04:15:09 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/mlbs.c.o -MF CMakeFiles/simwave.dir/mlbs.c.o.d -o CMakeFiles/simwave.dir/mlbs.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/mlbs.c
+Fri Jun 14 04:15:09 +03 2024: [ 16%] Building C object src/CMakeFiles/simwave.dir/parser.c.o
+Fri Jun 14 04:15:09 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/parser.c.o -MF CMakeFiles/simwave.dir/parser.c.o.d -o CMakeFiles/simwave.dir/parser.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/parser.c
+Fri Jun 14 04:15:09 +03 2024: [ 20%] Building C object src/CMakeFiles/simwave.dir/pml.c.o
+Fri Jun 14 04:15:09 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/pml.c.o -MF CMakeFiles/simwave.dir/pml.c.o.d -o CMakeFiles/simwave.dir/pml.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/pml.c
+Fri Jun 14 04:15:09 +03 2024: [ 25%] Building C object src/CMakeFiles/simwave.dir/shot.c.o
+Fri Jun 14 04:15:09 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/shot.c.o -MF CMakeFiles/simwave.dir/shot.c.o.d -o CMakeFiles/simwave.dir/shot.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/shot.c
+Fri Jun 14 04:15:10 +03 2024: [ 29%] Building C object src/CMakeFiles/simwave.dir/source.c.o
+Fri Jun 14 04:15:10 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/source.c.o -MF CMakeFiles/simwave.dir/source.c.o.d -o CMakeFiles/simwave.dir/source.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/source.c
+Fri Jun 14 04:15:10 +03 2024: [ 33%] Building C object src/CMakeFiles/simwave.dir/velocity.c.o
+Fri Jun 14 04:15:10 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/velocity.c.o -MF CMakeFiles/simwave.dir/velocity.c.o.d -o CMakeFiles/simwave.dir/velocity.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/velocity.c
+Fri Jun 14 04:15:11 +03 2024: [ 37%] Building C object src/CMakeFiles/simwave.dir/wave.c.o
+Fri Jun 14 04:15:11 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wave.c.o -MF CMakeFiles/simwave.dir/wave.c.o.d -o CMakeFiles/simwave.dir/wave.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave.c
+Fri Jun 14 04:15:16 +03 2024: [ 41%] Building C object src/CMakeFiles/simwave.dir/wave_tb.c.o
+Fri Jun 14 04:15:16 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wave_tb.c.o -MF CMakeFiles/simwave.dir/wave_tb.c.o.d -o CMakeFiles/simwave.dir/wave_tb.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c
+Fri Jun 14 04:15:16 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c(1665): warning #556: a value of type "void (*)(const int, const int, const int, const int, int, const int *, const int, int, const int *, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, const float
+Fri Jun 14 04:15:16 +03 2024: *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, cpu_set_t **, const tb_data_t *, const int, const int, tb_timer_t *)" cannot be assigned to an entity of type "void (*)(const int, const int, const int, const int, int, const int *, const int, int, const int *, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float
+Fri Jun 14 04:15:16 +03 2024: *__restrict__, float *__restrict__, const float *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, cpu_set_t **, const tb_data_t *, const int, const int, tb_timer_t *)"
+Fri Jun 14 04:15:16 +03 2024: ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode;
+Fri Jun 14 04:15:16 +03 2024: ^
+Fri Jun 14 04:15:16 +03 2024: 
+Fri Jun 14 04:15:16 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wave_tb.c(1666): warning #556: a value of type "void (*)(const int, const int, const int, const int, const int, const int, const int, const int, const int, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, float *__restrict__, const float
+Fri Jun 14 04:15:16 +03 2024: *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, const int, const int, const int, const int, cpu_set_t **, tb_data_t *, const int, const int, tb_timer_t *)" cannot be assigned to an entity of type "void (*)(const int, const int, const int, const int, const int, const int, const int, const int, const int, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float *__restrict__, const float
+Fri Jun 14 04:15:16 +03 2024: *__restrict__, const float *__restrict__, float *__restrict__, float *__restrict__, const float *__restrict__, const int, int, int, const int, const int, const int, const int, const int, const int, const int, const int, const int, const int, cpu_set_t **, tb_data_t *, const int, const int, tb_timer_t *)"
+Fri Jun 14 04:15:16 +03 2024: ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode;
+Fri Jun 14 04:15:16 +03 2024: ^
+Fri Jun 14 04:15:16 +03 2024: 
+Fri Jun 14 04:15:20 +03 2024: [ 45%] Building C object src/CMakeFiles/simwave.dir/wtime.c.o
+Fri Jun 14 04:15:20 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT src/CMakeFiles/simwave.dir/wtime.c.o -MF CMakeFiles/simwave.dir/wtime.c.o.d -o CMakeFiles/simwave.dir/wtime.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src/wtime.c
+Fri Jun 14 04:15:20 +03 2024: [ 50%] Linking C static library libsimwave.a
+Fri Jun 14 04:15:20 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P CMakeFiles/simwave.dir/cmake_clean_target.cmake
+Fri Jun 14 04:15:20 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/src && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/simwave.dir/link.txt --verbose=1
+Fri Jun 14 04:15:20 +03 2024: /usr/bin/ar qc libsimwave.a CMakeFiles/simwave.dir/bwriter.c.o CMakeFiles/simwave.dir/interp.c.o CMakeFiles/simwave.dir/mlbs.c.o CMakeFiles/simwave.dir/parser.c.o CMakeFiles/simwave.dir/pml.c.o CMakeFiles/simwave.dir/shot.c.o CMakeFiles/simwave.dir/source.c.o CMakeFiles/simwave.dir/velocity.c.o CMakeFiles/simwave.dir/wave.c.o CMakeFiles/simwave.dir/wave_tb.c.o CMakeFiles/simwave.dir/wtime.c.o
+Fri Jun 14 04:15:20 +03 2024: /usr/bin/ranlib libsimwave.a
+Fri Jun 14 04:15:20 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:20 +03 2024: [ 50%] Built target simwave
+Fri Jun 14 04:15:20 +03 2024: make  -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/depend
+Fri Jun 14 04:15:20 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:20 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/gather.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:20 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:20 +03 2024: make  -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
+Fri Jun 14 04:15:20 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:20 +03 2024: [ 54%] Building C object app/CMakeFiles/gather.dir/gather.c.o
+Fri Jun 14 04:15:20 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/gather.dir/gather.c.o -MF CMakeFiles/gather.dir/gather.c.o.d -o CMakeFiles/gather.dir/gather.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/gather.c
+Fri Jun 14 04:15:21 +03 2024: [ 58%] Linking C executable gather
+Fri Jun 14 04:15:21 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/gather.dir/link.txt --verbose=1
+Fri Jun 14 04:15:21 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/gather.dir/gather.c.o -o gather  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:21 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:21 +03 2024: [ 58%] Built target gather
+Fri Jun 14 04:15:21 +03 2024: make  -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/depend
+Fri Jun 14 04:15:21 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:21 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:21 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:21 +03 2024: make  -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
+Fri Jun 14 04:15:21 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:21 +03 2024: [ 62%] Building C object app/CMakeFiles/modeling.dir/modeling.c.o
+Fri Jun 14 04:15:21 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c
+Fri Jun 14 04:15:21 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c(266): warning #266: function "wave_update_fields_block_1st" declared implicitly
+Fri Jun 14 04:15:21 +03 2024: wave_update_fields_block_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
+Fri Jun 14 04:15:21 +03 2024: ^
+Fri Jun 14 04:15:21 +03 2024: 
+Fri Jun 14 04:15:21 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling.c(395): warning #266: function "wave_tb_save_lastshot_1st" declared implicitly
+Fri Jun 14 04:15:21 +03 2024: wave_tb_save_lastshot_1st(s,shot,u0,vel);
+Fri Jun 14 04:15:21 +03 2024: ^
+Fri Jun 14 04:15:21 +03 2024: 
+Fri Jun 14 04:15:21 +03 2024: [ 66%] Linking C executable modeling
+Fri Jun 14 04:15:21 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=1
+Fri Jun 14 04:15:21 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling.dir/modeling.c.o -o modeling  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:22 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:22 +03 2024: [ 66%] Built target modeling
+Fri Jun 14 04:15:22 +03 2024: make  -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/depend
+Fri Jun 14 04:15:22 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:22 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling-snap_end.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:22 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:22 +03 2024: make  -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/build
+Fri Jun 14 04:15:22 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:22 +03 2024: [ 70%] Building C object app/CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o
+Fri Jun 14 04:15:22 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -MF CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o.d -o CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_end.c
+Fri Jun 14 04:15:22 +03 2024: [ 75%] Linking C executable modeling-snap_end
+Fri Jun 14 04:15:22 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling-snap_end.dir/link.txt --verbose=1
+Fri Jun 14 04:15:22 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o -o modeling-snap_end  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:23 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: [ 75%] Built target modeling-snap_end
+Fri Jun 14 04:15:23 +03 2024: make  -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/depend
+Fri Jun 14 04:15:23 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling-snap_tb.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:23 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: make  -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/build
+Fri Jun 14 04:15:23 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: [ 79%] Building C object app/CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o
+Fri Jun 14 04:15:23 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -MF CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o.d -o CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling-snap_tb.c
+Fri Jun 14 04:15:23 +03 2024: [ 83%] Linking C executable modeling-snap_tb
+Fri Jun 14 04:15:23 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling-snap_tb.dir/link.txt --verbose=1
+Fri Jun 14 04:15:23 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o -o modeling-snap_tb  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:23 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: [ 83%] Built target modeling-snap_tb
+Fri Jun 14 04:15:23 +03 2024: make  -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/depend
+Fri Jun 14 04:15:23 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/rtm.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:23 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: make  -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
+Fri Jun 14 04:15:23 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:23 +03 2024: [ 87%] Building C object app/CMakeFiles/rtm.dir/rtm.c.o
+Fri Jun 14 04:15:23 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/rtm.dir/rtm.c.o -MF CMakeFiles/rtm.dir/rtm.c.o.d -o CMakeFiles/rtm.dir/rtm.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c
+Fri Jun 14 04:15:23 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(415): warning #266: function "wave_update_fields_block_1st" declared implicitly
+Fri Jun 14 04:15:23 +03 2024: wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+Fri Jun 14 04:15:23 +03 2024: ^
+Fri Jun 14 04:15:23 +03 2024: 
+Fri Jun 14 04:15:24 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(483): warning #266: function "wave_update_fields_block_1st" declared implicitly
+Fri Jun 14 04:15:24 +03 2024: wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+Fri Jun 14 04:15:24 +03 2024: ^
+Fri Jun 14 04:15:24 +03 2024: 
+Fri Jun 14 04:15:24 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(812): warning #266: function "wave_update_fields_1st" declared implicitly
+Fri Jun 14 04:15:24 +03 2024: wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
+Fri Jun 14 04:15:24 +03 2024: ^
+Fri Jun 14 04:15:24 +03 2024: 
+Fri Jun 14 04:15:24 +03 2024: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/rtm.c(881): warning #266: function "get_nprocs" declared implicitly
+Fri Jun 14 04:15:24 +03 2024: int ncpus=get_nprocs();
+Fri Jun 14 04:15:24 +03 2024: ^
+Fri Jun 14 04:15:24 +03 2024: 
+Fri Jun 14 04:15:24 +03 2024: [ 91%] Linking C executable rtm
+Fri Jun 14 04:15:24 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/rtm.dir/link.txt --verbose=1
+Fri Jun 14 04:15:24 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/rtm.dir/rtm.c.o -o rtm  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:24 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:24 +03 2024: [ 91%] Built target rtm
+Fri Jun 14 04:15:24 +03 2024: make  -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/depend
+Fri Jun 14 04:15:24 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:24 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_depends "Unix Makefiles" /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/CMakeFiles/modeling_original.dir/DependInfo.cmake --color=
+Fri Jun 14 04:15:24 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:24 +03 2024: make  -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/build
+Fri Jun 14 04:15:24 +03 2024: make[2]: Entering directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:24 +03 2024: [ 95%] Building C object app/CMakeFiles/modeling_original.dir/modeling_original.c.o
+Fri Jun 14 04:15:25 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/include -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  -MD -MT app/CMakeFiles/modeling_original.dir/modeling_original.c.o -MF CMakeFiles/modeling_original.dir/modeling_original.c.o.d -o CMakeFiles/modeling_original.dir/modeling_original.c.o -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app/modeling_original.c
+Fri Jun 14 04:15:25 +03 2024: [100%] Linking C executable modeling_original
+Fri Jun 14 04:15:25 +03 2024: cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/app && /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_link_script CMakeFiles/modeling_original.dir/link.txt --verbose=1
+Fri Jun 14 04:15:25 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/bin/intel64/icc  -qopenmp -qopenmp -O3 -DNDEBUG -O3 -fno-fnalias -fno-alias -g -std=gnu99  CMakeFiles/modeling_original.dir/modeling_original.c.o -o modeling_original  ../src/libsimwave.a -lm -lstdc++ /sw/workstations/apps/linux-ubuntu18.04-ivybridge/intel-oneapi-compilers/2021.4.0/gcc-7.5.0/sqbobreknfie6u3gabzli6kfi3yox7as/compiler/2021.4.0/linux/compiler/lib/intel64_lin/libiomp5.so -lpthread -qopenmp
+Fri Jun 14 04:15:25 +03 2024: make[2]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:25 +03 2024: [100%] Built target modeling_original
+Fri Jun 14 04:15:25 +03 2024: make[1]: Leaving directory '/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich'
+Fri Jun 14 04:15:25 +03 2024: /sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -E cmake_progress_start /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/CMakeFiles 0
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target simwave
+Fri Jun 14 04:15:26 +03 2024: [ 50%] Built target simwave
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target gather
+Fri Jun 14 04:15:26 +03 2024: [ 58%] Built target gather
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target modeling
+Fri Jun 14 04:15:26 +03 2024: [ 66%] Built target modeling
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target modeling-snap_end
+Fri Jun 14 04:15:26 +03 2024: [ 75%] Built target modeling-snap_end
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target modeling-snap_tb
+Fri Jun 14 04:15:26 +03 2024: [ 83%] Built target modeling-snap_tb
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target rtm
+Fri Jun 14 04:15:26 +03 2024: [ 91%] Built target rtm
+Fri Jun 14 04:15:26 +03 2024: Consolidate compiler generated dependencies of target modeling_original
+Fri Jun 14 04:15:26 +03 2024: [100%] Built target modeling_original
+Fri Jun 14 04:15:26 +03 2024: Install the project...
+Fri Jun 14 04:15:26 +03 2024: -- Install configuration: "Release"
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/lib/libsimwave.a
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/gather
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling-snap_end
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling-snap_tb
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/modeling_original
+Fri Jun 14 04:15:26 +03 2024: -- Installing: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich/bin/rtm
+Fri Jun 14 04:15:26 +03 2024: mkdir: cannot create directory ‘./logs2’: File exists
+Fri Jun 14 04:15:26 +03 2024: rm: cannot remove './logs2/*': No such file or directory
+Fri Jun 14 04:15:26 +03 2024: SB_mod_1st
+Fri Jun 14 04:15:26 +03 2024: OMP: Warning #182: OMP_PROC_BIND: ignored because KMP_AFFINITY has been defined
+Fri Jun 14 04:15:26 +03 2024: OMP: Info #268: OMP_NESTED variable deprecated, please use OMP_MAX_ACTIVE_LEVELS instead.
+Fri Jun 14 04:15:26 +03 2024: OMP: Warning #182: OMP_PLACES: ignored because KMP_AFFINITY has been defined
+Fri Jun 14 04:26:19 +03 2024: ncpus : 48
+Fri Jun 14 04:26:19 +03 2024: # THREADS : 16
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:before velocity_query_model
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_query_model__________________________
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:wave_init_numerics. point1
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:initialize 2nd order scheme coefs
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... setting nb_snap = Nyquist sampling: 25
+Fri Jun 14 04:26:19 +03 2024: 
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]: s->rcv_len, 10404
+Fri Jun 14 04:26:19 +03 2024: 
+Fri Jun 14 04:26:19 +03 2024: data/acquisition.txt
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model__________________________
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model_3d__________________________
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_generate_model__________________________
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... simwave information:
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... velocity size       = 1024 x 1024 x 512
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... velocity min/max    = 1500.000000 - 4500.000000
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... compute domain size = 1024 x 1024 x 512 (528.156738 MB)
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... imaging domain size = 1024 x 1024 x 512 (512.000000 MB)
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... cdp,line,depth      = 10 x 10 x 10
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... dS                  = 10 x 10 x 10
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... dtrp                = 1 x 1 x 1
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... dt                  = 0.000805077
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... stencil size        = 9 x 9 x 9
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... pml damping         = 0 x 0 x 0
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... source depth        = 0
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... coefx               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... coefy               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... coefz               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... time steps          = 500
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... acquisition geometry:
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... number of receivers              = 10404
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... depth of the receivers           = 5
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... space between 2 receivers        = 10
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:... number of shots                  = 10404
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:
+Fri Jun 14 04:26:19 +03 2024: s->time_steps 500, nb_snap 25
+Fri Jun 14 04:26:19 +03 2024: Nb of snapshots in FWD: 21
+Fri Jun 14 04:26:19 +03 2024: MODE MEM
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:Start of Shot (1301)
+Fri Jun 14 04:26:19 +03 2024: [SIMWAVE MSG]:tmp in shot_init=data/snap_1301.raw
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... dealing with shot number 1301 (source @ 808194).
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:OUTDIR (data)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:SISMOS_BASE (sismos)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:tmp=data/sismos_1301.raw
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:before fd = fopen(tmp, "rb");
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:end of wave_read_sismos function
+Fri Jun 14 04:26:20 +03 2024: ... sismos min max 0.000000 0.000000
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 0 t=25
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 1 t=50
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 2 t=75
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 3 t=100
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 4 t=125
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 5 t=150
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 6 t=175
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 7 t=200
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 8 t=225
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 9 t=250
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 10 t=275
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 11 t=300
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 12 t=325
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 13 t=350
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 14 t=375
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 15 t=400
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 16 t=425
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 17 t=450
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 18 t=475
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... saving snapshot 19 t=500
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:forward timer (1301)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:Total:        468.296299 (s)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:SNAP:         4.797625 (s)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:PROP:         463.497756 (s)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:SISMOS:       0.000465 (s)
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:Speed:        573.217120 Mstencils/s
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:PropSpeed:    579.151577 Mstencils/s
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 19 t=500
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 18 t=475
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 17 t=450
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 16 t=425
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 15 t=400
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 14 t=375
+Fri Jun 14 04:26:20 +03 2024: [SIMWAVE MSG]:... reading snapshot 13 t=350
