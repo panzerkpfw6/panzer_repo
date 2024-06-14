@@ -8,7 +8,7 @@
 #SBATCH --mem=50GB
 #SBATCH --time=24:00:00
 #SBATCH --partition=7773X  # Milan-X 128
-#SBATCH --job-name=test_rtm_2nd
+#SBATCH --job-name=test_rtm
 #SBATCH --output=logs/rtm.%J.out
 #SBATCH --error=logs/rtm.%J.err
 #SBATCH --cpus-per-task=128

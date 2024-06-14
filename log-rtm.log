@@ -204,3 +204,205 @@ Thu Jun 13 23:43:01 +03 2024: SB_mod_1st
 Thu Jun 13 23:43:01 +03 2024: OMP: Warning #182: OMP_PROC_BIND: ignored because KMP_AFFINITY has been defined
 Thu Jun 13 23:43:01 +03 2024: OMP: Info #268: OMP_NESTED variable deprecated, please use OMP_MAX_ACTIVE_LEVELS instead.
 Thu Jun 13 23:43:01 +03 2024: OMP: Warning #182: OMP_PLACES: ignored because KMP_AFFINITY has been defined
+Thu Jun 13 23:45:11 +03 2024: ncpus : 48
+Thu Jun 13 23:45:11 +03 2024: # THREADS : 16
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:before velocity_query_model
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_query_model__________________________
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:wave_init_numerics. point1
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:initialize 2nd order scheme coefs
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... setting nb_snap = Nyquist sampling: 25
+Thu Jun 13 23:45:11 +03 2024: 
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]: s->rcv_len, 2601
+Thu Jun 13 23:45:11 +03 2024: 
+Thu Jun 13 23:45:11 +03 2024: data/acquisition.txt
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model__________________________
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model_3d__________________________
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_generate_model__________________________
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... simwave information:
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... velocity size       = 512 x 512 x 512
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... velocity min/max    = 1500.000000 - 4500.000000
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... compute domain size = 512 x 512 x 512 (134.094238 MB)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... imaging domain size = 512 x 512 x 512 (128.000000 MB)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... cdp,line,depth      = 10 x 10 x 10
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dS                  = 10 x 10 x 10
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dtrp                = 1 x 1 x 1
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dt                  = 0.000805077
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... stencil size        = 9 x 9 x 9
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... pml damping         = 0 x 0 x 0
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... source depth        = 0
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefx               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefy               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... coefz               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... time steps          = 500
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... acquisition geometry:
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... number of receivers              = 2601
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... depth of the receivers           = 5
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... space between 2 receivers        = 10
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... number of shots                  = 2601
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:45:11 +03 2024: s->time_steps 500, nb_snap 25
+Thu Jun 13 23:45:11 +03 2024: Nb of snapshots in FWD: 21
+Thu Jun 13 23:45:11 +03 2024: MODE MEM
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Start of Shot (1301)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:tmp in shot_init=data/snap_1301.raw
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... dealing with shot number 1301 (source @ 142228).
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:OUTDIR (data)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SISMOS_BASE (sismos)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:tmp=data/sismos_1301.raw
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:before fd = fopen(tmp, "rb");
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:end of wave_read_sismos function
+Thu Jun 13 23:45:11 +03 2024: ... sismos min max 0.000000 0.000000
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 0 t=25
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 1 t=50
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 2 t=75
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 3 t=100
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 4 t=125
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 5 t=150
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 6 t=175
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 7 t=200
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 8 t=225
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 9 t=250
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 10 t=275
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 11 t=300
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 12 t=325
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 13 t=350
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 14 t=375
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 15 t=400
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 16 t=425
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 17 t=450
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 18 t=475
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... saving snapshot 19 t=500
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:forward timer (1301)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Total:        86.145779 (s)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SNAP:         0.779591 (s)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:PROP:         85.365624 (s)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:SISMOS:       0.000305 (s)
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:Speed:        779.015112 Mstencils/s
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:PropSpeed:    786.134519 Mstencils/s
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 19 t=500
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 18 t=475
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 17 t=450
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 16 t=425
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 15 t=400
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 14 t=375
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 13 t=350
+Thu Jun 13 23:45:11 +03 2024: [SIMWAVE MSG]:... reading snapshot 12 t=325
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 11 t=300
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 10 t=275
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 9 t=250
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 8 t=225
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 7 t=200
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 6 t=175
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 5 t=150
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 4 t=125
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 3 t=100
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 2 t=75
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 1 t=50
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:... reading snapshot 0 t=25
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:backward timer (1301)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:Total:        87.170667 (s)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:SNAP:         0.688459 (s)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:PROP:         85.297919 (s)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:SISMOS:       0.018633 (s)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:IMAGE COND:   1.165259 (s)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:Speed:        769.856033 Mstencils/s
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:PropSpeed:    786.758514 Mstencils/s
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:End of Shot (1301)
+Thu Jun 13 23:46:04 +03 2024: [SIMWAVE MSG]:RTM HALAS
+Thu Jun 13 23:46:04 +03 2024: !!TB with parameters!!
+Thu Jun 13 23:46:04 +03 2024: TB_mod_1st
+Thu Jun 13 23:46:05 +03 2024: OMP: Warning #182: OMP_PROC_BIND: ignored because KMP_AFFINITY has been defined
+Thu Jun 13 23:46:05 +03 2024: OMP: Info #268: OMP_NESTED variable deprecated, please use OMP_MAX_ACTIVE_LEVELS instead.
+Thu Jun 13 23:46:05 +03 2024: OMP: Warning #182: OMP_PLACES: ignored because KMP_AFFINITY has been defined
+Thu Jun 13 23:47:36 +03 2024: ncpus : 48
+Thu Jun 13 23:47:36 +03 2024: # THREADS : 16
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:before velocity_query_model
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_query_model__________________________
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:wave_init_numerics. point1
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:initialize 2nd order scheme coefs
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... setting nb_snap = Nyquist sampling: 25
+Thu Jun 13 23:47:36 +03 2024: 
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]: s->rcv_len, 2601
+Thu Jun 13 23:47:36 +03 2024: 
+Thu Jun 13 23:47:36 +03 2024: data/acquisition.txt
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model__________________________
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_load_model_3d__________________________
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:__________________________Inside function velocity_generate_model__________________________
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... simwave information:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... velocity size       = 512 x 512 x 512
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... velocity min/max    = 1500.000000 - 4500.000000
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... compute domain size = 512 x 512 x 512 (134.094238 MB)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... imaging domain size = 512 x 512 x 512 (128.000000 MB)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... cdp,line,depth      = 10 x 10 x 10
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dS                  = 10 x 10 x 10
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dtrp                = 1 x 1 x 1
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dt                  = 0.000805077
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... stencil size        = 9 x 9 x 9
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... pml damping         = 0 x 0 x 0
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... source depth        = 0
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefx               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefy               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... coefz               = -1.78571e-05 0.000253968 -0.002 0.016 -0.0284722 0.016 -0.002 0.000253968 -1.78571e-05
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... time steps          = 500
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... acquisition geometry:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... number of receivers              = 2601
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... depth of the receivers           = 5
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... space between 2 receivers        = 10
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... number of shots                  = 2601
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:47:36 +03 2024: allocation
+Thu Jun 13 23:47:36 +03 2024: all
+Thu Jun 13 23:47:36 +03 2024: tb_init
+Thu Jun 13 23:47:36 +03 2024: ncpus : 48
+Thu Jun 13 23:47:36 +03 2024: errno001 : Success
+Thu Jun 13 23:47:36 +03 2024: errno001 : Success
+Thu Jun 13 23:47:36 +03 2024: ntg 1, tgs 16
+Thu Jun 13 23:47:36 +03 2024: Threads binding (tid->OS tid): 0->0 1->1 2->2 3->3 4->4 5->5 6->6 7->7 8->8 9->9 10->10 11->11 12->12 13->13 14->14 15->15
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:INFO: Modified nt from 500 to 512 for the intra-diamond method
+Thu Jun 13 23:47:36 +03 2024: 
+Thu Jun 13 23:47:36 +03 2024: tb_info
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:wave temporal blocking info
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:thread group : (8,2,1)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:group size: 16 num_group : 1
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:temporal blocking
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:t_dim : 7, num_wf : 64, diam_width : 64
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:scheduling info
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:t_len : 63, y_len_l : 8, y_lenr : 9
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:grid info
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:stride       : (520,520,520)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:stencil grid : (512,512,512)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:halo : 4
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:mode info
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:MODE (2) : SEPARATE MODE
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: tb_timer
+Thu Jun 13 23:47:36 +03 2024: Nb of snapshots in FWD: 21
+Thu Jun 13 23:47:36 +03 2024: rcv_len 2601, time_steps 512
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:loop over the shots between 1301 and 1301
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Processing shot 1301 (BEGIN)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:tmp in shot_init=data/snap_1301.raw
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:... dealing with shot number 1301 (source @ 142228).
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:OUTDIR (data)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:SISMOS_BASE (sismos)
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:tmp=data/sismos_1301.raw
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:before fd = fopen(tmp, "rb");
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:end of wave_read_sismos function
+Thu Jun 13 23:47:36 +03 2024: ... sismos min max 0.000000 0.000000
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:FWD STEP 1301
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:-------------------------------------------
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Global info:
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:Total:        68.372293 (s) -100.00%
+Thu Jun 13 23:47:36 +03 2024: [SIMWAVE MSG]:mainloop:     67.152929 (s) -098.22%
+Thu Jun 13 23:47:38 +03 2024: [SIMWAVE MSG]:ptest_munich3_kw_rtm.sh: line 69: 41928 Segmentation fault      (core dumped) ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode --dshot 1 --first 1301 --last 1301 --fwd_steps 3 -c

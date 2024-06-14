@@ -45,8 +45,8 @@ make install
 #timesteps=500
 timesteps=2000
 #nb_snap=100
-#nx=512;ny=512;nz=512;
-nx=2048;ny=2048;nz=512;
+nx=512;ny=512;nz=512;
+#nx=2048;ny=2048;nz=512;
 ####*********** Directories ************###
 fld=./logs2
 mkdir $fld
