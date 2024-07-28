@@ -31,9 +31,7 @@
 #include <simwave/wave_tb.h>
 #include <simwave/wtime.h>
 #include <simwave/macros.h>
-void wave_tb_data_close_open(tb_data_t * data,
-                             const int nb_thread_groups,
-const int shotid) {
+void wave_tb_data_close_open(tb_data_t * data,const int nb_thread_groups,const int shotid) {
   char tmp[512];
   sprintf(tmp, "mkdir -p %s", OUTDIR);
   system(tmp);
@@ -687,7 +685,7 @@ void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
                     parser *p) {
     /// contains the fields pressure value at time step t.
-    float *u0;
+    float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.
     float* vx;
     /// contains the fields (particle velocity across y direction) value at time step t.
@@ -757,6 +755,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 
         /// reset buffers for the shot (forward).
         NULIFY_BUFFER(u0, s->size);
+        NULIFY_BUFFER(vx, s->size);
+        NULIFY_BUFFER(vy, s->size);
+        NULIFY_BUFFER(vz, s->size);
         if (ctx->mode == 1 || ctx->mode == 2) {
             NULIFY_BUFFER(fwd, s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
             fwd_io = NULL;
@@ -786,10 +787,13 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
         wave_tb_forward_1st(ctx, data, timer, u0, vx,vy,vz, vel);
 
         wave_tb_data_unset_src(data);
-
+        MSG("before wave_tb_timer_info");
+        MSG("hallo!");
+        MSG("ctx->nb_stencils_total_fwd=%f ",ctx->nb_stencils_total_fwd);
+        MSG("ctx->nb_stencils_main=%f",ctx->nb_stencils_main);
         wave_tb_timer_info(timer, ctx->nb_stencils_total_fwd, ctx->nb_stencils_main);
 
-//wave_tb_data_close_open(data,ctx->num_thread_groups,shot->id);
+        wave_tb_data_close_open(data,ctx->num_thread_groups,shot->id);
 
         /////////
         // BWD //
@@ -801,6 +805,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 
         /// reset buffers for the shot (backward).
         NULIFY_BUFFER(u0, s->size);
+        NULIFY_BUFFER(vx, s->size);
+        NULIFY_BUFFER(vy, s->size);
+        NULIFY_BUFFER(vz, s->size);
         NULIFY_BUFFER(pml_tmp, s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
@@ -838,6 +845,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     /// free the simulation buffers.
     DELETE_BUFFER(fwd);
     DELETE_BUFFER(u0);
+    DELETE_BUFFER(vx);
+    DELETE_BUFFER(vy);
+    DELETE_BUFFER(vz);
     DELETE_BUFFER(img_shot);
     DELETE_BUFFER(ilm_shot);
     DELETE_BUFFER(sismos);

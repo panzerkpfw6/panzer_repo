@@ -34,12 +34,9 @@
 
 #define U0(z, y, x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define DAMPX(z, y, x)   (s->dampx[(x+s->sx) + (2*s->sx + s->dimx) * \
-                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define DAMPY(z, y, x)   (s->dampy[(x+s->sx) + (2*s->sx + s->dimx) * \
-                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define DAMPZ(z, y, x)   (s->dampz[(x+s->sx) + (2*s->sx + s->dimx) * \
-                    ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
+#define DAMPX(z, y, x)   (s->dampx[(x)])
+#define DAMPY(z, y, x)   (s->dampy[(y)])
+#define DAMPZ(z, y, x)   (s->dampz[(z)])
 #define VX(z, y, x)   (vx[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define VY(z, y, x)   (vy[(x+s->sx) + (2*s->sx + s->dimx) * \
@@ -266,17 +263,6 @@ void wave_init_acquisition(sismap_t *s) {
     /// initialize shots geometry:
     int a = 0;
     s->rcv_len = 0;
-    /// don't put receivers on the PML region.
-//    MSG(" s->dim2, %d\n", s->dim2);
-//    MSG(" s->pmly, %d\n", s->pmly);
-//    MSG(" s->drcv, %d\n", s->drcv);
-//    MSG(" s->dtrpy, %d\n", s->dtrpy);
-//    MSG(" s->pmlx, %d\n", s->pmlx);
-//    MSG(" s->dtrpx, %d\n", s->dtrpx);
-//    MSG(" s->rcv_len, %d\n", s->rcv_len);
-//    MSG(" s->dimy, %d\n", s->dimy);
-//    MSG(" s->pmly, %d\n", s->pmly);
-
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
         a++;
@@ -519,25 +505,23 @@ void wave_update_fields_1st(sismap_t *s,
                         float *u0, float *vx,float *vy,float *vz,
                         float *roc2, float *phi, float *eta) {
     unsigned int z, y, x;
-    float laplacian;
-// v loop
-#pragma omp parallel for private(laplacian, z, y, x)
-    for (z = 0; z < s->dimz; z++) {
-        for (y = 0; y < s->dimy; y++) {
-            for (x = 0; x < s->dimx; x++)   {
-                WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index();
+
+    #pragma omp parallel for private(z, y, x)
+        for (z = 0; z < s->dimz; z++) {     // v loop
+            for (y = 0; y < s->dimy; y++) {
+                for (x = 0; x < s->dimx; x++)   {
+                    WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index();
+                }
             }
         }
-    }
-// p loop
-#pragma omp parallel for private(laplacian, z, y, x)
-    for (z = 0; z < s->dimz; z++) {
-        for (y = 0; y < s->dimy; y++) {
-            for (x = 0; x < s->dimx; x++) {
-                WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p_index();
+    //#pragma omp parallel for private(z, y, x)
+        for (z = 0; z < s->dimz; z++) {    // p loop
+            for (y = 0; y < s->dimy; y++) {
+                for (x = 0; x < s->dimx; x++) {
+                    WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p_index();
+                }
             }
         }
-    }
 }
 void wave_update_fields_block(sismap_t *s,
                               float *u0, float *u1,

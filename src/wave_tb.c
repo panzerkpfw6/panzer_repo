@@ -2944,18 +2944,19 @@ void wave_tb_forward(tb_t* ctx,
                      float * restrict u0,
                      float * restrict v0,
                      const float * restrict roc2) {
-
     double t1,t2,t3,t4;
-
     if (data->src_depth !=-1) {
     u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
     }
 
     t1 = wtime();
+//    MSG("before dynamic_intra_diamond_prologue");
     dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
     t2 = wtime();
+//    MSG("before dynamic_intra_diamond_mainloop");
     dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
     t3 = wtime();
+//    MSG("before dynamic_intra_diamond_epilogue");
     dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
     t4 = wtime();
 
@@ -2978,10 +2979,13 @@ void wave_tb_forward_1st(tb_t* ctx,
     }
 
     t1 = wtime();
+    MSG("before dynamic_intra_diamond_prologue_1st");
     dynamic_intra_diamond_prologue_1st(ctx, data, timer,u0,vx,vy,vz, roc2);
     t2 = wtime();
+    MSG("before dynamic_intra_diamond_mainloop_1st");
     dynamic_intra_diamond_mainloop_1st(ctx, data, timer, u0,vx,vy,vz,roc2);
     t3 = wtime();
+    MSG("before dynamic_intra_diamond_epilogue_1st");
     dynamic_intra_diamond_epilogue_1st(ctx, data, timer, u0,vx,vy,vz,roc2);
     t4 = wtime();
 
@@ -3025,8 +3029,10 @@ void wave_tb_backward_1st(tb_t* ctx,
     double t1,t2,t3,t4;
 
     t1 = wtime();
+    MSG("before dynamic_intra_diamond_prologue_full_1st");
     dynamic_intra_diamond_prologue_full_1st(ctx, data, timer, u0, vx,vy,vz, roc2);
     t2 = wtime();
+    MSG("before dynamic_intra_diamond_mainloop_1st");
     dynamic_intra_diamond_mainloop_1st(ctx, data, timer, u0,vx,vy,vz,roc2);
     t3 = wtime();
 //  dynamic_intra_diamond_epilogue(ctx, data, u0, v0, roc2);
