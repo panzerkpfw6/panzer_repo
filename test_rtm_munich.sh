@@ -15,7 +15,6 @@
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** HORODATED LOG WRITING *********###
-#exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
@@ -45,9 +44,9 @@ make install
 timesteps=500
 #timesteps=2000
 #nb_snap=100
-#nx=512;ny=512;nz=512;
+nx=512;ny=512;nz=512;
 #nx=1024;ny=1024;nz=512;
-nx=2048;ny=2048;nz=512;
+#nx=2048;ny=2048;nz=512;
 ####*********** Directories ************###
 fld=./logs2
 mkdir $fld
@@ -68,5 +67,5 @@ num_wf=64
 echo "TB_mod_1st"
 srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
 
-#echo "TB_mod_2nd"
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c --order 2
+
+

@@ -514,7 +514,7 @@ void wave_update_fields_1st(sismap_t *s,
                 }
             }
         }
-    //#pragma omp parallel for private(z, y, x)
+    #pragma omp parallel for private(z, y, x)
         for (z = 0; z < s->dimz; z++) {    // p loop
             for (y = 0; y < s->dimy; y++) {
                 for (x = 0; x < s->dimx; x++) {

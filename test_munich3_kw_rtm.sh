@@ -43,19 +43,19 @@ make install
 #exit 300
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
-timesteps=500
+timesteps=100
 #nb_snap=100
 nx=512;ny=512;nz=512;
-nx=1024;ny=1024;nz=512;
+#nx=1024;ny=1024;nz=512;
 #nx=2048;ny=2048;nz=512;
 ####*********** Directories ************###
 fld=./logs2
 mkdir $fld
 rm $fld/*
 #####*********** SB tests ************###
-echo "SB_mod_1st"
-./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301
-#exit 300
+#echo "SB_mod_1st"
+#./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301
+##exit 300
 #####*********** TB tests ************########***********
 echo !!TB with parameters!!
 mode=2
