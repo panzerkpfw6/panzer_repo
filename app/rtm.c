@@ -382,7 +382,10 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
 
         /// reset buffers for the shot (forward).
         s->snap_idx = 0;
-        NULIFY_BUFFER(u0, s->size);
+        NULIFY_BUFFER(u0,s->size);
+        NULIFY_BUFFER(vx,s->size);
+        NULIFY_BUFFER(vy,s->size);
+        NULIFY_BUFFER(vz,s->size);
         NULIFY_BUFFER(pml_tmp, s->size_eff);
         /// forward modeling.
 
@@ -444,7 +447,10 @@ void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
 
         /// reset buffers for the shot (backward).
         s->snap_idx = s->snap_idx-1;
-        NULIFY_BUFFER(u0,       s->size);
+        NULIFY_BUFFER(u0,s->size);
+        NULIFY_BUFFER(vx,s->size);
+        NULIFY_BUFFER(vy,s->size);
+        NULIFY_BUFFER(vz,s->size);
         NULIFY_BUFFER(pml_tmp,  s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
