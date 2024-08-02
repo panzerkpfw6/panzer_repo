@@ -43,9 +43,9 @@ make install
 #timesteps=2000
 timesteps=500
 #nb_snap=100
-export size1=2048
+#export size1=2048
+export size1=512
 export size2=512
-#export size=256
 #####*********** SB tests ************###
 echo !!SB!!
 #numactl --interleave=all ./bin/rtm --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
