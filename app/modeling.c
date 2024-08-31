@@ -187,6 +187,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     /// PML temporary tab.
     float *pml_tmp;
     MSG("... !SB MODE! ...");
+    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
     CREATE_BUFFER_ONLY(u0, s->size);
     array_openmp_init(u0,s);
     CREATE_BUFFER_ONLY(vx, s->size);
