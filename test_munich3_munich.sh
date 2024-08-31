@@ -15,7 +15,7 @@
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** HORODATED LOG WRITING *********###
-#exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
+#exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm_512.log) 2>&1
 exec > >(while read line; do echo "$(date): $line"; done | tee log-modelling.log) 2>&1
 echo $hostname
 #lscpu

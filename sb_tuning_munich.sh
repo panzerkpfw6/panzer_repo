@@ -14,12 +14,6 @@
 nt=504
 mode=2
 cluster_name="Milan"
-## in the code only BLOCKY,BLOCKZ are used. set up cache blocking.
-BLOCKY=(1 2 4 8 16 32)
-th_y_arr=(1 2)
-th_z_arr=(1 2)
-num_wf_arr=(2 4 8 12 16 20 24 32 64)
-tdim_arr=(3 5 7 15) # suits for 512 domain size
 ########### Grid sizes search space
 nx_arr=(  512  1024  2048  2048 )
 ny_arr=(  512  1024  2048  2048 )
@@ -59,7 +53,6 @@ mkdir ./logs/sb_param_search
 export logs_path=./logs/sb_param_search/$SLURM_JOB_PARTITION
 mkdir $logs_path
 exec > >(while read line; do echo "$(date): $line"; done | tee ./logs/tb_search_$SLURM_JOB_PARTITION.log) 2>&1
-
 ###*********** RUNNING SIMWAVE ************###
 # iterate on parameters values
 len=${#nx_arr[@]}
@@ -71,11 +64,14 @@ for i in $(seq 0 $len); do
   grid_str="${nx}_${ny}_${nz}"
   for num_th in "${num_th_arr[@]}"; do
     export OMP_NUM_THREADS=$num_th
+    ## in the code only BLOCKY,BLOCKZ are used. set up cache blocking.
     for x in 1 `seq 2 2 64 `;do
         for y in 1 `seq 2 2 64 `;do
           echo $x,$y;
-          sed -i "s/define BLOCKY [[:digit:]]\+[ ]*;/define BLOCKY $x;/g" ./include/simwave/wave.h;
-          sed -i "s/define BLOCKZ [[:digit:]]\+[ ]*;/define BLOCKZ $y;/g" ./include/simwave/wave.h;
+#          sed -i "s/define BLOCKY [[:digit:]]\+[ ]*;/define BLOCKY $x;/g" ./include/simwave/wave.h;
+#          sed -i "s/define BLOCKZ [[:digit:]]\+[ ]*;/define BLOCKZ $y;/g" ./include/simwave/wave.h;
+          sed -i "s/.*#define BLOCKZ [[:digit:]].*/#define BLOCKZ $x;/g" ./include/simwave/wave.h;
+          sed -i "s/.*#define BLOCKY [[:digit:]].*/#define BLOCKY $x;/g" ./include/simwave/wave.h;
 
           echo "compilation"
           mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
