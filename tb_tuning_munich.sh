@@ -4,21 +4,22 @@
 #SBATCH --mail-user=pavel.plotnitskii@kaust.edu.sa
 #SBATCH --nodes=1
 #SBATCH --nodelist=gbt04
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 #SBATCH --partition=7773X  # Milan-X 128
-#SBATCH --job-name=tb_search
-#SBATCH --output=./logs/tb_search.%J.out
-#SBATCH --error=./logs/tb_search.%J.err
+#SBATCH --job-name=tb_search2
+#SBATCH --output=./logs/tb_search2.%J.out
+#SBATCH --error=./logs/tb_search2.%J.err
 #SBATCH --hint=nomultithread
 ########################################
-export TIME_TB_1st=505
-export TIME_SB_1st=504
-nt=500
+nt=505
 mode=2
 cluster_name="Milan"
+#th_x_arr=(1 2 4 8 16 32)
+#th_y_arr=(1 2)
+#th_z_arr=(1 2)
 th_x_arr=(1 2 4 8 16 32)
-th_y_arr=(1 2)
-th_z_arr=(1 2)
+th_y_arr=(1 2 4 8 16 32)
+th_z_arr=(1 2 4 8 16 32)
 num_wf_arr=(2 4 8 12 16 20 24 32 64)
 tdim_arr=(3 5 7 15) # suits for 512 domain size
 ########### Grid sizes search space
@@ -30,6 +31,7 @@ nz_arr=(  512  512   512   1024 )
 #nz_arr=(   512 )
 ###########
 module load icc/2020.2.254
+module load cmake
 
 if [ "$SLURM_JOB_PARTITION" = "7763" ]; then
     num_th_arr=(1 32 64 96 128)
@@ -51,31 +53,20 @@ lscpu
 export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
-module load icc/2020.2.254
 
 module list
 ### COMPILE SB
-echo "Compiling SB binaries"
-cd ../SB; icpc -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_1st.out
-cd ../SB_abc; icpc -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_1st-abc.out
-cd ../SB_order2; icpc -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_2nd.out
-cd ../SB_order2_abc; icpc -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_2nd-abc.out
-### COMPILE TB
-echo "Compiling TB binaries"
-echo "TB"
-cd ../TB; icpc -qopenmp -march=core-avx2 -mtune=core-avx2 -O3 -I. test_TB_kernel.cpp -o ../TB_1st.out
-echo "TB_abc"
-cd ../TB_abc; icpc -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_TB_kernel.cpp -o ../TB_1st-abc.out
-echo "TB_order2"
-cd ../TB_order2; icpc -qopenmp -march=core-avx2 -mtune=core-avx2 -O3 -I. test_TB_kernel.cpp -o ../TB_2nd.out
-echo "TB_order2_abc"
-cd ../TB_order2_abc; icpc -qopenmp -march=core-avx2 -mtune=core-avx2 -O3 -I. test_TB_kernel.cpp -o ../TB_2nd-abc.out
-cd ..
+echo "compilation"
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
 
 ###******** HORODATED LOG WRITING *********###
 mkdir ./logs
-mkdir ./logs/tb_param_search
-export logs_path=./logs/tb_param_search/$SLURM_JOB_PARTITION
+mkdir ./logs/tb_param_search2
+export logs_path=./logs/tb_param_search2/$SLURM_JOB_PARTITION
 mkdir $logs_path
 exec > >(while read line; do echo "$(date): $line"; done | tee ./logs/tb_search_$SLURM_JOB_PARTITION.log) 2>&1
 
