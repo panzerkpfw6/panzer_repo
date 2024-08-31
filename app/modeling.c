@@ -28,6 +28,7 @@
 #include <simwave/parser.h>
 #include <simwave/simwave.h>
 #include <simwave/wave_tb.h>
+#include <simwave/wave.h>
 #include <simwave/wtime.h>
 #include <simwave/macros.h>
 //#include <nccl.h>
