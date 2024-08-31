@@ -74,7 +74,7 @@ void shot_init(shot_t *shot, bool cpu, bool modeling) {
         shot->fd_ilm = fopen(tmp, "wb");
         CHK(shot->fd_ilm == NULL, "ilm file impossible to open, aborting");
     }
-    MSG("... dealing with shot number %u (source @ %u).", shot->id, shot->srcidx);
+    MSG("... dealing with shot number %u (source @ %u).", shot->id,shot->srcidx);
 }
 
 void shot_release(shot_t *shot) {

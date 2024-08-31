@@ -29,6 +29,7 @@
 #include <simwave/sismap.h>
 #include <simwave/shot.h>
 
+/// in the code only BLOCKY,BLOCKZ are used
 #define BLOCKX 128
 #define BLOCKY 4
 #define BLOCKZ 16

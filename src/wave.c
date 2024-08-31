@@ -280,7 +280,6 @@ void wave_init_acquisition(sismap_t *s) {
     printf("%s\n", tmp);
     CHK(fd == NULL, "failed to open rcv file");
 
-
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
