@@ -70,8 +70,8 @@ for i in $(seq 0 $len); do
           echo $x,$y;
 #          sed -i "s/define BLOCKY [[:digit:]]\+[ ]*;/define BLOCKY $x;/g" ./include/simwave/wave.h;
 #          sed -i "s/define BLOCKZ [[:digit:]]\+[ ]*;/define BLOCKZ $y;/g" ./include/simwave/wave.h;
-          sed -i "s/.*#define BLOCKZ [[:digit:]].*/#define BLOCKZ $x/g" ./include/simwave/wave.h;
-          sed -i "s/.*#define BLOCKY [[:digit:]].*/#define BLOCKY $x/g" ./include/simwave/wave.h;
+          sed -i "s/.*#define BLOCKZ [[:digit:]].*/#define BLOCKZ $x;/g" ./include/simwave/wave.h;
+          sed -i "s/.*#define BLOCKY [[:digit:]].*/#define BLOCKY $x;/g" ./include/simwave/wave.h;
 
           echo "compilation"
           mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved

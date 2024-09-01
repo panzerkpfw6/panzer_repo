@@ -32,7 +32,7 @@
 #include <simwave/pml.h>
 #include <omp.h>
 
-#define U0(z, y, x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
+#define U0(z,y,x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define DAMPX(z, y, x)   (s->dampx[(x)])
 #define DAMPY(z, y, x)   (s->dampy[(y)])
@@ -43,17 +43,17 @@
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define VZ(z, y, x)   (vz[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define U1(z, y, x)   (u1[(x+s->sx) + (2*s->sx + s->dimx) * \
+#define U1(z,y,x)   (u1[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define FWD(z, y, x)  (fwd[(x+s->sx) + (2*s->sx + s->dimx) * \
+#define FWD(z,y,x)  (fwd[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
-#define ROC2(z, y, x) (roc2[x + (s->dimx * (s->dimy*(z) + y))])
-#define  PHI(z, y, x) ( phi[x + (s->dimx * (s->dimy*(z) + y))])
-#define  ETA(z, y, x) ( eta[(2+s->dimx)*((2+s->dimy)*(z+1) + (y+1)) + (x+1)])
+#define ROC2(z,y,x) (roc2[x + (s->dimx * (s->dimy*(z) + y))])
+#define  PHI(z,y,x) ( phi[x + (s->dimx * (s->dimy*(z) + y))])
+#define  ETA(z,y,x) ( eta[(2+s->dimx)*((2+s->dimy)*(z+1) + (y+1)) + (x+1)])
 
-#define IMG_S(z, y, x)  (img_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
-#define ILM_S(z, y, x)  (ilm_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
-#define   IMG(z, y, x)  (img[x + (s->img_dimx * (s->img_dimy*(z) + y))])
+#define IMG_S(z,y,x)  (img_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
+#define ILM_S(z,y,x)  (ilm_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
+#define   IMG(z,y,x)  (img[x + (s->img_dimx * (s->img_dimy*(z) + y))])
 
 #define NDAMP 20
 
@@ -84,22 +84,21 @@ t[1] /= pow(delta,2);                  \
 t[2] /= pow(delta,2);                  \
 t[3] /= pow(delta,2);
 
-void array_openmp_init(float *u, sismap_t *s) {
-    const int nnx = s->dimx + 2 * s->sx;
-    const int nny = s->dimy + 2 * s->sy;
-    const int nnxy = nnx * nny;
-    float *restrict
-    ux;
-#pragma omp parallel for collapse(2) private(ux)
+void array_openmp_init(float* u, sismap_t *s) {
+    const int nnx = s->dimx + 2* s->sx;
+    const int nny = s->dimy + 2* s->sy;
+    const int nnxy = nnx*nny;
+    float * restrict ux;
+    #pragma omp parallel for collapse(2) private(ux)
     for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
         for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-            int zmax = zmin + BLOCKZ;
+            int zmax = zmin+BLOCKZ;
             if (zmax > s->dimz) zmax = s->dimz;
-            int ymax = ymin + BLOCKY;
+            int ymax = ymin+BLOCKY;
             if (ymax > s->dimy) ymax = s->dimy;
-            for (int z = zmin; z < zmax; z++) {
-                for (int y = ymin; y < ymax; y++) {
-                    ux = &(u[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
+            for(int z = zmin; z < zmax; z++) {
+                for(int y = ymin; y < ymax; y++) {
+                    ux = &(u[1ULL* (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
 //          #pragma simd
                     for (int x = 0; x < s->dimx; x++) {
                         ux[x] = 0.;
@@ -114,8 +113,7 @@ void array_openmp_inner_init(float *u, sismap_t *s) {
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnxy = nnx * nny;
-    float *restrict
-    ux;
+    float * restrict ux;
 #pragma omp parallel for collapse(2) private(ux)
     for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
         for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
@@ -263,6 +261,7 @@ void wave_init_acquisition(sismap_t *s) {
     /// initialize shots geometry:
     int a = 0;
     s->rcv_len = 0;
+
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
         a++;
@@ -570,12 +569,10 @@ void wave_update_fields_block_bis(sismap_t *s,
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnxy = nnx * nny;
-    float *restrict
-    ux;
-    float *restrict
-    vx;
-    float *restrict
-    rx;
+
+    float *restrict ux;
+    float *restrict vx;
+    float *restrict rx;
 #pragma omp parallel for collapse(2) private(laplacian, zmin, zmax, ymin, ymax, ux, vx, rx)
     for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
@@ -583,7 +580,6 @@ void wave_update_fields_block_bis(sismap_t *s,
             if (zmax > s->dimz) zmax = s->dimz;
             ymax = ymin + BLOCKY;
             if (ymax > s->dimy) ymax = s->dimy;
-
             for (int z = zmin; z < zmax; z++) {
                 for (int y = ymin; y < ymax; y++) {
                     ux = &(u1[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
