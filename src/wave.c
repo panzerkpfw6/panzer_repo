@@ -274,18 +274,18 @@ void wave_init_acquisition(sismap_t *s) {
     s->rcv = (unsigned int *) malloc(s->rcv_len * sizeof(unsigned int));
     unsigned int ir = 0;
     char tmp[512];
-    sprintf(tmp, "%s/acquisition.txt", OUTDIR);
+    sprintf(tmp,"%s/acquisition.txt", OUTDIR);
     FILE *fd = fopen(tmp, "w");
     printf("%s\n", tmp);
     CHK(fd == NULL, "failed to open rcv file");
 
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
+//        MSG("y=%d\n",y);
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
              x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
-//            MSG("x=%d,y=%d\n",x,y);
             s->rcv[ir++] = (s->sx + x) * (s->dimy + 2 * s->sy) + (y + s->sy);
-            fprintf(fd, "rec %3d in [%3d, %3d, %3d]\n", ir, x, y, s->rcv_depth);
+            fprintf(fd,"rec %3d in [%3d, %3d, %3d]\n", ir, x, y, s->rcv_depth);
         }
         fprintf(fd, "\n");
     }
@@ -306,7 +306,7 @@ void wave_init_acquisition(sismap_t *s) {
     for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
         s->shots[idx]->srcidx = s->rcv[ir] + s->drcv / 2;
 //    MSG("s->shots[idx]->srcidx=ir=, %d, %d, %d\n",s->shots[idx]->srcidx,ir);
-        s->shots[idx]->id = idx;
+        s->shots[idx]->id=idx;
         idx++;
     }
 }
@@ -735,15 +735,12 @@ void wave_update_fields_block_tri(sismap_t *s,
 }
 
 void wave_update_source(sismap_t *s, shot_t *shot, float *u0, float sterm) {
-    u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy) +
-       shot->srcidx] += sterm;
+    u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx] += sterm;
 }
 
-void wave_extract_sismos(sismap_t *s, float *u1,
-                         unsigned int t, float *sismos) {
+void wave_extract_sismos(sismap_t *s, float *u1, unsigned int t, float *sismos) {
     for (unsigned int ir = 0; ir < s->rcv_len; ir++) {
-        sismos[s->rcv_len * t + ir] =
-                u1[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy) + s->rcv[ir]];
+        sismos[s->rcv_len * t + ir] = u1[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy)+s->rcv[ir]];
     }
 }
 
