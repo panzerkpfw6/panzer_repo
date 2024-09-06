@@ -350,6 +350,47 @@ void velocity_load_model_3d(sismap_t *s, float *vtab) {
 #endif //__DUMP_VEL
 }
 
+void velocity_const_model2(sismap_t *s, float *vtab, unsigned int layers) {
+    MSG("__________________________Inside function velocity_constant_model__________________________");
+    unsigned int x, y, z, i;
+    for (z=0; z < s->dimz; z++) {
+        for (y = 0; y < s->dimy; y++) {
+            for (x = 0; x < s->dimx; x++) {
+                vtab[1ULL * s->dimx * (s->dimy * z + y) + x] = 1500;
+            }
+        }
+    }
+
+#ifdef __DUMP_VEL
+    char tmp[512];
+    sprintf(tmp, "mkdir -p %s", OUTDIR);
+    CHK(system(tmp), "failed to create output directory for snapshots");
+    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
+    FILE *fd = fopen(tmp, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd) != 1,
+        "failed to write the velocity file");
+    fclose(fd);
+#endif //__DUMP_VEL
+
+    for (z = 0; z < s->dimz; z++)
+        for (y = 0; y < s->dimy; y++)
+            for (x = 0; x < s->dimx; x++)
+                vtab[s->dimx * (s->dimy * z + y) + x] =
+                        pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x], 2);
+
+//    printf("__DUMP_VEL=%s",__DUMP_VEL);
+//#ifdef __DUMP_VEL
+//    char tmp[512];
+//    sprintf(tmp, "mkdir -p %s", OUTDIR);
+//    CHK(system(tmp), "failed to create output directory for snapshots");
+//    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
+//    FILE *fd = fopen(tmp, "wb");
+//    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd) != 1,
+//        "failed to write the velocity file");
+//    fclose(fd);
+//#endif //__DUMP_VEL
+}
+
 void velocity_load_model(sismap_t *s, float *vtab) {
     MSG("__________________________Inside function velocity_load_model__________________________");
     if (s->dim2) velocity_load_model_2d(s, vtab);

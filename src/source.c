@@ -30,57 +30,89 @@
 #define SOURCE_BASE "src"
 //#define __DUMP_SOURCE
 
-void source_ricker_wavelet(sismap_t *s, float* source) {
-  char tmp[256];
-  #ifdef __DUMP_SOURCE
-  sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
-  FILE *fd = fopen(tmp, "w");
-  #endif // __DUMP_SOURCE
+void source_ricker_wavelet(sismap_t *s, float *source) {
+    // 2nd order ricker wavelet
+    char tmp[256];
+#ifdef __DUMP_SOURCE
+    sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
+    FILE *fd = fopen(tmp,"w");
+#endif // __DUMP_SOURCE
 
-  #ifdef __USE_SIGMA
-  int it;
-  float sigma, tau, t, scale;
-  sigma = 0.6*s->fmax;
-  tau   = 1.0;
-  scale = 8.0;
-  for(it=0; it < s->time_steps; ++it) {
-    t = s->dt*(float)(it);
-    source[it] =
-      -2.0*scale*sigma*
-      (sigma-2.0*sigma*scale*(sigma*t-tau)*(sigma*t-tau))*
-    exp(-scale*(sigma*t-tau)*(sigma*t-tau));
-    #ifdef __DUMP_SOURCE
-    fprintf(fd, "%d %f\n", it, source[it]);
-    #endif // __DUMP_SOURCE
-  }
-  #else
-  int it;
-  float t1, t0;
-  float PI = 4.0f * atan(1.0f);
-  t0=1.0/s->fmax;
+#ifdef __USE_SIGMA
+    int it;
+    float sigma, tau, t, scale;
+    sigma = 0.6*s->fmax;
+    tau   = 1.0;
+    scale = 8.0;
+    for(it=0; it < s->time_steps; ++it) {
+      t = s->dt*(float)(it);
+      source[it] =
+        -2.0*scale*sigma*
+        (sigma-2.0*sigma*scale*(sigma*t-tau)*(sigma*t-tau))*
+      exp(-scale*(sigma*t-tau)*(sigma*t-tau));
+#ifdef __DUMP_SOURCE
+      fprintf(fd, "%d %f\n", it, source[it]);
+#endif // __DUMP_SOURCE
+    }
+#else
+    int it;
+    float t1, t0;
+    float PI = 4.0f * atan(1.0f);
+    t0 = 1.0 / s->fmax;
 
-  for (it=0; it<s->time_steps; it++) {
-    t1=it*s->dt;
-    source[it] = exp(-PI*PI*s->fmax*s->fmax*(t1-t0)*(t1-t0))*
-            (1.0-2.*PI*PI*s->fmax*s->fmax*(t1-t0)*(t1-t0));
-    #ifdef __DUMP_SOURCE
-    fprintf(fd, "%d %f\n", it, source[it]);
-    #endif // __DUMP_SOURCE
-  }
-  #endif // __USE_SIGMA
-  #ifdef __DUMP_SOURCE
-  fclose(fd);
-  sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
-  fd = fopen(tmp, "wb");
-  ERR_IF(fd == NULL, "failed to open the source file for dumping");
-  CHK(fwrite(source, sizeof(float),
-             s->time_steps, fd) != s->time_steps,
-             "failed to write in source file");
-  fclose(fd);
-  #endif // __DUMP_SOURCE
+    for (it = 0; it < s->time_steps; it++) {
+        t1 = it * s->dt;
+        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
+                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0));
+#ifdef __DUMP_SOURCE
+        fprintf(fd, "%d %f\n", it, source[it]);
+#endif // __DUMP_SOURCE
+    }
+#endif // __USE_SIGMA
+#ifdef __DUMP_SOURCE
+    fclose(fd);
+    sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
+    fd = fopen(tmp, "wb");
+    ERR_IF(fd == NULL, "failed to open the source file for dumping");
+    CHK(fwrite(source, sizeof(float),
+               s->time_steps, fd) != s->time_steps,
+               "failed to write in source file");
+    fclose(fd);
+#endif // __DUMP_SOURCE
 }
 
+void source_ricker_wavelet_1st(sismap_t *s, float *source) {
+    // 1st order ricker wavelet
+    char tmp[256];
+#ifdef __DUMP_SOURCE
+    sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
+    FILE *fd = fopen(tmp,"w");
+#endif // __DUMP_SOURCE
+    int  it;
+    float t1,t0;
+    float PI = 4.0f * atan(1.0f);
+    t0 = 1.0 / s->fmax;
 
+    for (it = 0; it < s->time_steps; it++) {
+        t1 = it * s->dt;
+        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
+                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0));
+#ifdef __DUMP_SOURCE
+        fprintf(fd, "%d %f\n", it, source[it]);
+#endif // __DUMP_SOURCE
+    }
+
+#ifdef __DUMP_SOURCE
+    fclose(fd);
+    sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
+    fd = fopen(tmp, "wb");
+    ERR_IF(fd == NULL, "failed to open the source file for dumping");
+    CHK(fwrite(source, sizeof(float),
+               s->time_steps, fd) != s->time_steps,
+               "failed to write in source file");
+    fclose(fd);
+#endif // __DUMP_SOURCE
+}
 
 
   // if (Freq == 0.0) Freq = 30.0;
