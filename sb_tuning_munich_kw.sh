@@ -22,18 +22,14 @@ x_arr=(   512 )
 ny_arr=(   512 )
 nz_arr=(   512 )
 ###########
-module load icc/2020.2.254
-module load cmake
+export OMP_NUM_THREADS=16
+export OMP_PROC_BIND=true
+export OMP_PLACES=threads
+export OMP_NESTED='True'
 
-if [ "$SLURM_JOB_PARTITION" = "7763" ]; then
-    num_th_arr=(1 32 64 96 128)
-#    num_th_arr=(128)
-elif [ "$SLURM_JOB_PARTITION" = "7773X" ]; then
-#    num_th_arr=(1 32 64 96 128)
-    num_th_arr=(128)
-else
-    exit 1
-fi
+module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load cmake
+num_th_arr=(48)
 
 echo $HOSTNAME
 echo $SLURM_JOB_PARTITION
@@ -45,7 +41,6 @@ lscpu
 export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
-module load icc/2020.2.254
 module list
 ###******** HORODATED LOG WRITING *********###
 mkdir ./logs
@@ -65,8 +60,10 @@ for i in $(seq 0 $len); do
   for num_th in "${num_th_arr[@]}"; do
     export OMP_NUM_THREADS=$num_th
     ## in the code only BLOCKY,BLOCKZ are used. set up cache blocking.
-    for x in 1 `seq 2 2 64 `;do
-        for y in 1 `seq 2 2 64 `;do
+#    for x in 1 `seq 2 2 64 `;do
+#            for y in 1 `seq 2 2 64 `;do
+    for x in 1 `seq 62 2 64 `;do
+        for y in 1 `seq 62 2 64 `;do
           echo $x,$y;
 #          sed -i "s/define BLOCKY [[:digit:]]\+[ ]*;/define BLOCKY $x;/g" ./include/simwave/wave.h;
 #          sed -i "s/define BLOCKZ [[:digit:]]\+[ ]*;/define BLOCKZ $y;/g" ./include/simwave/wave.h;
@@ -81,7 +78,7 @@ for i in $(seq 0 $len); do
           make install
 
           echo "${logs_path}/log-SB_1st_${x}_${y}.log"
-          srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode $mode  --dshot 1 --first 1301 --last 1301 >> "${logs_path}/log-SB_1st_${x}_${y}.log"
+          ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode $mode  --dshot 1 --first 1301 --last 1301 >> "${logs_path}/log-SB_1st_${x}_${y}.log"
         done
     done
   done
