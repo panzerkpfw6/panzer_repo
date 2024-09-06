@@ -47,25 +47,27 @@ endif (simwave_debug)
 ##   CUDA_LIBRARIES_DIR : contains the CUDA runtime libraries
 #find_package (CUDA REQUIRED)
 
-## set the compilation flags. 
-if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
-  include(${CMAKE_MODULE_PATH}/cray_c.cmake)
-#elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "GNU")
-#  include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
-elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "Intel")
-  include(${CMAKE_MODULE_PATH}/intel_c.cmake)
-elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "PGI")
-  include(${CMAKE_MODULE_PATH}/pgi_c.cmake)
-elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
- 	include(${CMAKE_MODULE_PATH}/msvc_c.cmake)
-endif ("${CMAKE_C_COMPILER_ID}"  MATCHES "Cray")
-
-
 ## add CUDA arch options.
 #include(${CMAKE_MODULE_PATH}/cuda_arch_options.cmake)
 #if (simwave_debug)
 #  set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -D__DEBUG")
 #endif (simwave_debug)
+
+### set the compilation flags.
+#if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
+#    include(${CMAKE_MODULE_PATH}/cray_c.cmake)
+#    #elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "GNU")
+#    #  include(${CMAKE_MODULE_PATH}/gnu_c.cmake)
+#elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "Intel")
+#    include(${CMAKE_MODULE_PATH}/intel_c.cmake)
+#elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "PGI")
+#    include(${CMAKE_MODULE_PATH}/pgi_c.cmake)
+#elseif ("${CMAKE_C_COMPILER_ID}" MATCHES "MSVC")
+#    include(${CMAKE_MODULE_PATH}/msvc_c.cmake)
+#endif ("${CMAKE_C_COMPILER_ID}"  MATCHES "Cray")
+
+### set the compilation flags.
+add_compile_options(-qopenmp -march=core-avx2 -mtune=core-avx2)
 
 ## add OpenMP.
 find_package(OpenMP)

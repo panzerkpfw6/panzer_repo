@@ -77,18 +77,6 @@ install/strip/fast: preinstall/fast
 	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
 # Special rule for the target install/local
 install/local: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
@@ -101,6 +89,18 @@ install/local/fast: preinstall/fast
 	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local/fast
 
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
 # Special rule for the target list_install_components
 list_install_components:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
@@ -109,16 +109,6 @@ list_install_components:
 # Special rule for the target list_install_components
 list_install_components/fast: list_install_components
 .PHONY : list_install_components/fast
-
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-.PHONY : edit_cache/fast
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
@@ -129,6 +119,16 @@ rebuild_cache:
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/sw/workstations/apps/linux-ubuntu18.04-ivybridge/cmake/3.21.4/intel-20.0.4/vuy5v7it5f5hqrqa65ibf6uttrx2d3oj/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+.PHONY : edit_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -175,19 +175,6 @@ simwave/fast:
 .PHONY : simwave/fast
 
 #=============================================================================
-# Target rules for targets named gather
-
-# Build rule for target.
-gather: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gather
-.PHONY : gather
-
-# fast build rule for target.
-gather/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
-.PHONY : gather/fast
-
-#=============================================================================
 # Target rules for targets named modeling
 
 # Build rule for target.
@@ -199,19 +186,6 @@ modeling: cmake_check_build_system
 modeling/fast:
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
 .PHONY : modeling/fast
-
-#=============================================================================
-# Target rules for targets named simwave_apps
-
-# Build rule for target.
-simwave_apps: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simwave_apps
-.PHONY : simwave_apps
-
-# fast build rule for target.
-simwave_apps/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/simwave_apps.dir/build.make app/CMakeFiles/simwave_apps.dir/build
-.PHONY : simwave_apps/fast
 
 #=============================================================================
 # Target rules for targets named modeling-snap_end
@@ -227,17 +201,17 @@ modeling-snap_end/fast:
 .PHONY : modeling-snap_end/fast
 
 #=============================================================================
-# Target rules for targets named modeling-snap_tb
+# Target rules for targets named gather
 
 # Build rule for target.
-modeling-snap_tb: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_tb
-.PHONY : modeling-snap_tb
+gather: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gather
+.PHONY : gather
 
 # fast build rule for target.
-modeling-snap_tb/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/build
-.PHONY : modeling-snap_tb/fast
+gather/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
+.PHONY : gather/fast
 
 #=============================================================================
 # Target rules for targets named rtm
@@ -253,17 +227,30 @@ rtm/fast:
 .PHONY : rtm/fast
 
 #=============================================================================
-# Target rules for targets named modeling_original
+# Target rules for targets named modeling-snap_tb
 
 # Build rule for target.
-modeling_original: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling_original
-.PHONY : modeling_original
+modeling-snap_tb: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_tb
+.PHONY : modeling-snap_tb
 
 # fast build rule for target.
-modeling_original/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling_original.dir/build.make app/CMakeFiles/modeling_original.dir/build
-.PHONY : modeling_original/fast
+modeling-snap_tb/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/build
+.PHONY : modeling-snap_tb/fast
+
+#=============================================================================
+# Target rules for targets named simwave_apps
+
+# Build rule for target.
+simwave_apps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simwave_apps
+.PHONY : simwave_apps
+
+# fast build rule for target.
+simwave_apps/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/simwave_apps.dir/build.make app/CMakeFiles/simwave_apps.dir/build
+.PHONY : simwave_apps/fast
 
 # Help Target
 help:
@@ -282,7 +269,6 @@ help:
 	@echo "... modeling"
 	@echo "... modeling-snap_end"
 	@echo "... modeling-snap_tb"
-	@echo "... modeling_original"
 	@echo "... rtm"
 	@echo "... simwave"
 .PHONY : help
