@@ -58,7 +58,9 @@ void source_ricker_wavelet(sismap_t *s, float *source) {
     int it;
     float t1, t0;
     float PI = 4.0f * atan(1.0f);
+//    float PI=3.1415926535897 ;
     t0 = 1.0 / s->fmax;
+    MSG("s->fmax=%s\n",s->fmax);
 
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;

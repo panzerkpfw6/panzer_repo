@@ -271,8 +271,11 @@ void wave_init_acquisition(sismap_t *s) {
         }
     }
     MSG(" s->rcv_len, %d\n", s->rcv_len);
+    MSG("number of receivers in y direction, %d\n",a);
     s->rcv = (unsigned int *) malloc(s->rcv_len * sizeof(unsigned int));
-    unsigned int ir = 0;
+    int ir = -1;
+
+    /// record acquisition file.
     char tmp[512];
     sprintf(tmp,"%s/acquisition.txt", OUTDIR);
     FILE *fd = fopen(tmp, "w");
@@ -281,15 +284,22 @@ void wave_init_acquisition(sismap_t *s) {
 
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
-//        MSG("y=%d\n",y);
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
              x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
-            s->rcv[ir++] = (s->sx + x) * (s->dimy + 2 * s->sy) + (y + s->sy);
-            fprintf(fd,"rec %3d in [%3d, %3d, %3d]\n", ir, x, y, s->rcv_depth);
+            s->rcv[ir++] = (s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);
+//            fprintf(fd,"rec %3d in [%3d, %3d, %3d]\n", ir, x, y, s->rcv_depth);
+            fprintf(fd,"rec %3d in [%3d, %3d, %3d] at %3d\n",ir,x,y,s->rcv_depth,(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx));
         }
         fprintf(fd, "\n");
     }
     fclose(fd);
+
+    /// record shots file.
+    char tmp2[512];
+    sprintf(tmp2,"%s/shots.txt", OUTDIR);
+    FILE *fd2 = fopen(tmp2, "w");
+    printf("%s\n", tmp2);
+    CHK(fd2 == NULL, "failed to open shots file");
 
     /// setup shots geometries.
     s->snap_idx = 0;
@@ -305,10 +315,12 @@ void wave_init_acquisition(sismap_t *s) {
     unsigned int idx = 0;
     for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
         s->shots[idx]->srcidx = s->rcv[ir] + s->drcv / 2;
-//    MSG("s->shots[idx]->srcidx=ir=, %d, %d, %d\n",s->shots[idx]->srcidx,ir);
+//      MSG("s->shots[idx]->srcidx=ir=, %d, %d, %d\n",s->shots[idx]->srcidx,ir);
         s->shots[idx]->id=idx;
+        fprintf(fd2,"shot ir=%3d,srcidx=%3d,id=%3d,s->drcv/2=%d\n",ir,s->shots[idx]->srcidx,s->shots[idx]->id,s->drcv/2);
         idx++;
     }
+    fclose(fd2);
 }
 
 void wave_release(sismap_t *s) {
@@ -735,6 +747,7 @@ void wave_update_fields_block_tri(sismap_t *s,
 }
 
 void wave_update_source(sismap_t *s, shot_t *shot, float *u0, float sterm) {
+//    MSG("shot->srcidx=%d\n",shot->srcidx);
     u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx] += sterm;
 }
 
@@ -866,9 +879,9 @@ void wave_save_sismos(sismap_t *s, shot_t *shot, float *sismos) {
       fprintf(fd, "%d", t);
       for (unsigned int r = 0; r < s->rcv_len; r++) {
         fprintf(fd, " %f", sismos[t*s->rcv_len+r]);
-        MSG("t=: %d,... s=: %d\n",t,sismos[t*s->rcv_len+r]);
+//        MSG("t=: %d,... s=: %d\n",t,sismos[t*s->rcv_len+r]);
       }
-      fprintf(fd, "\n");
+      fprintf(fd,"\n");
     }
     fclose(fd);
 #endif // __DEBUG

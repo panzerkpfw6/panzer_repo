@@ -50,7 +50,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
   MSG("... !SB MODE! ...");
   CREATE_BUFFER_ONLY(u0, s->size);
   CREATE_BUFFER_ONLY(u1, s->size);
-  MSG("s->size=%d",s->size);
+//  MSG("s->size=%d",s->size);
   array_openmp_init(u0,s);
   array_openmp_init(u1,s);
 
@@ -90,7 +90,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
     t_sismos = 0.0;
 
     t0 = wtime();
-    MSG("... !before wave_extract_sismos! (s, u0, 0, sismos); ...");
+//    MSG("... !before wave_extract_sismos! (s, u0, 0, sismos); ...");
     wave_extract_sismos(s, u0, 0, sismos);
     t_sismos += wtime() - t0;
     #ifdef __DEBUG
@@ -98,28 +98,28 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
 //    wave_save_snapshot(s, shot, u0, 0%s->nb_snap==0);
     #endif // __DEBUG
     for(int t = 0; t <= s->time_steps-1; ++t) {
-        MSG("t=%d",t);
-        int snap_freq = 504;
-        if ((t+1) % snap_freq == 0) {
+//        MSG("t=%d",t);
+        int snap_freq = s->time_steps;
+        if ((t+1) == snap_freq) {   //((t+1) % snap_freq == 0)
             MSG("SNAPSHOT CUSTOM");
             FILE *snap_fd;
-            char *snap_fd_name = (char*)malloc(20*sizeof(char));
+            char *snap_fd_name=(char*)malloc(20*sizeof(char));
 
-            sprintf(snap_fd_name, "snapshot_%u", t+1);
-            snap_fd = fopen(snap_fd_name, "wb+");
+            sprintf(snap_fd_name,"snapshot_%u",t+1);
+            snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
-            CHK(fwrite(u1, sizeof(float), s->size, snap_fd) != s->size,
+            CHK(fwrite(u1,sizeof(float), s->size, snap_fd) != s->size,
                 "failed to write custom snapshot");
             CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
             if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
             free(snap_fd_name);
         }
-        MSG("... !before wave_update_source! ...");
-        wave_update_source(s, shot, u0, source[t]);
+//        MSG("... !before wave_update_source! ...");
+        wave_update_source(s,shot,u0,source[t]);
 
         t0 = wtime();
-        MSG("... !before wave_update_fields_block_bis! ...");
+//        MSG("... !before wave_update_fields_block_bis! ...");
         wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
         t_prop += wtime() - t0;
 
@@ -129,10 +129,10 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
         #endif // __DEBUG
 
         t0 = wtime();
-        wave_extract_sismos(s, u1, t+1, sismos);
+        wave_extract_sismos(s,u1, t+1, sismos);
         t_sismos += wtime() - t0;
 
-        WAVE_SWAP_POINTERS(u0, u1);
+        WAVE_SWAP_POINTERS(u0,u1);
     }
 #endif
 //    /////////////////////////////////
@@ -642,9 +642,9 @@ int main(int argc, char* argv[]) {
 ////        run_modeling_gpu(s, vel, source, pml_tab);
     }
     /// free the simulation buffers.
-    MSG(" s->sx, %d\n", s->sx);
-    MSG(" s->sy, %d\n", s->sy);
-    MSG(" s->sz, %d\n", s->sz);
+//    MSG(" s->sx, %d\n", s->sx);
+//    MSG(" s->sy, %d\n", s->sy);
+//    MSG(" s->sz, %d\n", s->sz);
     DELETE_BUFFER(vel);
     DELETE_BUFFER(source);
     DELETE_BUFFER(pml_tab);
