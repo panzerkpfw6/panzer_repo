@@ -371,24 +371,36 @@ void velocity_const_model2(sismap_t *s, float *vtab, unsigned int layers) {
         "failed to write the velocity file");
     fclose(fd);
 #endif //__DUMP_VEL
+    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
 
-    for (z = 0; z < s->dimz; z++)
-        for (y = 0; y < s->dimy; y++)
-            for (x = 0; x < s->dimx; x++)
-                vtab[s->dimx * (s->dimy * z + y) + x] =
-                        pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x], 2);
-
+    if (s->order==1) {
+        MSG("order=1,vtab\n");
+        for (z = 0; z < s->dimz; z++)
+            for (y = 0; y < s->dimy; y++)
+                for (x = 0; x < s->dimx; x++)
+                    vtab[s->dimx * (s->dimy * z + y) + x]=
+                            s->dt*pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+    }else
+    {
+        MSG("order=2,vtab\n");
+        for (z = 0; z < s->dimz; z++)
+            for (y = 0; y < s->dimy; y++)
+                for (x = 0; x < s->dimx; x++)
+                    vtab[s->dimx * (s->dimy * z + y) + x]=
+                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+    }
 //    printf("__DUMP_VEL=%s",__DUMP_VEL);
-//#ifdef __DUMP_VEL
-//    char tmp[512];
-//    sprintf(tmp, "mkdir -p %s", OUTDIR);
-//    CHK(system(tmp), "failed to create output directory for snapshots");
-//    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
-//    FILE *fd = fopen(tmp, "wb");
-//    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd) != 1,
-//        "failed to write the velocity file");
-//    fclose(fd);
-//#endif //__DUMP_VEL
+#ifdef __DUMP_VEL
+    MSG("... augmented_vel2 ...");
+    char tmp2[512];
+    sprintf(tmp2, "mkdir -p %s", OUTDIR);
+    CHK(system(tmp2), "failed to create output directory for snapshots");
+    sprintf(tmp2, "%s/augmented_vel2.raw", OUTDIR);
+    FILE *fd2 = fopen(tmp2, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd2) != 1,
+        "failed to write the velocity file");
+    fclose(fd2);
+#endif //__DUMP_VEL
 }
 
 void velocity_load_model(sismap_t *s, float *vtab) {

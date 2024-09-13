@@ -256,11 +256,11 @@ parser_put(p, INT,                                                      \
            0, "src_depth", "0", "source depth");                        \
 parser_put(p, INT,                                                      \
            0, "rcv_depth", "5", "receivers depth");                     \
-parser_put(p, INT,                                                      \
+parser_put(p, FLOAT,                                                      \
            0, "dx", "10", "space delta step");                          \
-parser_put(p, INT,                                                      \
+parser_put(p, FLOAT,                                                      \
            0, "dy", "10", "space delta step");                          \
-parser_put(p, INT,                                                      \
+parser_put(p, FLOAT,                                                      \
            0, "dz", "10", "space delta step");                          \
 parser_put(p, INT,                                                      \
            'i', "iter", "1000", "simulation time step number");         \

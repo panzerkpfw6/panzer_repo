@@ -28,7 +28,7 @@
 #include <errno.h>
 
 #define SOURCE_BASE "src"
-//#define __DUMP_SOURCE
+#define __DUMP_SOURCE
 
 void source_ricker_wavelet(sismap_t *s, float *source) {
     // 2nd order ricker wavelet
@@ -98,7 +98,7 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
         source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
-                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0));
+                    (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
         fprintf(fd, "%d %f\n", it, source[it]);
 #endif // __DUMP_SOURCE
@@ -116,6 +116,41 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
 #endif // __DUMP_SOURCE
 }
 
+void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
+    // 1st order ricker wavelet
+    char tmp[256];
+#ifdef __DUMP_SOURCE
+    sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
+    FILE *fd = fopen(tmp,"w");
+#endif // __DUMP_SOURCE
+    int  it;
+    float t1,t0,deltaT,deltaT2,deltaT3;
+    float PI = 4.0f * atan(1.0f);
+    t0 = 1.0 / s->fmax;
+    float a  = PI*s->fmax;
+    float a2 = a  * a;
+    float a4 = a2 * a2;
+    for (it = 0; it < s->time_steps; it++) {
+        t1 = it * s->dt;
+        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT3=deltaT2 * deltaT;
+        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
+#ifdef __DUMP_SOURCE
+        fprintf(fd, "%d %f\n", it, source[it]);
+#endif // __DUMP_SOURCE
+    }
+
+#ifdef __DUMP_SOURCE
+    fclose(fd);
+    sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
+    fd = fopen(tmp, "wb");
+    ERR_IF(fd == NULL, "failed to open the source file for dumping");
+    CHK(fwrite(source, sizeof(float),
+               s->time_steps, fd) != s->time_steps,
+        "failed to write in source file");
+    fclose(fd);
+#endif // __DUMP_SOURCE
+}
 
   // if (Freq == 0.0) Freq = 30.0;
   // if (dt == 0.0) dt = 0.004;

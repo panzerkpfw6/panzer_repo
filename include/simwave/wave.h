@@ -31,8 +31,8 @@
 
 /// in the code only BLOCKY,BLOCKZ are used
 #define BLOCKX 128
-#define BLOCKY 62
-#define BLOCKZ 62
+#define BLOCKY 4
+#define BLOCKZ 16
 
 void array_openmp_init(float* u,sismap_t*s);
 void array_openmp_inner_init(float* u,sismap_t*s);
@@ -71,13 +71,6 @@ void wave_update_fields_block_bis(sismap_t *s,
                                   float* restrict phi,
                                   float* restrict eta);
 
-
-void wave_update_fields_block_tri(sismap_t *s,
-                                  float* restrict u0,
-                                  float* restrict u1,
-                                  float* restrict roc2,
-                                  float* restrict phi,
-                                  float* restrict eta);
 
 /// @brief Adds an impulse to the grid point situated at the
 /// source location

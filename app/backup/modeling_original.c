@@ -353,9 +353,9 @@ int main(int argc, char* argv[]) {
   s->vel_dimx   = parser_get_int(p, "n1");
   s->vel_dimy   = parser_get_int(p, "n2");
   s->vel_dimz   = parser_get_int(p, "n3");
-  s->dx         = parser_get_int(p, "dx");
-  s->dy         = parser_get_int(p, "dy");
-  s->dz         = parser_get_int(p, "dz");
+  s->dx         = parser_get_float(p, "dx");
+  s->dy         = parser_get_float(p, "dy");
+  s->dz         = parser_get_float(p, "dz");
   s->dcdp       = parser_get_int(p, "dcdp");
   s->dline      = parser_get_int(p, "dline");
   s->ddepth     = parser_get_int(p, "ddepth");
