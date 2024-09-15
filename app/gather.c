@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
   }
   /// browse the shot images/illuminations:
   struct dirent *de;
-	DIR *dr = opendir(dir);
+  DIR *dr = opendir(dir);
   CHK(dr == NULL, "failed to open img directory");
 
   char ilm_only_file[128];

@@ -26,7 +26,9 @@
 #include <simwave/shot.h>
 
 void shot_init(shot_t *shot, bool cpu, bool modeling) {
+    MSG("OUTDIR=%s",OUTDIR);
     char tmp[512];
+    MSG("breakpoint 0");
     sprintf(tmp, "mkdir -p %s", OUTDIR);
     system(tmp);
     sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SNAP_BASE, shot->id);

@@ -236,14 +236,14 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
         /// forward modeling.
         wave_tb_timer_clear(timer);
 
-//    wave_tb_data_set_src(data,s,shot->srcidx,source);
-//    wave_tb_data_set_rcv(data,s,sismos);
+        wave_tb_data_set_src(data,s,shot->srcidx,source);
+        wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_data_info(data);
 
         wave_tb_forward(ctx,data,timer,u0,u1,vel);
-
-        //   wave_tb_data_unset_src(data);
-        //   wave_tb_data_unset_rcv(data);
+        wave_tb_save_lastshot(s,shot,u0,u1,vel);
+        wave_tb_data_unset_src(data);
+        wave_tb_data_unset_rcv(data);
 
         wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
 
@@ -339,7 +339,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
                 FILE *snap_fd;
                 char *snap_fd_name = (char*)malloc(20*sizeof(char));
 
-                sprintf(snap_fd_name, "snapshot_SB1st_%u", t+1);
+                sprintf(snap_fd_name, "snapshot_SB1st_%u",t+1);
                 snap_fd = fopen(snap_fd_name, "wb+");
 
                 CHK(snap_fd == NULL, "failed to open custom snapshot file");
@@ -353,7 +353,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
             }
 
             wave_update_source(s,shot,u0,source[t]);
-            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
+//            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
 
             t0=wtime();
 
@@ -442,6 +442,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
     tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
 
     wave_tb_init(ctx,s,p);
+
 
     wave_tb_info(ctx);
     wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
@@ -613,16 +614,13 @@ int main(int argc, char* argv[]) {
     pml_compute_coefs(s, pml_tab);
 
     MSG("dx=%d,dy=%d,dz=%d,dt=%f\n",s->dx,s->dy,s->dz,s->dt);
-    MSG("coefx:0=%f,1=%f,2=%f,3=%f\n",s->coefx[0],s->coefx[1],s->coefx[2],s->coefx[3]);
-    MSG("coefy:0=%f,1=%f,2=%f,3=%f\n",s->coefy[0],s->coefy[1],s->coefy[2],s->coefy[3]);
-    MSG("coefz:0=%f,1=%f,2=%f,3=%f\n",s->coefz[0],s->coefz[1],s->coefz[2],s->coefz[3]);
 //    return EXIT_SUCCESS;
 
     /// generate the ricker source.
     if (s->order==1) {
         MSG("source 1st order");
-        source_ricker_wavelet(s, source);
-//        source_ricker_wavelet_1st(s, source);
+//        source_ricker_wavelet(s, source);
+        source_ricker_wavelet_1st(s, source);
 //        source_ricker_wavelet_2nd(s, source);
     } else {
         MSG("source 2nd order");

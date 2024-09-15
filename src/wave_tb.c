@@ -59,18 +59,18 @@ ux[i] = 2.0f * vx[i] - ux[i]                                                \
 #endif
 
 #define FUNC_BODY_1st_ord_Psweep()  {                            \
-ux[i] = ux[i] + rx[i] * (coefx[0] * (vx_x[i] + vx_x[i-1])   \
-                       + coefy[0] * (vy_x[i] + vy_x[i-nnx])   \
-                       + coefz[0] * (vz_x[i] + vz_x[i-nnxy])   \
-                       + coefx[1] * (vx_x[i+1]+vx_x[i-2])   \
-                       + coefy[1] * (vy_x[i+1*nnx]+vy_x[i-2*nnx])   \
-                       + coefz[1] * (vz_x[i+1*nnxy]+vz_x[i-2*nnxy])   \
-                       + coefx[2] * (vx_x[i+2]+  vx_x[i-3])   \
-                       + coefy[2] * (vy_x[i+2*nnx] + vy_x[i-3*nnx])   \
-                       + coefz[2] * (vz_x[i+2*nnxy] + vz_x[i-3*nnxy])   \
-                       + coefx[3] * (vx_x[i+3]+  vx_x[i-4])   \
-                       + coefy[3] * (vy_x[i+3*nnx] +vy_x[i-4*nnx])   \
-                       + coefz[3] * (vz_x[i+3*nnxy] +vz_x[i-4*nnxy])); \
+ux[i] = ux[i] + rx[i] * (coefx[0]/data->dx * (vx_x[i] - vx_x[i-1])   \
+                       + coefy[0]/data->dy * (vy_x[i] - vy_x[i-nnx])   \
+                       + coefz[0]/data->dz * (vz_x[i] - vz_x[i-nnxy])   \
+                       + coefx[1]/data->dx * (vx_x[i+1]-vx_x[i-2])   \
+                       + coefy[1]/data->dy * (vy_x[i+1*nnx]-vy_x[i-2*nnx])   \
+                       + coefz[1]/data->dz * (vz_x[i+1*nnxy]-vz_x[i-2*nnxy])   \
+                       + coefx[2]/data->dx * (vx_x[i+2]-  vx_x[i-3])   \
+                       + coefy[2]/data->dy * (vy_x[i+2*nnx] - vy_x[i-3*nnx])   \
+                       + coefz[2]/data->dz * (vz_x[i+2*nnxy] - vz_x[i-3*nnxy])   \
+                       + coefx[3]/data->dx * (vx_x[i+3]-  vx_x[i-4])   \
+                       + coefy[3]/data->dy * (vy_x[i+3*nnx] -vy_x[i-4*nnx])   \
+                       + coefz[3]/data->dz * (vz_x[i+3*nnxy] -vz_x[i-4*nnxy])); \
 ux[i] = dampx[i] * ux[i];                          \
 ux[i] = dampy[j] * ux[i];                          \
 ux[i] = dampz[k] * ux[i];                           \
@@ -78,23 +78,23 @@ ux[i] = dampz[k] * ux[i];                           \
 
 #define FUNC_BODY_1st_ord_Vsweep() {     \
 vx_x[i] = vx_x[i] \
-      + rx[i] * (     coefx[0] * (ux[i+1] - ux[i])    \
+      + data->dt/data->dx * (     coefx[0] * (ux[i+1] - ux[i])    \
                     + coefy[1] * (ux[i+2] - ux[i-1])   \
                     + coefz[2] * (ux[i+3] - ux[i-2])   \
                     + coefz[3] * (ux[i+4] - ux[i-3]));  \
 vy_x[i] = vy_x[i] \
-      + rx[i] * (     coefx[0] * (ux[i+1*nnx] - ux[i])   \
+      + data->dt/data->dy * (     coefx[0] * (ux[i+1*nnx] - ux[i])   \
                    +  coefy[1] * (ux[i+2*nnx] - ux[i-1*nnx])   \
                    +  coefz[2] * (ux[i+3*nnx] - ux[i-2*nnx])   \
                    +  coefz[3] * (ux[i+4*nnx] - ux[i-3*nnx]));  \
 vz_x[i] = vz_x[i] \
-      + rx[i] * (    coefx[0] * (ux[i+1*nnxy] - ux[i])   \
+      + data->dt/data->dz * (    coefx[0] * (ux[i+1*nnxy] - ux[i])   \
                    + coefy[1] * (ux[i+2*nnxy] - ux[i-1*nnxy])   \
                    + coefz[2] * (ux[i+3*nnxy] - ux[i-2*nnxy])   \
                    + coefz[3] * (ux[i+4*nnxy] - ux[i-3*nnxy])); \
 }
 
-void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const int nnz,
+void kernel_spatial_blocking_separate_mode_1st(const int nnx, const int nny, const int nnz,
                                                const int xb,  int yb_r, const int* zb,
                                                const int xe,  int ye_r, const int* ze,
                                                const float * restrict coefx,
@@ -213,33 +213,6 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
                         for (int i = xb; i < xe; i++) {
                             FUNC_BODY_1st_ord_Vsweep();     // compute v from p
                             }
-                        if (data->flag_bwd == 1) {
-                            // add sismos
-                            if (k == data->rcv_depth) {
-                                for (unsigned int ir = 0; ir < data->rcv_len; ir++) {
-                                    if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
-                                        ux[data->ix[ir]] += data->sismos[data->rcv_len * (t0 - (t - tb)) + ir];
-                                    }
-                                }
-                            }
-                        }
-                        if (data->flag_fwd == 1) {
-                                // save sismos
-                                if (k == data->rcv_depth) {
-                                    for (unsigned int ir = 0; ir < data->rcv_len; ir++) {
-                                        if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
-                                            data->sismos[data->rcv_len * (t0 + (t - tb)) + ir] = ux[data->ix[ir]];
-                                        }
-                                    }
-                                }
-                                // add source
-                                if (k == data->src_depth) {
-                                    if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) &&
-                                        (data->src_x < xe)) {
-                                        ux[data->src_x] += data->source[t0 + (t - tb)];
-                                    }
-                                }
-                            }
                     }
                 }
             }
@@ -317,7 +290,7 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
                                 ux = &(u[1ULL * k * nnxy + j * nnx]);
                                 wx = &(data->fwd[1ULL * ifwd * nnxyz + 1ULL * k * nnxy + j * nnx]);
                                 for (int i = xb; i < xe; i++) {
-                                    wx[i] = ux[i];
+                                    wx[i]=ux[i];
                                 }
 
                                 if (k == data->src_depth) {
@@ -944,6 +917,293 @@ void kernel_tiling_blocking_fuse_mode(const int nnx, const int nny, const int nn
 }
 
 void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const int nnz,
+                                          const int xb, const int yb_r0, const int zb,
+                                          const int xe, const int ye_r0, const int ze,
+                                          const float * restrict coefx,
+                                          const float * restrict coefy,
+                                          const float * restrict coefz,
+                                          const float * restrict dampx,
+                                          const float * restrict dampy,
+                                          const float * restrict dampz,
+                                          float * restrict u,
+                                          float * restrict v,
+                                          const float * restrict roc2,
+                                          const int t_dim,
+                                          int b_inc,
+                                          int e_inc,
+                                          const int stencilr,
+                                          const int tb,
+                                          const int te,
+                                          const int num_wf,
+                                          const int thread_group_size,
+                                          const int threadx,
+                                          const int thready,
+                                          const int threadz,
+                                          const int groupid,
+                                          const int setsize,
+                                          cpu_set_t ** bind_masks,
+                                          tb_data_t* data,
+                                          const int t0,
+                                          const int ifwd,
+                                          tb_timer_t* timer) {
+
+#pragma omp parallel default(shared) firstprivate(u, v, b_inc, e_inc) \
+  num_threads(thread_group_size)
+    {
+        int tgs, nwf, th_nwf, zi, yb, ye, ib, ie, kt, t, k, j, i, q, r, err;
+
+        const int nnxy  = nnx * nny;
+        const int64_t nnxyz = 1ULL * nnx * nny * nnz;
+
+        int tid  = 0;
+        int gtid = 0;
+#if defined(_OPENMP)
+        tid = omp_get_thread_num();
+    gtid = tid + groupid * thread_group_size;
+#endif
+
+        err = sched_setaffinity(0, setsize, bind_masks[gtid]);
+        if(err == -1) printf("WARNING: Could not set CPU Affinity (%d %d %d)\n",groupid,tid,gtid);
+
+        float * restrict u_r = u;
+        float * restrict v_r = v;
+        float * restrict ux;
+        float * restrict vx;
+        const float * restrict rx;
+        float * restrict wx;
+        float * restrict imgx;
+        float * restrict ilmx;
+
+        int th_x = threadx;
+        int th_y = thready;
+        int th_z = threadz;
+
+        // tid = tid_z*(th_x*th_y) + tid_y*th_x + tid_x
+        int tid_x = tid % th_x;
+        int tid_y = tid / th_x;
+        int tid_z = tid / (th_x*th_y);
+
+        int yb_r = yb_r0;
+        int ye_r = ye_r0;
+
+        nwf = num_wf;
+
+        if(thready > 1){
+            if(b_inc != 0 && e_inc != 0){ // split only at full diamonds
+                if (tid_y % 2 == 0){ // left thread
+                    ye_r = (yb_r + ye_r)/2;
+                    e_inc = 0;
+                } else{
+                    yb_r = (yb_r + ye_r)/2;
+                    b_inc = 0;
+                }
+            }else{// use the y-threads along z-axis make sure to use sufficient number of frontlines
+                th_z *= th_y;
+                tid_z = tid/th_x;
+                if (nwf < th_z) nwf = th_z;
+            }
+        }
+
+        int nbx = (xe-xb)/th_x;
+        q = (int)((xe-xb)/th_x);
+        r = (xe-xb)%th_x;
+        if(tid_x < r) {
+            ib = xb + tid_x * (q+1);
+            ie = ib + (q+1);
+        } else {
+            ib = xb + r * (q+1) + (tid_x - r) * q;
+            ie = ib + q;
+        }
+        th_nwf = nwf/th_z;
+
+        float coef0 = coefx[0] + coefy[0] + coefz[0];
+        double t1;
+
+        int th_nz = (ze-zb)/th_z;
+
+        // Load wavefield and imaging condition
+        if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
+            yb = yb_r;
+            ye = ye_r;
+
+            kt = zb;
+            for(t = tb; t < te; t++){ // Diamond blocking in time
+                if(t % 2 == 0){ //swap pointers
+                    u = v_r; v = u_r; // U->V
+                } else{
+                    u = u_r; v = v_r; // V->U
+                }
+
+                if (t <= t_dim) {
+                    for(k = kt; k < kt+ze-zb; k ++) { // wavefront loop (Z direction)
+                        if( ((k-stencilr)/th_nz) % th_z == tid_z ) {
+                            for(j = yb; j < ye; j++) { // Y
+                                // left most and right most
+                                if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                    ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                    vx   = &(        v[1ULL*k*nnxy + j*nnx]);
+                                    wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                    imgx = &(data->img[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                    ilmx = &(data->ilm[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                    for (i = ib; i < ie; i++) {
+                                        imgx[i] += vx[i]*wx[i];
+                                        ilmx[i] += wx[i]*wx[i];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(t < t_dim) { // lower half of the diamond
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // upper half of the diamond
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+
+                kt -= stencilr;
+            }
+        }
+
+#pragma omp barrier
+
+        for(zi = zb; zi < ze; zi += nwf) { // wavefront loop (Z direction)
+
+            if(ze-zi < nwf) {
+                nwf = ze-zi;
+            }
+
+            yb = yb_r;
+            ye = ye_r;
+
+            kt = zi;
+            for(t = tb; t < te; t++){ // Diamond blocking in time
+                if(t % 2 == 0){ //swap pointers
+                    u = v_r; v = u_r; // U->V
+                } else{
+                    u = u_r; v = v_r; // V->U
+                }
+
+                for(j = yb; j < ye; j++) { // Y
+                    for(k = kt; k < kt + nwf; k++) { // Z
+                        if( ((k-stencilr)/th_nwf) % th_z == tid_z ) {
+
+                            // compute propagation
+                            ux = &(   u[1ULL*k*nnxy + j*nnx]);
+                            vx = &(   v[1ULL*k*nnxy + j*nnx]);
+                            rx = &(roc2[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+
+                            for (i = ib; i < ie; i++) {
+                                FUNC_BODY()
+                            }
+
+                            if (data->flag_bwd == 1) {
+                                // add sismos
+                                if (k == data->rcv_depth) {
+                                    for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                        if ((data->iy[ir] == j) && (data->ix[ir] >= ib) && (data->ix[ir] < ie)) {
+                                            ux[data->ix[ir]] += data->sismos[data->rcv_len*(t0-(t-tb))+ir];
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (data->flag_fwd == 1) {
+                                // save sismos
+                                if (k == data->rcv_depth) {
+                                    for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                        if ((data->iy[ir] == j) && (data->ix[ir] >= ib) && (data->ix[ir] < ie)) {
+                                            data->sismos[data->rcv_len*(t0+(t-tb))+ir] = ux[data->ix[ir]];
+                                        }
+                                    }
+                                }
+
+                                // add source
+                                if (k == data->src_depth) {
+                                    if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= ib) && (data->src_x < ie)) {
+                                        ux[data->src_x] += data->source[t0+(t-tb)];
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                // Update block size in Y
+                if(t < t_dim) { // lower half of the diamond
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // upper half of the diamond
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+
+                kt -= stencilr;
+
+                t1 = wtime();
+#pragma omp barrier
+                timer->t_wait[gtid] += wtime() - t1;
+
+            } // diamond blocking in time (time loop)
+        } // wavefront loop
+
+#pragma omp barrier
+
+        if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // save fwd wavefield
+            yb = yb_r;
+            ye = ye_r;
+
+            kt = zb;
+            for(t = tb; t < te; t++){ // Diamond blocking in time
+                if(t % 2 == 0){ //swap pointers
+                    u = v_r; v = u_r; // U->V
+                } else{
+                    u = u_r; v = v_r; // V->U
+                }
+
+                if (t >= t_dim) {
+                    for(k = kt; k < kt+ze-zb; k ++) { // wavefront loop (Z direction)
+                        if( ((k-stencilr)/th_nz) % th_z == tid_z ) {
+                            for(j = yb; j < ye; j++) { // Y
+                                // left most and right most
+                                if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                    ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                    ux = &(   u[1ULL*k*nnxy + j*nnx]);
+                                    wx = &(   data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                    for (i = ib; i < ie; i++) {
+                                        wx[i] = ux[i];
+                                    }
+
+                                    if (k == data->src_depth) {
+                                        if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= ib) && (data->src_x < ie)) {
+                                            wx[data->src_x] -= data->source[t0+(t-tb)];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(t < t_dim) { // lower half of the diamond
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // upper half of the diamond
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+
+                kt -= stencilr;
+            }
+        }
+    } // parallel region
+}
+
+
+void kernel_tiling_blocking_separate_mode_1st(const int nnx, const int nny, const int nnz,
                                               const int xb, const int yb_r0, const int zb,
                                               const int xe, const int ye_r0, const int ze,
                                               const float * restrict coefx,
@@ -993,6 +1253,9 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
         err = sched_setaffinity(0,setsize,bind_masks[gtid]);
         if(err == -1) printf("WARNING: Could not set CPU Affinity (%d %d %d)\n",groupid,tid,gtid);
 
+//        MSG('t0=%d',t0);
+//        printf("t0=%d\n",t0);
+
         float * restrict u_r = u;
         float * restrict vx_r = vx;
         float * restrict vy_r = vy;
@@ -1012,6 +1275,8 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
         int th_y = thready;
         int th_z = threadz;
 
+//        MSG("data->dt=%f\n",data->dt);
+//        MSG("data->dx=%f\n",data->dx);
         // tid = tid_z*(th_x*th_y) + tid_y*th_x + tid_x
         int tid_x = tid % th_x;
         int tid_y = tid / th_x;
@@ -1127,36 +1392,6 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
                                 for (i = ib; i < ie; i++) {
                                     FUNC_BODY_1st_ord_Vsweep();
                                 }
-
-                                if (data->flag_bwd == 1) {
-                                    // add sismos
-                                    if (k == data->rcv_depth) {
-                                        for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
-                                            if ((data->iy[ir] == j) && (data->ix[ir] >= ib) && (data->ix[ir] < ie)) {
-                                                ux[data->ix[ir]] += data->sismos[data->rcv_len*(t0-(t-tb))+ir];
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (data->flag_fwd == 1) {
-                                    // save sismos
-                                    if (k == data->rcv_depth) {
-                                        for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
-                                            if ((data->iy[ir] == j) && (data->ix[ir] >= ib) && (data->ix[ir] < ie)) {
-                                                data->sismos[data->rcv_len*(t0+(t-tb))+ir] = ux[data->ix[ir]];
-                                            }
-                                        }
-                                    }
-
-                                    // add source
-                                    if (k == data->src_depth) {
-                                        if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= ib) && (data->src_x < ie)) {
-                                            ux[data->src_x] += data->source[t0+(t-tb)];
-                                        }
-                                    }
-                                }
-
                             }
                         }
                     }
@@ -1205,7 +1440,6 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
                                         }
                                     }
                                 }
-
                             }
                         }
                     }
@@ -1274,6 +1508,219 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
             }
         }
     } // parallel region
+}
+
+
+void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const int nnz,
+                                           const int xb,  int yb_r, const int* zb,
+                                           const int xe,  int ye_r, const int* ze,
+                                           const float * restrict coefx,
+                                           const float * restrict coefy,
+                                           const float * restrict coefz,
+                                           const float * restrict dampx,
+                                           const float * restrict dampy,
+                                           const float * restrict dampz,
+                                           float * restrict u_r,
+                                           float * restrict v_r,
+                                           const float * restrict roc2,
+                                           const int t_dim,
+                                           int b_inc,
+                                           int e_inc,
+                                           const int stencilr,
+                                           const int tb,
+                                           const int te,
+                                           const int thread_group_size,
+                                           const int groupid,
+                                           const int setsize,
+                                           cpu_set_t ** bind_masks,
+                                           const tb_data_t* data,
+                                           const int t0,
+                                           const int ifwd,
+                                           tb_timer_t* timer) {
+    const int nnxy  = nnx * nny;
+    const int64_t nnxyz = 1ULL * nnx * nny * nnz;
+
+    float *restrict u;
+    float *restrict v;
+
+    float *restrict ux;
+    const float *restrict vx;
+    const float *restrict rx;
+    float *restrict wx;
+    float *restrict imgx;
+    float *restrict ilmx;
+
+    float coef0 = coefx[0] + coefy[0] + coefz[0];
+
+#pragma omp parallel default(shared) private(rx,vx,ux,wx,imgx,ilmx) num_threads(thread_group_size)
+    {
+        int tid  = 0;
+        int gtid = 0;
+#if defined(_OPENMP)
+        tid = omp_get_thread_num();
+    gtid = tid + groupid * thread_group_size;
+#endif
+        int err = sched_setaffinity(0, setsize, bind_masks[gtid]);
+        if(err == -1) printf("WARNING: Could not set CPU Affinity (%d %d %d)\n",groupid,tid,gtid);
+
+        int yb,ye;
+
+        if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
+            yb = yb_r;
+            ye = ye_r;
+
+            for(int t = tb; t < te; t++) {
+                if(t % 2 == 1) {
+                    u = u_r; v = v_r;
+                } else {
+                    u = v_r; v = u_r;
+                }
+
+                if (t <= t_dim) {
+#pragma omp for schedule(static)
+                    for(int k = zb[t]; k < ze[t]; k++) {
+                        for(int j = yb; j < ye; j++) {
+                            // load fwd wavefield
+                            // left most and right most
+                            if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                vx   = &(        v[1ULL*k*nnxy + j*nnx]);
+                                wx   = &(data->fwd[1ULL*ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                imgx = &(data->img[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                ilmx = &(data->ilm[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+                                for (int i = xb; i < xe; i++) {
+                                    imgx[i] += vx[i]*wx[i];
+                                    ilmx[i] += wx[i]*wx[i];
+                                }
+                            }
+                        }
+                    }
+#pragma omp barrier
+                }
+
+                if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // trapezoid  (or upper half of the diamond)
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+            }
+        }
+
+#pragma omp barrier
+        yb = yb_r;
+        ye = ye_r;
+        for(int t = tb; t < te; t++) {
+
+            if(t % 2 == 1) {
+                u = u_r; v = v_r;
+            } else {
+                u = v_r; v = u_r;
+            }
+
+#pragma omp for schedule(static)
+            for(int k = zb[t]; k < ze[t]; k++) {
+                for(int j = yb;j < ye; j++) {
+
+                    // compute
+                    ux = &(   u[1ULL*k*nnxy + j*nnx]);
+                    vx = &(   v[1ULL*k*nnxy + j*nnx]);
+                    //          rx = &(roc2[1ULL*k*nnxy + j*nnx]);
+                    rx = &(roc2[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+
+                    for(int i = xb; i < xe; i++) {
+                        FUNC_BODY()
+                    }
+
+                    if (data->flag_bwd == 1) {
+                        // add sismos
+                        if (k == data->rcv_depth) {
+                            for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                    ux[data->ix[ir]] += data->sismos[data->rcv_len*(t0-(t-tb))+ir];
+                                }
+                            }
+                        }
+                    }
+
+                    if (data->flag_fwd == 1) {
+                        // save sismos
+                        if (k == data->rcv_depth) {
+                            for (unsigned int ir = 0; ir < data->rcv_len; ir ++) {
+                                if ((data->iy[ir] == j) && (data->ix[ir] >= xb) && (data->ix[ir] < xe)) {
+                                    data->sismos[data->rcv_len*(t0+(t-tb))+ir] = ux[data->ix[ir]];
+                                }
+                            }
+                        }
+
+                        // add source
+                        if (k == data->src_depth) {
+                            if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
+                                ux[data->src_x] += data->source[t0+(t-tb)];
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                yb -= b_inc;
+                ye += e_inc;
+            } else { // trapezoid  (or upper half of the diamond)
+                yb += b_inc;
+                ye -= e_inc;
+            }
+#pragma omp barrier
+        }
+
+        if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
+
+            yb = yb_r;
+            ye = ye_r;
+
+            for(int t = tb; t < te; t++) {
+
+                if(t % 2 == 1) {
+                    u = u_r; v = v_r;
+                } else {
+                    u = v_r; v = u_r;
+                }
+
+                if (t >= t_dim) {
+#pragma omp for schedule(static)
+                    for(int k = zb[t]; k < ze[t]; k++) {
+                        for(int j = yb; j < ye; j++) {
+                            // save fwd
+                            // left most and right most
+                            if (((b_inc != 0) && (yb <= j) && (j < yb + stencilr)) ||
+                                ((e_inc != 0) && (ye - stencilr <= j) && (j < ye))) {
+                                ux = &(   u[1ULL*k*nnxy + j*nnx]);
+                                wx = &(   data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+                                for (int i = xb; i < xe; i++) {
+                                    wx[i] = ux[i];
+                                }
+
+                                if (k == data->src_depth) {
+                                    if ((k == data->src_z) && (j == data->src_y) && (data->src_x >= xb) && (data->src_x < xe)) {
+                                        wx[data->src_x] -= data->source[t0+(t-tb)];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(t < t_dim) { // inverted trapezoid (or lower half of the diamond)
+                    yb -= b_inc;
+                    ye += e_inc;
+                } else { // trapezoid  (or upper half of the diamond)
+                    yb += b_inc;
+                    ye -= e_inc;
+                }
+#pragma omp barrier
+            }
+        }
+    } // openmp
 }
 
 
@@ -1660,8 +2107,8 @@ void wave_tb_init(tb_t* ctx,
   ctx->mode = s->mode;
   switch (ctx->mode) {
     case 2:
-    ctx->kernel_spatial_blocking_1st = kernel_spatial_blocking_separate_mode;
-    ctx->kernel_tiling_blocking_1st  = kernel_tiling_blocking_separate_mode;
+    ctx->kernel_spatial_blocking_1st = kernel_spatial_blocking_separate_mode_1st;
+    ctx->kernel_tiling_blocking_1st  = kernel_tiling_blocking_separate_mode_1st;
     ctx->kernel_spatial_blocking = kernel_spatial_blocking_separate_mode;
     ctx->kernel_tiling_blocking  = kernel_tiling_blocking_separate_mode;
     break;
@@ -1711,19 +2158,31 @@ void wave_tb_init(tb_t* ctx,
 
   // scheduling
   // round the number of time steps to the nearest valid number
-  int remain = (s->time_steps) % ((ctx->t_dim+1)*2);
+//  int nt_old=s->time_steps;
+//  s->time_steps=s->time_steps*2;
+//  int remain = (s->time_steps-2) % ((ctx->t_dim+1)*2);
+//  if(remain != 0){
+//    int nt2 = s->time_steps+(ctx->t_dim+1)*2 - remain;
+//    if(nt2 != s->time_steps){
+//      MSG("INFO: Modified nt from %03d to %03d for the intra-diamond method\n",nt_old,nt2/2);
+//      s->time_steps=nt2;
+//    }
+//  }
+
+  int remain=(s->time_steps) % ((ctx->t_dim+1)*2);
   if(remain != 0){
-    int nt2 = s->time_steps + (ctx->t_dim+1)*2 - remain;
+    int nt2 = s->time_steps + (ctx->t_dim+1)*2-remain;
     if(nt2 != s->time_steps){
-      MSG("INFO: Modified nt from %03d to %03d for the intra-diamond method\n", s->time_steps,nt2);
-      s->time_steps= nt2;
+        MSG("INFO: Modified nt from %03d to %03d for the intra-diamond method\n", s->time_steps,nt2);
+        s->time_steps= nt2;
     }
   }
 
   ctx->time_steps = s->time_steps;
-  ctx->t_len =  2*( (s->time_steps)/((ctx->t_dim+1)*2) ) - 1;
+  ctx->t_len =  2*( (s->time_steps-2)/((ctx->t_dim+1)*2) ) - 1;
   ctx->y_len_l = s->dimy / ctx->diam_width;
   ctx->y_len_r = ctx->y_len_l + 1;
+  MSG("velocity_const_model2\n");
 
   ctx->t_pos = calloc(ctx->y_len_r,sizeof(int));
   ctx->avail_list = calloc(ctx->y_len_r,sizeof(int));
@@ -1842,7 +2301,6 @@ void wave_tb_save_lastshot_1st(sismap_t* s,
                            unsigned int t) {
     MSG("inside wave_tb_save_lastshot");
     FILE * fd;
-
     fd = fopen("TB_lastshot_u0", "wb+");
     CHK(fd == NULL, "failed to open snapshot file");
     CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,
@@ -1883,6 +2341,10 @@ void wave_tb_data_init(tb_data_t * data,
                        const int nb_thread_groups,
                        const int shotid,
                        size_t groupsize) {
+  data->dx=s->dx;
+  data->dy=s->dy;
+  data->dz=s->dz;
+  data->dt=s->dt;
   data->ix = calloc(s->rcv_len, sizeof(int));
   data->iy = calloc(s->rcv_len, sizeof(int));
 
@@ -2027,7 +2489,7 @@ void wave_tb_data_info(tb_data_t* data) {
   MSG(" ");
   MSG("-------------------------------------------");
   MSG("wave data info");
-
+  MSG("src_depth : %d",data->src_depth);
   if (data->src_depth != -1) {
     MSG("-------------------------------------------");
     MSG("src_depth : %d",data->src_depth);

@@ -176,15 +176,16 @@ struct tb_s {
 };
 
 struct tb_data_s {
-
   float * roc2;
-
   const float* source;
   unsigned int src_idx;
   int src_depth;
   int src_x;
   int src_y;
   int src_z;
+
+  float dx,dy,dz;
+  float dt;
 
   float* sismos;
   int rcv_depth;

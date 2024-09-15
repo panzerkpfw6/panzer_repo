@@ -96,7 +96,7 @@ void memcpy_omp(float* u, float *v,sismap_t*s) {
 /// Reverse Time Migration on CPU.
 ///
 ///
-void run_rtm_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
+void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
   /// contains the fields pressure value at time step t.
   float* u0;
   /// contains the fields pressure value at time step t+1.
@@ -306,7 +306,7 @@ void run_rtm_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
   DELETE_BUFFER(pml_tmp);
 }
 /// 1st order rtm
-void run_rtm_1st_cpu (sismap_t *s, float* vel,  float *source, float *pml_tab) {
+void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
     /// contains the fields pressure value at time step t.
     float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.

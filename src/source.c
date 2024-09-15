@@ -106,7 +106,7 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
 
 #ifdef __DUMP_SOURCE
     fclose(fd);
-    sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
+    sprintf(tmp, "%s/first%s.raw", OUTDIR, SOURCE_BASE);
     fd = fopen(tmp, "wb");
     ERR_IF(fd == NULL, "failed to open the source file for dumping");
     CHK(fwrite(source, sizeof(float),
@@ -142,7 +142,7 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
 
 #ifdef __DUMP_SOURCE
     fclose(fd);
-    sprintf(tmp, "%s/%s.raw", OUTDIR, SOURCE_BASE);
+    sprintf(tmp, "%s/second%s.raw", OUTDIR, SOURCE_BASE);
     fd = fopen(tmp, "wb");
     ERR_IF(fd == NULL, "failed to open the source file for dumping");
     CHK(fwrite(source, sizeof(float),
