@@ -193,8 +193,8 @@ void wave_init_numerics(sismap_t *s) {
     for (i = 1; i < s->sz + 1; i++)
         s->courant_number += 2. * fabs(s->coefz[i]);
     s->courant_number = 2. / sqrt(s->courant_number);
-//    s->dt = s->cfl * s->courant_number / s->vmax;
-    s->dt =0.001;
+    s->dt = s->cfl * s->courant_number / s->vmax;
+//    s->dt =0.001;
     // check that nbsnap is < Nyquist limit:
     s->nyquist_sampling = floor(1.0 / (2.0 * s->fmax) / s->dt) + 1;
     if (s->nb_snap == -1) {
@@ -722,7 +722,7 @@ void wave_save_snapshot(sismap_t *s, shot_t *shot, float *u1, unsigned int t) {
     if (t % s->nb_snap == 0) {
         CHK(fwrite(u1, sizeof(float), s->size, shot->fd_snap) != s->size,
             "failed to write snapshot");
-        if (s->verbose) MSG("... saving snapshot %d t=%u", s->snap_idx, t);
+        if (s->verbose) MSG("... saving snapshot %d t=%u",s->snap_idx,t);
         s->snap_idx = s->snap_idx + 1;
     }
 }
@@ -792,14 +792,14 @@ void wave_image_condition_block(sismap_t *s, float *u1,
 
                 for (int z = zmin; z < zmax; z++) {
                     for (int y = ymin; y < ymax; y++) {
-
                         ux = &(u1[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
                         wx = &(fwd[1ULL * (z + s->sz) * nnxy + (y + s->sy) * nnx + s->sx]);
                         imgx = &(img_shot[1ULL * z * s->dimx * s->dimy + y * s->dimx]);
                         ilmx = &(ilm_shot[1ULL * z * s->dimx * s->dimy + y * s->dimx]);
-
 //            #pragma simd
                         for (int x = 0; x < s->img_dimx; x++) {
+//                            if (ux[x]>0.0001)
+//                                {MSG("ux[x]=%f,wx[x]=%f,I=%f",ux[x],wx[x],ux[x]*wx[x]);}
                             imgx[x] += ux[x] * wx[x];
                             ilmx[x] += wx[x] * wx[x];
 //              IMG_S(z, y, x)+=  U1(z,y+s->pmly,x+s->pmlx)*FWD(z,y+s->pmly,x+s->pmlx);
@@ -809,7 +809,6 @@ void wave_image_condition_block(sismap_t *s, float *u1,
                 }
             }
         }
-
     }
 }
 
@@ -843,17 +842,12 @@ void wave_read_sismos(sismap_t *s, shot_t *shot, float *sismos) {
     FILE *fd;
     size_t sz = s->rcv_len * s->time_steps * sizeof(float);
     sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SISMOS_BASE, shot->id);
-    MSG("OUTDIR (%s)",OUTDIR);
-    MSG("SISMOS_BASE (%s)",SISMOS_BASE);
-    MSG("tmp=%s",tmp);
 
-    MSG("before fd = fopen(tmp, \"rb\");");
-//    fd = fopen(tmp, "rb");
-//    CHK(fd == NULL,"sismos file not found, aborting (run modeling to generate it)");
-//    CHK(fread(sismos, sz, 1, fd) != 1,"failed to properly read sismos");
-//    MSG("before fclose(fd);");
-//    fclose(fd);
-    MSG("end of wave_read_sismos function");
+    MSG("reading sismos=%s",tmp);
+    fd = fopen(tmp, "rb");
+    CHK(fd == NULL,"sismos file not found, aborting (run modeling to generate it)");
+    CHK(fread(sismos, sz, 1, fd) != 1,"failed to properly read sismos");
+    fclose(fd);
 }
 
 /// @brief save the final image.

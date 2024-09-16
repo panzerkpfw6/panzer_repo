@@ -152,10 +152,10 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
 
     /// retrieve the shot descriptor.
     shot = s->shots[sidx];
-//    printf("debug point 2\n");
+
     /// initialize the current shot.
     shot_init(shot, true, s->modeling);
-//    printf("debug point 0\n");
+
     /// load the seismic traces for the shot.
     wave_read_sismos(s, shot, sismos);
 
@@ -195,7 +195,7 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
       t0 = wtime();
       wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
       t_prop += wtime() - t0;
-
+////      wave_extract_sismos(s, u1, t, sismos);
       t0 = wtime();
       if (s->mode == 2) {
         if ((t+1)%s->nb_snap == 0) {
@@ -256,6 +256,10 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
         wave_read_snapshot(s, shot, fwd, t+1);
       }
       t_snap += wtime() - t0;
+
+//      t0 = wtime();
+//      wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+//      t_prop += wtime() - t0;
 
       t0 = wtime();
       wave_image_condition_block(s, u0, fwd, img_shot, ilm_shot, t+1);
@@ -387,9 +391,8 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
         NULIFY_BUFFER(vy,s->size);
         NULIFY_BUFFER(vz,s->size);
         NULIFY_BUFFER(pml_tmp, s->size_eff);
+
         /// forward modeling.
-
-
         t1 = wtime();
         t_snap   = 0.0;
         t_prop   = 0.0;
@@ -424,7 +427,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
                     s->snap_idx ++;
                 }
             } else {
-                wave_save_snapshot(s, shot, u0, t+1);
+                wave_save_snapshot(s,shot,u0,t+1);
             }
             t_snap += wtime() - t0;
 
@@ -893,6 +896,7 @@ int main(int argc, char *argv[]) {
     s->modeling = false;
     s->nb_snap = parser_get_int(p, "nbsnap");
     s->mode = parser_get_int(p, "mode");
+    s->order = parser_get_int(p, "order");
 
     int ncpus=get_nprocs();
     printf("ncpus : %d\n",ncpus);
@@ -924,18 +928,38 @@ int main(int argc, char *argv[]) {
     velocity_load_model(s, vel);
     /// compute PML parameters.
     pml_compute_coefs(s, pml_tab);
+
     /// generate the Ricker source.
-    source_ricker_wavelet(s, source);
+    if (s->order==1) {
+        MSG("source 1st order");
+//        source_ricker_wavelet(s, source);
+        source_ricker_wavelet_1st(s, source);
+//        source_ricker_wavelet_2nd(s, source);
+    } else {
+        MSG("source 2nd order");
+        source_ricker_wavelet_2nd(s, source);
+    }
     source[s->time_steps] = 0.0f; // an extra time step for girih.
     /// print info if needed.
     if (s->verbose) wave_print(s);
     /// run RTM on CPU or GPU.
+
     if (s->cpu) {
-//        run_rtm_tb_cpu(s, vel, source, pml_tab, p);
-        run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
+        if (s->order==1) {
+            MSG("run RTM 1st order TB");
+            run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
+        } else {
+            MSG("run RTM 2nd order TB, deprecated.");
+            run_rtm_tb_cpu(s, vel, source, pml_tab, p);
+        }
     } else {
-//        run_rtm_cpu(s, vel, source, pml_tab);
-        run_rtm_1st_cpu(s, vel, source, pml_tab);
+        if (s->order==1) {
+            MSG("run RTM 1st order SB");
+            run_rtm_1st_cpu(s, vel, source, pml_tab);
+        } else {
+            MSG("run RTM 2nd order SB");
+            run_rtm_cpu(s, vel, source, pml_tab);
+        }
 //    run_rtm_gpu(s, vel, source, pml_tab);
     }
     /// free the simulation buffers.
@@ -950,5 +974,4 @@ int main(int argc, char *argv[]) {
     parser_delete(p);
     MSG("RTM HALAS");
     return EXIT_SUCCESS;
-    MSG("RTM HALAS");
 }

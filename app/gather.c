@@ -80,6 +80,8 @@ int main(int argc, char* argv[]) {
   s->modeling   = false;
   s->nb_snap    = parser_get_int(p, "nbsnap");
   char *dir     = parser_get_string(p, "dir");
+//  char dir="./data";
+
   /// image for RTM.
   float* img;
   float* img_only;
@@ -110,7 +112,16 @@ int main(int argc, char* argv[]) {
         s->size_img/1024./1024.);
   }
   /// browse the shot images/illuminations:
+  char cwd[1024]; // Buffer to hold the current working directory
+  // Get the current working directory
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+      printf("Current working directory: %s\n", cwd);
+  } else {
+      perror("getcwd"); // Print an error message if getcwd fails
+      return EXIT_FAILURE;}
+
   struct dirent *de;
+//  DIR *dr = opendir("./data");
   DIR *dr = opendir(dir);
   CHK(dr == NULL, "failed to open img directory");
 
@@ -128,7 +139,7 @@ int main(int argc, char* argv[]) {
   }
   while((de = readdir(dr)) != NULL) {
 		if (strstr(de->d_name, img_pref) != NULL) {
-  		if(s->cpu) {
+  		    if(s->cpu) {
 				sscanf(de->d_name, "img_%d.raw", &idx);
 				sprintf(img_file, "%s/img_%d.raw", dir, idx);
 				sprintf(ilm_file, "%s/ilm_%d.raw", dir, idx);
@@ -137,6 +148,10 @@ int main(int argc, char* argv[]) {
 				sprintf(img_file, "%s/gpu_img_%d.raw", dir, idx);
 				sprintf(ilm_file, "%s/gpu_ilm_%d.raw", dir, idx);
 			}
+//            MSG('img_file=%s',img_file);
+//            MSG('img_file=%s',img_file);
+//            MSG('dir=%s',dir);
+//            MSG('idx=%s',idx);
 			// read img:
 			FILE *fd = fopen(img_file, "rb");
 			CHK(fd == NULL, "failed to open img file");
@@ -168,11 +183,11 @@ int main(int argc, char* argv[]) {
   }
 	for (unsigned int i=0; i<s->size_img; i++) {
   	if (ilm_only[i] > 10) {
-    	printf("%u %f\n", i, ilm_only[i]);
+//    	printf("%u %f\n", i, ilm_only[i]);
       ilm_only[i]=0.15;
     }
   }
-	wave_save_image(s, img, img_dilm_file);
+  wave_save_image(s, img,img_dilm_file);
   wave_save_image(s, img_only, img_only_file);
   wave_save_image(s, ilm_only, ilm_only_file);
   DELETE_BUFFER(img);
