@@ -924,8 +924,10 @@ int main(int argc, char *argv[]) {
     }
     CREATE_BUFFER(source, s->time_steps + 1);
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
+
     /// load/generate the velocity model.
-    velocity_load_model(s, vel);
+//    velocity_load_model(s, vel);
+    velocity_2layer_model(s,vel);
     /// compute PML parameters.
     pml_compute_coefs(s, pml_tab);
 
