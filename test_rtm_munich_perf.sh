@@ -41,7 +41,8 @@ make install
 ###********** mode, grid, time steps ***********###
 #timesteps=2000
 timesteps=2200
-nt=2200;nt2=2*nt;
+nt=2200;
+nt2=4400;
 nx=128;ny=256;nz=512;
 nx=128;ny=256;nz=128;
 nx=1024;ny=1024;nz=512;
@@ -54,9 +55,9 @@ num_th=128;th_x=1;th_y=2;th_z=8;num_wf=64;tdim=7;tgs=16;
 echo "${logs_path}/log-TB_1st_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${tdim}.log"
 
 ####*********** Modeling ************###
-srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_mod_SB_1st.log"
-srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt2 --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $tdim --tb_num_wf $num_wf -c --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_mod_TB_1st.log"
+srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_mod_SB_1st.log"
+srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt2 --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $tdim --tb_num_wf $num_wf -c --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_mod_TB_1st.log"
 ####*********** RTM ************###
 srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/prepare_sismos_rtm.log"
-srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_rtm_SB_1st.log"
-srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $tdim --tb_num_wf $num_wf -c --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_rtm_TB_1st.log"
+srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_rtm_SB_2nd.log"
+srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $tdim --tb_num_wf $num_wf -c --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1 >> "${logs_path}/log_rtm_TB_2nd.log"
