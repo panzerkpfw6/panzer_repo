@@ -18,18 +18,33 @@
 exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
-###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=48
+
+####**********  workstation ***********###
+####********** OPENMP PARAMETERS  ***********###
+#export OMP_NUM_THREADS=48
+#export OMP_PROC_BIND=true
+#export OMP_PLACES=threads
+#export OMP_NESTED='True'
+#export granularity=fine
+#export KMP_AFFINITY=compact
+#### export KMP_HW_SUBSET=1t
+####********** MODULES & COMPILING *********###
+####module load icc/2020.2.254
+#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+#module load cmake
+
+###**********  kanary ***********###
+###********** OPENMP PARAMETERS  ***********###
+export OMP_NUM_THREADS=128
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
 export granularity=fine
 export KMP_AFFINITY=compact
 ### export KMP_HW_SUBSET=1t
-
 ###********** MODULES & COMPILING *********###
 ###module load icc/2020.2.254
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
 module load cmake
 
 #####
