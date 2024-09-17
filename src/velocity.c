@@ -468,40 +468,40 @@ void velocity_load_model(sismap_t *s, float *vtab) {
     else velocity_load_model_3d(s, vtab);
 }
 
-//void velocity_load_salt3d(sismap_t *s, float *vtab) {
-//    MSG("__________________________Inside function velocity_load_salt3d__________________________");
-//    /////////////////////////////////////////////////////
-//    const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
-//    FILE *fd;
-//    std::cout << "velocity file read started" << std::endl;
-//    size_t vel_size = 1LL * nx * ny * nz;
-//    float *tmp = (float *) malloc(vel_size * sizeof(float));
-//    cout << "reading from velocity file' " << file_namev << endl;
-//    fd = fopen(file_namev, "rb");
-//    if (fd == NULL){
-//        cout << "reading from velocity file' " << file_namev << "'  " << endl;
-//        std::cout << "downloading velocity file from dropbox" << std::endl;
-//        system(SHELLSCRIPT);
-//        fd = fopen(file_namev,"rb");
-//    }
-//    CHK(fd == NULL, "failed to open the velocity file");
-//    CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,
-//        "failed to read from the velocity file");
-//    fclose(fd);
-//    float val = 0;
-//#pragma omp parallel for collapse(3)
-//    for (Myint bx = ixMin; bx < ixMax; bx++) {
-//        for (Myint by = iyMin; by < iyMax; by++) {
-//            for (Myint bz = izMin; bz < izMax; bz++) {
-//                val = tmp[1ULL * nx * (ny * (bz - lstencil) + (by - lstencil)) + (bx - lstencil)];
-//                coef12[bx][by][bz] = cF2H(val * val * dt);
-//                vel[bx][by][bz] = cF2H( val );
-//            }
-//        }
-//    }
-//    std::cout << "custom velocity model read in memory" << std::endl;
-//    /////////////////////////////////////////////////////
-//
-//    if (s->dim2) velocity_load_model_2d(s, vtab);
-//    else velocity_load_model_3d(s, vtab);
-//}
+void velocity_load_salt3d(sismap_t *s, float *vtab) {
+    MSG("__________________________Inside function velocity_load_salt3d__________________________");
+    /////////////////////////////////////////////////////
+    const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
+    FILE *fd;
+    std::cout << "velocity file read started" << std::endl;
+    size_t vel_size = 1LL * nx * ny * nz;
+    float *tmp = (float *) malloc(vel_size * sizeof(float));
+    cout << "reading from velocity file' " << file_namev << endl;
+    fd = fopen(file_namev, "rb");
+    if (fd == NULL){
+        cout << "reading from velocity file' " << file_namev << "'  " << endl;
+        std::cout << "downloading velocity file from dropbox" << std::endl;
+        system(SHELLSCRIPT);
+        fd = fopen(file_namev,"rb");
+    }
+    CHK(fd == NULL, "failed to open the velocity file");
+    CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,
+        "failed to read from the velocity file");
+    fclose(fd);
+    float val = 0;
+#pragma omp parallel for collapse(3)
+    for (Myint bx = ixMin; bx < ixMax; bx++) {
+        for (Myint by = iyMin; by < iyMax; by++) {
+            for (Myint bz = izMin; bz < izMax; bz++) {
+                val = tmp[1ULL * nx * (ny * (bz - lstencil) + (by - lstencil)) + (bx - lstencil)];
+                coef12[bx][by][bz] = cF2H(val * val * dt);
+                vel[bx][by][bz] = cF2H( val );
+            }
+        }
+    }
+    std::cout << "custom velocity model read in memory" << std::endl;
+    /////////////////////////////////////////////////////
+
+    if (s->dim2) velocity_load_model_2d(s, vtab);
+    else velocity_load_model_3d(s, vtab);
+}

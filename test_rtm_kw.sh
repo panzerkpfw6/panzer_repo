@@ -19,23 +19,9 @@ exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
 
-####**********  workstation ***********###
-####********** OPENMP PARAMETERS  ***********###
-#export OMP_NUM_THREADS=48
-#export OMP_PROC_BIND=true
-#export OMP_PLACES=threads
-#export OMP_NESTED='True'
-#export granularity=fine
-#export KMP_AFFINITY=compact
-#### export KMP_HW_SUBSET=1t
-####********** MODULES & COMPILING *********###
-####module load icc/2020.2.254
-#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-#module load cmake
-
-###**********  kanary ***********###
+###**********  workstation ***********###
 ###********** OPENMP PARAMETERS  ***********###
-export OMP_NUM_THREADS=128
+export OMP_NUM_THREADS=48
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
@@ -44,8 +30,22 @@ export KMP_AFFINITY=compact
 ### export KMP_HW_SUBSET=1t
 ###********** MODULES & COMPILING *********###
 ###module load icc/2020.2.254
-module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load cmake
+
+####**********  kanary ***********###
+####********** OPENMP PARAMETERS  ***********###
+#export OMP_NUM_THREADS=128
+#export OMP_PROC_BIND=true
+#export OMP_PLACES=threads
+#export OMP_NESTED='True'
+#export granularity=fine
+#export KMP_AFFINITY=compact
+#### export KMP_HW_SUBSET=1t
+####********** MODULES & COMPILING *********###
+####module load icc/2020.2.254
+#module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+#module load cmake
 
 #####
 #rm ./bin/rtm
@@ -68,8 +68,9 @@ nx=128;ny=256;nz=512;
 first=16449;last=16450;
 
 nx=128;ny=256;nz=128;
-first=1;last=32500;dshot=300;
-fmax=20;
+#first=1;last=32500;
+first=1;last=10;
+dshot=300;fmax=20;
 #####*********** SB tests ************###
 echo !!SB!!
 #srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap

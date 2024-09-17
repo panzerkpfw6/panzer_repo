@@ -610,6 +610,7 @@ int main(int argc, char* argv[]) {
 //    MSG("velocity_const_model2\n");
 //    velocity_const_model2(s, vel);
     velocity_2layer_model(s,vel);
+//    velocity_load_salt3d(s,vel);
 
     /// compute PML parameters.
     pml_compute_coefs(s, pml_tab);
