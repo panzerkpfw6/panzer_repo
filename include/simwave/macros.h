@@ -2,23 +2,23 @@
 #define __SIMWAVE_MACROS_H_
 ///
 /// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b simwave.
+/// This file is part of \b stencil.
 ///
-/// \b simwave is free software: you can redistribute it and/or modify
+/// \b stencil is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// simwave is distributed in the hope that it will be useful,
+/// stencil is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
 /// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 /// GNU General Public License for more details.
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+/// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Issam Said
-/// @file simwave/macros.h
+/// @file stencil/macros.h
 /// @brief Contains the major settings of project.
 ///
 #include <stdlib.h>
@@ -26,7 +26,7 @@
 /// @brief print a formatted message.
 #define MSG(fmt,...)                    \
   do {                                  \
-    fprintf(stdout, "[SIMWAVE MSG]:");  \
+    fprintf(stdout, "[STENCIL MSG]:");  \
     fprintf(stdout, fmt, ##__VA_ARGS__);\
     fprintf(stdout, "\n");              \
   } while(0)
@@ -34,7 +34,7 @@
 /// @brief print a formatted message without line return.
 #define MSG_NLR(fmt,...) \
   do {                                  \
-    fprintf(stdout, "[SIMWAVE MSG]:");  \
+    fprintf(stdout, "[STENCIL MSG]:");  \
     fprintf(stdout, fmt, ##__VA_ARGS__);\
   } while(0)
 
@@ -49,7 +49,7 @@
 do {                                      \
   if(call) {                              \
     fprintf(stderr,                       \
-    	      "[SIMWAVE ERR] %s @ %s:%d\n", \
+    	      "[STENCIL ERR] %s @ %s:%d\n", \
             str, __FILE__, __LINE__);     \
     exit(EXIT_FAILURE);                   \
   }                                       \
@@ -59,7 +59,7 @@ do {                                      \
 #define ERR(str)                        \
 do {                                    \
   fprintf(stderr,                       \
-    	    "[SIMWAVE ERR] %s @ %s:%d\n", \
+    	    "[STENCIL ERR] %s @ %s:%d\n", \
           str, __FILE__, __LINE__);     \
   exit(EXIT_FAILURE);                   \
 } while(0)
@@ -67,7 +67,7 @@ do {                                    \
 /// @brief print an error formatted message.
 #define ERR_MSG(fmt,...)                     \
   do {                                       \
-    fprintf(stderr, "[SIMWAVE ERR @ %s:%d]", \
+    fprintf(stderr, "[STENCIL ERR @ %s:%d]", \
            __FILE__,__LINE__ );              \
     fprintf(stderr, fmt, ##__VA_ARGS__);     \
     exit(EXIT_FAILURE);                      \
@@ -78,7 +78,7 @@ do {                                    \
 do {                                      \
   if(predicate) {                         \
     fprintf(stderr,                       \
-    	      "[SIMWAVE ERR] %s @ %s:%d\n", \
+    	      "[STENCIL ERR] %s @ %s:%d\n", \
             str, __FILE__, __LINE__);     \
     exit(EXIT_FAILURE);                   \
   }                                       \
@@ -91,7 +91,7 @@ do {                                      \
       "failed to allocate heap memory");                          \
   if (buffer == NULL) {                                           \
     fprintf(stderr,                                               \
-            "[SIMWAVE ERR] failed to create buffer @ %s:%d\n",    \
+            "[STENCIL ERR] failed to create buffer @ %s:%d\n",    \
             __FILE__, __LINE__);                                  \
     exit(EXIT_FAILURE);                                           \
   }                                                               \
@@ -102,7 +102,7 @@ do {                                      \
       "failed to allocate heap memory");                          \
   if (buffer == NULL) {                                           \
     fprintf(stderr,                                               \
-            "[SIMWAVE ERR] failed to create buffer @ %s:%d\n",    \
+            "[STENCIL ERR] failed to create buffer @ %s:%d\n",    \
             __FILE__, __LINE__);                                  \
     exit(EXIT_FAILURE);                                           \
   }
@@ -116,7 +116,7 @@ do {                                      \
 do {                                                              \
   cudaError_t status = call;                                      \
   if (status != cudaSuccess) {                                    \
-    fprintf(stderr, "[SIMWAVE GPU ERR] %s @ %s:%d\n",             \
+    fprintf(stderr, "[STENCIL GPU ERR] %s @ %s:%d\n",             \
             cudaGetErrorString(status),      __FILE__, __LINE__); \
     exit(EXIT_FAILURE);                                           \
   }                                                               \

@@ -162,25 +162,25 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/CMakeFiles/simwave.dir/rule:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/simwave.dir/rule
-.PHONY : src/CMakeFiles/simwave.dir/rule
+src/CMakeFiles/stencil.dir/rule:
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/stencil.dir/rule
+.PHONY : src/CMakeFiles/stencil.dir/rule
 
 # Convenience name for target.
-simwave: src/CMakeFiles/simwave.dir/rule
-.PHONY : simwave
+stencil: src/CMakeFiles/stencil.dir/rule
+.PHONY : stencil
 
 # fast build rule for target.
-simwave/fast:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/build
-.PHONY : simwave/fast
+stencil/fast:
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/build
+.PHONY : stencil/fast
 
 bwriter.o: bwriter.c.o
 .PHONY : bwriter.o
 
 # target to build an object file
 bwriter.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/bwriter.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/bwriter.c.o
 .PHONY : bwriter.c.o
 
 bwriter.i: bwriter.c.i
@@ -188,7 +188,7 @@ bwriter.i: bwriter.c.i
 
 # target to preprocess a source file
 bwriter.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/bwriter.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/bwriter.c.i
 .PHONY : bwriter.c.i
 
 bwriter.s: bwriter.c.s
@@ -196,7 +196,7 @@ bwriter.s: bwriter.c.s
 
 # target to generate assembly for a file
 bwriter.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/bwriter.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/bwriter.c.s
 .PHONY : bwriter.c.s
 
 interp.o: interp.c.o
@@ -204,7 +204,7 @@ interp.o: interp.c.o
 
 # target to build an object file
 interp.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/interp.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/interp.c.o
 .PHONY : interp.c.o
 
 interp.i: interp.c.i
@@ -212,7 +212,7 @@ interp.i: interp.c.i
 
 # target to preprocess a source file
 interp.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/interp.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/interp.c.i
 .PHONY : interp.c.i
 
 interp.s: interp.c.s
@@ -220,7 +220,7 @@ interp.s: interp.c.s
 
 # target to generate assembly for a file
 interp.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/interp.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/interp.c.s
 .PHONY : interp.c.s
 
 mlbs.o: mlbs.c.o
@@ -228,7 +228,7 @@ mlbs.o: mlbs.c.o
 
 # target to build an object file
 mlbs.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/mlbs.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/mlbs.c.o
 .PHONY : mlbs.c.o
 
 mlbs.i: mlbs.c.i
@@ -236,7 +236,7 @@ mlbs.i: mlbs.c.i
 
 # target to preprocess a source file
 mlbs.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/mlbs.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/mlbs.c.i
 .PHONY : mlbs.c.i
 
 mlbs.s: mlbs.c.s
@@ -244,7 +244,7 @@ mlbs.s: mlbs.c.s
 
 # target to generate assembly for a file
 mlbs.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/mlbs.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/mlbs.c.s
 .PHONY : mlbs.c.s
 
 parser.o: parser.c.o
@@ -252,7 +252,7 @@ parser.o: parser.c.o
 
 # target to build an object file
 parser.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/parser.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/parser.c.o
 .PHONY : parser.c.o
 
 parser.i: parser.c.i
@@ -260,7 +260,7 @@ parser.i: parser.c.i
 
 # target to preprocess a source file
 parser.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/parser.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/parser.c.i
 .PHONY : parser.c.i
 
 parser.s: parser.c.s
@@ -268,7 +268,7 @@ parser.s: parser.c.s
 
 # target to generate assembly for a file
 parser.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/parser.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/parser.c.s
 .PHONY : parser.c.s
 
 pml.o: pml.c.o
@@ -276,7 +276,7 @@ pml.o: pml.c.o
 
 # target to build an object file
 pml.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/pml.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/pml.c.o
 .PHONY : pml.c.o
 
 pml.i: pml.c.i
@@ -284,7 +284,7 @@ pml.i: pml.c.i
 
 # target to preprocess a source file
 pml.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/pml.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/pml.c.i
 .PHONY : pml.c.i
 
 pml.s: pml.c.s
@@ -292,7 +292,7 @@ pml.s: pml.c.s
 
 # target to generate assembly for a file
 pml.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/pml.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/pml.c.s
 .PHONY : pml.c.s
 
 shot.o: shot.c.o
@@ -300,7 +300,7 @@ shot.o: shot.c.o
 
 # target to build an object file
 shot.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/shot.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/shot.c.o
 .PHONY : shot.c.o
 
 shot.i: shot.c.i
@@ -308,7 +308,7 @@ shot.i: shot.c.i
 
 # target to preprocess a source file
 shot.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/shot.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/shot.c.i
 .PHONY : shot.c.i
 
 shot.s: shot.c.s
@@ -316,7 +316,7 @@ shot.s: shot.c.s
 
 # target to generate assembly for a file
 shot.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/shot.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/shot.c.s
 .PHONY : shot.c.s
 
 source.o: source.c.o
@@ -324,7 +324,7 @@ source.o: source.c.o
 
 # target to build an object file
 source.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/source.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/source.c.o
 .PHONY : source.c.o
 
 source.i: source.c.i
@@ -332,7 +332,7 @@ source.i: source.c.i
 
 # target to preprocess a source file
 source.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/source.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/source.c.i
 .PHONY : source.c.i
 
 source.s: source.c.s
@@ -340,7 +340,7 @@ source.s: source.c.s
 
 # target to generate assembly for a file
 source.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/source.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/source.c.s
 .PHONY : source.c.s
 
 velocity.o: velocity.c.o
@@ -348,7 +348,7 @@ velocity.o: velocity.c.o
 
 # target to build an object file
 velocity.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/velocity.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/velocity.c.o
 .PHONY : velocity.c.o
 
 velocity.i: velocity.c.i
@@ -356,7 +356,7 @@ velocity.i: velocity.c.i
 
 # target to preprocess a source file
 velocity.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/velocity.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/velocity.c.i
 .PHONY : velocity.c.i
 
 velocity.s: velocity.c.s
@@ -364,7 +364,7 @@ velocity.s: velocity.c.s
 
 # target to generate assembly for a file
 velocity.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/velocity.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/velocity.c.s
 .PHONY : velocity.c.s
 
 wave.o: wave.c.o
@@ -372,7 +372,7 @@ wave.o: wave.c.o
 
 # target to build an object file
 wave.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave.c.o
 .PHONY : wave.c.o
 
 wave.i: wave.c.i
@@ -380,7 +380,7 @@ wave.i: wave.c.i
 
 # target to preprocess a source file
 wave.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave.c.i
 .PHONY : wave.c.i
 
 wave.s: wave.c.s
@@ -388,7 +388,7 @@ wave.s: wave.c.s
 
 # target to generate assembly for a file
 wave.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave.c.s
 .PHONY : wave.c.s
 
 wave_tb.o: wave_tb.c.o
@@ -396,7 +396,7 @@ wave_tb.o: wave_tb.c.o
 
 # target to build an object file
 wave_tb.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave_tb.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb.c.o
 .PHONY : wave_tb.c.o
 
 wave_tb.i: wave_tb.c.i
@@ -404,7 +404,7 @@ wave_tb.i: wave_tb.c.i
 
 # target to preprocess a source file
 wave_tb.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave_tb.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb.c.i
 .PHONY : wave_tb.c.i
 
 wave_tb.s: wave_tb.c.s
@@ -412,7 +412,7 @@ wave_tb.s: wave_tb.c.s
 
 # target to generate assembly for a file
 wave_tb.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wave_tb.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb.c.s
 .PHONY : wave_tb.c.s
 
 wtime.o: wtime.c.o
@@ -420,7 +420,7 @@ wtime.o: wtime.c.o
 
 # target to build an object file
 wtime.c.o:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wtime.c.o
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wtime.c.o
 .PHONY : wtime.c.o
 
 wtime.i: wtime.c.i
@@ -428,7 +428,7 @@ wtime.i: wtime.c.i
 
 # target to preprocess a source file
 wtime.c.i:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wtime.c.i
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wtime.c.i
 .PHONY : wtime.c.i
 
 wtime.s: wtime.c.s
@@ -436,7 +436,7 @@ wtime.s: wtime.c.s
 
 # target to generate assembly for a file
 wtime.c.s:
-	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/wtime.c.s
+	cd /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/rtm_munich && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wtime.c.s
 .PHONY : wtime.c.s
 
 # Help Target
@@ -451,7 +451,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... simwave"
+	@echo "... stencil"
 	@echo "... bwriter.o"
 	@echo "... bwriter.i"
 	@echo "... bwriter.s"

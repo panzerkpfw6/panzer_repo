@@ -1,8 +1,8 @@
 ```
 NAME
-	simwave - a synthetic wave simulator
+	stencil - a synthetic wave simulator
 SYNTAX
-	simwave [options]
+	stencil [options]
 
 OPTIONS
 	-f, --file         VALUE       parse parameters from file.
@@ -32,5 +32,8 @@ OPTIONS
 We are compiling the project with cmake software.
 #### CMAKE requirements
 Please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in ./Makefile  
-Also please edit CMAKE_SOURCE_DIR,CMAKE_BINARY_DIR filepaths in CMakeFiles/Makefile2
+Also edit CMakeLists.txt files in ./, ./app and ./src subdirectories:
+./CMakeLists.txt
+./app/CMakeLists.txt
+./src/CMakeLists.txt
 ```

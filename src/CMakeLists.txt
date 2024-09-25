@@ -1,27 +1,27 @@
 ##
-## @copyright Copyright 2017- Issam Said. All rights reserved.
-## This file is part of \b simwave.
+## @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
+## This file is part of the \b stencil project.
 ##
-## \b simwave is free software: you can redistribute it and/or modify
+## \b stencil is free software: you may redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation, either version 3 of the License, or
 ## (at your option) any later version.
 ##
-## simwave is distributed in the hope that it will be useful,
+## The stencil project is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ## GNU General Public License for more details.
 ##
 ## You should have received a copy of the GNU General Public License
-## along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+## along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ##
 ## @file src/CMakeLists.txt
-## @author Issam SAID
-## @brief CMake build script for the simwave executable.
+## @author Pavel Plotnitskii
+## @brief CMake build script for the stencil executable.
 ##
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-project(simwave LANGUAGES C)
+project(stencil LANGUAGES C)
 
 ## Check whether CUDA is detected:
 ## - The CUDA library queered in usual directories
@@ -38,8 +38,8 @@ file(GLOB SRCS "*.c")
 
 #message ("CMAKE_CUDA_FLAGS : " ${CMAKE_CUDA_FLAGS})
 
-add_library(simwave ${SRCS})
-#set_target_properties(simwave PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_library(stencil ${SRCS})
+#set_target_properties(stencil PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 
 ## install the library.
-install(TARGETS simwave ARCHIVE DESTINATION lib)
+install(TARGETS stencil ARCHIVE DESTINATION lib)

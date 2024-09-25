@@ -1,44 +1,28 @@
-##
-## @copyright Copyright 2017- Issam Said. All rights reserved.
-## This file is part of \b simwave.
-##
-## \b simwave is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-##
-## simwave is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
-##
-## @file CMakeLists.txt
-## @author Issam SAID
-## @brief CMake main build script for simwave.
+## @brief CMake main build script for stencil_rtm.
 ##
 cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 
-project (simwave_distribution LANGUAGES C)
+project (stencil_distribution LANGUAGES C)
 
 ## overwrite the install prefix.
 set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
 
 ## add extra cmake modules dir.
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
-## configurable options for how we want to build simwave.
-option(simwave_debug "Build simwave with the debug mode." OFF)
+## configurable options for how we want to build project.
+option(project_debug "Build project with the debug mode." OFF)
 
 ## set the build type (DEFAULT is Release).
 if (NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
-if (simwave_debug)
+if (project_debug)
 	set (CMAKE_BUILD_TYPE Debug)
-endif (simwave_debug)
+endif (project_debug)
 
 ## check whether CUDA is detected:
 ## - The CUDA library queered in usual directories
@@ -49,9 +33,9 @@ endif (simwave_debug)
 
 ## add CUDA arch options.
 #include(${CMAKE_MODULE_PATH}/cuda_arch_options.cmake)
-#if (simwave_debug)
+#if (project_debug)
 #  set (CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -D__DEBUG")
-#endif (simwave_debug)
+#endif (project_debug)
 
 ### set the compilation flags.
 #if ("${CMAKE_C_COMPILER_ID}"     MATCHES "Cray")
@@ -80,11 +64,11 @@ if (OPENMP_FOUND)
        "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif(OPENMP_FOUND)
 
-## build the simwave C/C++ library.
+## build the project C/C++ library.
 add_subdirectory(src)
 
-## build the simwave based applications.
+## build the project based applications.
 add_subdirectory(app)
 
-## build the simwave unit and functional tests.
+## build the project unit and functional tests.
 #add_subdirectory(test)

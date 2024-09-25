@@ -162,56 +162,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named simwave
+# Target rules for targets named stencil
 
 # Build rule for target.
-simwave: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simwave
-.PHONY : simwave
+stencil: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stencil
+.PHONY : stencil
 
 # fast build rule for target.
-simwave/fast:
-	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/simwave.dir/build.make src/CMakeFiles/simwave.dir/build
-.PHONY : simwave/fast
-
-#=============================================================================
-# Target rules for targets named modeling
-
-# Build rule for target.
-modeling: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling
-.PHONY : modeling
-
-# fast build rule for target.
-modeling/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
-.PHONY : modeling/fast
-
-#=============================================================================
-# Target rules for targets named modeling-snap_end
-
-# Build rule for target.
-modeling-snap_end: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_end
-.PHONY : modeling-snap_end
-
-# fast build rule for target.
-modeling-snap_end/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/build
-.PHONY : modeling-snap_end/fast
-
-#=============================================================================
-# Target rules for targets named gather
-
-# Build rule for target.
-gather: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gather
-.PHONY : gather
-
-# fast build rule for target.
-gather/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
-.PHONY : gather/fast
+stencil/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/build
+.PHONY : stencil/fast
 
 #=============================================================================
 # Target rules for targets named rtm
@@ -240,17 +201,56 @@ modeling-snap_tb/fast:
 .PHONY : modeling-snap_tb/fast
 
 #=============================================================================
-# Target rules for targets named simwave_apps
+# Target rules for targets named gather
 
 # Build rule for target.
-simwave_apps: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 simwave_apps
-.PHONY : simwave_apps
+gather: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 gather
+.PHONY : gather
 
 # fast build rule for target.
-simwave_apps/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/simwave_apps.dir/build.make app/CMakeFiles/simwave_apps.dir/build
-.PHONY : simwave_apps/fast
+gather/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
+.PHONY : gather/fast
+
+#=============================================================================
+# Target rules for targets named modeling
+
+# Build rule for target.
+modeling: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling
+.PHONY : modeling
+
+# fast build rule for target.
+modeling/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
+.PHONY : modeling/fast
+
+#=============================================================================
+# Target rules for targets named modeling-snap_end
+
+# Build rule for target.
+modeling-snap_end: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_end
+.PHONY : modeling-snap_end
+
+# fast build rule for target.
+modeling-snap_end/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/build
+.PHONY : modeling-snap_end/fast
+
+#=============================================================================
+# Target rules for targets named stencil_apps
+
+# Build rule for target.
+stencil_apps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stencil_apps
+.PHONY : stencil_apps
+
+# fast build rule for target.
+stencil_apps/fast:
+	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/stencil_apps.dir/build.make app/CMakeFiles/stencil_apps.dir/build
+.PHONY : stencil_apps/fast
 
 # Help Target
 help:
@@ -264,13 +264,13 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... simwave_apps"
+	@echo "... stencil_apps"
 	@echo "... gather"
 	@echo "... modeling"
 	@echo "... modeling-snap_end"
 	@echo "... modeling-snap_tb"
 	@echo "... rtm"
-	@echo "... simwave"
+	@echo "... stencil"
 .PHONY : help
 
 
