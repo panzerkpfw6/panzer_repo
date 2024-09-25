@@ -52,7 +52,7 @@ timesteps=500
 nx=512;ny=512;nz=512;
 #nx=2048;ny=2048;nz=512;
 #####***********#####***********#####***********#####***********
-###*********** RUNNING SIMWAVE ************###
+###*********** RUNNING ************###
 rm SB.log
 rm TB.log
 rm data/SB-final_snap.raw
@@ -77,11 +77,11 @@ mv TB_lastshot_u0 data/TB-final_snap.raw
 
 
 
-#####*********** RUNNING SIMWAVE ************###
+#####*********** RUNNING ************###
 ## iterate on parameters values
 #echo "CSV: size ; timesteps ; OMP_NUM_THREADS ; tgs ; ntg ; (th_x, th_y, th_z) ; t_dim ; num_wf ; mode ; tb or sb"
 #size=512
-## Thread configuration: SIMWAVE x=1, RACHED z=1 (innermost dimension is vectorized)
+## Thread configuration: stencil x=1, RACHED z=1 (innermost dimension is vectorized)
 ####*** temporal blocking parameters***###
 ##thread group : (1,2,2)  #group size: 4 #num_group : 8
 #th_z=2

@@ -1,25 +1,24 @@
 #ifndef __SIMWAVE_VELOCITY_H_
 #define __SIMWAVE_VELOCITY_H_
 ///
-/// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b simwave.
+/// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
+/// This file is part of the \b stencil project.
 ///
-/// @b simwave is free software: you can redistribute it and/or modify
+/// \b stencil is free software: you may redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// @b simwave is distributed in the hope that it will be useful,
+/// The stencil project is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 /// GNU General Public License for more details.
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+/// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
-/// @author Issam Said
+/// @author Pavel Plotnitskii
 /// @file velocity.h
-/// @version $Id: velocity.h 1864 2012-12-29 23:09:23Z isaid $
 /// @brief A velocity model generator.
 ///
 /// Generates a phase velocity model for the simulation.

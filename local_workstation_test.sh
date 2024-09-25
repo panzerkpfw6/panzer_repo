@@ -25,7 +25,7 @@ size=256
 num_wf=20
 t_dim=7
 mode=2
-###*********** RUNNING SIMWAVE ************###
+###*********** RUNNING ************###
 tgs=4
 th_x=2
 th_y=2

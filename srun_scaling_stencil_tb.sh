@@ -2,7 +2,7 @@
 #SBATCH -N 1
 #SBATCH --partition=users
 #SBATCH --exclusive
-#SBATCH -J simwave
+#SBATCH -J stencil
 #SBATCH --mail-user=long.qu@kaust.edu.sa
 #SBATCH --mail-type=ALL
 #SBATCH -t 02:00:00

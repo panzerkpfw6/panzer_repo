@@ -1,7 +1,7 @@
 #!/bin/bash
 ###********* SLURM CONFIGURATION **********###
 #SBATCH -N 1
-#SBATCH --job-name=test_simwave_perf
+#SBATCH --job-name=test_perf
 #SBATCH --output=logs/modelling.%J.out
 #SBATCH --error=logs/modelling.%J.err
 #SBATCH --cpus-per-task=32
@@ -12,7 +12,7 @@
 #SBATCH -A k1205
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee log-simwave_perf.log) 2>&1
+exec > >(while read line; do echo "$(date): $line"; done | tee log-perf.log) 2>&1
 
 ###*** PARAMETERS TO ITERATE A SWEEP ON ***###
 # Values to iter for num_threads | tgs | size |
@@ -54,7 +54,7 @@ make clean
 make VERBOSE=1
 make install
 
-###*********** RUNNING SIMWAVE ************###
+###*********** RUNNING STENCIL ************###
 # iterate on parameters values
 echo "CSV: size ; timesteps ; OMP_NUM_THREADS ; tgs ; ntg ; (th_x, th_y, th_z) ; t_dim ; num_wf ; mode ; tb or sb"
 for num in "${num_threads[@]}"; do
@@ -65,7 +65,7 @@ for num in "${num_threads[@]}"; do
       continue
     fi
     for size in "${size_values[@]}"; do
-      # Thread configuration: SIMWAVE x=1, RACHED z=1 (innermost dimension is vectorized)
+      # Thread configuration: STENCIL x=1, RACHED z=1 (innermost dimension is vectorized)
       th_z=$(expr $tgs / 2)
       th_y=2
       th_x=1

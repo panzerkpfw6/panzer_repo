@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
-  parser *p = parser_create("Reverse Time Migration using simwave");
+  parser *p = parser_create("Reverse Time Migration using STENCIL");
   /// parse command line arguments.
   PARSER_BOOTSTRAP(p);
   parser_parse(p, argc, argv);
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
   /// print info:
   if (s->verbose) {
   	MSG(" ");
-  	MSG("... simwave information:");
+  	MSG("... stencil information:");
   	MSG("... compute domain size = %u x %u x %u (%f MB)",
       s->dimx, s->dimy, s->dimz, s->size/1024./1024.);
   	MSG("... imaging domain size = %u x %u x %u (%f MB)",

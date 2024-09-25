@@ -1,21 +1,21 @@
 ///
-/// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b simwave.
+/// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
+/// This file is part of the \b stencil project.
 ///
-/// @b simwave is free software: you can redistribute it and/or modify
+/// \b stencil is free software: you may redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// @b simwave is distributed in the hope that it will be useful,
+/// The stencil project is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 /// GNU General Public License for more details.
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+/// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
-/// @author Issam Said
+/// @author Pavel Plotnitskii
 /// @file src/wave.c
 /// @brief This file contains the implementation of the new CPU wave descriptor.
 #include <stdio.h>
@@ -202,7 +202,7 @@ void wave_init_numerics(sismap_t *s) {
         s->nb_snap = s->nyquist_sampling;
     } else {
         if (s->nb_snap > s->nyquist_sampling) {
-            MSG("... simwave information:");
+            MSG("... STENCIL information:");
             MSG("... Nyquist sampling=: %d\n", s->nyquist_sampling);
             ERR("... nb_snap cannot > Nyquist sampling");
         }

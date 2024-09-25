@@ -25,7 +25,7 @@ make VERBOSE=1
 make install
 
 rm data/*
-###*********** RUNNING SIMWAVE ************###
+###*********** RUNNING ************###
 numactl --interleave=all ./bin/modeling-snap_end  --verbose --n1 512 --n2 512 --n3 512 --iter 504 --dshot 1 --first 1301 --last 1301
 mv snapshot_final data/SB-final_snap_504.raw
 numactl --interleave=all ./bin/modeling  --verbose --n1 512 --n2 512 --n3 512  --iter 504 --tb_thread_group_size 14 --tb_nb_thread_groups 4 --tb_th_x 1 --tb_th_y 2 --tb_th_z 7 --tb_t_dim 3 --tb_num_wf 21 --dshot 1 --first 1301 --last 1301 -c 

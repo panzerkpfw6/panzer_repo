@@ -24,7 +24,7 @@ timesteps=1000 ###???
 num_wf=21
 t_dim=3
 mode=2
-###*********** RUNNING SIMWAVE ************###
+###*********** RUNNING ************###
 tgs=4
 th_z=$(expr $tgs / 2)
 th_y=2

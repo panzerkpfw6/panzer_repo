@@ -76,11 +76,11 @@ echo "TB_mod_1st"
 
 
 
-####*********** RUNNING SIMWAVE ************###
+####*********** RUNNING stencil ************###
 ## iterate on parameters values
 #echo "CSV: size ; timesteps ; OMP_NUM_THREADS ; tgs ; ntg ; (th_x, th_y, th_z) ; t_dim ; num_wf ; mode ; tb or sb"
 #size=512
-## Thread configuration: SIMWAVE x=1, RACHED z=1 (innermost dimension is vectorized)
+## Thread configuration: stencil x=1, RACHED z=1 (innermost dimension is vectorized)
 ####*** temporal blocking parameters***###
 ##thread group : (1,2,2)  #group size: 4 #num_group : 8
 #th_z=2

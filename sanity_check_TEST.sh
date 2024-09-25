@@ -26,7 +26,7 @@ make install
 
 rm data/*
 
-####*********** RUNNING SIMWAVE ************###
+####*********** RUNNING ************###
 #numactl --interleave=all ./bin/modeling-snap_end  --verbose --n1 512 --n2 512 --n3 512 --iter 104 --dshot 1 --first 1301 --last 1301
 #mv snapshot_final data/SB-final_snap.raw
 

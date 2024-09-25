@@ -37,5 +37,5 @@ if __name__ == "__main__":
   try:
     plot_sismo(args.filename)
   except Exception as e:
-    print('[SIMWAVE SISMO]: %s' % e)
+    print('[SISMO]: %s' % e)
     exit(1)
