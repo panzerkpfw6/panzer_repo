@@ -1,23 +1,23 @@
-#ifndef __SIMWAVE_MACROS_H_
-#define __SIMWAVE_MACROS_H_
+#ifndef __STENCIL_MACROS_H_
+#define __STENCIL_MACROS_H_
 ///
-/// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b stencil.
+/// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
+/// This file is part of the \b stencil project.
 ///
-/// \b stencil is free software: you can redistribute it and/or modify
+/// \b stencil is free software: you may redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// stencil is distributed in the hope that it will be useful,
+/// The stencil project is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
-/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+/// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 /// GNU General Public License for more details.
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
+/// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
-/// @author Issam Said
+/// @author Pavel Plotnitskii
 /// @file stencil/macros.h
 /// @brief Contains the major settings of project.
 ///
@@ -122,4 +122,4 @@ do {                                                              \
   }                                                               \
 } while(0);
 
-#endif //  __SIMWAVE_MACROS_H_
+#endif //  __STENCIL_MACROS_H_

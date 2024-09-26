@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <simwave/config.h>
-#include <simwave/macros.h>
-#include <simwave/pml.h>
+#include <stencil/config.h>
+#include <stencil/macros.h>
+#include <stencil/pml.h>
 #include <omp.h>
 
 #define ETA(z,y,x) ( eta[(2+s->dimx)*((2+s->dimy)*(z+1) + (y+1)) + (x+1)])

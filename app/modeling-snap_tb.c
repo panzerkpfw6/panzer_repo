@@ -5,11 +5,11 @@
 #include <string.h>
 #include <errno.h>
 //#include <cuda_runtime.h>
-#include <simwave/parser.h>
-#include <simwave/simwave.h>
-#include <simwave/wave_tb.h>
-#include <simwave/wtime.h>
-#include <simwave/macros.h>
+#include <stencil/parser.h>
+#include <stencil/stencil.h>
+#include <stencil/wave_tb.h>
+#include <stencil/wtime.h>
+#include <stencil/macros.h>
 /// Modeling on CPU.
 ///
 ///
@@ -365,7 +365,7 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
     DELETE_BUFFER(pml_tmp);
 }
 
-/// @brief The main function of the first part of \b simwave
+/// @brief The main function of the first part of \b stencil
 /// @param argc the number of user's options
 /// @param argv contains the user options
 /// @return 0 on success
@@ -397,7 +397,7 @@ int main(int argc, char* argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
     /// create a parser.
-    parser *p = parser_create("Seismic Modelling using simwave");
+    parser *p = parser_create("Seismic Modelling using stencil");
     /// parse command line arguments.
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);
@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
     DELETE_BUFFER(vel);
     DELETE_BUFFER(source);
     DELETE_BUFFER(pml_tab);
-    /// release simwave.
+    /// release stencil.
     wave_release(s);
     /// release the sismap structure.
     free(s);

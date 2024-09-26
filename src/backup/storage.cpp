@@ -16,7 +16,7 @@
  **/
 
 #include <iomanip>
-#include <simwave/storage.h>
+#include <stencil/storage.h>
 namespace mlbs{
 Storage::Storage(){}
 Storage::~Storage(){}

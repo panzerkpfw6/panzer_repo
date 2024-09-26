@@ -3,8 +3,8 @@
 #include <string.h>
 #include <errno.h>
 
-#include <simwave/macros.h>
-#include <simwave/wave_tb.h>
+#include <stencil/macros.h>
+#include <stencil/wave_tb.h>
 
 typedef struct mlbs_s mlbs_t;
 

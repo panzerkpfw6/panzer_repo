@@ -9,11 +9,11 @@
 #include <assert.h>
 #include <omp.h>
 #include <math.h>
-#include "simwave/macros.h"
-#include "simwave/sismap.h"
-#include "simwave/parser.h"
-#include "simwave/wave_tb.h"
-#include "simwave/wtime.h"
+#include "stencil/macros.h"
+#include "stencil/sismap.h"
+#include "stencil/parser.h"
+#include "stencil/wave_tb.h"
+#include "stencil/wtime.h"
 
 volatile int wave_tb_head;
 volatile int wave_tb_tail;

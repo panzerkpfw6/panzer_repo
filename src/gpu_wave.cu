@@ -1,19 +1,19 @@
 ///
 /// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b simwave.
+/// This file is part of \b stencil.
 ///
-/// @b simwave is free software: you can redistribute it and/or modify
+/// @b stencil is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// @b simwave is distributed in the hope that it will be useful,
+/// @b stencil is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
 /// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 /// GNU General Public License for more details.
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+/// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Issam Said
 /// @file src/gpu_wave.cu
@@ -24,10 +24,10 @@
 #include <libgen.h>
 #include <string.h>
 #include <math.h>
-#include <simwave/config.h>
-#include <simwave/macros.h>
-#include <simwave/sismap.h>
-#include <simwave/shot.h>
+#include <stencil/config.h>
+#include <stencil/macros.h>
+#include <stencil/sismap.h>
+#include <stencil/shot.h>
 
 /// @brief This function should contains the OpenCL
 /// kernel that updates the wave fields on the GPU.

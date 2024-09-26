@@ -46,7 +46,7 @@ def slice_keyb_viewer(volume, axis=0, **kwargs):
   remove_keymap_conflicts({'j', 'k'})
   fig, ax   = plt.subplots()
   ax.volume = volume
-  ax.set_title("simwave")
+  ax.set_title("stencil")
   ax.index  = 0 #volume.shape[0]
   ax.imshow(volume[ax.index])#, cmap='nipy_spectral')
   fig.canvas.mpl_connect('key_press_event', process_key)
@@ -65,7 +65,7 @@ def slice_slid_viewer(cube, axis=0, **kwargs):
   # generate figure
   fig = plt.figure()
   ax  = plt.subplot(111)
-  ax.set_title("simwave")
+  ax.set_title("stencil")
   fig.subplots_adjust(left=0.25, bottom=0.25)
 
   # select first image
@@ -93,7 +93,7 @@ def slice_slid_viewer(cube, axis=0, **kwargs):
 def slice_auto_viewer(volume, axis=0, **kwargs):
   fig, ax   = plt.subplots()
   ax.volume = volume
-  ax.set_title("simwave")
+  ax.set_title("stencil")
   ax.index  = 0
   l = ax.imshow(volume[0])
   fig.canvas.draw() 
@@ -118,7 +118,7 @@ def vizu(file_name, nx, ny, keyb, slid, auto):
   else:              slice_auto_viewer(b, 0)
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description = 'simwave vizu tool.')
+  parser = argparse.ArgumentParser(description = 'stencil vizu tool.')
   parser.add_argument('filename', type=str,
                       help='the path to the wave output.')
   parser.add_argument('--nx', type=int, default=100,

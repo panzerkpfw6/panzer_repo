@@ -1,25 +1,25 @@
 ///
 /// @copyright Copyright 2017- Issam Said. All rights reserved.
-/// This file is part of \b simwave.
+/// This file is part of \b stencil.
 ///
-/// \b simwave is free software: you can redistribute it and/or modify
+/// \b stencil is free software: you can redistribute it and/or modify
 /// it under the terms of the GNU General Public License as published by
 /// the Free Software Foundation, either version 3 of the License, or
 /// (at your option) any later version.
 ///
-/// \b simwave is distributed in the hope that it will be useful,
+/// \b stencil is distributed in the hope that it will be useful,
 /// but WITHOUT ANY WARRANTY; without even the implied warranty of
 /// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 /// GNU General Public License for more details->
 ///
 /// You should have received a copy of the GNU General Public License
-/// along with \b simwave.  If not, see <http://www.gnu.org/licenses/>.
+/// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Issam Said.
 /// @file src/main.c
 /// @brief Main program of the wave simulator.
 ///
-/// Contains the main program that runs the Seismic Modeling using simwave.
+/// Contains the main program that runs the Seismic Modeling using stencil.
 ///
 #include <stdio.h>
 #include <math.h>
@@ -336,7 +336,7 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
   DELETE_BUFFER(pml_tmp);
 }
 
-/// @brief The main function of the first part of \b simwave
+/// @brief The main function of the first part of \b stencil
 /// @param argc the number of user's options
 /// @param argv contains the user options
 /// @return 0 on success
@@ -368,7 +368,7 @@ int main(int argc, char* argv[]) {
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
-  parser *p = parser_create("Seismic Modelling using simwave");
+  parser *p = parser_create("Seismic Modelling using stencil");
   /// parse command line arguments.
   PARSER_BOOTSTRAP(p);
   parser_parse(p, argc, argv);
@@ -446,7 +446,7 @@ int main(int argc, char* argv[]) {
   DELETE_BUFFER(vel);
   DELETE_BUFFER(source);
   DELETE_BUFFER(pml_tab);
-  /// release simwave.
+  /// release stencil.
   wave_release(s);
   /// release the sismap structure.
   free(s);

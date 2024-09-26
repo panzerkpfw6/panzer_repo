@@ -1,4 +1,4 @@
-#include <simwave/storage.h>
+#include <stencil/storage.h>
 
 mlbs::Storage iostorage;
 

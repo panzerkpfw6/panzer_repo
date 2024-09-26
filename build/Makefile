@@ -157,7 +157,7 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named simwave
+# Target rules for targets named stencil
 
 # Build rule for target.
 simwave: cmake_check_build_system

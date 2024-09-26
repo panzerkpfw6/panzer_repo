@@ -23,10 +23,10 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
-#include <simwave/config.h>
-#include <simwave/macros.h>
-#include <simwave/velocity.h>
-#include <simwave/interp.h>
+#include <stencil/config.h>
+#include <stencil/macros.h>
+#include <stencil/velocity.h>
+#include <stencil/interp.h>
 
 #define __DUMP_VEL
 

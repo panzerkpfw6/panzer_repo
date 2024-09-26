@@ -17,15 +17,11 @@ double wtime() {
   return t;
 }
 */
-
 # include <stdlib.h>
 # include <stdio.h>
 #include <sys/time.h>
-
 # include <time.h>
-
-# include "simwave/wtime.h"
-
+# include "stencil/wtime.h"
 /******************************************************************************/
 
 struct timespec start;

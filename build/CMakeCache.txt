@@ -261,7 +261,7 @@ simwave_apps_BINARY_DIR:STATIC=/home/plotnips/Dropbox/PhD_proposal/work_with_dav
 //Value Computed by CMake
 simwave_apps_SOURCE_DIR:STATIC=/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app
 
-//Build simwave with the debug mode.
+//Build stencil with the debug mode.
 simwave_debug:BOOL=OFF
 
 //Value Computed by CMake

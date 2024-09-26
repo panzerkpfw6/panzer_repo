@@ -4,11 +4,11 @@
 #include <math.h>
 #include <string.h>
 //#include <cuda_runtime.h>
-#include <simwave/parser.h>
-#include <simwave/simwave.h>
-#include <simwave/wave_tb.h>
-#include <simwave/wtime.h>
-#include <simwave/macros.h>
+#include <stencil/parser.h>
+#include <stencil/stencil.h>
+#include <stencil/wave_tb.h>
+#include <stencil/wtime.h>
+#include <stencil/macros.h>
 void wave_tb_data_close_open(tb_data_t * data,const int nb_thread_groups,const int shotid) {
   char tmp[512];
   sprintf(tmp, "mkdir -p %s", OUTDIR);
@@ -845,7 +845,7 @@ int main(int argc, char *argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
     /// create a parser.
-    parser *p = parser_create("Reverse Time Migration using simwave");
+    parser *p = parser_create("Reverse Time Migration using stencil");
     /// parse command line arguments.
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);
@@ -947,7 +947,7 @@ int main(int argc, char *argv[]) {
     DELETE_BUFFER(vel);
     DELETE_BUFFER(source);
     DELETE_BUFFER(pml_tab);
-    /// release simwave.
+    /// release stencil.
     wave_release(s);
     /// release the simulation structure.
     free(s);

@@ -3,12 +3,12 @@
 #include <math.h>
 #include <string.h>
 #include <errno.h>
-#include <simwave/parser.h>
-#include <simwave/simwave.h>
-#include <simwave/wave_tb.h>
-#include <simwave/wave.h>
-#include <simwave/wtime.h>
-#include <simwave/macros.h>
+#include <stencil/parser.h>
+#include <stencil/stencil.h>
+#include <stencil/wave_tb.h>
+#include <stencil/wave.h>
+#include <stencil/wtime.h>
+#include <stencil/macros.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
 /// Modeling on CPU.
@@ -524,7 +524,7 @@ int main(int argc, char* argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
     /// create a parser.
-    parser *p = parser_create("Seismic Modelling using simwave");
+    parser *p = parser_create("Seismic Modelling using stencil");
     /// parse command line arguments.
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);
@@ -640,7 +640,7 @@ int main(int argc, char* argv[]) {
     DELETE_BUFFER(vel);
     DELETE_BUFFER(source);
     DELETE_BUFFER(pml_tab);
-    /// release simwave.
+    /// release stencil.
     wave_release(s);
     /// release the sismap structure.
     free(s);

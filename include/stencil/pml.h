@@ -1,6 +1,5 @@
-#ifndef __SIMWAVE_SHOT_H_
-#define __SIMWAVE_SHOT_H_
-
+#ifndef __STENCIL_PML_H_
+#define __STENCIL_PML_H_
 ///
 /// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
 /// This file is part of the \b stencil project.
@@ -19,29 +18,16 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-/// @file simwave/shot.h
-/// @brief A shot descriptor with its manipulation routines.
+/// @file stencil/pml.h
 ///
-/// Define a structure for the shots and their manipulation routines.
+/// Contains all the routines necessary for the boundary
+/// conditions (using the <b>Perfectly Matched Layer</b> method) computations.
 ///
-#include <stdio.h>
-#include <stdbool.h>
-#include <simwave/config.h>
+#include <stencil/sismap.h>
 
-typedef struct __shot_t {
-	unsigned int  srcidx;
-	unsigned int      id;
-	FILE *fd_snap;
-//	#ifdef __DEBUG
-	FILE* fd_fwd;
-	FILE* fd_bwd;
-	FILE* fd_img;
-	FILE* fd_ilm;
-//	#endif // __DEBUG
-} shot_t;
+#define PML_TAPER 0
 
-void shot_init(shot_t *, bool, bool);
+/// @brief Calculate the damping factors.
+void pml_compute_coefs(sismap_t *s, float* pml_array);
 
-void shot_release(shot_t *);
-
-#endif // __SIMWAVE_SHOT_H_
+#endif // __STENCIL_PML_H_

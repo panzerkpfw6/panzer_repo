@@ -1,5 +1,5 @@
-#ifndef __SIMWAVE_MLBS_H_
-#define __SIMWAVE_MLBS_H_
+#ifndef __STENCIL_MLBS_H_
+#define __STENCIL_MLBS_H_
 
 typedef struct mlbs_s mlbs_t;
 

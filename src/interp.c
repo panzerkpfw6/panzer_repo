@@ -3,7 +3,7 @@
 ///
 #include <stdio.h>
 #include <string.h>
-#include <simwave/interp.h>
+#include <stencil/interp.h>
 
 float linearinterp(float a, float b, float t) {
 	return a*(1-t)+b*t;

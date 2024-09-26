@@ -1,5 +1,6 @@
-#ifndef __SIMWAVE_VELOCITY_H_
-#define __SIMWAVE_VELOCITY_H_
+#ifndef __STENCIL_SHOT_H_
+#define __STENCIL_SHOT_H_
+
 ///
 /// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
 /// This file is part of the \b stencil project.
@@ -18,26 +19,29 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-/// @file velocity.h
-/// @brief A velocity model generator.
+/// @file stencil/shot.h
+/// @brief A shot descriptor with its manipulation routines.
 ///
-/// Generates a phase velocity model for the simulation.
+/// Define a structure for the shots and their manipulation routines.
 ///
-#include <simwave/config.h>
-#include <simwave/sismap.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <stencil/config.h>
 
-/// @brief Generates a three dimensional velocity model in m/s
-/// @param vtab is an array that will contain the model terms
-/// @param dimx is the width of the domain
-/// @param dimy is the height of the domain
-/// @param dimz is the depth of the domain
-/// @param vmin is the minimum velocity required
-/// @param vmax is the maximum velocity tolerated
-/// @param layers is the maximum velocity layers number
-void velocity_generate_model(sismap_t *s, float* vtab, unsigned int layers);
+typedef struct __shot_t {
+	unsigned int  srcidx;
+	unsigned int      id;
+	FILE *fd_snap;
+//	#ifdef __DEBUG
+	FILE* fd_fwd;
+	FILE* fd_bwd;
+	FILE* fd_img;
+	FILE* fd_ilm;
+//	#endif // __DEBUG
+} shot_t;
 
-void velocity_query_model(sismap_t *s);
+void shot_init(shot_t *, bool, bool);
 
-void velocity_load_model(sismap_t *s, float *vtab);
+void shot_release(shot_t *);
 
-#endif // __SIMWAVE_VELOCITY_H_
+#endif // __STENCIL_SHOT_H_

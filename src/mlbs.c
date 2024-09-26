@@ -7,10 +7,9 @@
 #include <pthread.h>
 #include <sched.h>
 #include <sys/sysinfo.h>
-
-#include <simwave/macros.h>
-#include <simwave/wave_tb.h>
-#include <simwave/mlbs.h>
+#include <stencil/macros.h>
+#include <stencil/wave_tb.h>
+#include <stencil/mlbs.h>
 
 struct mlbs_s {
   FILE * fp;

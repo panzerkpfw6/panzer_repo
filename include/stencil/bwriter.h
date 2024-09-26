@@ -1,5 +1,5 @@
-#ifndef __SIMWAVE_BWRITER_H_
-#define __SIMWAVE_BWRITER_H_
+#ifndef __STENCIL_BWRITER_H_
+#define __STENCIL_BWRITER_H_
 
 typedef struct bwriter_s bwriter_t;
 

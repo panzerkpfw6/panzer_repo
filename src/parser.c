@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <simwave/parser.h>
+#include <stencil/parser.h>
 
 option *option_create(const option_kind kind,
                       const char short_name,

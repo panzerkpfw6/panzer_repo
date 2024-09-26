@@ -1,5 +1,5 @@
-#ifndef __SIMWAVE_WAVE_H_
-#define __SIMWAVE_WAVE_H_
+#ifndef __STENCIL_WAVE_H_
+#define __STENCIL_WAVE_H_
 ///
 /// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
 /// This file is part of the \b stencil project.
@@ -18,7 +18,7 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-/// @file simwave/wave.h
+/// @file stencil/wave.h
 ///
 /// Contains all the routines necessary for a wave simulation with boundary
 /// conditions (using the <b>Perfectly Matched Layer</b> method) on CPU.
@@ -26,9 +26,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include <simwave/config.h>
-#include <simwave/sismap.h>
-#include <simwave/shot.h>
+#include <stencil/config.h>
+#include <stencil/sismap.h>
+#include <stencil/shot.h>
 
 /// in the code only BLOCKY,BLOCKZ are used
 #define BLOCKX 128
@@ -136,4 +136,4 @@ int  wave_check_fields(float *tab, size_t len);
 
 void wave_min_max(char* str, float *tab, size_t len);
 
-#endif // __SIMWAVE_WAVE_H_
+#endif // __STENCIL_WAVE_H_

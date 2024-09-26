@@ -8,9 +8,9 @@
 #include <sched.h>
 #include <sys/sysinfo.h>
 
-#include <simwave/macros.h>
-#include <simwave/wave_tb.h>
-#include <simwave/bwriter.h>
+#include <stencil/macros.h>
+#include <stencil/wave_tb.h>
+#include <stencil/bwriter.h>
 
 struct bwriter_s {
   FILE * fp;

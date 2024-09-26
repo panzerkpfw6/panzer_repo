@@ -23,13 +23,13 @@
 #include <math.h>
 #include <string.h>
 #include <libgen.h>
-#include <simwave/config.h>
-#include <simwave/macros.h>
-#include <simwave/wave.h>
-#include <simwave/velocity.h>
-#include <simwave/source.h>
-#include <simwave/shot.h>
-#include <simwave/pml.h>
+#include <stencil/config.h>
+#include <stencil/macros.h>
+#include <stencil/wave.h>
+#include <stencil/velocity.h>
+#include <stencil/source.h>
+#include <stencil/shot.h>
+#include <stencil/pml.h>
 #include <omp.h>
 
 #define U0(z,y,x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
@@ -340,7 +340,7 @@ void wave_release(sismap_t *s) {
 void wave_print(sismap_t *s) {
     int i;
     MSG(" ");
-    MSG("... simwave information:");
+    MSG("... stencil information:");
     MSG("... velocity size       = %u x %u x %u",
         s->vel_dimx, s->vel_dimy, s->vel_dimz);
     MSG("... velocity min/max    = %f - %f", s->vmin, s->vmax);

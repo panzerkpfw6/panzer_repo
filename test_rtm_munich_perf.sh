@@ -50,7 +50,7 @@ first=1;last=10;
 first=16449;last=16449;
 dshot=300;fmax=11;
 ###********** TB parameters ***********###
-#num_th=128;th_x=8;th_y=2;th_z=1;num_wf=64;tdim=7; #stencil parameters. rewrite to simwave convention.
+#num_th=128;th_x=8;th_y=2;th_z=1;num_wf=64;tdim=7; #stencil parameters. rewrite to stencil convention.
 num_th=128;th_x=1;th_y=2;th_z=8;num_wf=64;tdim=7;
 export tgs=16;
 echo "${logs_path}/log-TB_1st_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${tdim}.log"

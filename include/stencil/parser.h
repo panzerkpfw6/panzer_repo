@@ -1,5 +1,5 @@
-#ifndef __SIMWAVE_PARSER_H_
-#define __SIMWAVE_PARSER_H_
+#ifndef __STENCIL_PARSER_H_
+#define __STENCIL_PARSER_H_
 
 ///
 /// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
@@ -19,7 +19,7 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-/// @file simwave/parser.h
+/// @file stencil/parser.h
 /// @brief A customized user options parser.
 ///
 /// Parses user options from command line or from a text file.
@@ -216,9 +216,9 @@ void  parser_get_vect_float(parser* p,
 void  parser_get_vect_string(parser* p,
                              const char* expression, char** vs, unsigned int n);
 
-/// @brief Sets the possible options for \b simwave
+/// @brief Sets the possible options for \b stencil
 ///
-/// run <b> bin/simwave -h </b> or <b> bin/simwave --help </b>
+/// run <b> bin/stencil -h </b> or <b> bin/stencil --help </b>
 /// to see the possible options
 #define PARSER_BOOTSTRAP(p)                                             \
 parser_put(p, BOOL,                                                     \
@@ -305,4 +305,4 @@ parser_put(p, STRING,                                                   \
            0, "tb_affinity", "NONE", "Affinity setup file");            \
 parser_put(p, INT,                                                      \
            0, "order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
-#endif //  __SIMWAVE_PARSER_H_
+#endif //  __STENCIL_PARSER_H_

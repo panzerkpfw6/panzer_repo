@@ -16,20 +16,20 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-#ifndef __SIMWAVE_WAVE_TB_H_
-#define __SIMWAVE_WAVE_TB_H_
+#ifndef __STENCIL_WAVE_TB_H_
+#define __STENCIL_WAVE_TB_H_
 
 #define _GNU_SOURCE
 #include <sched.h>
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <simwave/config.h>
-#include <simwave/sismap.h>
-#include <simwave/shot.h>
-#include <simwave/parser.h>
-#include <simwave/mlbs.h>
-#include <simwave/bwriter.h>
+#include <stencil/config.h>
+#include <stencil/sismap.h>
+#include <stencil/shot.h>
+#include <stencil/parser.h>
+#include <stencil/mlbs.h>
+#include <stencil/bwriter.h>
 
 typedef struct tb_s tb_t;
 typedef struct tb_data_s tb_data_t;

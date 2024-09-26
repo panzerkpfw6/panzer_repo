@@ -21,9 +21,9 @@
 ///
 #include <math.h>
 #include <stdio.h>
-#include <simwave/config.h>
-#include <simwave/macros.h>
-#include <simwave/shot.h>
+#include <stencil/config.h>
+#include <stencil/macros.h>
+#include <stencil/shot.h>
 
 void shot_init(shot_t *shot, bool cpu, bool modeling) {
     MSG("OUTDIR=%s",OUTDIR);

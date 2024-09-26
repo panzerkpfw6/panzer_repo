@@ -1,5 +1,5 @@
-#ifndef __SIMWAVE_CONFIG_H_
-#define __SIMWAVE_CONFIG_H_
+#ifndef __STENCIL_CONFIG_H_
+#define __STENCIL_CONFIG_H_
 ///
 /// @copyright Copyright 2024- Pavel Plotnitskii. All rights reserved.
 /// This file is part of the \b stencil project.
@@ -18,7 +18,7 @@
 /// along with the \b stencil project. If not, see <http://www.gnu.org/licenses/>.
 ///
 /// @author Pavel Plotnitskii
-/// @file simwave/config.h
+/// @file stencil/config.h
 /// @brief contains the major settings of project.
 ///
 
@@ -55,7 +55,7 @@
 #endif // __DUMP_SOURCE
 
 #define OUTDIR       "data"
-//#define OUTDIR       "/raid/simwave"
+//#define OUTDIR       "/raid/stencil"
 #define SNAP_BASE    "snap"
 #define SISMOS_BASE  "sismos"
 #define VEL          "vel.raw"
@@ -66,4 +66,4 @@
 #define SNAP_DBG     "snap_dbg"
 #endif // __DEBUG
 
-#endif //  __SIMWAVE_CONFIG_H_
+#endif //  __STENCIL_CONFIG_H_

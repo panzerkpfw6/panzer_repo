@@ -4,8 +4,8 @@
 #include <string.h>
 #include <dirent.h>
 //#include <cuda_runtime.h>
-#include <simwave/parser.h>
-#include <simwave/simwave.h>
+#include <stencil/parser.h>
+#include <stencil/stencil.h>
 
 void gather_img_div_ilm(unsigned int len,
                         float *img_shot, float *ilm_shot, float *img) {
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
   DELETE_BUFFER(img_only);
   DELETE_BUFFER(img_shot);
   DELETE_BUFFER(ilm_shot);
-  /// release simwave.
+  /// release stencil.
   wave_release(s);
   /// release the simulation structure.
   free(s);
