@@ -1,0 +1,219 @@
+pipeline {
+    agent { label 'jenkinsfile' }
+    triggers {
+        pollSCM('H/10 * * * *')
+    }
+
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '50'))
+        timestamps()
+    }
+
+    stages {
+        stage ('compile_SB') {
+            steps {
+                sh '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    cd ./SB; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_1st.out
+                    cd ../SB_abc; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_1st-abc.out
+                    cd ../SB_order2_abc; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_2nd-abc.out
+                    cd ../SB_order2; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_2nd.out
+                    cd ..
+                '''
+            }
+        }
+        stage ('compile_TB') {
+            steps {
+                sh '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    cd ./TB; icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_1st.out
+                    cd ../TB_abc;     icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_1st-abc.out
+                    cd ../TB_order2_abc;     icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_2nd-abc.out
+                    cd ../TB_order2; icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_2nd.out
+                    cd ..
+                '''
+            }
+        }
+        stage ('test_SB') {
+            steps {
+                sh '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    ./SB_1st.out 512 512 512 10 100 0 0
+                    '''
+            }
+        }
+        stage ('test_TB') {
+            steps {
+                sh '''#!/bin/bash -le
+                    export TIME_TB_1st=57
+                    # we dont record last time sample wavefield now and set it to 100000
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    x=2 y=2 z=1 t=7 w=20;
+                    numactl --interleave=all ./TB_1st.out 256 256 256 $TIME_TB_1st 100000 $x $y $z $t $w 0 0
+                    '''
+            }
+        }
+        stage ('compare_wavefields_for_SB_TB') {
+            steps {
+                sh '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    echo "Compare wavefields"
+                    export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_1st=504 #@pavel in SB the nt should one time less than in correponding TB.
+
+                    ### grid size 512*512*512
+                    x=2 y=2 z=1 t=7 w=20;  numactl --interleave=all ./TB_1st.out 512 512 512 $TIME_TB_1st 1 $x $y $z $t $w 0 1;    # we record last time sample wavefield now and set is to 1
+                    ./SB_1st.out 512 512 512 $TIME_SB_1st $TIME_SB_1st 0 1;
+                    ./scripts/diff_to ./TB_1st.raw ./SB_1st.raw
+                    ### grid size 256*256*256
+                    x=2 y=2 z=1 t=7 w=20;  numactl --interleave=all ./TB_1st.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t $w 0 1;    # we record last time sample wavefield now and set is to 1
+                    ./SB_1st.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1;
+                    ./scripts/diff_to ./TB_1st.raw ./SB_1st.raw
+                    '''
+            }
+        }
+        stage ('compare_wavefields_for_SBabc_TBabc') {
+            steps {
+                sh '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_1st=504 #@pavel in SB the nt should one time less than in correponding TB.
+                    ### grid size 256*256*256
+                    x=2 y=2 z=1 t=7 w=20;
+                    ./SB_1st-abc.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1 0 0;
+                    numactl --interleave=all ./TB_1st-abc.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t $w 0 1 0 0;
+                    ./scripts/diff_to ./TB_1st_abc.raw ./SB_1st_abc.raw
+                    '''
+            }
+        }
+        stage ('compare_wavefields_for_SB_TB_2nd_order') {
+            steps {
+                sh  '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_TB_2nd=514 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_2nd=513 #@pavel in SB the nt should one time less than in correponding TB.
+                    ### grid size 256*256*256
+                    x=2 y=2 z=1 t=7 w=20;  numactl --interleave=all ./TB_2nd.out 256 256 256 $TIME_TB_2nd 1 $x $y $z $t $w 0 1;    # we record last time sample wavefield now and set is to 1
+                    ./SB_2nd.out 256 256 256 $TIME_SB_2nd $TIME_SB_2nd 0 1;
+                    echo 'compare_wavefields_for_SB_TB_2nd_order'
+                    ./scripts/diff_to ./TB_2nd.raw ./SB_2nd.raw
+                    '''
+            }
+        }
+        stage ('compare_wavefields_for_SB_TB_2nd_order_abc') {
+            steps {
+                sh  '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_TB_2nd=514 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_2nd=513 #@pavel in SB the nt should one time less than in correponding TB.
+                    ### grid size 256*256*256
+                    x=2 y=2 z=1 t=7 w=20;  numactl --interleave=all ./TB_2nd-abc.out 256 256 256 $TIME_TB_2nd 1 $x $y $z $t $w 0 1;    # we record last time sample wavefield now and set is to 1
+                    ./SB_2nd-abc.out 256 256 256 $TIME_SB_2nd $TIME_SB_2nd 0 1;
+                    echo 'compare_wavefields_for_SB_TB_2nd_order_abc'
+                    ./scripts/diff_to ./TB_2nd_abc.raw ./SB_2nd_abc.raw
+                    '''
+            }
+        }
+        stage ('test_sismos_options_for_SB') {
+            steps {
+                sh  '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_SB_1st=54 #@pavel in SB the nt should one time less than in correponding TB.
+                    ### we test functionality of 2 bool flags "read_v,shot_flag". Does the program crash or not.
+                    # first two flags are write_velocity_grid,write_snapshot
+                    ./SB_1st-abc.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1 1 0;
+                    ./SB_1st-abc.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1 1 1;
+                    ./SB_1st-abc.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1 0 0;
+                    ./SB_1st-abc.out 256 256 256 $TIME_SB_1st $TIME_SB_1st 0 1 0 1;
+                    '''
+            }
+        }
+        stage ('test_sismos_options_for_TB') {
+            steps {
+                sh  '''#!/bin/bash -le
+                    ####################################################
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    ### we test functionality of 2 bool flags "read_v,shot_flag". Does the program crash or not.
+                    # first two flags are write_velocity_grid,write_snapshot
+                    x=2 y=2 z=1 t=7 w=20;
+                    echo '!!!!!!!0 0!!!!!!!'
+                    numactl --interleave=all  ./TB_1st-abc.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t $w 0 1 0 0;
+                    echo '!!!!!!!0 1!!!!!!!'
+                    numactl --interleave=all ./TB_1st-abc.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t  $w 0 1 0 1; #ok 505
+                    echo '!!!!!!!1 0!!!!!!!'
+                    numactl --interleave=all ./TB_1st-abc.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t $w 0 1 1 0;
+                    echo '!!!!!!! 1 1 !!!!!!!'
+                    numactl --interleave=all ./TB_1st-abc.out 256 256 256 $TIME_TB_1st 1 $x $y $z $t $w 0 1 1 1; #ok 505
+                    '''
+            }
+        }
+        stage ('compare_sismos_for_SBabc_TBabc') {
+            steps {
+                sh  '''#!/bin/bash -le
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    export OMP_NUM_THREADS=4
+                    ####################################################
+                    export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_1st=504 #@pavel in SB the nt should one time less than in correponding TB.
+                    ####################################################
+                    #######   test with read_v=0   #######
+                    cd ./SB_abc;
+                    pwd
+                    icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ./SB_1st-abc.out
+                    ./SB_1st-abc.out 256 512 256 $TIME_SB_1st $TIME_SB_1st 0 0 0 1;
+
+                    cd ../TB_abc;
+                    icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ./TB_1st-abc.out
+                    x=2 y=2 z=1 t=7 w=20;
+                    ./TB_1st-abc.out 256 512 256 $TIME_TB_1st 1 $x $y $z $t $w 0 0 0 1;
+                    cd ..
+
+                    python test_tb_sismos.py './SB_abc/data/sismos.raw' './TB_abc/data/sismos.raw' 256 256 504 505
+                    #######   test with read_v=1   #######
+                    cd ./SB_abc;
+                    icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ./SB_1st-abc.out
+                    ./SB_1st-abc.out 256 512 256 $TIME_SB_1st $TIME_SB_1st 0 0 1 1;
+
+                    cd ../TB_abc;
+                    icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ./TB_1st-abc.out
+                    x=2 y=2 z=1 t=7 w=20;
+                    ./TB_1st-abc.out 256 512 256 $TIME_TB_1st 1 $x $y $z $t $w 0 0 1 1;
+                    cd ..
+
+                    python test_tb_sismos.py './SB_abc/data/sismos.raw' './TB_abc/data/sismos.raw' 256 512 504 505
+                    '''
+            }
+        }
+    }
+    // Post build actions
+    post {
+        //always {
+        //}
+        //success {
+        //}
+        //unstable {
+        //}
+        //failure {
+        //}
+        unstable {
+                emailext body: "${env.JOB_NAME} - Please go to ${env.BUILD_URL}", subject: "Jenkins Pipeline build is UNSTABLE", recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+        }
+        failure {
+                emailext body: "${env.JOB_NAME} - Please go to ${env.BUILD_URL}", subject: "Jenkins Pipeline build FAILED", recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+        }
+    }
+}
