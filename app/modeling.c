@@ -587,13 +587,13 @@ int main(int argc, char* argv[]) {
 //    velocity_load_model(s,vel);
 //    MSG("velocity_const_model2\n");
 //    velocity_const_model2(s, vel);
-    velocity_2layer_model(s,vel);
-//    velocity_load_salt3d(s,vel);
+//    velocity_2layer_model(s,vel);
+    velocity_load_salt3d(s,vel);
 
     /// compute PML parameters.
     pml_compute_coefs(s, pml_tab);
 
-    MSG("dx=%d,dy=%d,dz=%d,dt=%f\n",s->dx,s->dy,s->dz,s->dt);
+//    MSG("dx=%d,dy=%d,dz=%d,dt=%f\n",s->dx,s->dy,s->dz,s->dt);
 //    return EXIT_SUCCESS;
 
     /// generate the ricker source.

@@ -905,8 +905,8 @@ int main(int argc, char *argv[]) {
 
     /// load/generate the velocity model.
 //    velocity_load_model(s, vel);
-    velocity_2layer_model(s,vel);
-//    velocity_load_salt3d(s,vel);
+//    velocity_2layer_model(s,vel);
+    velocity_load_salt3d(s,vel);
     /// compute PML parameters.
     pml_compute_coefs(s,pml_tab);
 

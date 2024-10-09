@@ -28,6 +28,18 @@
 #include <stencil/velocity.h>
 #include <stencil/interp.h>
 
+#define V(z, x) vtab[s->dimx*(z) + (x+s->pmlx)]
+#define TMP(z, x) tmp[(s->vel_dimx+1)*(z) + x]
+
+#define DOWNLOADSALT3D "\
+#/bin/bash \n\
+pwd \n\
+mkdir ./velocity_models \n\
+wget -q --content-disposition 'https://www.dropbox.com/scl/fi/05bc42ctyyhx1d7d10k51/salt3d_676x676x201_xyz.raw?rlkey=04646f0r2vil9ph5m9yjsiras&dl=0' \n\
+rm ./velocity_models/* \n\
+mv salt3d_676x676x201_xyz.raw ./velocity_models/salt3d_676x676x201_xyz.raw \n\
+"
+
 #define __DUMP_VEL
 
 void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
@@ -108,8 +120,53 @@ void velocity_query_model(sismap_t *s) {
     }
 }
 
-#define V(z, x) vtab[s->dimx*(z) + (x+s->pmlx)]
-#define TMP(z, x) tmp[(s->vel_dimx+1)*(z) + x]
+void fill_vcoef_matrix(sismap_t *s, float *vtab) {
+    unsigned int x, y, z;
+    /// fill vtab matrix with v^2*dt or v^2*dt2 value
+    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
+    if (s->order==1) {
+        MSG("order=1,vtab\n");
+        for (z = 0; z < s->dimz; z++)
+            for (y = 0; y < s->dimy; y++)
+                for (x = 0; x < s->dimx; x++)
+                    vtab[s->dimx * (s->dimy * z + y) + x]=
+                            s->dt*pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+    }else
+    {
+        MSG("order=2,vtab\n");
+        for (z = 0; z < s->dimz; z++)
+            for (y = 0; y < s->dimy; y++)
+                for (x = 0; x < s->dimx; x++)
+                    vtab[s->dimx * (s->dimy * z + y) + x]=
+                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+    }
+//    printf("__DUMP_VEL=%s",__DUMP_VEL);
+#ifdef __DUMP_VEL
+    MSG("... augmented_vel2 ...");
+    char tmp2[512];
+    sprintf(tmp2, "mkdir -p %s", OUTDIR);
+    CHK(system(tmp2), "failed to create output directory for snapshots");
+    sprintf(tmp2, "%s/augmented_vel2.raw", OUTDIR);
+    FILE *fd2 = fopen(tmp2, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd2) != 1,
+        "failed to write the velocity file");
+    fclose(fd2);
+#endif //__DUMP_VEL
+}
+
+void dump_vel(sismap_t *s, float *vtab) {
+#ifdef __DUMP_VEL
+    MSG("... dump v ...");
+    char tmp[512];
+    sprintf(tmp, "mkdir -p %s", OUTDIR);
+    CHK(system(tmp), "failed to create output directory for snapshots");
+    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
+    FILE *fd = fopen(tmp, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float),1,fd) != 1,
+        "failed to write the velocity file");
+    fclose(fd);
+#endif //__DUMP_VEL
+}
 
 void velocity_load_model_2d(sismap_t *s, float *vtab) {
     MSG("__________________________Inside function velocity_load_model_2d__________________________");
@@ -430,36 +487,8 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
         "failed to write the velocity file");
     fclose(fd);
 #endif //__DUMP_VEL
-    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
-
-    if (s->order==1) {
-        MSG("order=1,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            s->dt*pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
-    }else
-    {
-        MSG("order=2,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
-    }
-//    printf("__DUMP_VEL=%s",__DUMP_VEL);
-#ifdef __DUMP_VEL
-    MSG("... augmented_vel2 ...");
-    char tmp2[512];
-    sprintf(tmp2, "mkdir -p %s", OUTDIR);
-    CHK(system(tmp2), "failed to create output directory for snapshots");
-    sprintf(tmp2, "%s/augmented_vel2.raw", OUTDIR);
-    FILE *fd2 = fopen(tmp2, "wb");
-    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd2) != 1,
-        "failed to write the velocity file");
-    fclose(fd2);
-#endif //__DUMP_VEL
+    /////////////////////////////////////////////////////
+    fill_vcoef_matrix(s,vtab);
 }
 
 void velocity_load_model(sismap_t *s, float *vtab) {
@@ -467,41 +496,38 @@ void velocity_load_model(sismap_t *s, float *vtab) {
     if (s->dim2) velocity_load_model_2d(s, vtab);
     else velocity_load_model_3d(s, vtab);
 }
+
 //
-//void velocity_load_salt3d(sismap_t *s, float *vtab) {
-//    MSG("__________________________Inside function velocity_load_salt3d__________________________");
-//    /////////////////////////////////////////////////////
-//    const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
-//    FILE *fd;
-//    std::cout << "velocity file read started" << std::endl;
-//    size_t vel_size = 1LL * nx * ny * nz;
-//    float *tmp = (float *) malloc(vel_size * sizeof(float));
-//    cout << "reading from velocity file' " << file_namev << endl;
-//    fd = fopen(file_namev, "rb");
-//    if (fd == NULL){
-//        cout << "reading from velocity file' " << file_namev << "'  " << endl;
-//        std::cout << "downloading velocity file from dropbox" << std::endl;
-//        system(SHELLSCRIPT);
-//        fd = fopen(file_namev,"rb");
-//    }
-//    CHK(fd == NULL, "failed to open the velocity file");
-//    CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,
-//        "failed to read from the velocity file");
-//    fclose(fd);
-//    float val = 0;
-//#pragma omp parallel for collapse(3)
-//    for (Myint bx = ixMin; bx < ixMax; bx++) {
-//        for (Myint by = iyMin; by < iyMax; by++) {
-//            for (Myint bz = izMin; bz < izMax; bz++) {
-//                val = tmp[1ULL * nx * (ny * (bz - lstencil) + (by - lstencil)) + (bx - lstencil)];
-//                coef12[bx][by][bz] = cF2H(val * val * dt);
-//                vel[bx][by][bz] = cF2H( val );
-//            }
-//        }
-//    }
-//    std::cout << "custom velocity model read in memory" << std::endl;
-//    /////////////////////////////////////////////////////
-//
-//    if (s->dim2) velocity_load_model_2d(s, vtab);
-//    else velocity_load_model_3d(s, vtab);
-//}
+void velocity_load_salt3d(sismap_t *s, float *vtab) {
+    MSG("__________________________Inside function velocity_load_salt3d__________________________");
+    /////////////////////////////////////////////////////
+    const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
+    FILE *fd;
+    MSG("velocity_load_salt3d");
+    size_t vel_size = 1LL * s->dimx * s->dimy * s->dimz;
+    float *tmp=(float *) malloc(vel_size * sizeof(float));
+    fd = fopen(file_namev, "rb");
+    if (fd == NULL){
+        MSG("reading from velocity file %s",file_namev);
+        MSG("downloading velocity file from dropbox");
+        system(DOWNLOADSALT3D);
+        fd = fopen(file_namev,"rb");
+    }
+    CHK(fd == NULL, "failed to open the velocity file");
+    CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,"failed to read from the velocity file");
+    fclose(fd);
+
+    float val = 0;
+    unsigned int x, y, z;
+    for (z = 0; z < s->dimz; z++)
+        for (y = 0; y < s->dimy; y++)
+            for (x = 0; x < s->dimx; x++)
+//                MSG("V=%f",tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)]);
+                vtab[s->dimx*(s->dimy*z+y)+x]=tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)];
+    MSG("custom velocity model read in memory");
+    /////////////////////////////////////////////////////
+    dump_vel(s,vtab);
+    /////////////////////////////////////////////////////
+    fill_vcoef_matrix(s,vtab);
+}
+
