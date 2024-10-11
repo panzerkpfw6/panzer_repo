@@ -1,4 +1,3 @@
-///
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -11,11 +10,157 @@
 #include <stencil/macros.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
-/// Modeling on CPU.
-///
-///
 
-///2nd order
+void run_modeling_SB(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
+    MSG("... !SB MODE! ...");
+    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
+    /// seismic traces for a given shot.
+    float *sismos;
+    /// PML temporary tab.
+    float *pml_tmp;
+
+    /// contains the fields pressure value at time step t.
+    float* u0;
+    /// contains the fields pressure value at time step t+1.
+    float* u1;
+    /// contains the fields (particle velocity across x direction) value at time step t.
+    float* vx;
+    /// contains the fields (particle velocity across y direction) value at time step t.
+    float* vy;
+    /// contains the fields (particle velocity across z direction) value at time step t.
+    float* vz;
+
+    CREATE_BUFFER_ONLY(u0,s->size);
+    array_openmp_init(u0,s);
+    if (s->order==1) {
+        MSG("run 1st order SB.");
+        CREATE_BUFFER_ONLY(vx, s->size);
+        CREATE_BUFFER_ONLY(vy, s->size);
+        CREATE_BUFFER_ONLY(vz,s->size);
+        array_openmp_init(vx,s);
+        array_openmp_init(vy,s);
+        array_openmp_init(vz,s);
+    } else {
+        MSG("run 2nd order SB.");
+        CREATE_BUFFER_ONLY(u1, s->size);
+        array_openmp_init(u1,s);
+    }
+
+    CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
+    CREATE_BUFFER(pml_tmp, s->size_eff);
+    shot_t *shot;
+
+    double t0,t1,t2,t_prop,t_sismos;
+    wtime_init();
+
+    /// loop over the shots.
+    for (int sidx = s->first; sidx <= s->last; sidx++) {
+        /// retrieve the shot descriptor.
+        shot = s->shots[sidx];
+        /// initialize the current shot.
+        shot_init(shot,true,s->modeling);
+        /// reset some buffers for the shot.
+        NULIFY_BUFFER(pml_tmp, s->size_eff);
+        NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
+        if (s->order==1) {
+            NULIFY_BUFFER(u0, s->size);
+            NULIFY_BUFFER(vx, s->size);
+            NULIFY_BUFFER(vy, s->size);
+            NULIFY_BUFFER(vz, s->size);
+        } else {
+            NULIFY_BUFFER(u0, s->size);
+            NULIFY_BUFFER(u1, s->size);
+        }
+        t1 = wtime();
+        /// forward modeling.
+        t1 = wtime();
+        t_prop   = 0.0;
+        t_sismos = 0.0;
+
+        t0 = wtime();
+        wave_extract_sismos(s, u0, 0, sismos);
+        t_sismos += wtime() - t0;
+
+        for(int t = 0; t <= s->time_steps-1; ++t) {
+//        MSG("t=%d",t);
+            int snap_freq = s->time_steps;
+            if ((t+1) == snap_freq) {   //((t+1) % snap_freq == 0)
+                MSG("SNAPSHOT RECORDING");
+                FILE *snap_fd;
+                char *snap_fd_name=(char*)malloc(20*sizeof(char));
+
+                if (s->order==1) {
+                    sprintf(snap_fd_name, "snapshot_SB1st_%u",t+1);
+                } else {
+                    sprintf(snap_fd_name, "snapshot_SB2nd_%u",t+1);
+                }
+                snap_fd = fopen(snap_fd_name,"wb+");
+                CHK(snap_fd == NULL, "failed to open snapshot file");
+
+                if (s->order==1) {
+                    sprintf(snap_fd_name, "snapshot_SB1st_%u",t+1);
+                    CHK(fwrite(u0, sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
+                } else {
+                    sprintf(snap_fd_name, "snapshot_SB2nd_%u",t+1);
+                    CHK(fwrite(u1,sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
+                }
+
+                CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
+                if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
+                free(snap_fd_name);
+            }
+            wave_update_source(s,shot,u0,source[t]);
+
+            t0 = wtime();
+
+            if (s->order==1) {
+                wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
+            } else {
+                wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+            }
+
+            //        MSG("pr0=%f",u1[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx+2]);
+            t_prop += wtime() - t0;
+
+            t0 = wtime();
+            if (s->order==1) {
+                wave_extract_sismos(s,u0, t+1, sismos);
+            } else {
+                wave_extract_sismos(s,u1, t+1, sismos);
+            }
+            t_sismos += wtime() - t0;
+
+            if (s->order==2) {
+                WAVE_SWAP_POINTERS(u0,u1);
+            }
+        }
+        /////////////////////////////////
+        t2 = wtime();
+        MSG("forward timer");
+        MSG("Total:        %f (s)",t2-t1);
+        MSG("PROP:         %f (s)",t_prop);
+        MSG("SISMOS:       %f (s)",t_sismos);
+        MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
+        MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop) );
+        /// save the seismic traces for the shot.
+        wave_save_sismos(s, shot, sismos);
+        /// release/close the resources related to the current shot.
+        shot_release(shot);
+    }
+    /// free the simulation buffers.
+    DELETE_BUFFER(u0);
+    if (s->order==1) {
+        DELETE_BUFFER(vx);
+        DELETE_BUFFER(vy);
+        DELETE_BUFFER(vz);
+    } else {
+        DELETE_BUFFER(u1);
+    }
+    DELETE_BUFFER(sismos);
+    DELETE_BUFFER(pml_tmp);
+}
+
+///
 void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
   /// contains the fields pressure value at time step t.
   float* u0;
@@ -247,7 +392,7 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
     DELETE_BUFFER(pml_tmp);
 }
 
-///1st order
+///
 void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
     /// contains the fields pressure value at time step t.
     float* u0;
@@ -311,7 +456,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
 //    wave_save_snapshot(s, shot, u0, 0%s->nb_snap==0);
 #endif // __DEBUG
         for(int t = 0; t <= s->time_steps-1; ++t) {
-            int snap_freq = 504;
+            int snap_freq = s->time_steps;
             if ((t+1) ==snap_freq) {
                 MSG("SNAPSHOT CUSTOM");
                 FILE *snap_fd;
@@ -321,8 +466,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
                 snap_fd = fopen(snap_fd_name, "wb+");
 
                 CHK(snap_fd == NULL, "failed to open custom snapshot file");
-                CHK(fwrite(u0, sizeof(float), s->size, snap_fd) != s->size,
-                    "failed to write custom snapshot");
+                CHK(fwrite(u0, sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
                 CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
 
                 if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
@@ -349,28 +493,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
             t_sismos += wtime() - t0;
 //            WAVE_SWAP_POINTERS(u0, u1);
         }
-//    /////////////////////////////////
-//    //// for TB we should take u0, for SB we should take u1. run on qaysar
-////    modelling.c
-//
-//
-//    MSG("recording last snapshot");
-//    FILE *snap_fd;
-//    char *snap_fd_name = (char*)malloc(20*sizeof(char));
-//
-////    sprintf(snap_fd_name, "snapshot_%u", t+1);
-//    sprintf(snap_fd_name, "SB-final_snap_u1_%u", s->time_steps);
-//    snap_fd = fopen(snap_fd_name, "wb+");
-//
-//    CHK(snap_fd == NULL, "failed to open custom snapshot file");
-//    CHK(fwrite(u1, sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
-//    CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
-//
-//    if (s->verbose) MSG("... saving snapshot n°%u (size %d)", s->time_steps, s->size);
-//
-//    free(snap_fd_name);
-//    //////////////////////////////
-//    wave_sb_save_lastshot(s,shot,u0,u1,vel);
         /////////////////////////////////
         t2 = wtime();
         MSG("forward timer");
@@ -520,6 +642,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
 /// GPU wave descriptor (@ref gpu_wave_t):
 /// - simulation on the GPU (default behavior)
 /// - check the GPU results if asked by the user
+
 int main(int argc, char* argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
@@ -586,9 +709,9 @@ int main(int argc, char* argv[]) {
     /// load/generate the velocity model.
 //    velocity_load_model(s,vel);
 //    MSG("velocity_const_model2\n");
-//    velocity_const_model2(s, vel);
+    velocity_const_model2(s, vel);
 //    velocity_2layer_model(s,vel);
-    velocity_load_salt3d(s,vel);
+//    velocity_load_salt3d(s,vel);
 
     /// compute PML parameters.
     pml_compute_coefs(s, pml_tab);
@@ -623,7 +746,9 @@ int main(int argc, char* argv[]) {
             run_modeling_tb_cpu(s, vel, source, p);
         }
     } else {
+//        run_modeling_SB(s, vel, source, pml_tab);
 ////      run_modeling_cpu(s, vel, source, pml_tab);
+
         if (s->order==1) {
             MSG("run 1st order SB");
             run_modeling_1st_cpu(s, vel, source, pml_tab);
