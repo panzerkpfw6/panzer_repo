@@ -7,6 +7,7 @@ module load cmake
 
 
 #####
+cd ..
 rm ./bin/rtm
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
