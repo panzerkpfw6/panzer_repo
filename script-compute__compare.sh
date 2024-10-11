@@ -50,10 +50,10 @@ rm lastshot_u1
 ./scripts/isnan data/SB-final_snap_504.raw
 ./scripts/diff_to data/TB-final_snap_504.raw data/SB-final_snap_504.raw
 
-#./scripts/isnan data/TB-final_snap_1000.raw
-#./scripts/isnan data/SB-final_snap_1000.raw
-#./scripts/diff_to data/TB-final_snap_1000.raw data/SB-final_snap_1000.raw
+#./scripts_useful/isnan data/TB-final_snap_1000.raw
+#./scripts_useful/isnan data/SB-final_snap_1000.raw
+#./scripts_useful/diff_to data/TB-final_snap_1000.raw data/SB-final_snap_1000.raw
 #
-#./scripts/isnan data/TB-final_snap_2000.raw
-#./scripts/isnan data/SB-final_snap_2000.raw
-#./scripts/diff_to data/TB-final_snap_2000.raw data/SB-final_snap_2000.raw
+#./scripts_useful/isnan data/TB-final_snap_2000.raw
+#./scripts_useful/isnan data/SB-final_snap_2000.raw
+#./scripts_useful/diff_to data/TB-final_snap_2000.raw data/SB-final_snap_2000.raw
