@@ -1,0 +1,32 @@
+clear all
+close all
+
+root='/Volumes/ssd1/snapshots';
+root='/Volumes/ssd1/snapshots';
+fname= ['SB_1st_abc.raw'];
+fname=fullfile(root,fname);
+
+% add 8 points to each dimension
+dims=[520,520,520];
+ccnt=dims(1)*dims(2)*dims(3);
+
+% read file according to dimensions
+fileID = fopen(fname,'r');
+A=fread(fileID,ccnt,'float32');
+fclose(fileID);
+data = reshape(A,dims);
+data=permute(data, [3 2 1]);
+
+ix=260;
+for ix=1:100:500
+    figure
+    imagesc( squeeze(data(:,:,ix)).'  );
+    val=1.5;
+    clim([-val,val]);title(fname);
+    colorbar
+end
+
+min(data,[],'all')
+max(data,[],'all')
+
+ss=1

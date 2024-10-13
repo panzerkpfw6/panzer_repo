@@ -1,0 +1,37 @@
+pwd
+ls
+% ccnt=51*230;
+% fileID = fopen('sismos_5865.raw','r');
+% A=fread(fileID,ccnt,'uint8=>uint8');
+% fclose(fileID);
+
+% fname='sismos_5865.raw'
+% dims=[51,230,2000];
+
+% fname='salt3d_169x169x50_xyz.raw'
+% dims=[169,169,50];
+
+fname='./test_wavefield/sismos_6867.raw'
+dims=[51,230,10];
+
+% fname='./test_wavefield2/snap_fwd_6867.raw'
+% dims=[2301,512,248,10];
+
+ccnt=dims(1)*dims(2)*dims(3);
+ccnt=dims(1)*dims(2)*dims(3)*dims(4);
+fileID = fopen(fname,'r');
+A=fread(fileID,ccnt,'float32');
+fclose(fileID);
+
+% data = reshape(A,dims);
+% data = reshape(A,[2301,512,248,10]);
+data = reshape(A,[dims(1),dims(1),dims(1),dims(1)]);
+min(data,[],'all')
+max(data,[],'all')
+
+figure
+% imagesc( squeeze(data(22,:,:)).' );
+imagesc( squeeze(data(:,22,:,3)).' );
+colorbar
+
+ss=1;
