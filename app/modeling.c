@@ -228,7 +228,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
             FILE *snap_fd;
             char *snap_fd_name=(char*)malloc(20*sizeof(char));
 
-            sprintf(snap_fd_name,"snapshot_%u",t+1);
+            sprintf(snap_fd_name,"snapshot_SB2nd_%u",t+1);
             snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
@@ -259,28 +259,6 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
         WAVE_SWAP_POINTERS(u0,u1);
     }
 #endif
-//    /////////////////////////////////
-//    //// for TB we should take u0, for SB we should take u1. run on qaysar
-////    modelling.c
-//
-//
-//    MSG("recording last snapshot");
-//    FILE *snap_fd;
-//    char *snap_fd_name = (char*)malloc(20*sizeof(char));
-//
-////    sprintf(snap_fd_name, "snapshot_%u", t+1);
-//    sprintf(snap_fd_name, "SB-final_snap_u1_%u", s->time_steps);
-//    snap_fd = fopen(snap_fd_name, "wb+");
-//
-//    CHK(snap_fd == NULL, "failed to open custom snapshot file");
-//    CHK(fwrite(u1, sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
-//    CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
-//
-//    if (s->verbose) MSG("... saving snapshot n°%u (size %d)", s->time_steps, s->size);
-//
-//    free(snap_fd_name);
-//    //////////////////////////////
-//    wave_sb_save_lastshot(s,shot,u0,u1,vel);
     /////////////////////////////////
     t2 = wtime();
     MSG("forward timer");

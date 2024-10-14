@@ -34,6 +34,7 @@ module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load cmake
 
 ##### COMPILATION #####
+#cd ..
 rm ./bin/modeling
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 #CC=icc CXX=icpc -DCMAKE_BUILD_TYPE=Debug cmake .
@@ -49,7 +50,7 @@ mode=2
 export TIME_SB_1st=504
 #export TIME_SB_1st=2
 export TIME_TB_1st=505
-export TIME_TB_1st=1000
+#export TIME_TB_1st=1000
 #export TIME_TB_1st=512
 #nx=512;ny=512;nz=512;
 #nx=2048;ny=2048;nz=512;
@@ -66,8 +67,8 @@ rm $fld/*
 export shot=16447
 rm snapshot_504
 
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode $mode --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 1 --fmax 8
-#./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 2 --fmax 8
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode $mode --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 1 --fmax 8
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 2 --fmax 8
 #./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 1
 #####*********** TB tests ************########***********
 echo !!TB with parameters!!
@@ -89,7 +90,7 @@ echo "TB_mod_2nd"
 #./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter 505 --tb_thread_group_size 1 --tb_nb_thread_groups 1 --tb_th_x 1 --tb_th_y 1 --tb_th_z 1 --tb_t_dim 7 --tb_num_wf 64 --mode 2 --dshot 1 --first $shot --last $shot -c
 
 ### order 1
-./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_TB_1st --tb_thread_group_size 16 --tb_nb_thread_groups 3 --tb_th_x 8 --tb_th_y 2 --tb_th_z 1 --tb_t_dim 7 --tb_num_wf 64 --mode 2 --dshot 1 --first 16447 --last 16447 -c --fwd_steps 3 --order 1 --fmax 8 --src_depth 256 --drcv 1
+#./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_TB_1st --tb_thread_group_size 16 --tb_nb_thread_groups 3 --tb_th_x 8 --tb_th_y 2 --tb_th_z 1 --tb_t_dim 7 --tb_num_wf 64 --mode 2 --dshot 1 --first 16447 --last 16447 -c --fwd_steps 3 --order 1 --fmax 8 --src_depth 256 --drcv 1
 ### order 2
 #./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_TB_1st --tb_thread_group_size 16 --tb_nb_thread_groups 3 --tb_th_x 8 --tb_th_y 2 --tb_th_z 1 --tb_t_dim 7 --tb_num_wf 64 --mode 2 --dshot 1 --first 16447 --last 16447 -c --fwd_steps 3 --order 2 --fmax 8 --src_depth 256 --drcv 1
 

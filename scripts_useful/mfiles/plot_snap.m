@@ -61,8 +61,6 @@ title(strcat('SB,z=',num2str(p)));
 xlabel('X');ylabel('Y');
 colorbar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ss=1
-
 function data=read_snap(fname,ordering,dims)
 ccnt=dims(1)*dims(2)*dims(3);
 fileID = fopen(fname,'r');
