@@ -11,15 +11,25 @@ pipeline {
     }
 
     stages {
-        stage ('compile_SB') {
+        stage ('compile_project') {
             steps {
                 sh '''#!/bin/bash -le
+                    exec > >(while read line; do echo "$(date): $line"; done | tee log-modeling_.log) 2>&1
+                    echo $hostname
+                    export OMP_NUM_THREADS=4
+                    export OMP_PROC_BIND=true
+                    export OMP_PLACES=threads
+                    export OMP_NESTED='True'
+                    export granularity=fine
+                    export KMP_AFFINITY=compact
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
-                    cd ./SB; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_1st.out
-                    cd ../SB_abc; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_1st-abc.out
-                    cd ../SB_order2_abc; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_2nd-abc.out
-                    cd ../SB_order2; icpc -xHost -qopenmp -O3 -I. test_SB_kernel.cpp -o ../SB_2nd.out
-                    cd ..
+                    module load cmake
+
+                    mv -f ./CMakeCache.txt ./CMakeCache-old.txt
+                    CC=icc CXX=icpc cmake .
+                    make clean
+                    make VERBOSE=1
+                    make install
                 '''
             }
         }
