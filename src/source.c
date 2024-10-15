@@ -97,6 +97,9 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
 
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
+        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT3=deltaT2 * deltaT;
+//        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
         source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
@@ -135,6 +138,8 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
         deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
         deltaT3=deltaT2 * deltaT;
         source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
+//        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
+//                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
         fprintf(fd, "%d %f\n", it, source[it]);
 #endif // __DUMP_SOURCE

@@ -65,10 +65,10 @@ rm $fld/*
 ## s->shots[idx]->srcidx = s->rcv[ir] + s->drcv / 2;
 ## x,y indexing in acquisition.txt file is relative to the boundaries of computation domain().
 export shot=16447
-rm snapshot_504
 
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode $mode --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 1 --fmax 8
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 2 --fmax 8
+
 #./bin/modeling --verbose --n1 128 --n2 256 --n3 512 --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth 256 --drcv 1 --order 1
 #####*********** TB tests ************########***********
 echo !!TB with parameters!!

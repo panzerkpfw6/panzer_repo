@@ -395,10 +395,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     CREATE_BUFFER_ONLY(vz,s->size);
     array_openmp_init(vz,s);
 
-//    float* u1;
-//    CREATE_BUFFER_ONLY(u1, s->size);
-//    array_openmp_init(u1,s);
-
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
     CREATE_BUFFER(pml_tmp, s->size_eff);
     shot_t *shot;
@@ -427,13 +423,29 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
         t_sismos = 0.0;
 
         t0 = wtime();
-        wave_extract_sismos(s, u0, 0, sismos);
+        wave_extract_sismos(s,u0,0, sismos);
         t_sismos += wtime() - t0;
 #ifdef __DEBUG
         wave_save_fwd_dbg(s, shot, u0, 0%s->nb_snap==0);
 //    wave_save_snapshot(s, shot, u0, 0%s->nb_snap==0);
 #endif // __DEBUG
         for(int t = 0; t <= s->time_steps-1; ++t) {
+
+            wave_update_source(s,shot,u0,source[t]);
+//            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
+
+            t0=wtime();
+            wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
+            t_prop += wtime() - t0;
+
+#ifdef __DEBUG
+            wave_save_fwd_dbg(s, shot, u0, (t+1)%s->nb_snap==0);
+#endif // __DEBUG
+
+            t0 = wtime();
+            wave_extract_sismos(s, u0, t+1, sismos);
+            t_sismos += wtime() - t0;
+
             int snap_freq = s->time_steps;
             if ((t+1) ==snap_freq) {
                 MSG("SNAPSHOT CUSTOM");
@@ -451,24 +463,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
 
                 free(snap_fd_name);
             }
-
-            wave_update_source(s,shot,u0,source[t]);
-//            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
-
-            t0=wtime();
-
-            wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
-
-            t_prop += wtime() - t0;
-
-#ifdef __DEBUG
-            wave_save_fwd_dbg(s, shot, u0, (t+1)%s->nb_snap==0);
-        //      wave_save_snapshot(s, shot, u0, (t+1)%s->nb_snap==0);
-#endif // __DEBUG
-
-            t0 = wtime();
-            wave_extract_sismos(s, u0, t+1, sismos);
-            t_sismos += wtime() - t0;
 //            WAVE_SWAP_POINTERS(u0, u1);
         }
         /////////////////////////////////
@@ -687,15 +681,12 @@ int main(int argc, char* argv[]) {
     /// load/generate the velocity model.
 //    velocity_load_model(s,vel);
 //    MSG("velocity_const_model2\n");
-    velocity_const_model2(s, vel);
+    velocity_const_model2(s,vel);
 //    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
 
     /// compute PML parameters.
-    pml_compute_coefs(s, pml_tab);
-
-//    MSG("dx=%d,dy=%d,dz=%d,dt=%f\n",s->dx,s->dy,s->dz,s->dt);
-//    return EXIT_SUCCESS;
+    pml_compute_coefs(s,pml_tab);
 
     /// generate the ricker source.
     if (s->order==1) {
