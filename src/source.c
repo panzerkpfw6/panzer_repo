@@ -90,9 +90,13 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
     sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
     FILE *fd = fopen(tmp,"w");
 #endif // __DUMP_SOURCE
+    float PI = 4.0f * atan(1.0f);
     int  it;
     float t1,t0;
-    float PI = 4.0f * atan(1.0f);
+    float deltaT,deltaT2,deltaT3;
+    float a  = PI*s->fmax;
+    float a2 = a  * a;
+    float a4 = a2 * a2;
     t0 = 1.0 / s->fmax;
 
     for (it = 0; it < s->time_steps; it++) {
@@ -126,9 +130,9 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
     FILE *fd = fopen(tmp,"w");
 #endif // __DUMP_SOURCE
+    float PI = 4.0f * atan(1.0f);
     int  it;
     float t1,t0,deltaT,deltaT2,deltaT3;
-    float PI = 4.0f * atan(1.0f);
     t0 = 1.0 / s->fmax;
     float a  = PI*s->fmax;
     float a2 = a  * a;
