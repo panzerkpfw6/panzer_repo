@@ -25,6 +25,8 @@ pipeline {
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
                     module load cmake
 
+                    pwd
+                    ls
                     mv -f ./CMakeCache.txt ./CMakeCache-old.txt
                     CC=icc CXX=icpc cmake .
                     make clean
