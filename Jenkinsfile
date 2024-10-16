@@ -14,8 +14,12 @@ pipeline {
     stage ('learn_bash') {
                 steps {
                     sh '''#!/bin/bash -le
-                        x=2; y=2; z=1; t=7; w=20;
-                        tgs=$(expr $x * $y * $z);echo $tgs;
+                        x=2;
+                        y=2;
+                        z=1;
+                        t=7;
+                        w=20;
+                        tgs=$(expr $x \* $y \* $z);echo $tgs;
                         '''
                 }
             }
