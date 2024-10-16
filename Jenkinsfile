@@ -15,7 +15,7 @@ pipeline {
                 steps {
                     sh '''#!/bin/bash -le
                         x=2; y=2; z=1; t=7; w=20;
-                        tgs=$(expr $x \* $y \* $z);echo $tgs;
+                        tgs=$(expr $x * $y * $z);echo $tgs;
                         '''
                 }
             }
