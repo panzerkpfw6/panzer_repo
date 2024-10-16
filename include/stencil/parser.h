@@ -266,7 +266,7 @@ parser_put(p, FLOAT,                                                      \
 parser_put(p, INT,                                                      \
            'i', "iter", "1000", "simulation time step number");         \
 parser_put(p, FLOAT,                                                      \
-           'dt', "dt", "0.001", "simulation time sampling in sec");         \
+           0, "dt", "0.001", "simulation time sampling in sec");         \
 parser_put(p, FLOAT,                                                    \
            0, "cfl", "0.8", "CFL percentage");                          \
 parser_put(p, FLOAT,                                                    \
@@ -286,19 +286,19 @@ parser_put(p, INT,                                                      \
 parser_put(p, INT,                                                      \
            0, "last",  "-1", "last shot");                              \
 parser_put(p, INT,                                                      \
-           0, "tb_thread_group_size", "1","tb param");                  \
+           "tgs", "tb_thread_group_size", "1","tb param");                  \
 parser_put(p, INT,                                                      \
-           0, "tb_nb_thread_groups", "1","tb param");                   \
+           "nb_thg", "tb_nb_thread_groups", "1","tb param");                   \
 parser_put(p, INT,                                                      \
-           0, "tb_th_x", "1","tb param");                               \
+           "thx", "tb_th_x", "1","tb param");                               \
 parser_put(p, INT,                                                      \
-           0, "tb_th_y", "1","tb param");                               \
+           "thy", "tb_th_y", "1","tb param");                               \
 parser_put(p, INT,                                                      \
-           0, "tb_th_z", "1","tb param");                               \
+           "thz", "tb_th_z", "1","tb param");                               \
 parser_put(p, INT,                                                      \
-           0, "tb_t_dim", "1","tb param");                              \
+           "tdim", "tb_t_dim", "1","tb param");                              \
 parser_put(p, INT,                                                      \
-           0, "tb_num_wf", "1","tb param");                             \
+           "nwf", "tb_num_wf", "1","tb param");                             \
 parser_put(p, INT,                                                      \
            0, "mode", "2","mode (1 MEM 2 I/O, 0 FUSE)");                \
 parser_put(p, INT,                                                      \

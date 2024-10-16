@@ -42,23 +42,24 @@ pipeline {
                     ./SB_1st.out 512 512 512 10 100 0 0
                     ## simulate one shot in the center of domain
                     nx=128;ny=256;nz=512;
-                    export shot=16447;
+                    nt=10;  dt=0.001;
+                    export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
                     export src_depth=256;
-                    export TIME_SB_1st=504;
-
-                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8
-                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8
+                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
+                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
                     '''
             }
         }
         stage ('test_TB') {
             steps {
                 sh '''#!/bin/bash -le
-                    export TIME_TB_1st=57
-                    # we dont record last time sample wavefield now and set it to 100000
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5;
+                    nx=128;ny=256;nz=512;
+                    nt=57; dt=0.001;
                     x=2 y=2 z=1 t=7 w=20;
-                    numactl --interleave=all ./TB_1st.out 256 256 256 $TIME_TB_1st 100000 $x $y $z $t $w 0 0
+                    tgs=$(expr $x \* $y \* $z)
+                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 1 --fmax 8;
+                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 2 --fmax 8;
                     '''
             }
         }
