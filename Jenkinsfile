@@ -35,23 +35,19 @@ pipeline {
                 '''
             }
         }
-        stage ('compile_TB') {
-            steps {
-                sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
-                    cd ./TB; icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_1st.out
-                    cd ../TB_abc;     icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_1st-abc.out
-                    cd ../TB_order2_abc;     icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_2nd-abc.out
-                    cd ../TB_order2; icpc -xHost -qopenmp -O3 -I. test_TB_kernel.cpp -o ../TB_2nd.out
-                    cd ..
-                '''
-            }
-        }
         stage ('test_SB') {
             steps {
                 sh '''#!/bin/bash -le
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
                     ./SB_1st.out 512 512 512 10 100 0 0
+                    ## simulate one shot in the center of domain
+                    nx=128;ny=256;nz=512;
+                    export shot=16447;
+                    export src_depth=256;
+                    export TIME_SB_1st=504;
+
+                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8
+                    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8
                     '''
             }
         }

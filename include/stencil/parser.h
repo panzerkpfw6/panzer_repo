@@ -265,6 +265,8 @@ parser_put(p, FLOAT,                                                      \
            0, "dz", "10", "space delta step");                          \
 parser_put(p, INT,                                                      \
            'i', "iter", "1000", "simulation time step number");         \
+parser_put(p, FLOAT,                                                      \
+           'dt', "dt", "0.001", "simulation time sampling in sec");         \
 parser_put(p, FLOAT,                                                    \
            0, "cfl", "0.8", "CFL percentage");                          \
 parser_put(p, FLOAT,                                                    \

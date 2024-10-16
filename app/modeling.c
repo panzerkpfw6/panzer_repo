@@ -626,6 +626,7 @@ int main(int argc, char* argv[]) {
     s->verbose = parser_get_bool(p, "verbose");
     s->cpu = parser_get_bool(p,"cpu");
     s->time_steps = parser_get_int(p,"iter");
+    s->dt = parser_get_float(p, "dt");
     s->cfl = parser_get_float(p, "cfl");
     s->fmax = parser_get_float(p, "fmax");
     s->vel_file = parser_get_string(p,"in");
