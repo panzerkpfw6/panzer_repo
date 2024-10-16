@@ -11,18 +11,6 @@ pipeline {
     }
 
     stages {
-    stage ('learn_bash') {
-                steps {
-                    sh '''#!/bin/bash -le
-                        x=2;
-                        y=2;
-                        z=1;
-                        t=7;
-                        w=20;
-                        tgs=$(expr $x \* $y \* $z);echo $tgs;
-                        '''
-                }
-            }
         stage ('compile_project') {
             steps {
                 sh '''#!/bin/bash -le
@@ -67,8 +55,7 @@ pipeline {
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5;
                     nx=128;ny=256;nz=512;
                     nt=57; dt=0.001;
-                    x=2 y=2 z=1 t=7 w=20;
-                    tgs=$(expr $x * $y * $z);echo $tgs;
+                    x=2; y=2; z=1; t=7; w=20; tgs=4;
                     ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 1 --fmax 8;
                     ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 2 --fmax 8;
                     '''
