@@ -39,7 +39,6 @@ pipeline {
             steps {
                 sh '''#!/bin/bash -le
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
-                    ./SB_1st.out 512 512 512 10 100 0 0
                     ## simulate one shot in the center of domain
                     nx=128;ny=256;nz=512;
                     nt=10;  dt=0.001;
