@@ -221,90 +221,47 @@ void  parser_get_vect_string(parser* p,
 /// run <b> bin/stencil -h </b> or <b> bin/stencil --help </b>
 /// to see the possible options
 #define PARSER_BOOTSTRAP(p)                                             \
-parser_put(p, BOOL,                                                     \
-           'v', "verbose", "false", "enable verbose mode");             \
-parser_put(p, BOOL,                                                     \
-           'c', "cpu", "false", "run serial code on the CPU");          \
-parser_put(p, VECT_INT,                                                 \
-           'l', "local", "16,4", "set the GPU block dimensions");       \
-parser_put(p, INT,                                                      \
-           'd', "device", "0", "select the GPU device");                \
-parser_put(p, BOOL,                                                     \
-           'o', "one", "false", "use only one GPU kernel");             \
-parser_put(p, STRING,                                                   \
-           0, "gpu_options", " ", "set GPU build options");             \
-parser_put(p, STRING,                                                   \
-           0, "in", "NONE", "velocity file");                           \
-parser_put(p, STRING,                                                   \
-           0, "dir", "NONE", "output directory");                       \
-parser_put(p, INT,                                                      \
-           0, "n1", "100", "velocity x dimension");                     \
-parser_put(p, INT,                                                      \
-           0, "n2", "100", "velocity y dimension");                     \
-parser_put(p, INT,                                                      \
-           0, "n3", "100", "velocity z dimension");                     \
-parser_put(p, INT,                                                      \
-           0, "drcv", "10", "receivers step");                          \
-parser_put(p, INT,                                                      \
-           0, "dshot", "5", "shot step");                               \
-parser_put(p, INT,                                                      \
-           0, "dcdp", "10", "space delta step");                        \
-parser_put(p, INT,                                                      \
-           0, "dline", "10", "space delta step");                       \
-parser_put(p, INT,                                                      \
-           0, "ddepth", "10", "space delta step");                      \
-parser_put(p, INT,                                                      \
-           0, "src_depth", "0", "source depth");                        \
-parser_put(p, INT,                                                      \
-           0, "rcv_depth", "5", "receivers depth");                     \
-parser_put(p, FLOAT,                                                      \
-           0, "dx", "10", "space delta step");                          \
-parser_put(p, FLOAT,                                                      \
-           0, "dy", "10", "space delta step");                          \
-parser_put(p, FLOAT,                                                      \
-           0, "dz", "10", "space delta step");                          \
-parser_put(p, INT,                                                      \
-           'i', "iter", "1000", "simulation time step number");         \
-parser_put(p, FLOAT,                                                      \
-           0, "dt", "0.001", "simulation time sampling in sec");         \
-parser_put(p, FLOAT,                                                    \
-           0, "cfl", "0.8", "CFL percentage");                          \
-parser_put(p, FLOAT,                                                    \
-           0, "fmax", "25.", "source max frequency");                   \
-parser_put(p, FLOAT,                                                    \
-           0, "vmin", "1500.", "min velocity");                         \
-parser_put(p, FLOAT,                                                    \
-           0, "vmax", "4500.", "max velocity");                         \
-parser_put(p, INT,                                                      \
-           0, "nbsnap", "-1", "snapshot frequency");                    \
-parser_put(p, BOOL,                                                     \
-           0, "check", "false", "check the GPU results");               \
-parser_put(p, FLOAT,                                                    \
-           'e', "epsilon", "1.e-2", "the margin of floating point errors");\
-parser_put(p, INT,                                                      \
-           0, "first", "-1", "first shot");                             \
-parser_put(p, INT,                                                      \
-           0, "last",  "-1", "last shot");                              \
-parser_put(p, INT,                                                      \
-           "tgs", "tb_thread_group_size", "1","tb param");                  \
-parser_put(p, INT,                                                      \
-           "nb_thg", "tb_nb_thread_groups", "1","tb param");                   \
-parser_put(p, INT,                                                      \
-           "thx", "tb_th_x", "1","tb param");                               \
-parser_put(p, INT,                                                      \
-           "thy", "tb_th_y", "1","tb param");                               \
-parser_put(p, INT,                                                      \
-           "thz", "tb_th_z", "1","tb param");                               \
-parser_put(p, INT,                                                      \
-           "tdim", "tb_t_dim", "1","tb param");                              \
-parser_put(p, INT,                                                      \
-           "nwf", "tb_num_wf", "1","tb param");                             \
-parser_put(p, INT,                                                      \
-           0, "mode", "2","mode (1 MEM 2 I/O, 0 FUSE)");                \
-parser_put(p, INT,                                                      \
-           0, "fwd_steps", "1","save wavefield every fwd_steps diamonds");\
-parser_put(p, STRING,                                                   \
-           0, "tb_affinity", "NONE", "Affinity setup file");            \
-parser_put(p, INT,                                                      \
-           0, "order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
+parser_put(p, BOOL,'v', "verbose", "false", "enable verbose mode");             \
+parser_put(p, BOOL,'c', "cpu", "false", "run serial code on the CPU");          \
+parser_put(p, VECT_INT,'l', "local", "16,4", "set the GPU block dimensions");       \
+parser_put(p, INT,'d', "device", "0", "select the GPU device");                \
+parser_put(p, BOOL,'o', "one", "false", "use only one GPU kernel");             \
+parser_put(p, STRING,0, "gpu_options", " ", "set GPU build options");             \
+parser_put(p, STRING,0, "in", "NONE", "velocity file");                           \
+parser_put(p, STRING,0, "dir", "NONE", "output directory");                       \
+parser_put(p, INT,0, "n1", "100", "velocity x dimension");                     \
+parser_put(p, INT,0, "n2", "100", "velocity y dimension");                     \
+parser_put(p, INT,0, "n3", "100", "velocity z dimension");                     \
+parser_put(p, INT,0, "drcv", "10", "receivers step");                          \
+parser_put(p, INT,0, "dshot", "5", "shot step");                               \
+parser_put(p, INT,0, "dcdp", "10", "space delta step");                        \
+parser_put(p, INT,0, "dline", "10", "space delta step");                       \
+parser_put(p, INT,0, "ddepth", "10", "space delta step");                      \
+parser_put(p, INT,0, "src_depth", "0", "source depth");                        \
+parser_put(p, INT,0, "rcv_depth", "5", "receivers depth");                     \
+parser_put(p, FLOAT,0, "dx", "10", "space delta step");                          \
+parser_put(p, FLOAT,0, "dy", "10", "space delta step");                          \
+parser_put(p, FLOAT,0, "dz", "10", "space delta step");                          \
+parser_put(p, INT,'i', "iter", "1000", "simulation time step number");         \
+parser_put(p, FLOAT,0, "dt", "0.001", "simulation time sampling in sec");         \
+parser_put(p, FLOAT,0, "cfl", "0.8", "CFL percentage");                          \
+parser_put(p, FLOAT,0, "fmax", "25.", "source max frequency");                   \
+parser_put(p, FLOAT,0, "vmin", "1500.", "min velocity");                         \
+parser_put(p, FLOAT,0, "vmax", "4500.", "max velocity");                         \
+parser_put(p, INT,0, "nbsnap", "-1", "snapshot frequency");                    \
+parser_put(p, BOOL,0, "check", "false", "check the GPU results");               \
+parser_put(p, FLOAT,'e', "epsilon", "1.e-2", "the margin of floating point errors");\
+parser_put(p, INT,0, "first", "-1", "first shot");                             \
+parser_put(p, INT,0, "last",  "-1", "last shot");                              \
+parser_put(p, INT,0, "tb_thread_group_size", "1","tb_thread_group_size");   \
+parser_put(p, INT,0, "tb_nb_thread_groups", "1","tb_nb_thread_groups");  \
+parser_put(p, INT,0, "tb_th_x", "1", "tb_th_x");                               \
+parser_put(p, INT,0, "tb_th_y", "1", "tb_th_y");                               \
+parser_put(p, INT,0, "tb_th_z", "1", "tb_th_z");                               \
+parser_put(p, INT,0, "tb_t_dim", "1","tb_t_dim");                              \
+parser_put(p, INT,0, "tb_num_wf", "1","tb_num_wf");                             \
+parser_put(p, INT,0, "mode", "2","mode (1 MEM 2 I/O, 0 FUSE)");                     \
+parser_put(p, INT,0, "fwd_steps", "1","save wavefield every fwd_steps diamonds");   \
+parser_put(p, STRING,0,"tb_affinity", "NONE", "Affinity setup file");              \
+parser_put(p, INT,0,"order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
 #endif //  __STENCIL_PARSER_H_

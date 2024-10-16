@@ -5,6 +5,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <stencil/parser.h>
+#define MSG(fmt,...)                    \
+  do {                                  \
+    fprintf(stdout, "[STENCIL MSG]:");  \
+    fprintf(stdout, fmt, ##__VA_ARGS__);\
+    fprintf(stdout, "\n");              \
+  } while(0)
 
 option *option_create(const option_kind kind,
                       const char short_name,
@@ -114,9 +120,12 @@ int parser_parse(parser *p, int argc, char* argv[]) {
   unsigned int s, i, param_size;
   const char *param;
   char *long_name, short_name;
+//  MSG("long_name=%s,short_name=%s",long_name,short_name);
   strcpy(p->exe_name, get_basename(argv[0]));
   for (i = 1; i < argc; ++i) {
     param      = argv[i];
+//    MSG("param=%s",param);
+//    printf("param=%s\n",param);
     param_size = strlen(param);
     if (param[0] != '-') {
       if (((i+1) < argc) && (argv[i+1][0] != '-'))
@@ -289,6 +298,7 @@ void parser_put(parser* p,
   const char* default_value,
   const char* message) {
   option *o = p->options;
+//  MSG("long_name=%s",long_name);
   if((strlen(long_name) == 0) || (isspace(long_name[0]))) {
     fprintf(stderr, "[PARSER ERROR]: Blank Option detected\n");
     exit(EXIT_FAILURE);
