@@ -56,8 +56,13 @@ pipeline {
                     nx=128;ny=256;nz=512;
                     nt=57; dt=0.001;
                     x=2; y=2; z=1; t=7; w=20; tgs=4;
-                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 1 --fmax 8;
-                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tgs $tgs --nb_thg $(expr $OMP_NUM_THREADS / $tgs) --thx $x --thy $y --thz $z --tdim $t --nwf $w --mode 2  --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --order 2 --fmax 8;
+                    export OMP_NUM_THREADS=4
+                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
+                     --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --src_depth 256 --order 1 --fmax 8;
+                    ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
+                     --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --src_depth 256 --order 2 --fmax 8;
                     '''
             }
         }
