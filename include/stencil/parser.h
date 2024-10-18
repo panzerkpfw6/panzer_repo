@@ -261,7 +261,7 @@ parser_put(p, INT,0, "tb_th_z", "1", "tb_th_z");                               \
 parser_put(p, INT,0, "tb_t_dim", "1","tb_t_dim");                              \
 parser_put(p, INT,0, "tb_num_wf", "1","tb_num_wf");                             \
 parser_put(p, INT,0, "mode", "2","mode (1 MEM 2 I/O, 0 FUSE)");                     \
-parser_put(p, INT,0, "fwd_steps", "1","save wavefield every fwd_steps diamonds");   \
+parser_put(p, INT,0, "fwd_steps", "1","tb param, save wavefield every fwd_steps diamonds");   \
 parser_put(p, STRING,0,"tb_affinity", "NONE", "Affinity setup file");              \
 parser_put(p, INT,0,"order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
 #endif //  __STENCIL_PARSER_H_

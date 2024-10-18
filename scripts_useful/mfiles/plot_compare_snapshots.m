@@ -20,18 +20,36 @@ root2='../../'; fname2=['snapshot_SB2nd_504'];
 % root2='../../../rtm_munich'; fname2=['snapshot_SB2nd_504'];
 % root= '../../../rtm_munich'; fname= ['snapshot_SB1st_504'];
 % fname= ['snapshot_SB1st_204'];
+
+% description_str='diff SB 1st,TB 1st';
+% root='../../';  fname= ['snapshot_SB1st_511'];
+% root2='../../'; fname2=['snapshot_TB1st_512'];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+description_str='diff SB 2nd,TB 2nd';title1='SB2nd';title2='TB2nd';
+root='../../';  fname= ['snapshot_SB2nd_527'];
+root2='../../'; fname2=['snapshot_TB2nd_528'];
+
+description_str='diff SB 2nd,TB 2nd';title1='SB2nd';title2='TB2nd';
+root='../../../simwave_export_to_ecrc_servers';  fname= ['snapshot_SB2nd_527'];
+root2='../../../simwave_export_to_ecrc_servers'; fname2=['snapshot_u1_TB2nd_528'];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compare simwave and stencil
+% description_str='diff SB 2nd simwave,SB 2nd stencil';title1='SB 2nd simwave';title2='SB 2nd stencil';
+% root='../../../simwave_export_to_ecrc_servers';  fname= ['snapshot_SB2nd_527'];
+% root2='../../'; fname2=['snapshot_SB2nd_527'];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% forget below
+% root='../../../simwave_export_to_ecrc_servers_';  fname= ['TB_lastshot_u0'];
+% root2='../../../simwave_export_to_ecrc_servers_'; fname2=['TB_lastshot_u1'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fname=fullfile(root,fname);
 fname2=fullfile(root2,fname2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % add 8 points to each dimension
-dims1=[676+8,676+8,201+8];
-% dims1=[264,264,264];
-% dims1=[520,520,520];
 dims1=[128+8,256+8,512+8];
-dims2=[128+8,256+8,512+8];
-% dims2=[512+8,256+8,128+8];
-% dims2=dims1;
+dims1=[256+8,256+8,512+8];
+% dims1=[676+8,676+8,201+8];
 ccnt=dims1(1)*dims1(2)*dims1(3);
 %%%%%%%%%%%%%%%%%%%%%%%%% check sizes
 s = dir(fname);
@@ -75,6 +93,11 @@ data1_max_loc=[r,c,p,mxv];
 [r2,c2,p2] = ind2sub(size(data2),idx);
 data2_max_loc=[r2,c2,p2,mxv];
 
+[M,I] = max(data_diff,[],1);
+[mxv,idx] = max(abs(data_diff(:)));
+[r2,c2,p2] = ind2sub(size(data_diff),idx);
+data_diff_max_loc=[r2,c2,p2,mxv];
+
 % ix=dims(3)/2;
 ix=256;
 val=1.5e-4;
@@ -82,24 +105,25 @@ val=1.5e-4;
 a=5*1e-2;
 % a=10;
 r2=68;c2=132;p2=260;
+r2=132;c2=132;p2=260;
 figure
 subplot(1,3,1)
-% imagesc( squeeze(data2(r2,:,:)).' );    %p2
-imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(r2,:,:)).' );    %p2
+% imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',x=',num2str(r2)) );
 xlabel('Y');ylabel('Z');
 colorbar
 
 subplot(1,3,2)
-% imagesc( squeeze(data2(:,c2,:)).' );    %p2
-imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(:,c2,:)).' );    %p2
+% imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',y=',num2str(c2)));
 xlabel('X');ylabel('Z');
 colorbar
 
 subplot(1,3,3)
-% imagesc( squeeze(data2(:,:,p2)).');    %p2
-imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(:,:,p2)).');    %p2
+% imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
 title(strcat(title2,',z=',num2str(p2)));
 xlabel('X');ylabel('Y');
 colorbar
@@ -108,22 +132,22 @@ colorbar
 r=r2;c=c2;p=p2;
 figure
 subplot(1,3,1)
-% imagesc( squeeze(data(r+1,:,:)).');
-imagesc( squeeze(data(r+1,:,:)).',[-a,a]);
+imagesc( squeeze(data(r+1,:,:)).');
+% imagesc( squeeze(data(r+1,:,:)).',[-a,a]);
 title(strcat(title1,',x=',num2str(r)));
 xlabel('Y');ylabel('Z');
 colorbar
 
 subplot(1,3,2)
-% imagesc( squeeze(data(:,c+1,:)).'  );    %p
-imagesc( squeeze(data(:,c+1,:)).',[-a,a]);    %p
+imagesc( squeeze(data(:,c+1,:)).'  );    %p
+% imagesc( squeeze(data(:,c+1,:)).',[-a,a]);    %p
 title(strcat(title1,',y=',num2str(c)));
 xlabel('X');ylabel('Z');
 colorbar
 
 subplot(1,3,3)
-% imagesc( squeeze(data(:,:,p+1)).'  );    %p
-imagesc( squeeze(data(:,:,p+1)).',[-a,a]);    %p
+imagesc( squeeze(data(:,:,p+1)).'  );    %p
+% imagesc( squeeze(data(:,:,p+1)).',[-a,a]);    %p
 title(strcat(title1,',z=',num2str(p)));
 xlabel('X');ylabel('Y');
 colorbar

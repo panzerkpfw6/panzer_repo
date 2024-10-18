@@ -451,7 +451,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
                 MSG("SNAPSHOT CUSTOM");
                 FILE *snap_fd;
                 char *snap_fd_name = (char*)malloc(20*sizeof(char));
-
                 sprintf(snap_fd_name, "snapshot_SB1st_%u",t+1);
                 snap_fd = fopen(snap_fd_name, "wb+");
 
@@ -680,9 +679,9 @@ int main(int argc, char* argv[]) {
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
 
     /// load/generate the velocity model.
-//    velocity_load_model(s,vel);
+    velocity_load_model(s,vel);
 //    MSG("velocity_const_model2\n");
-    velocity_const_model2(s,vel);
+//    velocity_const_model2(s,vel);
 //    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
 

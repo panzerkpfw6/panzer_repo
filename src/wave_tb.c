@@ -2283,10 +2283,11 @@ void wave_tb_save_lastshot(sismap_t* s,
       "failed to write snapshot");
     CHK(fclose(fd)!=0,"failed to close snapshot file");
     if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
-
     fd = 0;
 
-    fd = fopen("TB_lastshot_u1", "wb+");
+    char *snap_fd_name = (char*)malloc(20*sizeof(char));
+    sprintf(snap_fd_name, "snapshot_TB2nd_%u",s->time_steps);
+    fd = fopen(snap_fd_name, "wb+");
     CHK(fd == NULL, "failed to open snapshot file");
     CHK(fwrite(u1, sizeof(float), s->size, fd) != s->size,
       "failed to write snapshot");
@@ -2301,10 +2302,11 @@ void wave_tb_save_lastshot_1st(sismap_t* s,
                            unsigned int t) {
     MSG("inside wave_tb_save_lastshot");
     FILE * fd;
-    fd = fopen("TB_lastshot_u0", "wb+");
+    char *snap_fd_name = (char*)malloc(20*sizeof(char));
+    sprintf(snap_fd_name, "snapshot_TB1st_%u",s->time_steps);
+    fd = fopen(snap_fd_name, "wb+");
     CHK(fd == NULL, "failed to open snapshot file");
-    CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,
-      "failed to write snapshot");
+    CHK(fwrite(u0, sizeof(float), s->size, fd) != s->size,"failed to write snapshot");
     CHK(fclose(fd)!=0,"failed to close snapshot file");
     if (s->verbose) MSG("... saving last snapshot (size %d)",s->size);
     fd = 0;

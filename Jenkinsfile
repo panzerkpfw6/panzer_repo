@@ -59,16 +59,26 @@ pipeline {
                     export OMP_NUM_THREADS=4
                     ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
                      --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --src_depth 256 --order 1 --fmax 8;
+                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth 256 --order 1 --fmax 8;
                     ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
                      --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot  --fwd_steps 3 -c --src_depth 256 --order 2 --fmax 8;
+                     --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth 256 --order 2 --fmax 8;
                     '''
             }
         }
         stage ('compare_wavefields_for_SB_TB') {
             steps {
                 sh '''#!/bin/bash -le
+                    nx=128;ny=256;nz=512;
+                    export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+                    export TIME_SB_1st=504 #@pavel in SB the nt should one time less than in correponding TB.
+                    dt=0.001;
+                    x=2; y=2; z=1; t=7; w=20; tgs=4;
+                    export OMP_NUM_THREADS=4;
+
+
+
+                    ############# old code below
                     module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
                     export OMP_NUM_THREADS=4
                     ####################################################
