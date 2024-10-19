@@ -188,19 +188,6 @@ rtm/fast:
 .PHONY : rtm/fast
 
 #=============================================================================
-# Target rules for targets named modeling-snap_tb
-
-# Build rule for target.
-modeling-snap_tb: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_tb
-.PHONY : modeling-snap_tb
-
-# fast build rule for target.
-modeling-snap_tb/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_tb.dir/build.make app/CMakeFiles/modeling-snap_tb.dir/build
-.PHONY : modeling-snap_tb/fast
-
-#=============================================================================
 # Target rules for targets named gather
 
 # Build rule for target.
@@ -225,19 +212,6 @@ modeling: cmake_check_build_system
 modeling/fast:
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
 .PHONY : modeling/fast
-
-#=============================================================================
-# Target rules for targets named modeling-snap_end
-
-# Build rule for target.
-modeling-snap_end: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 modeling-snap_end
-.PHONY : modeling-snap_end
-
-# fast build rule for target.
-modeling-snap_end/fast:
-	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling-snap_end.dir/build.make app/CMakeFiles/modeling-snap_end.dir/build
-.PHONY : modeling-snap_end/fast
 
 #=============================================================================
 # Target rules for targets named stencil_apps
@@ -267,8 +241,6 @@ help:
 	@echo "... stencil_apps"
 	@echo "... gather"
 	@echo "... modeling"
-	@echo "... modeling-snap_end"
-	@echo "... modeling-snap_tb"
 	@echo "... rtm"
 	@echo "... stencil"
 .PHONY : help

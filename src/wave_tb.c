@@ -2182,7 +2182,6 @@ void wave_tb_init(tb_t* ctx,
   ctx->t_len =  2*( (s->time_steps-2)/((ctx->t_dim+1)*2) ) - 1;
   ctx->y_len_l = s->dimy / ctx->diam_width;
   ctx->y_len_r = ctx->y_len_l + 1;
-  MSG("velocity_const_model2\n");
 
   ctx->t_pos = calloc(ctx->y_len_r,sizeof(int));
   ctx->avail_list = calloc(ctx->y_len_r,sizeof(int));
@@ -2550,7 +2549,6 @@ static void intra_diamond_mwd_comp(tb_t * ctx,
     int zb_array[ctx->t_dim*2+1];
     int ze_array[ctx->t_dim*2+1];
 
-
     int time_len = te-tb;
     double t1,t2,t3,t4;
 
@@ -2563,8 +2561,8 @@ static void intra_diamond_mwd_comp(tb_t * ctx,
     xe = ctx->stencilx + ctx->r;
 
     for(t = tb; t < te-1; t++) {
-        zb_array[t] = ctx->r;
         ze_array[t] = ctx->r * (time_len - (t-tb));
+        zb_array[t] = ctx->r;
     }
 
     ctx->kernel_spatial_blocking(ctx->nnx, ctx->nny, ctx->nnz,
@@ -2900,7 +2898,6 @@ static inline void intra_diamond_resolve(tb_t *ctx,
             if ((data->flag_fwd == 1) &&(data->fwd != NULL)) {
                 tm0 = wtime();
 //        fwd_save(ctx,data->gfd[groupid],data->fwd,groupid,  offset,fwdsize);
-
                 if (groupid < ctx->num_thread_groups/2) {
                     bwriter_write(data->bwriter0,groupid,&data->fwd[1LL* ctx->nnx * ctx->nnz * ctx->diam_width* groupid],offset,fwdsize);
                 } else {
@@ -2988,9 +2985,7 @@ static inline void dynamic_intra_diamond_prologue(tb_t * ctx,
                                                   float * restrict v0,
                                                   const float * restrict roc2) {
     int i, yb, ye, ifwd;
-
     ifwd = -1;
-
 #pragma omp parallel num_threads(ctx->num_thread_groups)
     {
         int b_inc = ctx->r;
@@ -3006,8 +3001,7 @@ static inline void dynamic_intra_diamond_prologue(tb_t * ctx,
             yb = ctx->r + i * ctx->diam_width + ctx->r;
             ye = yb + ctx->diam_width - 2*ctx->r;
             intra_diamond_mwd_comp(ctx, data, timer, u0, v0, roc2, yb, ye, b_inc, e_inc,
-                                   ctx->t_dim + 1, ctx->t_dim * 2 + 1, 1,
-                                   ifwd, groupid);
+                                   ctx->t_dim + 1, ctx->t_dim * 2 + 1, 1,ifwd, groupid);
         }
     }
 }

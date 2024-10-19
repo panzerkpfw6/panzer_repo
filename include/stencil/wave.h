@@ -31,9 +31,9 @@
 #include <stencil/shot.h>
 
 /// in the code only BLOCKY,BLOCKZ are used
-#define BLOCKX 128
-#define BLOCKY 1
-#define BLOCKZ 8
+#define BLOCKX 64
+#define BLOCKY 22
+#define BLOCKZ 9999
 
 void array_openmp_init(float* u,sismap_t*s);
 void array_openmp_inner_init(float* u,sismap_t*s);
