@@ -83,10 +83,18 @@ void shot_release(shot_t *shot) {
   if (shot->fd_snap) {
     char tmp[512];
     sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SNAP_BASE, shot->id);
+    MSG("shot release=%s\n",tmp);
     fclose(shot->fd_snap); shot->fd_snap = NULL;
     int err = remove(tmp);
     CHK(err != 0, "failed to delete snapshot file, aborting");
   }
+//  char tmp[512];
+//  sprintf(tmp, "%s/%s_%d.raw", OUTDIR, SNAP_BASE, shot->id);
+//  MSG("shot release=%s\n",tmp);
+
+//  MSG("shot->fd_img=%s\n",shot->fd_img);
+//  MSG("shot->fd_ilm=%s\n",shot->fd_ilm);
+
   if (shot->fd_img) { fclose(shot->fd_img); shot->fd_img = NULL; }
   if (shot->fd_ilm) { fclose(shot->fd_ilm); shot->fd_ilm = NULL; }
 
