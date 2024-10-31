@@ -227,8 +227,8 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
             MSG("SNAPSHOT CUSTOM");
             FILE *snap_fd;
             char *snap_fd_name=(char*)malloc(20*sizeof(char));
-
             sprintf(snap_fd_name,"snapshot_SB2nd_%u",t+1);
+
             snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
