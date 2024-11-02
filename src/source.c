@@ -160,21 +160,3 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     fclose(fd);
 #endif // __DUMP_SOURCE
 }
-
-  // if (Freq == 0.0) Freq = 30.0;
-  // if (dt == 0.0) dt = 0.004;
-  // Bpar = sqrt(6.0) / (PI * Freq);
-  // N = ceil(1.35 * Bpar / dt);
-  // Np1 = N;
-  // *Npoint = 2 * N + 1;
-
-  // Amp = alloc1float(*Npoint);
-
-  // Amp[Np1] = 1.0;
-
-  // for (i = 1; i <= N; i++) {
-  //   t = dt * (float)i;
-  //   u = 2.0 * sqrt(6.0) * t / Bpar;
-  //   Amp[Np1 + i] = Amp[Np1 - i] = 0.5 * (2.0 - u * u) * exp(-u * u / 4.0);
-  // }
-  // return Amp;

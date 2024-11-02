@@ -21,11 +21,11 @@ description_str='diff SB 2nd,TB 2nd. simwave';title1='SB2nd';title2='TB2nd';
 root='../../';  fname= ['snapshot_SB2nd_529'];
 root2='../../'; fname2=['snapshot_TB2nd_530'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compare simwave  
-% description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
-% % root='../../';  fname= ['snapshot_SB1st_529'];
-% % root2='../../'; fname2=['snapshot_TB1st_530'];
-% root='../../';  fname= ['snapshot_SB1st_536'];
-% root2='../../'; fname2=['snapshot_TB1st_537'];
+description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
+% root='../../';  fname= ['snapshot_SB1st_529'];
+% root2='../../'; fname2=['snapshot_TB1st_530'];
+root='../../';  fname= ['snapshot_SB1st_536'];
+root2='../../'; fname2=['snapshot_TB1st_537'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % description_str='diff SB 2nd,TB 2nd';title1='SB2nd';title2='TB2nd';
 % root='../../../simwave_export_to_ecrc_servers';  fname= ['snapshot_SB2nd_527'];
@@ -45,6 +45,10 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % description_str='diff SB 2nd,TB 2nd.stencil';title1='SB2nd stencil';title2='TB2nd stencil';
 % root='../../../../stencil-main';  fname= ['SB_2nd_abc.raw'];
 % root2='../../../../stencil-main'; fname2=['TB_2nd_abc.raw'];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% analytical
+% description_str='diff SB 2nd,TB 2nd. stencil';title1='SB2nd';title2='Analytical';
+% root='../../../../stencil-main'; fname=['SB_2nd_abc.raw'];
+% root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fname=fullfile(root,fname);
 fname2=fullfile(root2,fname2);
@@ -55,6 +59,7 @@ dims1=[256+8,256+8,256+8];
 % dims1=[676+8,676+8,201+8];
 ccnt=dims1(1)*dims1(2)*dims1(3);
 %%%%%%%%%%%%%%%%%%%%%%%%% check sizes
+pwd
 s = dir(fname);
 filesize = s.bytes;
 s2 = dir(fname2);
