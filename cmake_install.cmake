@@ -1,8 +1,8 @@
-# Install script for directory: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-dev
+# Install script for directory: /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_munich2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-dev")
+  set(CMAKE_INSTALL_PREFIX "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_munich2")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,8 +44,8 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-dev/src/cmake_install.cmake")
-  include("/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-dev/app/cmake_install.cmake")
+  include("/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_munich2/src/cmake_install.cmake")
+  include("/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_munich2/app/cmake_install.cmake")
 
 endif()
 
@@ -57,5 +57,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-dev/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_munich2/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

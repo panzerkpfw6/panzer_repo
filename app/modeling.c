@@ -227,8 +227,8 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
             MSG("SNAPSHOT CUSTOM");
             FILE *snap_fd;
             char *snap_fd_name=(char*)malloc(20*sizeof(char));
-
             sprintf(snap_fd_name,"snapshot_SB2nd_%u",t+1);
+
             snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
@@ -273,8 +273,11 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
     shot_release(shot);
   }
   /// free the simulation buffers.
+//  MSG("DELETE_BUFFER(u0); ");
   DELETE_BUFFER(u0);
+//  MSG("DELETE_BUFFER(u1); ");
   DELETE_BUFFER(u1);
+//  MSG("DELETE_BUFFER(sismos); ");
   DELETE_BUFFER(sismos);
   DELETE_BUFFER(pml_tmp);
 }
@@ -352,10 +355,11 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
         wave_save_sismos(s, shot, sismos);
 
         /// release/close the resources related to the current shot.
+        MSG("shot_release(shot);");
         shot_release(shot);
+        MSG("wave_tb_data_free(data,ctx->num_thread_groups);");
         wave_tb_data_free(data,ctx->num_thread_groups);
     }
-
     wave_tb_free(ctx);
     wave_tb_timer_free(timer);
     /// free the simulation buffers.
@@ -702,11 +706,11 @@ int main(int argc, char* argv[]) {
     source[s->time_steps] = 0.0f; // an extra time step for girih.
     /// print info if needed.
     if (s->verbose) wave_print(s);
+
     /// run RTM on CPU or GPU.
 
-
     if (s->cpu) {
-////        run_modeling_tb_cpu(s, vel, source, p);
+//        run_modeling_tb_cpu(s, vel, source, p);
         if (s->order==1) {
             MSG("run 1st order TB");
             run_modeling_1st_tb_cpu(s, vel, source, p);
@@ -731,14 +735,23 @@ int main(int argc, char* argv[]) {
 //    MSG(" s->sx, %d\n", s->sx);
 //    MSG(" s->sy, %d\n", s->sy);
 //    MSG(" s->sz, %d\n", s->sz);
+
+//    MSG("DELETE_BUFFER(vel); ");
     DELETE_BUFFER(vel);
+//    MSG("DELETE_BUFFER(source); ");
     DELETE_BUFFER(source);
+//    MSG("DELETE_BUFFER(pml_tab); ");
     DELETE_BUFFER(pml_tab);
+
     /// release stencil.
+//    MSG("(wave_release(s)); ");
     wave_release(s);
+
     /// release the sismap structure.
+//    MSG("(free(s)); ");
     free(s);
     /// delete the parser.
+//    MSG("parser_delete(p);; ");
     parser_delete(p);
 
     MSG("END\n");

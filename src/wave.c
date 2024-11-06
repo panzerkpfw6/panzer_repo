@@ -193,8 +193,8 @@ void wave_init_numerics(sismap_t *s) {
     for (i = 1; i < s->sz + 1; i++)
         s->courant_number += 2. * fabs(s->coefz[i]);
     s->courant_number = 2. / sqrt(s->courant_number);
-    s->dt = s->cfl * s->courant_number / s->vmax; // for 2nd order
-//    s->dt =0.001;
+//    s->dt = s->cfl * s->courant_number / s->vmax; // for 2nd order
+    s->dt =0.001;
     // check that nbsnap is < Nyquist limit:
     s->nyquist_sampling = floor(1.0 / (2.0 * s->fmax) / s->dt) + 1;
     if (s->nb_snap == -1) {
@@ -427,7 +427,7 @@ vy0[z] = vy0[z]                                                                \
                        + s->coefy[2] * (pr0[x+3*nnx] - pr0[x-2*nnx])   \
                        + s->coefy[3] * (pr0[x+4*nnx] - pr0[x-3*nnx])) ;  \
 vz0[z] = vz0[z]                                                         \
-      + s->dt/s->dz * (                s->coefz[0] * (pr0[x+1*nnxy] - pr0[z])   \
+      + s->dt/s->dz * (         s->coefz[0] * (pr0[x+1*nnxy] - pr0[z])   \
                                + s->coefz[1] * (pr0[x+2*nnxy] - pr0[x-1*nnxy])   \
                                + s->coefz[2] * (pr0[x+3*nnxy] - pr0[x-2*nnxy])   \
                                + s->coefz[3] * (pr0[x+4*nnxy] - pr0[x-3*nnxy]))

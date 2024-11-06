@@ -1,5 +1,5 @@
 ///
-/// @copyright Copyright 2017- Issam Said. All rights reserved.
+/// @copyright Copyright . All rights reserved.
 /// This file is part of \b stencil.
 ///
 /// @b stencil is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 /// You should have received a copy of the GNU General Public License
 /// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
 ///
-/// @author Issam Said
+/// @author
 /// @file src/source.c
 /// @brief This file contains the implementation of the source simulator.
 ///
@@ -59,7 +59,8 @@ void source_ricker_wavelet(sismap_t *s, float *source) {
     float t1, t0;
     float PI = 4.0f * atan(1.0f);
 //    float PI=3.1415926535897 ;
-    t0 = 1.0 / s->fmax;
+//    t0 = 1.0 / s->fmax;
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
     MSG("s->fmax=%s\n",s->fmax);
 
     for (it = 0; it < s->time_steps; it++) {
@@ -97,15 +98,19 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
     float a  = PI*s->fmax;
     float a2 = a  * a;
     float a4 = a2 * a2;
-    t0 = 1.0 / s->fmax;
+//    t0 = 1.0 / (s->fmax);
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
 
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
-        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT=(t1-t0);
+        deltaT2=deltaT  * deltaT;
         deltaT3=deltaT2 * deltaT;
-//        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
-        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
-                    (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
+        source[it] = exp(-a2*deltaT2) *(1.0 - 2. * a2 * deltaT2)/s->dt;
+
+        //        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
+//        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
+//                    (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
         fprintf(fd, "%d %f\n", it, source[it]);
 #endif // __DUMP_SOURCE
@@ -133,15 +138,16 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     float PI = 4.0f * atan(1.0f);
     int  it;
     float t1,t0,deltaT,deltaT2,deltaT3;
-    t0 = 1.0 / s->fmax;
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
     float a  = PI*s->fmax;
     float a2 = a  * a;
     float a4 = a2 * a2;
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
-        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT=(t1-t0);
+        deltaT2=deltaT  * deltaT;
         deltaT3=deltaT2 * deltaT;
-        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
+        source[it] = (- 6.*a2*deltaT +4.*a4*deltaT3 )*exp(-a2 * deltaT2);
 //        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
 //                     (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
@@ -160,21 +166,3 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     fclose(fd);
 #endif // __DUMP_SOURCE
 }
-
-  // if (Freq == 0.0) Freq = 30.0;
-  // if (dt == 0.0) dt = 0.004;
-  // Bpar = sqrt(6.0) / (PI * Freq);
-  // N = ceil(1.35 * Bpar / dt);
-  // Np1 = N;
-  // *Npoint = 2 * N + 1;
-
-  // Amp = alloc1float(*Npoint);
-
-  // Amp[Np1] = 1.0;
-
-  // for (i = 1; i <= N; i++) {
-  //   t = dt * (float)i;
-  //   u = 2.0 * sqrt(6.0) * t / Bpar;
-  //   Amp[Np1 + i] = Amp[Np1 - i] = 0.5 * (2.0 - u * u) * exp(-u * u / 4.0);
-  // }
-  // return Amp;

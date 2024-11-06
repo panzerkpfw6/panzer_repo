@@ -1,5 +1,5 @@
 ///
-/// @copyright Copyright 2017- Issam Said. All rights reserved.
+/// @copyright Copyright . All rights reserved.
 /// This file is part of \b stencil.
 ///
 /// @b stencil is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 /// You should have received a copy of the GNU General Public License
 /// along with \b stencil.  If not, see <http://www.gnu.org/licenses/>.
 ///
-/// @author Issam Said
+/// @author
 /// @file src/gpu_wave.cu
 /// @brief This file contains the implementation of the new GPU wave descriptor.
 ///
