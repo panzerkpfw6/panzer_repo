@@ -59,7 +59,8 @@ void source_ricker_wavelet(sismap_t *s, float *source) {
     float t1, t0;
     float PI = 4.0f * atan(1.0f);
 //    float PI=3.1415926535897 ;
-    t0 = 1.0 / s->fmax;
+//    t0 = 1.0 / s->fmax;
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
     MSG("s->fmax=%s\n",s->fmax);
 
     for (it = 0; it < s->time_steps; it++) {
@@ -97,15 +98,19 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
     float a  = PI*s->fmax;
     float a2 = a  * a;
     float a4 = a2 * a2;
-    t0 = 1.0 / s->fmax;
+//    t0 = 1.0 / (s->fmax);
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
 
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
-        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT=(t1-t0);
+        deltaT2=deltaT  * deltaT;
         deltaT3=deltaT2 * deltaT;
-//        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
-        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
-                    (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
+        source[it] = exp(-a2*deltaT2) *(1.0 - 2. * a2 * deltaT2)/s->dt;
+
+        //        source[it] = exp(-a2 * deltaT2) *(- 6.*a2*deltaT +4.*a4*deltaT3 );
+//        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
+//                    (1.0 - 2. * PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)); ///s->dt;
 #ifdef __DUMP_SOURCE
         fprintf(fd, "%d %f\n", it, source[it]);
 #endif // __DUMP_SOURCE
@@ -133,13 +138,14 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     float PI = 4.0f * atan(1.0f);
     int  it;
     float t1,t0,deltaT,deltaT2,deltaT3;
-    t0 = 1.0 / s->fmax;
+    t0 = 1.5 * sqrt(6.) / (PI *s->fmax);
     float a  = PI*s->fmax;
     float a2 = a  * a;
     float a4 = a2 * a2;
     for (it = 0; it < s->time_steps; it++) {
         t1 = it * s->dt;
-        deltaT=(t1-t0);deltaT2=deltaT  * deltaT;
+        deltaT=(t1-t0);
+        deltaT2=deltaT  * deltaT;
         deltaT3=deltaT2 * deltaT;
         source[it] = (- 6.*a2*deltaT +4.*a4*deltaT3 )*exp(-a2 * deltaT2);
 //        source[it] = exp(-PI * PI * s->fmax * s->fmax * (t1 - t0) * (t1 - t0)) *
