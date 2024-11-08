@@ -21,9 +21,9 @@ description_str='diff SB 2nd,TB 2nd. simwave';title1='SB2nd';title2='TB2nd';
 root='../../';  fname= ['snapshot_SB2nd_529'];
 root2='../../'; fname2=['snapshot_TB2nd_530'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 1st
-description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
-root='../../';  fname= ['snapshot_SB1st_545'];
-root2='../../'; fname2=['snapshot_TB1st_546'];
+% description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
+% root='../../';  fname= ['snapshot_SB1st_545'];
+% root2='../../'; fname2=['snapshot_TB1st_546'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil 2nd
 % description_str='diff SB 2nd,TB 2nd.stencil';title1='SB2nd stencil';title2='TB2nd stencil';
 % root='../../../../stencil-main';  fname= ['SB_2nd_abc.raw'];
