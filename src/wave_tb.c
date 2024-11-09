@@ -13,6 +13,7 @@
 #include "stencil/sismap.h"
 #include "stencil/parser.h"
 #include "stencil/wave_tb.h"
+#include "stencil/wave_tb_extra.h"
 #include "stencil/wtime.h"
 
 volatile int wave_tb_head;
@@ -3976,10 +3977,46 @@ void wave_tb_forward(tb_t* ctx,
                      const float * restrict roc2) {
     double t1,t2,t3,t4;
     if (data->src_depth !=-1) {
-//        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
-        u0[data->srcidx * ctx->nnz+(data->src_depth+ctx->r)] += data->source[0]; // stencil:xyz
+        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
+//        u0[1ULL*data->srcidx * ctx->nnz+(data->src_depth+ctx->r)] += data->source[0]; // stencil:xyz
+    }
+    ////////////////////////////////////////////////////
+    Parameters *p = (Parameters*) calloc(1, sizeof(Parameters));
+    if(p == NULL){
+        printf("Error in allocating for Girih Parameters.\n");
+        exit(0);
+    }
+    // girih print_param(p);
+    p->lstencil_shape[0] = nz;
+    p->lstencil_shape[1] = ny;
+    p->lstencil_shape[2] = nx;
+    p->ldomain_shape[0] = nz+lstencil*2;
+    p->ldomain_shape[1] = ny+lstencil*2;
+    p->ldomain_shape[2] = nx+lstencil*2;
+    p->stencil_ctx.bs_y = ny;
+    p->target_ts = 2;
+    p->stencil.r = 4; // Stencil Kernel semi-bandwidth
+    p->n_tests = 1;
+    p->verbose = 1;
+    p->t_dim = __t_dim;
+    p->nt = nt; // Rached
+    int enable_all_sizes = 0;
+    if(enable_all_sizes == 0){
+        // round the number of time steps to the nearest valid number
+        int remain = (p->nt-2)%((p->t_dim+1)*2);
+        if(remain != 0){
+            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
+            if(nt2 != p->nt){
+                if( (p->verbose ==1) ){
+                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n", nt ,nt2);
+                    fflush(stdout);
+                }
+                p->nt= nt2;
+            }
+        }
     }
 
+    ////////////////////////////////////////////////////
     t1 = wtime();
 //    MSG("before dynamic_intra_diamond_prologue");
     dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
