@@ -19,6 +19,41 @@
 // Paste from stencil-dev. A bit different notattion for TB.
 typedef float hFloat ;
 typedef float real_t;
+#define MPI_real_t MPI_FLOAT
+enum Stencil_Shapes{
+	STAR,
+	TTI,
+	BOz
+};
+
+enum Stencil_Coefficients{
+	CONSTANT_COEFFICIENT,
+	VARIABLE_COEFFICIENT,
+	VARIABLE_COEFFICIENT_AXSYM,
+	VARIABLE_COEFFICIENT_NOSYM,
+	SOLAR_COEFFICIENT
+};
+
+enum Stencil_Type{
+	REGULAR,
+	SOLAR
+};
+
+// Fields in solar kernel grid cell
+enum Solar_Fields{
+	ALL_FIELDS,
+	H_FIELD,
+	E_FIELD,
+};
+
+
+#ifndef _OPENMP
+#define  omp_get_num_threads() (1)
+#define omp_set_nested(a) {}
+#define omp_get_thread_num() (0)
+#define omp_get_max_threads() (1)
+#endif
+
 // Profiling
 typedef struct{
     double compute, communicate, send_recv, wait, total, others, ts_main, ts_others;
@@ -37,7 +72,7 @@ typedef struct{
     down,  // y-
     front, // x+
     back;  // x-
-    int shape[3], is_periodic[3], rank_coords[3];
+    int shape[3],is_periodic[3],rank_coords[3];
     //  MPI_Request wait_req[8];
     //  MPI_Status wait_stat16[16],wait_stat8[8],wait_stat4[4];
 }mpi_topology;
@@ -51,6 +86,28 @@ typedef struct{
 		const real_t *  coef, hFloat *  u, \
 		const hFloat *  v, const hFloat *  roc2)
 typedef void (*clu_func_t)CLU_SIG;
+
+// contezt information passed to the stencil kernel
+typedef struct{
+    int bs_z; //depricated
+    int bs_y; // for spatial blocking in Y at the standard methods
+    int thread_group_size;
+    int th_z, th_y, th_x, th_c; // number of threads per dimension in z, y, and x, and per component
+
+    // cpu binding masks
+    cpu_set_t **bind_masks;
+    int setsize;
+    int use_manual_cpu_bind;
+
+    // for separate stride-1 functions
+    clu_func_t clu_func;
+
+    int num_wf; // number of wavefront updats per iteration
+    // wavefront profiling
+    double *t_wf_comm, *t_wait, *t_wf_prologue, *t_wf_main, *t_wf_epilogue, *wf_num_resolved_diamonds, *t_group_wait;
+    real_t idz, idy, idx, idzyx_sum; //@Rqched 1/dz 1/dy 1/dx
+
+}stencil_ctx;
 
 ////// Kernels and time steppers data structures
 #define KERNEL_SIG ( const int shape[3], const int zb, const int yb,  const int xb, const int ze, const int ye, const int xe,\
@@ -86,27 +143,7 @@ struct StencilInfo {
     enum Stencil_Coefficients coeff;
     enum Stencil_Type type;
 };
-// contezt information passed to the stencil kernel
-typedef struct{
-    int bs_z; //depricated
-    int bs_y; // for spatial blocking in Y at the standard methods
-    int thread_group_size;
-    int th_z, th_y, th_x, th_c; // number of threads per dimension in z, y, and x, and per component
 
-    // cpu binding masks
-    cpu_set_t **bind_masks;
-    int setsize;
-    int use_manual_cpu_bind;
-
-    // for separate stride-1 functions
-    clu_func_t clu_func;
-
-    int num_wf; // number of wavefront updats per iteration
-    // wavefront profiling
-    double *t_wf_comm, *t_wait, *t_wf_prologue, *t_wf_main, *t_wf_epilogue, *wf_num_resolved_diamonds, *t_group_wait;
-    real_t idz, idy, idx, idzyx_sum; //@Rqched 1/dz 1/dy 1/dx
-
-}stencil_ctx;
 // contezt information
 typedef struct{
     int alignment, verbose, stencil_shape[3];
