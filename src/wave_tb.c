@@ -3978,6 +3978,7 @@ void wave_tb_forward(tb_t* ctx,
                      float * restrict u0,
                      float * restrict v0,
                      const float * restrict roc2) {
+    /// 2nd order TB code
     double t1,t2,t3,t4;
     if (data->src_depth !=-1) {
         u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
@@ -4101,21 +4102,105 @@ void wave_tb_forward(tb_t* ctx,
         fprintf(stderr, "###ERROR: threads number must be multiples of thread group size\n");
         exit(1);
     }
-    ////////////////////////////////////////////////////
-    t1 = wtime();
-//    MSG("before dynamic_intra_diamond_prologue");
-    dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
-    t2 = wtime();
-//    MSG("before dynamic_intra_diamond_mainloop");
-    dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
-    t3 = wtime();
-//    MSG("before dynamic_intra_diamond_epilogue");
-    dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
-    t4 = wtime();
 
-    timer->ts_main   += (t3-t2);
-    timer->ts_others += (t2-t1) + (t4-t3);
-    timer->total     += timer->ts_main + timer->ts_others;
+    if( (p->stencil_ctx.num_wf%p->stencil_ctx.th_x != 0) && (p->stencil_ctx.thread_group_size != 1) ){
+        fprintf(stderr,"ERROR: num_wavefronts must be multiples of thread groups size\n");
+        exit(1);
+    }
+    if(p->t_dim < 1){
+        fprintf(stderr,"ERROR: Diamond method does not support unrolling in time less than 1\n");
+        exit(1);
+    }
+    if (p->lstencil_shape[1] < p->stencil.r*(p->t_dim+1)*2){
+        fprintf(stderr,"ERROR: Intra-diamond method requires the sub-domain size to fit at least one diamond: %d elements in Y [stencil_radius*2*(time_unrolls+1)]. Given %d elements\n"
+                ,p->stencil.r*(p->t_dim+1)*2, p->lstencil_shape[1]);
+        exit(1);
+    }
+    if (floor(p->lstencil_shape[1] / (p->stencil.r*(p->t_dim+1)*2.0)) != p->lstencil_shape[1] / (p->stencil.r*(p->t_dim+1)*2.0)){
+        fprintf(stderr,"ERROR: Intra-diamond method requires the sub-domain size to be multiples of the diamond width: %d elements [stencil_radius*2*(time_unrolls+1)]\n"
+                ,p->stencil.r*(p->t_dim+1)*2);
+        exit(1);
+    }
+
+    /// define source
+//    int small_domain = 0;
+//    if(small_domain == 1){
+//        p->source_pt[0] = 20;//5000;//(p->stencil_shape[0]+2*p->stencil.r)/2 -1;
+//        p->source_pt[1] = 20;//5000;//(p->stencil_shape[1]+2*p->stencil.r)/2 -1;
+//        p->source_pt[2] = 20;//2000;//(p->stencil_shape[2]+2*p->stencil.r)/2 -1;
+//        fprintf(stderr, "%s %d: Correct source.\n", __FILE__, __LINE__);
+//    } else {
+//        p->source_pt[0] = p->stencil.r+ nx/2;//100;//250;//(p->stencil_shape[0]+2*p->stencil.r)/2 -1;
+//        p->source_pt[1] = p->stencil.r+ ny/2;//250;//250;//(p->stencil_shape[1]+2*p->stencil.r)/2 -1;
+//        p->source_pt[2] = p->stencil.r+ nz/2;//250;//100;//(p->stencil_shape[2]+2*p->stencil.r)/2 -1;
+//    }
+//    p->lsource_pt[0] = p->source_pt[0];
+//    p->lsource_pt[1] = p->source_pt[1];
+//    p->lsource_pt[2] = p->source_pt[2];
+    //////////////////
+    p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
+    p->stencil_ctx.idy = ((real_t)1.)/((real_t)data->dy);
+    p->stencil_ctx.idx = ((real_t)1.)/((real_t)data->dx);
+    p->stencil_ctx.idzyx_sum = p->stencil_ctx.idz + p->stencil_ctx.idy + p->stencil_ctx.idx;
+
+//	p->stencil.stat_sched_func = stat_sched_iso_ref;
+    p->stencil.mwd_func = femwd_iso_ref_2nd;
+
+    // Allocate the wavefront profiling timers
+//	int num_thread_groups = get_ntg(*p);
+    p->stencil_ctx.t_wait        = (double *) malloc(sizeof(double)*p->num_threads);
+    p->stencil_ctx.t_wf_main     = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_comm = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_prologue = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_epilogue = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.wf_num_resolved_diamonds = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
+    ////////////////////////////////////////////////////
+//    tb_t* ctx,
+//    tb_data_t * data,
+//    tb_timer_t* timer,
+//    float * restrict u0,
+//    float * restrict v0,
+//    const float * restrict roc2
+
+    p->U1 = u0;
+    p->rU1 = u0;
+    p->U2 = v0;
+    p->U5 = roc2;
+
+    size_t size_src_exc_coef = p->nt * sizeof(real_t);
+    p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);
+    int it=0;
+    for (it=0;it<p->nt;it++)
+    {
+        p->src_exc_coef[it] = data->source[it];
+    }
+    for (int i = 0; i < ctx->nnx; i++) {
+        p->dampx[i] = ctx->dampx[i];
+    }
+    for (int i = 0; i < ctx->nny; i++) {
+        p->dampy[i] = ctx->dampy[i];
+    }
+    for (int i = 0; i < ctx->nnz; i++) {
+        p->dampz[i] = ctx->dampz[i];
+    }
+
+    ////////////////////////////////////////////////////
+//    t1 = wtime();
+////    MSG("before dynamic_intra_diamond_prologue");
+//    dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
+//    t2 = wtime();
+////    MSG("before dynamic_intra_diamond_mainloop");
+//    dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
+//    t3 = wtime();
+////    MSG("before dynamic_intra_diamond_epilogue");
+//    dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
+//    t4 = wtime();
+//
+//    timer->ts_main   += (t3-t2);
+//    timer->ts_others += (t2-t1) + (t4-t3);
+//    timer->total     += timer->ts_main + timer->ts_others;
+    ////////////////////////////////////////////////////
 }
 
 void wave_tb_forward_orig(tb_t* ctx,

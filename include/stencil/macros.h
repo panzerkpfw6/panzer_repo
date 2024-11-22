@@ -122,4 +122,24 @@ do {                                                              \
   }                                                               \
 } while(0);
 
+//////////  special TB macros   //////////
+// define type
+typedef int      Myint ;
+typedef float    Myfloat ;
+typedef long int Myint64 ;
+typedef float hFloat ;
+typedef float real_t;
+
+//#define U1(i,j,k)         (u1[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//#define U2(i,j,k)         (u2[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//#define U3(i,j,k)         (u3[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+#define V1_xyz(i,j,k)         (v1[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//#define V2(i,j,k)         (v2[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//#define V3(i,j,k)         (v3[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//#define ROC(i,j,k)        (roc2[((1ULL)*((i)*(nny)+(j))*(nnz)+(k))])
+//////////////////////////////
+#define MAX(a,b)    (a>b?a:b)
+#define MIN(a,b)    (a<b?a:b)
+#define max(a, b) ((a) > (b) ? (a) : (b))
+
 #endif //  __STENCIL_MACROS_H_
