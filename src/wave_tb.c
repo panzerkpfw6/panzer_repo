@@ -4184,7 +4184,26 @@ void wave_tb_forward(tb_t* ctx,
     for (int i = 0; i < ctx->nnz; i++) {
         p->dampz[i] = ctx->dampz[i];
     }
+    ////////////////////////////////////////////////////
+    double elapse_time = 0.0;
+    double *p_elapse_time;
+    p_elapse_time = &elapse_time;
 
+    reset_timers(&(p->prof));
+    reset_wf_timers(p);
+    p->stencil_ctx.use_manual_cpu_bind=1;
+    cpu_bind_init(p);
+    //@KADIR gcall
+    double wall0 = get_wall_time();
+//    dynamic_intra_diamond_ts_combined(p);
+    double wall1 = get_wall_time();
+    *p_elapse_time = wall1 - wall0;
+
+    free(p->coef);
+    free(p);
+
+//    *p_n_flop = n_flop;
+//    *p_n_sample = n_sample;
     ////////////////////////////////////////////////////
 //    t1 = wtime();
 ////    MSG("before dynamic_intra_diamond_prologue");

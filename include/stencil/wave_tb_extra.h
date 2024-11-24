@@ -153,7 +153,8 @@ typedef struct {
     int call_combined_function;
 
     // Fields for storing computed values
-    hFloat *U1, *U2, *U3, *U4, *U5, *source;
+    hFloat *  U1, *  U2, *  U3,*  U4, *  source;
+    const float * U5;
     hFloat *rU1, *rU2, *rU3, *rU4, *rU5;
 
     // Damping parameters for the Absorbing Boundary Condition (ABC)
@@ -206,5 +207,9 @@ void femwd_iso_ref_2nd(const int shape[3], const int zb, const int yb_r0, const 
                        hFloat *p21, hFloat *p22, hFloat *p23, const hFloat *roc2,
                        float *dampx, float *dampy, float *dampz, int t_dim, int b_inc, int e_inc,
                        int NHALO, int tb, int te, stencil_ctx stencil_ctx, int mtid);
-
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid);
+void dynamic_intra_diamond_ts_combined(Parameters *p);
+void reset_timers(Profile * p);
+void reset_wf_timers(Parameters * p);
+void cpu_bind_init(Parameters *p);
 #endif // STENCIL_KERNEL_H

@@ -490,5 +490,413 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid){
+    //@KADIR1 EXECUTED IN DIAMOND
+    int t, x, xb[32], xe[32];
+    int xb0,xe0;
+    int yb, ye;
+    int time_len = te-tb;
+    double t1, t2, t3;
+//    int lstencil; //pavel edition
+
+    // wavefront prologue
+    t1 = get_wall_time();
+#if 0
+    yb = yb_r;
+	ye = ye_r;
+
+	for(t=tb; t< te-1; t++){
+		xb[t] = p->stencil.r;
+		xe[t] = p->stencil.r*(time_len-(t-tb));
+	}
+
+	stat_sched_iso_ref_v2(p->ldomain_shape, p->stencil.r, yb, xb,
+                			  p->lstencil_shape[0]+p->stencil.r, ye, xe, p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5, p->t_dim, b_inc, e_inc, p->stencil.r, tb, te-1, p->stencil_ctx, tid);
+#endif
+    t2 = get_wall_time();
+    // main wavefront loop
+    yb = yb_r;
+    ye = ye_r;
+    //xb0 = (te-tb)*p->stencil.r;
+    xb0 = p->stencil.r;
+    xe0 = p->ldomain_shape[2]-p->stencil.r;
+//    lstencil=(p->ldomain_shape[2]-p->lstencil_shape[2])/2; //pavel edition
+    p->stencil.mwd_func(p->ldomain_shape, p->stencil.r, yb, xb0,
+                        p->lstencil_shape[0]+p->stencil.r, ye, xe0, p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
+                        p->dampx,p->dampy,p->dampz,
+                        p->t_dim, b_inc, e_inc, p->stencil.r, tb, te, p->stencil_ctx, tid);
+    t3 = get_wall_time();
+
+    // wavefront epilogue
+#if 0
+    yb = yb_r;
+	ye = ye_r;
+
+	if(tb < p->t_dim) { // lower half of the diamond
+    yb -= b_inc;
+    ye += e_inc;
+  } else { // upper half of the diamond
+    yb += b_inc;
+    ye -= e_inc;
+  }
+
+
+	for(t=tb+1; t< te; t++){
+		xe[t] = p->ldomain_shape[2]-p->stencil.r;
+		xb[t] = p->ldomain_shape[2]-p->stencil.r - (t-tb)*p->stencil.r;
+	}
+
+	stat_sched_iso_ref_v2(p->ldomain_shape, p->stencil.r, yb, xb,
+                			  p->lstencil_shape[0]+p->stencil.r, ye, xe, p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5, p->t_dim, b_inc, e_inc, p->stencil.r, tb+1, te, p->stencil_ctx, tid);
+#endif
+    p->stencil_ctx.t_wf_prologue[tid] += t2-t1;
+    p->stencil_ctx.t_wf_main[tid]     += t3-t2;
+    p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
+}
+
+void dynamic_intra_diamond_ts_combined(Parameters *p) {
+    //@5
+    int t_dim = p->t_dim;
+    diam_width = (t_dim+1) * 2 *p->stencil.r;
+
+    if(p->stencil.type == REGULAR){
+        t_len = 2*( (p->nt-2)/((t_dim+1)*2) ) - 1;
+    } else if(p->stencil.type == SOLAR){
+        t_len = 2*( (p->nt)/((t_dim+1)*2) ) - 1;
+    }
+    int num_thread_groups = get_ntg(*p);
+
+    y_len_l = p->lstencil_shape[1] / (diam_width);
+    y_len_r = y_len_l;
+    if(p->is_last == 1) y_len_r++;
+
+    int i, y, t;
+    double t1,t2,t3,t4;
+    int yb,ye;
+    double db_t;
+
+    // allocate scheduling variables
+    st.t_pos = (int*) malloc(y_len_r*sizeof(int));
+    st.state = (int*) malloc(y_len_r*sizeof(int));
+    avail_list = (int*) malloc(y_len_r*sizeof(int));
+    head=y_len_r;
+    tail=0;
+    // initialixe scheduling variables
+    for(i=0; i<y_len_r; i++){
+        st.t_pos[i] = 0;
+        st.state[i] = ST_NOT_BUSY;
+    }
+#if defined(_OPENMP)
+    omp_set_nested(1);
+#endif
+
+    gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+    isrc_exc++;
+
+    // Prologue
+    t1 = get_wall_time();
+    if(p->in_auto_tuning == 0){
+        //dynamic_intra_diamond_prologue(p);
+        //@4.1
+        if(p->stencil.type == REGULAR){
+            //dynamic_intra_diamond_prologue_std(p);
+            //@3.1
+            // compute all the trapexoids
+            int i, yb, ye;
+            int ntg = get_ntg(*p);
+#pragma omp parallel num_threads(ntg)
+            {
+                int b_inc = p->stencil.r;
+                int e_inc = p->stencil.r;
+                int tid = 0;
+#if defined(_OPENMP)
+                tid = omp_get_thread_num();
+#endif
+
+#pragma omp for schedule(dynamic) private(i,yb,ye)
+                for(i=0; i<y_len_l; i++){
+                    yb = p->stencil.r + i*diam_width;
+                    ye = yb + diam_width;
+                    //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, p->t_dim, p->t_dim*2+1, tid);
+                    //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
+                    //@2
+                    {
+                        int tb = p->t_dim;
+                        int te = p->t_dim*2+1;
+                        if(p->stencil.type == REGULAR){
+                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    t2 = get_wall_time();
+
+    // main loop
+    //dynamic_intra_diamond_main_loop(p);
+    {
+        //@4.3.2
+        int not_complete, th_y_coord, i;
+        uint64_t il;
+        int num_thread_groups = get_ntg(*p);
+        uint64_t diam_size = y_len_l*(t_len-1)/2 + y_len_r*((t_len-1)/2 +1);
+        int tid;
+        double t1;
+
+        int idz=0;
+
+        if(p->in_auto_tuning == 0) {
+            for(i=0; i<y_len_r; i++){
+                avail_list[i] = i;
+            }
+        } else { // diversify the startup for shorter autotuning
+            for(i=0; i<y_len_r; i++){
+                if(i%2==0){
+                    avail_list[i] = idz++;
+                }
+            }
+            for(i=0; i<y_len_r; i++){
+                if(i%2==1){
+                    avail_list[i] = idz++;
+                }
+            }
+        }
+
+#pragma omp parallel num_threads(num_thread_groups) shared(head, tail) private(tid)
+        {
+            tid = 0;
+#if defined(_OPENMP)
+            tid = omp_get_thread_num();
+#endif
+#pragma omp for schedule(dynamic) private(il, th_y_coord, not_complete)//shared(head,tail)
+            for (il=0; il<diam_size; il++){
+                not_complete = 1;
+                th_y_coord = -1;
+                while(not_complete) {
+                    t1 = get_wall_time();
+                    while(head-tail<1); // spin-wait for available tasks
+                    p->stencil_ctx.t_group_wait[tid] += (get_wall_time() - t1);
+#pragma omp critical// (consumer)
+                    {
+#pragma omp flush (head, tail)
+                        if(head-tail>0){ // make sure there is still available work
+                            th_y_coord = avail_list[tail%y_len_r]; //acquire task
+                            tail++;
+                        }
+                    }
+                    if(th_y_coord>=0){
+                        //intra_diamond_resolve(p, th_y_coord, tid);
+                        //(Parameters *p, int y_coord, int tid)
+                        {
+                            int y_coord = th_y_coord;
+                            //@4.3.1
+                            int t_coord = st.t_pos[y_coord];
+                            double t1, t2;
+                            //intra_diamond_comp_using_location(p, y_coord, tid, t_coord);
+                            //(Parameters *p, int y_coord, int tid, int t_coord)
+                            {
+                                //@3.3
+                                int yb, ye, b_inc, e_inc;
+                                if(p->stencil.type == REGULAR){
+                                    //intra_diamond_get_info_std(p, y_coord, tid, t_coord, &yb, &ye, &b_inc, &e_inc);
+                                    //(Parameters *p, int y_coord, int tid, int t_coord, int *yb, int *ye, int *b_inc, int *e_inc)
+                                    {
+                                        double diam_size;
+                                        if( (p->is_last == 1) && (y_coord == y_len_l-1) && (t_coord%2 == 0) ){ // right most process & left-half diamond
+                                            // left half computations
+                                            yb = p->stencil.r + p->lstencil_shape[1] - p->stencil.r;
+                                            ye = yb + p->stencil.r;
+                                            b_inc = p->stencil.r;
+                                            e_inc = 0;
+                                            diam_size = 0.5;
+                                        } else if( (p->is_last == 1) && (y_coord == y_len_r-1) && (t_coord%2 == 0) ){ // right most process & right-half diamond
+                                            // right half computations
+                                            b_inc = 0;
+                                            e_inc = p->stencil.r;
+                                            if(p->t.shape[1] > 1)
+                                                yb = p->stencil.r + p->lstencil_shape[1] + 2*p->stencil.r;
+                                            else // serial code case
+                                                yb = p->stencil.r;
+                                            ye = yb + p->stencil.r;
+                                            diam_size = 0.5;
+                                        } else{ // full diamond computation
+                                            if(t_coord%2 == 0)// row shifted to the right
+                                                yb = p->stencil.r + diam_width - p->stencil.r + y_coord*diam_width;
+                                            else // row shifted to the left
+                                                yb = p->stencil.r + diam_width/2 - p->stencil.r+ y_coord*diam_width;
+                                            ye = yb + 2*p->stencil.r;
+                                            b_inc = p->stencil.r;
+                                            e_inc = p->stencil.r;
+                                            diam_size = 1.0;
+                                        }
+                                        p->stencil_ctx.wf_num_resolved_diamonds[tid] += diam_size;
+                                    }
+
+                                    //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, 0, p->t_dim*2+1, tid);
+                                    //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
+                                    {
+                                        int tb = 0;
+                                        int te = p->t_dim*2+1;
+                                        //@2
+                                        if(p->stencil.type == REGULAR){
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                                        }
+                                    }
+
+                                }
+                            }
+                            p->stencil_ctx.t_wf_comm[tid] += t2-t1;
+                        }
+#pragma omp critical// (producer)
+                        {
+#pragma omp flush (head)
+                            update_state(th_y_coord, p);
+                        }
+                        not_complete = 0;
+                    }
+                }
+            }
+        }
+    }
+    t3 = get_wall_time();
+    // Epilogue
+    if(p->in_auto_tuning == 0){
+        //dynamic_intra_diamond_epilogue(p);
+        //@4
+        //dynamic_intra_diamond_epilogue_std(p);
+        //@3
+        int yb, ye, i;
+        int ntg = get_ntg(*p);
+#pragma omp parallel num_threads(ntg)
+        {
+            int b_inc = p->stencil.r;
+            int e_inc = p->stencil.r;
+            int yb_r = p->stencil.r + diam_width/2 - p->stencil.r;
+            int ye_r = yb_r + 2*p->stencil.r;
+            int tid = 0;
+#if defined(_OPENMP)
+            tid = omp_get_thread_num();
+#endif
+
+#pragma omp for schedule(dynamic) private(i,yb,ye)
+            for(i=0; i<y_len_l; i++){
+                yb = yb_r + i*diam_width;
+                ye = ye_r + i*diam_width;
+                //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, 0, p->t_dim+1, tid);
+                {
+                    int tb = 0;
+                    int te = p->t_dim+1;
+                    //@2
+                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                }
+            }
+        }
+    }
+    t4 = get_wall_time();
+
+    p->prof.ts_main += (t3-t2);
+    p->prof.ts_others += (t2-t1) + (t4-t3);
+    // cleanup the state variables
+    free((void *) st.t_pos);
+    free(st.state);
+    free((void *) avail_list);
+}
+
+void reset_timers(Profile * p){
+    p->compute = 0.;
+    p->communicate = 0.;
+    p->send_recv = 0.;
+    p->wait = 0.;
+    p->total = 0.;
+    p->others = 0.;
+    p->ts_main = 0.;
+    p->ts_others = 0.;
+}
+void reset_wf_timers(Parameters * p){
+    int i;
+    int num_thread_groups = get_ntg(*p);
+
+    // reset if the wavefront profiling is allocated
+    if( (p->wavefront != 0) && (p->target_ts == 2) ) {
+
+        for(i=0; i<p->num_threads; i++) p->stencil_ctx.t_wait[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.t_wf_main[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.t_wf_comm[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.t_wf_prologue[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.t_wf_epilogue[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.wf_num_resolved_diamonds[i] = 0.0;
+        for(i=0; i<num_thread_groups; i++) p->stencil_ctx.t_group_wait[i] = 0.0;
+    }
+}
+void cpu_bind_init(Parameters *p){
+    if(p->stencil_ctx.use_manual_cpu_bind==0)
+        return;
+    //printf("%s %d: using sched_affinity()\n", __FILE__, __LINE__);
+
+    // Source for finding number of CPUs: https://software.intel.com/en-us/blogs/2013/10/31/applying-intel-threading-building-blocks-observers-for-thread-affinity-on-intel
+    cpu_set_t *mask;
+    int ncpus;
+    for ( ncpus = sizeof(cpu_set_t)/8; ncpus < 16*1024; ncpus <<= 1 ) {
+        mask = CPU_ALLOC( ncpus );
+        if ( !mask ) break;
+        const size_t size = CPU_ALLOC_SIZE( ncpus );
+        CPU_ZERO_S( size, mask );
+        const int err = sched_getaffinity( 0, size, mask );
+        if ( !err ) break;
+        CPU_FREE( mask );
+        mask = NULL;
+        //if ( errno != EINVAL )  break; REALLY FIXME KADIR
+    }
+    if ( !mask )
+        printf("Warning: Failed to obtain process affinity mask. Thread affinitixation is disabled.\n");
+
+    p->stencil_ctx.setsize = CPU_ALLOC_SIZE(ncpus);
+    p->stencil_ctx.bind_masks = (cpu_set_t**) malloc(p->num_threads*sizeof(cpu_set_t*));
+
+    int i, ib, idz=0;
+    ib=0;
+#if __MIC__
+    ib = 1;
+#endif
+    for(i=ib; i<p->num_threads*p->th_stride/p->th_block+ib;i++){
+        if((i-ib)%p->th_stride < p->th_block){
+            p->stencil_ctx.bind_masks[idz] = CPU_ALLOC( ncpus );
+            CPU_ZERO_S(p->stencil_ctx.setsize, p->stencil_ctx.bind_masks[idz]);
+            CPU_SET_S(i,p->stencil_ctx.setsize, p->stencil_ctx.bind_masks[idz]);
+            idz++;
+        }
+    }
+
+    int *phys_cpu = (int*) malloc(p->num_threads*sizeof(int));
+
+    omp_set_nested(1);
+    // Set the affinity to reduce the cost of first run
+    int num_thread_groups = get_ntg(*p);
+#pragma omp parallel num_threads(num_thread_groups) //PROC_BIND(spread)
+    {
+        int mtid = omp_get_thread_num();
+#pragma omp parallel shared(mtid)  num_threads(p->stencil_ctx.thread_group_size) //PROC_BIND(master)
+        {
+            int tid = omp_get_thread_num();
+            int gtid = tid + mtid * p->stencil_ctx.thread_group_size;
+            int err = sched_setaffinity(0, p->stencil_ctx.setsize, p->stencil_ctx.bind_masks[gtid]);
+            if(err==-1) printf("WARNING: Could not set CPU Affinity of thread:%d error:%d\n", gtid, err);
+            phys_cpu[gtid] = sched_getcpu();
+        }
+    }
+#ifdef _GNU_SOURCE
+    //printf("__________________________GNU SOURCE IS DEFINED\n");
+#else
+    printf("__________________________GNU SOURCE IS NOT NOT NOT DEFINED\n");
+#endif
+    printf("Threads binding (tid->OS tid):");
+    for(i=0;i<p->num_threads;i++){
+        printf(" %d->%d", i, phys_cpu[i]);
+    }
+    printf("\n");
+
+    free(phys_cpu);
+}
 
 ////////////////////////
