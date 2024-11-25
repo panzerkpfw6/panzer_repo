@@ -251,6 +251,103 @@ real_t* recv_rec; //@KADIR array for receiver recording
 size_t* irecv_rec; //@KADIR indez into the recv_rec
 size_t isrc_exc; //@KADIR number of source ezcitations performed so far
 
+//from diamond_ts.c
+#define ST_BUSY (0)
+#define ST_NOT_BUSY (1)
+typedef struct{
+    volatile  int *t_pos;
+    int *state;
+} Diam_Sched_State;
+volatile int *avail_list;
+volatile uint64_t head, tail;
+int diam_width;
+Diam_Sched_State st;
+int y_len_l, y_len_r;
+int t_len;
+int mpi_size;
+#define F2H(f) (f)
+#define H2F(h) (h)
+#define T_POS_L(y) (st.t_pos[(((y)+(y_len_l))%(y_len_l))])
+#define T_POS_R(y) (st.t_pos[(((y)+(y_len_r))%(y_len_r))])
+Parameters *gp; //@KADIR global parameter within a node
+static inline void update_state(int y_coord, Parameters *p){
+    //@KADIR EXECUTED IN DIAMOND
+    int sh;
+    st.t_pos[y_coord]++; // advance the current tile in time
+    if(p->is_last != 1) {
+        sh = ((st.t_pos[y_coord]%2 == 0) ? 1 : -1);// define the dependency direction
+        // add the current tile to the ready queue if its dependency is satisfied
+        if( (T_POS_L(y_coord+sh) >= st.t_pos[y_coord]) & (st.t_pos[y_coord] < t_len) )
+        {
+            avail_list[head%y_len_r] = y_coord;
+            head++;
+        }
+        // add the dependent tile to the ready queue if its other dependency is satisfied
+        if( (T_POS_L(y_coord-sh) == st.t_pos[y_coord]) & (T_POS_L(y_coord-sh) < t_len) )
+        {
+            avail_list[head%y_len_r] = (y_coord - sh + y_len_l)%y_len_l; // add the dependent neighbor to the list if the dependency is satisfied
+            head++;
+        }
+
+    } else { // last process (and single process case)
+
+        if(st.t_pos[y_coord]%2 == 0){ // right row case
+            // add the current diamond to the ready queue if dependencies are satisfied
+            if(st.t_pos[y_coord] < t_len){
+                // if left-half diamond, no dependencies. Add to the list
+                if(y_coord == y_len_l-1){
+                    avail_list[head%y_len_r] = y_coord;
+                    head++;
+                } else if(T_POS_R(y_coord+1) >= st.t_pos[y_coord]) {
+                    //the reset have the same circular dependence (ezcept the right-half diamond) if:
+                    // 1) the current tile did not reach the end of the temporal dimension
+                    // 2) the right neighbor is at least at the same time step
+                    avail_list[head%y_len_r] = y_coord;
+                    head++;
+                }
+            } // check validity in range of temporal dimension
+
+            // add the dependent diamond to the ready queue if other dependencies are satisfied:
+            if (T_POS_R(y_coord-1) < t_len){
+                // add the right-half diamond automatically when the left most diamond is updated
+                if(y_coord == 0){ // no dependencies. Add to the list
+                    st.t_pos[y_len_r-1]++; // advance the right-half diamond in time
+                    avail_list[head%y_len_r] = y_len_r-1;
+                    head++;
+                }
+                else if(T_POS_R(y_coord-1) == st.t_pos[y_coord]) {
+                    // 1) the neighbor did not reach the end of the temporal dimension
+                    // 2) the left neighbor is at the same time step
+                    // 3) is not the right-half diamond
+                    avail_list[head%y_len_r] = (y_coord - 1 + y_len_r)%y_len_r; // add the dependent neighbor to the list if the dependency is satisfied
+                    head++;
+                }
+            } // check validity in temporal dimension
+        } //end right row case
+
+        else if(st.t_pos[y_coord]%2 == 1){ // left row
+            // add the current diamond to the ready queue if dependencies are satisfied:
+            if( (T_POS_R(y_coord-1) >= st.t_pos[y_coord]) && (st.t_pos[y_coord] < t_len)  && (y_coord != y_len_r-1) ) {
+                // 1) the left neighbor is at least at the same time step
+                // 2) the current diamond did not reach the end of the temporal dimension
+                // 3) is not the right-half diamond
+                avail_list[head%y_len_r] = y_coord;
+                head++;
+            }
+
+            // add the dependent diamond to the ready queue if other dependencies are satisfied:
+            if( (T_POS_R(y_coord+1) == st.t_pos[y_coord]) && (T_POS_R(y_coord+1) < t_len) && (y_coord != y_len_l-1) ) {
+                // 1) the right neighbor is at the same time step
+                // 2) the neighbor did not reach the end of the temporal dimension
+                // 3) is not the right most diamond in space
+                avail_list[head%y_len_r] = (y_coord + 1 + y_len_r)%y_len_r; // add the dependent neighbor to the list if the dependency is satisfied
+                head++;
+            }
+        } // end left row case
+
+    } //end is_last process case
+}
+
 // Function definitions below
 void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0, const int xb, const int ze, const int ye_r0, const int xe,
                         const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
