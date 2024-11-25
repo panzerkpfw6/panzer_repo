@@ -3979,6 +3979,7 @@ void wave_tb_forward(tb_t* ctx,
                      float * restrict v0,
                      const float * restrict roc2) {
     /// 2nd order TB code
+    MSG("3982");
     double t1,t2,t3,t4;
     if (data->src_depth !=-1) {
         u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
@@ -4122,6 +4123,7 @@ void wave_tb_forward(tb_t* ctx,
         exit(1);
     }
 
+    MSG("4126");
     /// define source
 //    int small_domain = 0;
 //    if(small_domain == 1){
@@ -4138,6 +4140,7 @@ void wave_tb_forward(tb_t* ctx,
 //    p->lsource_pt[1] = p->source_pt[1];
 //    p->lsource_pt[2] = p->source_pt[2];
     //////////////////
+    MSG("4143");
     p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
     p->stencil_ctx.idy = ((real_t)1.)/((real_t)data->dy);
     p->stencil_ctx.idx = ((real_t)1.)/((real_t)data->dx);
@@ -4156,6 +4159,7 @@ void wave_tb_forward(tb_t* ctx,
     p->stencil_ctx.wf_num_resolved_diamonds = (double *) malloc(sizeof(double)*num_thread_groups);
     p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
     ////////////////////////////////////////////////////
+    MSG("4161");
 //    tb_t* ctx,
 //    tb_data_t * data,
 //    tb_timer_t* timer,
@@ -4170,32 +4174,40 @@ void wave_tb_forward(tb_t* ctx,
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
     p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);
+    MSG("4177");
     int it=0;
     for (it=0;it<p->nt;it++)
     {
         p->src_exc_coef[it] = data->source[it];
     }
-    for (int i = 0; i < ctx->nnx; i++) {
-        p->dampx[i] = ctx->dampx[i];
-    }
-    for (int i = 0; i < ctx->nny; i++) {
-        p->dampy[i] = ctx->dampy[i];
-    }
-    for (int i = 0; i < ctx->nnz; i++) {
-        p->dampz[i] = ctx->dampz[i];
-    }
+    p->dampx=ctx->dampx;
+    p->dampy=ctx->dampy;
+    p->dampz=ctx->dampz;
+//    for (int i = 0; i < ctx->nnx; i++) {
+//        MSG("i=%d\n",i);
+//        p->dampx[i] = ctx->dampx[i];
+//    }
+//    for (int i = 0; i < ctx->nny; i++) {
+//        p->dampy[i] = ctx->dampy[i];
+//    }
+//    for (int i = 0; i < ctx->nnz; i++) {
+//        p->dampz[i] = ctx->dampz[i];
+//    }
+    MSG("4192");
     ////////////////////////////////////////////////////
     double elapse_time = 0.0;
     double *p_elapse_time;
     p_elapse_time = &elapse_time;
 
+    MSG("4194");
     reset_timers(&(p->prof));
     reset_wf_timers(p);
     p->stencil_ctx.use_manual_cpu_bind=1;
     cpu_bind_init(p);
     //@KADIR gcall
     double wall0 = get_wall_time();
-//    dynamic_intra_diamond_ts_combined(p);
+    MSG("4198,before dynamic_intra_diamond_ts_combined");
+    dynamic_intra_diamond_ts_combined(p);
     double wall1 = get_wall_time();
     *p_elapse_time = wall1 - wall0;
 
