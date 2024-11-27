@@ -359,6 +359,7 @@ void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0, const
 firstprivate(b_inc, e_inc) \
 num_threads(stencil_ctx.thread_group_size)
     {
+//        MSG("line 362");
         int lstencil=NHALO;// @pavel  allocate variable lstencil
         //    KA_SHOW(FUNC_NAME);
         //    printf("%p\n",  TEMPLATE(femwd, FUNC_NAME));
@@ -382,47 +383,6 @@ num_threads(stencil_ctx.thread_group_size)
         nz=shape[0]-2*lstencil;
         ny=shape[1]-2*lstencil;
         nx=shape[2]-2*lstencil;
-
-        // load damping parameters
-        int NDAMP;
-        NDAMP=20; //
-        float alpha = 0.2;
-        float tabdamp[NDAMP];
-        float dampx[nx+2*lstencil];
-        float dampy[ny+2*lstencil];
-        float dampz[nz+2*lstencil];
-
-        for (int i = 1; i <= NDAMP; i++) {
-            tabdamp[NDAMP-i] = exp( -alpha * (1.0*i/NDAMP) * (1.0*i/NDAMP) );
-        }
-
-        for (int i = 0; i < 2*lstencil + nx; i++) { //pavel modification (loop)
-            dampx[i] = 1.0;
-        }
-        for (int i = 0; i < 2*lstencil + ny; i++) { //pavel modification (loop)
-            dampy[i] = 1.0;
-        }
-        for (int i = 0; i < 2*lstencil + nz; i++) { //pavel modification (loop)
-            dampz[i] = 1.0;
-        }
-//
-        for (int i = 0; i < NDAMP; i++) {
-            dampx[i] = tabdamp[i];
-            dampy[i] = tabdamp[i];
-//        dampz[lstencil+i] = tabdamp[i];
-
-            // original version
-            dampx[nx+lstencil-1-i] = tabdamp[i];
-            dampy[ny+lstencil-1-i] = tabdamp[i];
-            dampz[nz+lstencil-1-i] = tabdamp[i];
-            // pavel modification
-//        dampx[nx+2*lstencil-1-i] = tabdamp[i];
-//        dampy[ny+2*lstencil-1-i] = tabdamp[i];
-//        dampz[nz+2*lstencil-1-i] = tabdamp[i];
-        }
-        // end of loading damping parameters
-
-
 #if defined(_OPENMP)
         tid = omp_get_thread_num();
 		gtid = tid + mtid * tgs;
@@ -434,12 +394,7 @@ num_threads(stencil_ctx.thread_group_size)
         }
 
         hFloat *  u1 = p11;
-        hFloat *  u2 = p12;
-        hFloat *  u3 = p13;
         hFloat *  v1 = p21;
-        hFloat *  v2 = p22;
-        hFloat *  v3 = p23;
-
 
         int th_z = stencil_ctx.th_z;
         int th_y = stencil_ctx.th_y;
@@ -453,6 +408,7 @@ num_threads(stencil_ctx.thread_group_size)
         int yb_r = yb_r0;
         int ye_r = ye_r0;
 
+//        MSG("line 415");
         if(stencil_ctx.th_y>1 ){
             if(b_inc !=0 && e_inc!=0){ // split only at full diamonds
                 if (tid_y%2 == 0){ // left thread
@@ -509,8 +465,8 @@ num_threads(stencil_ctx.thread_group_size)
                     u1 = p21 ;
                     v1 = p11 ;
                 }
-
-
+                MSG("t=%d\n",t);
+//                MSG("line 474");
 //#pragma omp barrier
                 const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz) ;
                 const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx) ;
@@ -531,7 +487,6 @@ num_threads(stencil_ctx.thread_group_size)
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3*nnyz + iz] + pr0_v[ 3*nnyz + iz])
                                                      + FDM_O2_8_2_A4 * (pr0_v[-4*nnyz + iz] + pr0_v[ 4*nnyz + iz])) * inv_dx2 ;
 
-
                                 Myfloat d2_pr_y = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnz + iz]
                                                      + FDM_O2_8_2_A1 * (pr0_v[-1*nnz + iz] + pr0_v[ 1*nnz + iz])
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2*nnz + iz] + pr0_v[ 2*nnz + iz])
@@ -543,9 +498,12 @@ num_threads(stencil_ctx.thread_group_size)
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2 + iz] + pr0_v[ 2 + iz])
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3 + iz] + pr0_v[ 3 + iz])
                                                      + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2 ;
-
+//                                MSG("vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
+//                                MSG("vx0_v=%f\n",vx0_v[iz],",pr0_v=%f\n",pr0_v[iz],",=%f\n",pr0_v[iz]);
+//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
                                 vx0_v[iz] = coef0_v[iz] * stencil_ctx.dt * (d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
                                 // ABCs
+//                                MSG("vx0_v[iz]=%d\n",vx0_v[iz]);
                                 vx0_v[iz] = dampx[ix+lstencil] * vx0_v[iz] + (1 -dampx[ix+lstencil]) * pr0_v[iz];
                                 vx0_v[iz] = dampy[iy+lstencil] * vx0_v[iz] + (1 -dampy[iy+lstencil]) * pr0_v[iz];
                                 vx0_v[iz] = dampz[iz+lstencil] * vx0_v[iz] + (1 -dampz[iz+lstencil]) * pr0_v[iz];
@@ -565,7 +523,6 @@ num_threads(stencil_ctx.thread_group_size)
                             V1_xyz(gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]) += gp->src_exc_coef[isrc_exc];
                             isrc_exc++;
                         }
-
                     }
                 }
                 // Update block size in Y
@@ -576,12 +533,15 @@ num_threads(stencil_ctx.thread_group_size)
                     yb += b_inc;
                     ye += -e_inc;
                 }
+//                MSG("line 540");
                 kte=max(kte-NHALO,xb);
                 if (end==1) kte =xe;
                 kt=max(kt-NHALO,xb);
                 t_start = get_wall_time();
+//                MSG("line 545");
 #pragma omp barrier
                 stencil_ctx.t_wait[gtid] += get_wall_time() - t_start;
+//                MSG("line 548");
             } // diamond blocking in time (time loop)
         } // wavefront loop
     } // parallel region
@@ -594,7 +554,6 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     int yb, ye;
     int time_len = te-tb;
     double t1, t2, t3;
-//    int lstencil; //pavel edition
 
     // wavefront prologue
     t1 = get_wall_time();
@@ -608,7 +567,9 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
 	}
 
 	stat_sched_iso_ref_v2(p->ldomain_shape, p->stencil.r, yb, xb,
-                			  p->lstencil_shape[0]+p->stencil.r, ye, xe, p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5, p->t_dim, b_inc, e_inc, p->stencil.r, tb, te-1, p->stencil_ctx, tid);
+                			  p->lstencil_shape[0]+p->stencil.r, ye, xe,
+                              p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
+                              p->t_dim, b_inc, e_inc, p->stencil.r, tb, te-1, p->stencil_ctx, tid);
 #endif
     t2 = get_wall_time();
     // main wavefront loop
@@ -687,6 +648,8 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     omp_set_nested(1);
 #endif
     MSG("689");
+    MSG("gp->lsource_pt[0]=%d\n",gp->lsource_pt[0]);
+
     gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
     isrc_exc++;
     MSG("692");

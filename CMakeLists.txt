@@ -17,6 +17,8 @@ message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 option(project_debug "Build project with the debug mode." OFF)
 
 ## set the build type (DEFAULT is Release).
+set(project_debug TRUE)
+
 if (NOT CMAKE_BUILD_TYPE)
   set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)

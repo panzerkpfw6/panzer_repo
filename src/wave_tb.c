@@ -1429,7 +1429,6 @@ void kernel_tiling_blocking_separate_mode(const int nnx, const int nny, const in
     } // parallel region
 }
 
-
 void kernel_tiling_blocking_separate_mode_1st_orig(const int nnx, const int nny, const int nnz,
                                               const int xb, const int yb_r0, const int zb,
                                               const int xe, const int ye_r0, const int ze,
@@ -1462,7 +1461,6 @@ void kernel_tiling_blocking_separate_mode_1st_orig(const int nnx, const int nny,
                                               const int t0,
                                               const int ifwd,
                                               tb_timer_t* timer) {
-
 #pragma omp parallel default(shared) firstprivate(u,vx,vy,vz,b_inc,e_inc) \
     num_threads(thread_group_size)
     {
@@ -1737,7 +1735,6 @@ void kernel_tiling_blocking_separate_mode_1st_orig(const int nnx, const int nny,
     } // parallel region
 }
 
-
 void kernel_tiling_blocking_separate_mode_1st(const int nnx, const int nny, const int nnz,
                                               const int xb, const int yb_r0, const int zb,
                                               const int xe, const int ye_r0, const int ze,
@@ -1770,7 +1767,6 @@ void kernel_tiling_blocking_separate_mode_1st(const int nnx, const int nny, cons
                                               const int t0,
                                               const int ifwd,
                                               tb_timer_t* timer) {
-
 #pragma omp parallel default(shared) firstprivate(u,vx,vy,vz,b_inc,e_inc) \
     num_threads(thread_group_size)
     {
@@ -2044,7 +2040,6 @@ void kernel_tiling_blocking_separate_mode_1st(const int nnx, const int nny, cons
     } // parallel region
 }
 
-
 void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const int nnz,
                                            const int xb,  int yb_r, const int* zb,
                                            const int xe,  int ye_r, const int* ze,
@@ -2256,8 +2251,6 @@ void kernel_spatial_blocking_separate_mode(const int nnx, const int nny, const i
         }
     } // openmp
 }
-
-
 
 void kernel_tiling_blocking_separate_mode_io(const int nnx, const int nny, const int nnz,
                                              const int xb, const int yb_r0, const int zb,
@@ -2546,7 +2539,6 @@ void kernel_tiling_blocking_separate_mode_io(const int nnx, const int nny, const
         }
     } // parallel region
 }
-
 
 static void cpu_bind(tb_t *ctx) {
     int ncpus = get_nprocs();
@@ -2952,7 +2944,6 @@ void wave_tb_data_init(tb_data_t * data,
     bwriter_create(&(data->bwriter1));
     bwriter_init(data->bwriter0,tb->nnx,tb->nny,tb->diam_width,tb->num_thread_groups,tmp);
     bwriter_init(data->bwriter1,tb->nnx,tb->nny,tb->diam_width,tb->num_thread_groups,tmp);
-
 }
 
 void wave_tb_data_set_src(tb_data_t * data,
@@ -4005,6 +3996,9 @@ void wave_tb_forward(tb_t* ctx,
     p->verbose = 1;
     p->t_dim=ctx->t_dim;
     p->nt = ctx->time_steps; // Rached
+//    printf("data.dt:%f\n",data->dt);
+//    exit(0);
+    p->stencil_ctx.dt=data->dt;
     int enable_all_sizes = 0;
     if(enable_all_sizes == 0){
         // round the number of time steps to the nearest valid number
@@ -4136,9 +4130,9 @@ void wave_tb_forward(tb_t* ctx,
 //        p->source_pt[1] = p->stencil.r+ ny/2;//250;//250;//(p->stencil_shape[1]+2*p->stencil.r)/2 -1;
 //        p->source_pt[2] = p->stencil.r+ nz/2;//250;//100;//(p->stencil_shape[2]+2*p->stencil.r)/2 -1;
 //    }
-//    p->lsource_pt[0] = p->source_pt[0];
-//    p->lsource_pt[1] = p->source_pt[1];
-//    p->lsource_pt[2] = p->source_pt[2];
+    p->lsource_pt[0] = data->src_x;
+    p->lsource_pt[1] = data->src_y;
+    p->lsource_pt[2] = data->src_z;
     //////////////////
     MSG("4143");
     p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
@@ -4170,6 +4164,8 @@ void wave_tb_forward(tb_t* ctx,
     p->U1 = u0;
     p->rU1 = u0;
     p->U2 = v0;
+    p->U3 = v0;
+    p->U4 = v0;
     p->U5 = roc2;
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
@@ -4183,6 +4179,10 @@ void wave_tb_forward(tb_t* ctx,
     p->dampx=ctx->dampx;
     p->dampy=ctx->dampy;
     p->dampz=ctx->dampz;
+    gp = p;
+    MSG("0=%f\n",gp->lsource_pt[0],",1=%f\n",gp->lsource_pt[1],",2=%f\n",gp->lsource_pt[2]);
+    MSG("0=%f, 1=%f, 2=%f\n",gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]);
+    exit(0);
 //    for (int i = 0; i < ctx->nnx; i++) {
 //        MSG("i=%d\n",i);
 //        p->dampx[i] = ctx->dampx[i];
