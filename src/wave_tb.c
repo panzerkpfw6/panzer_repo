@@ -3990,6 +3990,13 @@ void wave_tb_forward(tb_t* ctx,
     p->ldomain_shape[1] = ctx->nny;
     p->ldomain_shape[2] = ctx->nnx;
     p->stencil_ctx.bs_y = ctx->stencily;
+    p->stencil_ctx.dx = data->dx;
+    p->stencil_ctx.dy = data->dy;
+    p->stencil_ctx.dz = data->dz;
+    p->stencil_ctx.nx = ctx->stencilx;
+    p->stencil_ctx.ny = ctx->stencily;
+    p->stencil_ctx.nz = ctx->stencilz;
+
     p->target_ts = 2;
     p->stencil.r = 4; // Stencil Kernel semi-bandwidth
     p->n_tests = 1;
@@ -4133,6 +4140,8 @@ void wave_tb_forward(tb_t* ctx,
     p->lsource_pt[0] = data->src_x;
     p->lsource_pt[1] = data->src_y;
     p->lsource_pt[2] = data->src_z;
+//    MSG("!!!0=%d\n",data->src_x);
+//    MSG("!!0=%d, 1=%d, 2=%d\n",p->lsource_pt[0],p->lsource_pt[1],p->lsource_pt[2]);
     //////////////////
     MSG("4143");
     p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
@@ -4180,9 +4189,10 @@ void wave_tb_forward(tb_t* ctx,
     p->dampy=ctx->dampy;
     p->dampz=ctx->dampz;
     gp = p;
-    MSG("0=%f\n",gp->lsource_pt[0],",1=%f\n",gp->lsource_pt[1],",2=%f\n",gp->lsource_pt[2]);
-    MSG("0=%f, 1=%f, 2=%f\n",gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]);
-    exit(0);
+//    MSG("0=%f\n",gp->lsource_pt[0],",1=%f\n",gp->lsource_pt[1],",2=%f\n",gp->lsource_pt[2]);
+//    MSG("!0=%d, 1=%d, 2=%d\n",p->lsource_pt[0],p->lsource_pt[1],p->lsource_pt[2]);
+//    MSG("0=%d, 1=%d, 2=%d\n",gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]);
+//    exit(0);
 //    for (int i = 0; i < ctx->nnx; i++) {
 //        MSG("i=%d\n",i);
 //        p->dampx[i] = ctx->dampx[i];

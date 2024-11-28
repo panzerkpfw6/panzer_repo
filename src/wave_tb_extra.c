@@ -122,6 +122,7 @@ typedef struct{
     int thread_group_size;
     int th_z, th_y, th_x, th_c; // number of threads per dimension in z, y, and x, and per component
     float dz, dy, dx; // spacing per dimension in z, y, and x
+    int nz, ny, nx; // grid size without halo area
 
     // cpu binding masks
     cpu_set_t **bind_masks;
@@ -370,6 +371,9 @@ num_threads(stencil_ctx.thread_group_size)
         const int nnz =shape[0];
         const unsigned long nnzy = 1UL * nnz * nny;
         const unsigned long nnyz = nnzy;
+        // index notation for velocity array
+        const int nnz_v=stencil_ctx.nz;
+        const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
 
         uint64_t  ln_domain = ((uint64_t) 1)* shape[0]*shape[1]*shape[2];
 
@@ -378,11 +382,7 @@ num_threads(stencil_ctx.thread_group_size)
 
         tid = 0;
         gtid = 0;
-        ////////////////////////////////
-        int nx,ny,nz;
-        nz=shape[0]-2*lstencil;
-        ny=shape[1]-2*lstencil;
-        nx=shape[2]-2*lstencil;
+
 #if defined(_OPENMP)
         tid = omp_get_thread_num();
 		gtid = tid + mtid * tgs;
@@ -465,20 +465,23 @@ num_threads(stencil_ctx.thread_group_size)
                     u1 = p21 ;
                     v1 = p11 ;
                 }
-                MSG("t=%d\n",t);
+//                MSG("t=%d\n",t);
+//                MSG("v1[222]=%f\n",v1[222]);
 //                MSG("line 474");
 //#pragma omp barrier
                 const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz) ;
                 const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx) ;
                 const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
+
+//                MSG("stencil_ctx.dz=%f\n",stencil_ctx.dz);
+//                MSG("inv_dx2=%f\n",inv_dx2);
                 const Myfloat coef = stencil_ctx.dt;
                 for(ix=kt; ix<kte; ix++){
                     if( ((ix)/th_nwf)%th_x == tid_x ) {
                         for(iy=yb; iy<ye; iy++) {
                             float *  pr0_v = &(u1[ix*nnyz+iy*nnz]);
                             float *  vx0_v = &(v1[ix*nnyz+iy*nnz]);
-                            const float *  coef0_v = &(roc2[ix*nnyz+iy*nnz]);
-
+                            const float *  coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
 #pragma ivdep
                             for(iz=ib; iz<ie; iz++) {
                                 Myfloat d2_pr_x = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnyz + iz]
@@ -498,10 +501,17 @@ num_threads(stencil_ctx.thread_group_size)
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2 + iz] + pr0_v[ 2 + iz])
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3 + iz] + pr0_v[ 3 + iz])
                                                      + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2 ;
+
 //                                MSG("vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
 //                                MSG("vx0_v=%f\n",vx0_v[iz],",pr0_v=%f\n",pr0_v[iz],",=%f\n",pr0_v[iz]);
 //                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
-                                vx0_v[iz] = coef0_v[iz] * stencil_ctx.dt * (d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
+//                                MSG("stencil_ctx.dt=%f\n",stencil_ctx.dt);
+//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
+                                vx0_v[iz] = coef0_v[(iz-NHALO)] * stencil_ctx.dt * (d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
+//                                if (fabs(vx0_v[iz]) > 10) {
+//                                    MSG("!alarm! vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
+//                                }
+
                                 // ABCs
 //                                MSG("vx0_v[iz]=%d\n",vx0_v[iz]);
                                 vx0_v[iz] = dampx[ix+lstencil] * vx0_v[iz] + (1 -dampx[ix+lstencil]) * pr0_v[iz];
@@ -521,6 +531,7 @@ num_threads(stencil_ctx.thread_group_size)
                                 )
                         {
                             V1_xyz(gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]) += gp->src_exc_coef[isrc_exc];
+//                            MSG("gp->src_exc_coef[isrc_exc]=%f\n",gp->src_exc_coef[isrc_exc]);
                             isrc_exc++;
                         }
                     }

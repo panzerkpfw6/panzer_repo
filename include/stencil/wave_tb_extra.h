@@ -81,6 +81,7 @@ typedef struct {
     int thread_group_size;
     int th_z, th_y, th_x, th_c; // number of threads per dimension
     float dz, dy, dx; // spacing per dimension
+    int nz, ny, nx; // grid size without halo area
 
     // cpu binding masks
     cpu_set_t **bind_masks;
