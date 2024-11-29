@@ -469,10 +469,9 @@ num_threads(stencil_ctx.thread_group_size)
 //                MSG("v1[222]=%f\n",v1[222]);
 //                MSG("line 474");
 //#pragma omp barrier
-                const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz) ;
                 const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx) ;
                 const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
-
+                const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz) ;
 //                MSG("stencil_ctx.dz=%f\n",stencil_ctx.dz);
 //                MSG("inv_dx2=%f\n",inv_dx2);
                 const Myfloat coef = stencil_ctx.dt;
@@ -488,26 +487,26 @@ num_threads(stencil_ctx.thread_group_size)
                                                      + FDM_O2_8_2_A1 * (pr0_v[-1*nnyz + iz] + pr0_v[ 1*nnyz + iz])
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2*nnyz + iz] + pr0_v[ 2*nnyz + iz])
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3*nnyz + iz] + pr0_v[ 3*nnyz + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnyz + iz] + pr0_v[ 4*nnyz + iz])) * inv_dx2 ;
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnyz + iz] + pr0_v[ 4*nnyz + iz])) * inv_dx2;
 
                                 Myfloat d2_pr_y = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnz + iz]
                                                      + FDM_O2_8_2_A1 * (pr0_v[-1*nnz + iz] + pr0_v[ 1*nnz + iz])
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2*nnz + iz] + pr0_v[ 2*nnz + iz])
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3*nnz + iz] + pr0_v[ 3*nnz + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnz + iz] + pr0_v[ 4*nnz + iz])) * inv_dy2 ;
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnz + iz] + pr0_v[ 4*nnz + iz])) * inv_dy2;
 
                                 Myfloat d2_pr_z = (  FDM_O2_8_2_A0 *  pr0_v[ 0 + iz]
                                                      + FDM_O2_8_2_A1 * (pr0_v[-1 + iz] + pr0_v[ 1 + iz])
                                                      + FDM_O2_8_2_A2 * (pr0_v[-2 + iz] + pr0_v[ 2 + iz])
                                                      + FDM_O2_8_2_A3 * (pr0_v[-3 + iz] + pr0_v[ 3 + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2 ;
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2;
 
 //                                MSG("vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
 //                                MSG("vx0_v=%f\n",vx0_v[iz],",pr0_v=%f\n",pr0_v[iz],",=%f\n",pr0_v[iz]);
 //                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
 //                                MSG("stencil_ctx.dt=%f\n",stencil_ctx.dt);
 //                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
-                                vx0_v[iz] = coef0_v[(iz-NHALO)] * stencil_ctx.dt * (d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
+                                vx0_v[iz] = coef0_v[(iz-NHALO)]*(d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
 //                                if (fabs(vx0_v[iz]) > 10) {
 //                                    MSG("!alarm! vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
 //                                }

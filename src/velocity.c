@@ -28,7 +28,7 @@
 #include <stencil/velocity.h>
 #include <stencil/interp.h>
 
-#define V(z, x) vtab[s->dimx*(z) + (x+s->pmlx)]
+#define V(z,x) vtab[s->dimx*(z) + (x+s->pmlx)]
 #define TMP(z, x) tmp[(s->vel_dimx+1)*(z) + x]
 
 #define DOWNLOADSALT3D "\
@@ -442,10 +442,14 @@ void velocity_const_model2(sismap_t *s, float *vtab, unsigned int layers) {
         MSG("order=2,vtab\n");
         for (z = 0; z < s->dimz; z++)
             for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+                for (x = 0; x < s->dimx; x++){
+//                    MSG("v=%f, dt=%f\n",vtab[s->dimx * (s->dimy * z + y) +x],s->dt );
+//                    MSG("vtab=%f\n",pow(s->dt,2)*pow(vtab[s->dimx * (s->dimy * z + y) + x],2));
+                    vtab[s->dimx * (s->dimy * z + y) + x]=pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+//                    MSG("vtab=1\n");
+                }
     }
+//    exit(0);
 //    printf("__DUMP_VEL=%s",__DUMP_VEL);
 #ifdef __DUMP_VEL
     MSG("... augmented_vel2 ...");

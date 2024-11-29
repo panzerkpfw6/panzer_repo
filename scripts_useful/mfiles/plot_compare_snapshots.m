@@ -20,6 +20,10 @@ root2='../../'; fname2=['snapshot_SB2nd_504'];
 description_str='diff SB 2nd,TB 2nd. simwave';title1='SB2nd';title2='TB2nd';
 root='../../';  fname= ['snapshot_SB2nd_529'];
 root2='../../'; fname2=['snapshot_TB2nd_530'];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compare "simwave" and "stencil",2nd TB
+% description_str='diff TB 2nd. simwave,stencil';title1='simwave';title2='stencil';
+% root='../../';  fname= ['snapshot_TB2nd_530'];
+% root2='../../../../stencil-main'; fname2=['TB_2nd_abc.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 1st
 % description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
 % root='../../';  fname= ['snapshot_SB1st_545'];
@@ -70,11 +74,11 @@ fileID = fopen(fname2,'r');
 A2=fread(fileID,ccnt,'float32');
 fclose(fileID);
 %%%%%%%%%%%%%%%%%%%%%%%%% data
-data=read_snap(fname,'simwave',dims1);
-% data=read_snap(fname,'stencil',dims1);
+% data=read_snap(fname,'simwave',dims1);
+data=read_snap(fname,'stencil',dims1);
 %%%%%%%%%%%%%%%%%%%%%%%%% data2
-data2=read_snap(fname2,'simwave',dims1);
-% data2=read_snap(fname2,'stencil',dims1);
+% data2=read_snap(fname2,'simwave',dims1);
+data2=read_snap(fname2,'stencil',dims1);
 %%%%%%%%%%%%%%%%%%%%%%%%%
 data_diff=data-data2;
 1+1e-11-1

@@ -55,7 +55,8 @@ export TIME_SB_1st=545; #@pavel in SB the nt should one time less than in correp
 
 dt=0.001;
 shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-shot=32639;  # position of the source in x,y coordinates.check ./data/acquisition.txt
+shot=32638;  # position of the source in x,y coordinates.check ./data/acquisition.txt
+shot=32896;
 #shot=100;  # position of the source in x,y coordinates.check ./data/acquisition.txt
 src_depth=128;
 x=1; y=2; z=2; t=7; w=20; tgs=4;
@@ -65,9 +66,9 @@ export OMP_NUM_THREADS=4;
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax 8;
 
 
-./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_2nd --tb_thread_group_size $tgs \
- --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
- --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth $src_depth --order 2 --fmax 8;
+#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_2nd --tb_thread_group_size $tgs \
+# --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+# --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth $src_depth --order 2 --fmax 8;
 
 #gdb --args ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_2nd --tb_thread_group_size $tgs \
 #  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \

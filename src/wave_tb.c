@@ -2957,6 +2957,8 @@ void wave_tb_data_set_src(tb_data_t * data,
     data->src_x = data->src_idx % (s->dimx + 2* s->sx);
     data->src_y = data->src_idx / (s->dimx + 2* s->sx);
     data->src_z = data->src_depth;
+    MSG("SRC: ix=%d,iy=%d,iz=%d\n",data->src_x,data->src_y,data->src_z);
+//    exit(0);
 }
 
 void wave_tb_data_unset_src(tb_data_t * data) {
@@ -4002,7 +4004,7 @@ void wave_tb_forward(tb_t* ctx,
     p->n_tests = 1;
     p->verbose = 1;
     p->t_dim=ctx->t_dim;
-    p->nt = ctx->time_steps; // Rached
+    p->nt=ctx->time_steps; // Rached
 //    printf("data.dt:%f\n",data->dt);
 //    exit(0);
     p->stencil_ctx.dt=data->dt;
@@ -4126,17 +4128,6 @@ void wave_tb_forward(tb_t* ctx,
 
     MSG("4126");
     /// define source
-//    int small_domain = 0;
-//    if(small_domain == 1){
-//        p->source_pt[0] = 20;//5000;//(p->stencil_shape[0]+2*p->stencil.r)/2 -1;
-//        p->source_pt[1] = 20;//5000;//(p->stencil_shape[1]+2*p->stencil.r)/2 -1;
-//        p->source_pt[2] = 20;//2000;//(p->stencil_shape[2]+2*p->stencil.r)/2 -1;
-//        fprintf(stderr, "%s %d: Correct source.\n", __FILE__, __LINE__);
-//    } else {
-//        p->source_pt[0] = p->stencil.r+ nx/2;//100;//250;//(p->stencil_shape[0]+2*p->stencil.r)/2 -1;
-//        p->source_pt[1] = p->stencil.r+ ny/2;//250;//250;//(p->stencil_shape[1]+2*p->stencil.r)/2 -1;
-//        p->source_pt[2] = p->stencil.r+ nz/2;//250;//100;//(p->stencil_shape[2]+2*p->stencil.r)/2 -1;
-//    }
     p->lsource_pt[0] = data->src_x;
     p->lsource_pt[1] = data->src_y;
     p->lsource_pt[2] = data->src_z;
@@ -4189,20 +4180,6 @@ void wave_tb_forward(tb_t* ctx,
     p->dampy=ctx->dampy;
     p->dampz=ctx->dampz;
     gp = p;
-//    MSG("0=%f\n",gp->lsource_pt[0],",1=%f\n",gp->lsource_pt[1],",2=%f\n",gp->lsource_pt[2]);
-//    MSG("!0=%d, 1=%d, 2=%d\n",p->lsource_pt[0],p->lsource_pt[1],p->lsource_pt[2]);
-//    MSG("0=%d, 1=%d, 2=%d\n",gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]);
-//    exit(0);
-//    for (int i = 0; i < ctx->nnx; i++) {
-//        MSG("i=%d\n",i);
-//        p->dampx[i] = ctx->dampx[i];
-//    }
-//    for (int i = 0; i < ctx->nny; i++) {
-//        p->dampy[i] = ctx->dampy[i];
-//    }
-//    for (int i = 0; i < ctx->nnz; i++) {
-//        p->dampz[i] = ctx->dampz[i];
-//    }
     MSG("4192");
     ////////////////////////////////////////////////////
     double elapse_time = 0.0;

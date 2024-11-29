@@ -232,7 +232,8 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
             snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
-            CHK(fwrite(u1,sizeof(float), s->size, snap_fd) != s->size,
+            CHK(fwrite(u1,sizeof(float), s->size, snap_fd
+            ) != s->size,
                 "failed to write custom snapshot");
             CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
             if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
