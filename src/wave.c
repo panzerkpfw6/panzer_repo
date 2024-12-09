@@ -543,6 +543,7 @@ void wave_update_fields_1st(sismap_t *s,
             }
         }
 }
+
 void wave_update_fields_block(sismap_t *s,
                               float *u0, float *u1,
                               float *roc2, float *phi, float *eta) {
@@ -576,6 +577,57 @@ void wave_update_fields_block(sismap_t *s,
         }
     }
 }
+
+void wave_update_fields_block_bis_orig(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict u1,
+                                  float *restrict roc2,
+                                  float *restrict phi,
+                                  float *restrict eta) {
+    unsigned int z, y, x;
+    float laplacian;
+    float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
+    unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+
+    const int nnx = s->dimx + 2 * s->sx;
+    const int nny = s->dimy + 2 * s->sy;
+    const int nnz = s->dimz + 2 * s->sz;
+    const int nnxy = nnx * nny;
+    const int nnyz = nny * nnz;
+
+    float *restrict ux;
+    float *restrict vx;
+    float *restrict rx;
+#pragma omp parallel for collapse(3) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, ux, vx, rx)
+    for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+                zmax = zmin + BLOCKZ;
+                if (zmax > s->dimz) zmax = s->dimz;
+                ymax = ymin + BLOCKY;
+                if (ymax > s->dimy) ymax = s->dimy;
+                xmax = xmin + BLOCKX;
+                if (xmax > s->dimx) xmax = s->dimx;
+
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+//                        s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
+                        ux = &(u1[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vx = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+                        for (int z = zmin; z < zmax; z++) {
+                            WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD();
+                            ux[z] = s->dampx[x + s->sx] * ux[z] + (1 - s->dampx[x + s->sx]) * vx[z];
+                            ux[z] = s->dampy[y + s->sy] * ux[z] + (1 - s->dampy[y + s->sy]) * vx[z];
+                            ux[z] = s->dampz[z + s->sz] * ux[z] + (1 - s->dampz[z + s->sz]) * vx[z];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void wave_update_fields_block_bis(sismap_t *s,
                                   float *restrict u0,
@@ -614,6 +666,7 @@ void wave_update_fields_block_bis(sismap_t *s,
                         ux = &(u1[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
                         vx = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
                         rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+#pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
                             WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD();
                             ux[z] = s->dampx[x + s->sx] * ux[z] + (1 - s->dampx[x + s->sx]) * vx[z];

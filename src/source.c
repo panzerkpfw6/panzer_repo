@@ -88,7 +88,7 @@ void source_ricker_wavelet_1st(sismap_t *s, float *source) {
     // 1st order ricker wavelet
     char tmp[256];
 #ifdef __DUMP_SOURCE
-    sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
+    sprintf(tmp, "%s/first%s.txt", OUTDIR, SOURCE_BASE);
     FILE *fd = fopen(tmp,"w");
 #endif // __DUMP_SOURCE
     float PI = 4.0f * atan(1.0f);
@@ -132,7 +132,7 @@ void source_ricker_wavelet_2nd(sismap_t *s, float *source) {
     // 1st order ricker wavelet
     char tmp[256];
 #ifdef __DUMP_SOURCE
-    sprintf(tmp, "%s/%s.txt", OUTDIR, SOURCE_BASE);
+    sprintf(tmp, "%s/second%s.txt", OUTDIR, SOURCE_BASE);
     FILE *fd = fopen(tmp,"w");
 #endif // __DUMP_SOURCE
     float PI = 4.0f * atan(1.0f);
