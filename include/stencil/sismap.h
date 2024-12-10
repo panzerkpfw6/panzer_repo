@@ -61,7 +61,7 @@ typedef struct __sismap_t {
     ///
     unsigned int img_dimx, img_dimy, img_dimz;
     unsigned int dimx, dimy, dimz;
-    unsigned int dx, dy, dz;
+    unsigned float dx, dy, dz;
     unsigned int dtrpx, dtrpy, dtrpz;
     unsigned int sx, sy, sz;
     unsigned int pmlx, pmly, pmlz;
