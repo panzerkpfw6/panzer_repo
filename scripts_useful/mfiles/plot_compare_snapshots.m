@@ -191,9 +191,9 @@ RMS_val =rms(data_diff,"all")
 ss=1
 %%%%%%%%%%%%%%%%%%   plot trace %%%%%%%%%%%%%%%%%%%
 figure;
-plot(data(132,:,132));hold on
-plot(data2(132,:,132));
-% plot(data_diff(132,:,132));
+% plot(data(132,:,132));hold on
+% plot(data2(132,:,132));
+plot(data_diff(132,:,132));
 legend('SB','TB');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
