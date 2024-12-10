@@ -14,21 +14,15 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 ## configurable options for how we want to build project.
-option(project_debug "Build project with the debug mode." OFF)
-
+#option(project_debug "Build project with the debug mode." OFF)
+option(project_debug "Enable debugging" ON)
 
 ## set the build type (DEFAULT is Release).
-################# Please comment code below if you don't want to debug the code.
-#set(project_debug TRUE)
-#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
-#################
-
 if (NOT CMAKE_BUILD_TYPE)
-  set (CMAKE_BUILD_TYPE Release)
+    set (CMAKE_BUILD_TYPE Release)
 endif (NOT CMAKE_BUILD_TYPE)
 if (project_debug)
-	set (CMAKE_BUILD_TYPE Debug)
+    set (CMAKE_BUILD_TYPE Debug)
 endif (project_debug)
 
 ## check whether CUDA is detected:
@@ -58,17 +52,19 @@ endif (project_debug)
 #endif ("${CMAKE_C_COMPILER_ID}"  MATCHES "Cray")
 
 ### set the compilation flags.
-add_compile_options(-qopenmp -march=core-avx2 -mtune=core-avx2)
+#add_compile_options(-qopenmp -march=core-avx2 -mtune=core-avx2)
+#add_compile_options(-fopenmp -march=core-avx2 -mtune=core-avx2)
+add_compile_options(-fopenmp -g3 -O0 -march=core-avx2 -mtune=core-avx2) # for debug
 
 ## add OpenMP.
 find_package(OpenMP)
 if (OPENMP_FOUND)
-  set (CMAKE_C_FLAGS 
-       "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set (CMAKE_CXX_FLAGS 
-       "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  set (CMAKE_EXE_LINKER_FLAGS
-       "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    set (CMAKE_C_FLAGS
+            "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS
+            "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS
+            "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif(OPENMP_FOUND)
 
 ## build the project C/C++ library.

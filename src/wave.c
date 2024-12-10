@@ -177,7 +177,7 @@ void wave_init_numerics(sismap_t *s) {
         }
         SETUP_STENCIL_COEFFS(s->coefz);
         SCALE_STENCIL_COEFFS(s->dx, s->coefx);
-        if (!s->dim2) SCALE_STENCIL_COEFFS(s->dy, s->coefy);
+        SCALE_STENCIL_COEFFS(s->dy, s->coefy);
         SCALE_STENCIL_COEFFS(s->dz, s->coefz);
     }
 
