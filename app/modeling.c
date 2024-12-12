@@ -438,7 +438,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
 
             wave_update_source(s,shot,u0,source[t]);
 //            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
-
             t0=wtime();
             wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
