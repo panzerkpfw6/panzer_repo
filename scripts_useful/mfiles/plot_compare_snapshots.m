@@ -40,14 +40,14 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % description_str='diff SB 1st,TB 1st.stencil';title1='SB1st stencil';title2='TB1st stencil';
 % root='../../../../stencil-main';  fname= ['SB_1st_abc.raw'];
 % root2='../../../../stencil-main'; fname2=['TB_1st_abc.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  compare simwave and stencil. 2nd order.
+%%%%%%%%%%%%%%%%%%  compare simwave and stencil. 2nd order.!!!!!!!!!!!!!!!!
 description_str='diff SB 2nd,.simwave VS stencil';title1='simwave SB2nd';title2='stencil SB2nd';
 root='../../';  fname= ['snapshot_SB2nd_530'];
 root2='../../../../stencil-main'; fname2=['SB_2nd_abc.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  compare simwave and stencil. 1st order.
-% description_str='diff SB 1st,.simwave VS stencil';title1='simwave SB1st';title2='stencil SB1st';
-% root='../../';  fname= ['snapshot_SB1st_536'];
-% root2='../../../../stencil-main'; fname2=['SB_1st_abc.raw'];
+%%%%%%%%%%%%%  compare simwave and stencil. 1st order.!!!!!!!!!!!!!!!!!!!!
+description_str='diff SB 1st,.simwave VS stencil';title1='simwave SB1st';title2='stencil SB1st';
+root='../../';  fname= ['snapshot_SB1st_536'];
+root2='../../../../stencil-main'; fname2=['SB_1st_abc.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% analytical
 % description_str='diff SB 2nd,TB 2nd. stencil';title1='SB2nd';title2='Analytical';
 % root='../../../../stencil-main'; fname=['SB_2nd_abc.raw'];

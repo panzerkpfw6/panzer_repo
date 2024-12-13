@@ -420,36 +420,36 @@ ux[z] = 2.0f * vx[z] - ux[z]                                                   \
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v()                        \
 vx0[z] = vx0[z]                                                                \
-      + s->dt/s->dx*(s->coefx[0] * (pr0[z] - pr0[z])   \
-                   + s->coefx[1] * (pr0[z] - pr0[z-1])   \
-                   + s->coefx[2] * (pr0[z] - pr0[z-2])   \
-                   + s->coefx[3] * (pr0[z] - pr0[z-3])) ;  \
+      + s->dt/s->dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
+                   + s->coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
+                   + s->coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
+                   + s->coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz])) ;  \
 vy0[z] = vy0[z]                                                                \
-        + s->dt/s->dy * (      s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
+        + s->dt/s->dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
                        + s->coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
                        + s->coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
                        + s->coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz])) ;  \
 vz0[z] = vz0[z]                                                         \
-      + s->dt/s->dz * (         s->coefz[0] * (pr0[z+1*nnxy] - pr0[z])   \
-                               + s->coefz[1] * (pr0[z+2*nnxy] - pr0[z-1*nnxy])   \
-                               + s->coefz[2] * (pr0[z+3*nnxy] - pr0[z-2*nnxy])   \
-                               + s->coefz[3] * (pr0[z+4*nnxy] - pr0[z-3*nnxy]))
+      + s->dt/s->dz * (          s->coefz[0] * (pr0[z+1] - pr0[z])   \
+                               + s->coefz[1] * (pr0[z+2] - pr0[z-1])   \
+                               + s->coefz[2] * (pr0[z+3] - pr0[z-2])   \
+                               + s->coefz[3] * (pr0[z+4] - pr0[z-3]))
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p()                        \
-pr0[x] = pr0[x]                                                   \
-      + rx[x] * (                                                             \
-                    s->coefx[0]/s->dx * (vx0[z]           - vx0[z-1     ])   \
-                   + s->coefy[0]/s->dy * (vy0[z]          - vy0[z-nnx   ])   \
-                   + s->coefz[0]/s->dz * (vz0[z]          -vz0[z-nnxy  ])   \
-                   + s->coefx[1]/s->dx * (vx0[z+1     ]   - vx0[z-2     ])   \
-                   + s->coefy[1]/s->dy * (vy0[z+1*nnx ]   - vy0[z-2*nnx ])   \
-                   + s->coefz[1]/s->dz * (vz0[z+1*nnxy]    -vz0[z-2*nnxy])   \
-                   + s->coefx[2]/s->dx * (vx0[z+2     ]    -vx0[z-3     ])   \
-                   + s->coefy[2]/s->dy * (vy0[z+2*nnx ]    -vy0[z-3*nnx ])   \
-                   + s->coefz[2]/s->dz * (vz0[z+2*nnxy]   -vz0[z-3*nnxy])   \
-                   + s->coefx[3]/s->dx * (vx0[z+3     ]   - vx0[z-4     ])   \
-                   + s->coefy[3]/s->dy * (vy0[z+3*nnx ]   - vy0[z-4*nnx ])   \
-                   + s->coefz[3]/s->dz * (vz0[z+ 3*nnxy]   -vz0[z-4*nnxy])                 \
+pr0[z] = pr0[z]                                                   \
+      + rx[z] * (                                                             \
+                    s->coefx[0]/s->dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
+                   + s->coefy[0]/s->dy * (vy0[z]          - vy0[z-1*nnz   ])   \
+                   + s->coefz[0]/s->dz * (vz0[z]          - vz0[z-1  ])   \
+                   + s->coefx[1]/s->dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
+                   + s->coefy[1]/s->dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
+                   + s->coefz[1]/s->dz * (vz0[z+1]         -vz0[z-2])   \
+                   + s->coefx[2]/s->dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
+                   + s->coefy[2]/s->dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
+                   + s->coefz[2]/s->dz * (vz0[z+2]   -      vz0[z-3])   \
+                   + s->coefx[3]/s->dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
+                   + s->coefy[3]/s->dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
+                   + s->coefz[3]/s->dz * (vz0[z+ 3]   -     vz0[z-4])                 \
                    )
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index()                            \
@@ -754,9 +754,9 @@ void wave_update_fields_block_1st(sismap_t *s,
 #pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
                             WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
-                            pr0[x] = s->dampx[x + s->sx] * pr0[x];
-                            pr0[x] = s->dampy[y + s->sy] * pr0[x];
-                            pr0[x] = s->dampz[z + s->sz] * pr0[x];
+                            pr0[z] = s->dampx[x + s->sx] * pr0[z];
+                            pr0[z] = s->dampy[y + s->sy] * pr0[z];
+                            pr0[z] = s->dampz[z + s->sz] * pr0[z];
                         }
                     }
                 }
