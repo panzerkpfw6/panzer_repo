@@ -26,11 +26,11 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % root='../../';  fname= ['snapshot_TB2nd_530'];
 % root2='../../../../stencil-main'; fname2=['TB_2nd_abc.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 1st
-% description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
+description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
 % root='../../';  fname= ['snapshot_SB1st_545'];
 % root2='../../'; fname2=['snapshot_TB1st_546'];
-% root='../../';  fname= ['snapshot_SB1st_536'];
-% root2='../../'; fname2=['snapshot_TB1st_537'];
+root='../../';  fname= ['snapshot_SB1st_537'];
+root2='../../'; fname2=['snapshot_TB1st_537'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil 2nd
 % description_str='diff SB 2nd,TB 2nd.stencil';title1='SB2nd stencil';title2='TB2nd stencil';
 % root='../../../../stencil-main';  fname= ['SB_2nd_abc.raw'];
@@ -191,8 +191,8 @@ ss=1
 %%%%%%%%%%%%%%%%%%   plot trace %%%%%%%%%%%%%%%%%%%
 figure;
 % plot(data(132,:,132));hold on
-% plot(data2(132,:,132));
-plot(data_diff(132,:,132));
+plot(data2(132,:,132));
+% plot(data_diff(132,:,132));
 legend('SB','TB');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

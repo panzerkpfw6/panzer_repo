@@ -3965,6 +3965,34 @@ void dynamic_intra_diamond_mainloop_1st(tb_t* ctx,
     }
 }
 
+
+void wave_tb_forward_orig(tb_t* ctx,
+                          tb_data_t * data,
+                          tb_timer_t* timer,
+                          float * restrict u0,
+                          float * restrict v0,
+                          const float * restrict roc2) {
+    double t1,t2,t3,t4;
+    if (data->src_depth !=-1) {
+        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
+    }
+
+    t1 = wtime();
+//    MSG("before dynamic_intra_diamond_prologue");
+    dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
+    t2 = wtime();
+//    MSG("before dynamic_intra_diamond_mainloop");
+    dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
+    t3 = wtime();
+//    MSG("before dynamic_intra_diamond_epilogue");
+    dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
+    t4 = wtime();
+
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+}
+
 void wave_tb_forward(tb_t* ctx,
                      tb_data_t * data,
                      tb_timer_t* timer,
@@ -4202,33 +4230,6 @@ void wave_tb_forward(tb_t* ctx,
     free(p);
 }
 
-void wave_tb_forward_orig(tb_t* ctx,
-                     tb_data_t * data,
-                     tb_timer_t* timer,
-                     float * restrict u0,
-                     float * restrict v0,
-                     const float * restrict roc2) {
-    double t1,t2,t3,t4;
-    if (data->src_depth !=-1) {
-        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
-    }
-
-    t1 = wtime();
-//    MSG("before dynamic_intra_diamond_prologue");
-    dynamic_intra_diamond_prologue(ctx, data, timer, u0, v0, roc2);
-    t2 = wtime();
-//    MSG("before dynamic_intra_diamond_mainloop");
-    dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
-    t3 = wtime();
-//    MSG("before dynamic_intra_diamond_epilogue");
-    dynamic_intra_diamond_epilogue(ctx, data, timer, u0, v0, roc2);
-    t4 = wtime();
-
-    timer->ts_main   += (t3-t2);
-    timer->ts_others += (t2-t1) + (t4-t3);
-    timer->total     += timer->ts_main + timer->ts_others;
-}
-
 void wave_tb_forward_1st(tb_t* ctx,
                          tb_data_t * data,
                          tb_timer_t* timer,
@@ -4416,19 +4417,11 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.wf_num_resolved_diamonds = (double *) malloc(sizeof(double)*num_thread_groups);
     p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
     ////////////////////////////////////////////////////
-    MSG("4161");
-//    tb_t* ctx,
-//    tb_data_t * data,
-//    tb_timer_t* timer,
-//    float * restrict u0,
-//    float * restrict v0,
-//    const float * restrict roc2
-
     p->U1 = u0;
     p->rU1 = u0;
-    p->U2 = v0;
-    p->U3 = v0;
-    p->U4 = v0;
+    p->U2 = vx;
+    p->U3 = vy;
+    p->U4 = vz;
     p->U5 = roc2;
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
