@@ -438,6 +438,10 @@ num_threads(stencil_ctx.thread_group_size)
         int iz_=data->rcv_depth; //@pavel
         int end=0;
 
+        const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx);
+        const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
+        const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz);
+
         for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
 
             if(xe-xi <= nwf){
@@ -461,13 +465,7 @@ num_threads(stencil_ctx.thread_group_size)
                     u1 = p21 ;
                     v1 = p11 ;
                 }
-//                MSG("t=%d\n",t);
-//                MSG("v1[222]=%f\n",v1[222]);
-//                MSG("line 474");
 //#pragma omp barrier
-                const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx) ;
-                const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
-                const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz) ;
 //                MSG("stencil_ctx.dz=%f\n",stencil_ctx.dz);
 //                MSG("inv_dx2=%f\n",inv_dx2);
                 const Myfloat coef = stencil_ctx.dt;
@@ -651,6 +649,11 @@ num_threads(stencil_ctx.thread_group_size)
         int printed = 0; //@KADIR
         int iz_=data->rcv_depth; //@pavel
         int end=0;
+
+        const Myfloat inv_dx = 1. / (stencil_ctx.dx);
+        const Myfloat inv_dy = 1. / (stencil_ctx.dy);
+        const Myfloat inv_dz = 1. / (stencil_ctx.dz);
+
         for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
             if(xe-xi <= nwf){
                 nwf = xe-xi;
@@ -766,7 +769,8 @@ num_threads(stencil_ctx.thread_group_size)
                                 u1_v = &(u1[ix*nnyz+iy*nnz]);
                                 u2_v = &(u2[ix*nnyz+iy*nnz]);
                                 u3_v = &(u3[ix*nnyz+iy*nnz]);
-                                coef0_v = &(roc2[ix*nnyz+iy*nnz]);
+//                                coef0_v = &(roc2[ix*nnyz+iy*nnz]); original
+                                coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
 #pragma ivdep
                                 for(int iz=ib; iz<ie; iz++) {
                                     const Myfloat xum4 = u1_v[-4*nnyz + iz];
