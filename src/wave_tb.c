@@ -3999,6 +3999,7 @@ void wave_tb_forward(tb_t* ctx,
                      float * restrict u0,
                      float * restrict v0,
                      const float * restrict roc2) {
+    data->order=2;
     /// 2nd order TB code
     MSG("3982");
     double t1,t2,t3,t4;
@@ -4214,6 +4215,10 @@ void wave_tb_forward(tb_t* ctx,
     double *p_elapse_time;
     p_elapse_time = &elapse_time;
 
+    //////////////////////////////////////////////////////////////////////
+    p->data=data;
+    //////////////////////
+
     MSG("4194");
     reset_timers(&(p->prof));
     reset_wf_timers(p);
@@ -4238,6 +4243,7 @@ void wave_tb_forward_1st(tb_t* ctx,
                          float * restrict vy,
                          float * restrict vz,
                          const float * restrict roc2) {
+    data->order=1;
     double t1,t2,t3,t4;
     if (data->src_depth !=-1) {
         u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
@@ -4441,6 +4447,10 @@ void wave_tb_forward_1st(tb_t* ctx,
     double elapse_time = 0.0;
     double *p_elapse_time;
     p_elapse_time = &elapse_time;
+
+    //////////////////////////////////////////////////////////////////////
+    p->data=data;
+    //////////////////////
 
     MSG("4194");
     reset_timers(&(p->prof));

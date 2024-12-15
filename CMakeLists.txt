@@ -52,9 +52,9 @@ endif (project_debug)
 #endif ("${CMAKE_C_COMPILER_ID}"  MATCHES "Cray")
 
 ### set the compilation flags.
-#add_compile_options(-qopenmp -march=core-avx2 -mtune=core-avx2)
+add_compile_options(-qopenmp -march=core-avx2 -mtune=core-avx2)
 #add_compile_options(-fopenmp -march=core-avx2 -mtune=core-avx2)
-add_compile_options(-fopenmp -g3 -O0 -march=core-avx2 -mtune=core-avx2) # for debug
+#add_compile_options(-fopenmp -g3 -O0 -march=core-avx2 -mtune=core-avx2) # for debug
 
 ## add OpenMP.
 find_package(OpenMP)

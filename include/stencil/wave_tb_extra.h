@@ -104,10 +104,13 @@ typedef struct {
 #define KERNEL_SIG ( const int shape[3], const int zb, const int yb, const int xb, const int ze, const int ye, const int xe, \
                      const real_t *coef, hFloat *p11, hFloat *p12, hFloat *p13, const hFloat *p21, const hFloat *p22, const hFloat *p23, \
                      const hFloat *roc2, int mod, stencil_ctx stencil_ctx)
-#define KERNEL_MWD_SIG ( const int shape[3], const int zb, const int yb_r, const int xb, const int ze, const int ye_r, const int xe, \
-                         const real_t *coef, hFloat *u1, hFloat *u2, hFloat *u3, hFloat *v1, hFloat *v2, hFloat *v3, const hFloat *roc2, \
-                         float *dampx, float *dampy, float *dampz, int t_dim, int b_inc, int e_inc, int NHALO, int tb, int te, stencil_ctx stencil_ctx, int mtid)
-
+#define KERNEL_MWD_SIG ( const int shape[3], const int zb, const int yb_r, \
+                            const int xb, const int ze, const int ye_r, const int xe, \
+                            const real_t *coef, hFloat *u1, hFloat *u2, hFloat *u3,   \
+                            hFloat *v1, hFloat *v2, hFloat *v3, const hFloat *roc2, \
+                            float *dampx, float *dampy, float *dampz,      \
+                            int t_dim, int b_inc, int e_inc, int NHALO,    \
+                            int tb, int te,int t0,stencil_ctx stencil_ctx, int mtid,tb_data_t * data)
 typedef void (*spt_blk_func_t)KERNEL_SIG;
 typedef void (*mwd_func_t)KERNEL_MWD_SIG;
 
@@ -137,8 +140,9 @@ struct StencilInfo {
     enum Stencil_Type type;
 };
 
-// Context information for the entire stencil computation
-typedef struct {
+
+// contezt information
+typedef struct{
     int alignment, verbose, stencil_shape[3];
     uint64_t n_stencils, ln_domain, ln_stencils;
     int target_ts, target_kernel;
@@ -149,52 +153,65 @@ typedef struct {
     int debug;
     int num_threads;
     int use_omp_stat_sched;
-    int lstencil_shape[3], ldomain_shape[3], gb[3], ge[3], lsource_pt[3], has_source;
-    int notuning;  // Skip autuning
-    int call_combined_function;
+    int lstencil_shape[3], ldomain_shape[3], gb[3], ge[3], lsource_pt[3], has_source; //MPI ranks' global indices, and local source locations
 
-    // Fields for storing computed values
+    int notuning; //@KADIR returns early from autuning functions
+    int call_combined_function; //@KADIR calls Kadir's function that does everything
+
+    //  int stencil_radius, is_constant_coefficient;
+    //  enum Stencil_Types stencil_type;
+
     hFloat *  U1, *  U2, *  U3,*  U4, *  source;
     const float * U5;
-    hFloat *rU1, *rU2, *rU3, *rU4, *rU5;
+    hFloat *  rU1, *  rU2, *  rU3,*  rU4, *  rU5;
 
-    // Damping parameters for the Absorbing Boundary Condition (ABC)
-    float *dampx;
-    float *dampy;
-    float *dampz;
-    real_t *coef;
-    real_t *src_exc_coef;
+    // damping ABCs
+    float * dampx;
+    float * dampy;
+    float * dampz;
+    real_t * coef;
 
-    // Thread affinity settings
+    real_t * src_exc_coef; //@KADIR: coef used in source ezcitation. length is number of time steps (nt)
+    // Use source instead of src_exc_conf after verification results
+
+    // parameters for internal thread affinity
     int th_block;
     int th_stride;
 
-    // Cache blocking information
+    // Holds the value of cache blocking across Y axis
     stencil_ctx stencil_ctx;
-    int source_point_enabled;
-    int cache_size;  // Cache size in KB for blocking
 
-    // Halo concatenation flag
+    // to enable/disable source point update
+    int source_point_enabled;
+
+    int cache_size; // Last level cache usable size in KB for blocking
+
+    // to enable concatenating halo information before communication
     int halo_concat;
 
-    // Diamond method specific data
-    int t_dim, larger_t_dim, is_last, mwd_type;
-    Halo hu[3], hv[3];
+    // Specific data for the diamond method
+    int t_dim,larger_t_dim,is_last,mwd_type;
+    Halo hu[3],hv[3];
+
     int wavefront;
     uint64_t idiamond_pro_epi_logue_updates;
     uint64_t wf_blk_size, wf_larger_blk_size;
 
-    Halo h[3];  // Halo information for z, Y, and x directions
+    Halo h[3]; // Halo information for z,Y, and x directions
     mpi_topology t;
     Profile prof;
+
     struct Stencil stencil;
-    real_t g_coef[11];  // List of coefficients for stencil operators
+
+    // list of coefficients to be used in stencil operators
+    real_t g_coef[11];
+
     int array_padding;
 
     int in_auto_tuning;
-    int orig_thread_group_size; // to distinguish if thread group size is set by the user
-
-} Parameters;
+    int orig_thread_group_size; // to distingquish whether thread group size is set by the user
+    tb_data_t * data;
+}Parameters;
 
 // Global parameter variable
 extern Parameters *gp;  // Global parameter structure within a node
@@ -203,18 +220,21 @@ extern size_t *irecv_rec; // Index array into recv_rec
 extern size_t isrc_exc;  // Number of source excitations performed so far
 
 // Function prototypes
-void femwd_iso_ref_2nd(const int shape[3], const int zb, const int yb_r0, const int xb, const int ze, const int ye_r0, const int xe,
-                       const real_t *coef, hFloat *p11, hFloat *p12, hFloat *p13,
-                       hFloat *p21, hFloat *p22, hFloat *p23, const hFloat *roc2,
-                       float *dampx, float *dampy, float *dampz, int t_dim, int b_inc, int e_inc,
-                       int NHALO, int tb, int te, stencil_ctx stencil_ctx, int mtid);
-void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0, const int xb, const int ze, const int ye_r0, const int xe,
+void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0, const int xb,
+                        const int ze, const int ye_r0, const int xe,
                         const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
                         hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
                         float * dampx,float * dampy,float * dampz,
-                        int t_dim, int b_inc, int e_inc,
-                        int NHALO, int tb, int te,int t0, stencil_ctx stencil_ctx, int mtid,tb_data_t * data);
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid);
+                        int t_dim, int b_inc, int e_inc,int NHALO,
+                        int tb, int te,int t0,stencil_ctx stencil_ctx, int mtid,tb_data_t * data);
+void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0, const int xb,
+                        const int ze, const int ye_r0, const int xe,
+                        const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
+                        hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
+                        float * dampx,float * dampy,float * dampz,
+                        int t_dim, int b_inc, int e_inc,int NHALO,
+                        int tb, int te,int t0, stencil_ctx stencil_ctx, int mtid,tb_data_t * data);
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0);
 void dynamic_intra_diamond_ts_combined(Parameters *p);
 void reset_timers(Profile * p);
 void reset_wf_timers(Parameters * p);

@@ -74,8 +74,8 @@ export OMP_NUM_THREADS=4;
 #
 # ./scripts_useful/diff_to ./snapshot_TB2nd_530 ./snapshot_SB2nd_530;
  ############################### compare_wavefields_for_SB_TB_1st_order
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_1st \
-# --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10;
+./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_1st \
+ --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10;
 
 #gdb --args ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_1st \
 # --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10;

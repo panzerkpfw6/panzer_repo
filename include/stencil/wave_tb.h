@@ -201,6 +201,7 @@ struct tb_data_s {
   int src_x;
   int src_y;
   int src_z;
+  int order;
 
   float dx,dy,dz;
   float dt;

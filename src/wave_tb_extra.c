@@ -143,11 +143,13 @@ typedef struct{
 ////// Kernels and time steppers data structures
 #define KERNEL_SIG ( const int shape[3], const int zb, const int yb,  const int xb, const int ze, const int ye, const int xe,\
 		const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13, const hFloat *  p21, const hFloat *  p22, const hFloat *  p23, const hFloat *  roc2, int mod, stencil_ctx stencil_ctx);
-#define KERNEL_MWD_SIG ( const int shape[3], const int zb, const int yb_r, const int xb, const int ze, const int ye_r, const int xe, \
-		const real_t *  coef, hFloat *  u1,hFloat *  u2,hFloat *  u3, \
-		hFloat *  v1, hFloat *  v2,hFloat *  v3, const hFloat *  roc2,\
-        float *  dampx, float *  dampy,float *  dampz,\
-        int t_dim, int b_inc, int e_inc, int NHALO, int tb, int te, stencil_ctx stencil_ctx, int mtid)
+#define KERNEL_MWD_SIG ( const int shape[3], const int zb, const int yb_r, \
+                            const int xb, const int ze, const int ye_r, const int xe, \
+                            const real_t *coef, hFloat *u1, hFloat *u2, hFloat *u3,   \
+                            hFloat *v1, hFloat *v2, hFloat *v3, const hFloat *roc2, \
+                            float *dampx, float *dampy, float *dampz,      \
+                            int t_dim, int b_inc, int e_inc, int NHALO,    \
+                            int tb, int te,int t0,stencil_ctx stencil_ctx, int mtid,tb_data_t * data)
 typedef void (*spt_blk_func_t)KERNEL_SIG;
 typedef void (*mwd_func_t)KERNEL_MWD_SIG;
 //////
@@ -244,6 +246,7 @@ typedef struct{
 
     int in_auto_tuning;
     int orig_thread_group_size; // to distingquish whether thread group size is set by the user
+    tb_data_t * data;
 }Parameters;
 
 
@@ -350,12 +353,13 @@ static inline void update_state(int y_coord, Parameters *p){
 }
 
 // Function definitions below
-void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0, const int xb, const int ze, const int ye_r0, const int xe,
-                        const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
-                        hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
-                        float * dampx,float * dampy,float * dampz,
-                        int t_dim, int b_inc, int e_inc,
-                        int NHALO, int tb, int te, stencil_ctx stencil_ctx, int mtid)
+void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0,
+                        const int xb, const int ze, const int ye_r0, const int xe,
+                    const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
+                    hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
+                    float * dampx,float * dampy,float * dampz,
+                    int t_dim, int b_inc, int e_inc,int NHALO,
+                    int tb, int te,int t0,stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
 {
 #pragma omp parallel shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO,recv_rec,irecv_rec) \
 firstprivate(b_inc, e_inc) \
@@ -436,7 +440,7 @@ num_threads(stencil_ctx.thread_group_size)
         th_nwf = nwf/th_x;
 
         int printed = 0; //@KADIR
-//        int iz_=data->rcv_depth; //@pavel
+        int iz_=data->rcv_depth; //@pavel
         int end=0;
 
         const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx);
@@ -552,13 +556,13 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-
-void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0, const int xb, const int ze, const int ye_r0, const int xe,
+void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
+                        const int xb, const int ze, const int ye_r0, const int xe,
                     const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
                     hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
                     float * dampx,float * dampy,float * dampz,
-                    int t_dim, int b_inc, int e_inc,
-                    int NHALO, int tb, int te,int t0, stencil_ctx stencil_ctx, int mtid)
+                    int t_dim, int b_inc, int e_inc,int NHALO,
+                    int tb, int te,int t0, stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
 {
 #pragma omp parallel shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO,recv_rec, irecv_rec) \
 firstprivate(b_inc, e_inc) \
@@ -643,7 +647,7 @@ num_threads(stencil_ctx.thread_group_size)
         th_nwf = nwf/th_x;
 
         int printed = 0; //@KADIR
-//        int iz_=data->rcv_depth; //@pavel
+        int iz_=data->rcv_depth; //@pavel
         int end=0;
 
         const Myfloat inv_dx = 1. / (stencil_ctx.dx);
@@ -674,7 +678,7 @@ num_threads(stencil_ctx.thread_group_size)
                 t_real=(t)/2+1;
                 hFloat* output_buffer = NULL;  //@KADIR
                 int mod = (t)%2;
-                MSG("t=%d",t);
+//                MSG("t=%d",t);
                 if(mod){ // compute v from p
                     u1 = p11 ; //p
                     u2 = p12 ;
@@ -863,7 +867,7 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -873,20 +877,6 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
 
     // wavefront prologue
     t1 = get_wall_time();
-#if 0
-    yb = yb_r;
-	ye = ye_r;
-
-	for(t=tb; t< te-1; t++){
-		xb[t] = p->stencil.r;
-		xe[t] = p->stencil.r*(time_len-(t-tb));
-	}
-
-	stat_sched_iso_ref_v2(p->ldomain_shape, p->stencil.r, yb, xb,
-                			  p->lstencil_shape[0]+p->stencil.r, ye, xe,
-                              p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
-                              p->t_dim, b_inc, e_inc, p->stencil.r, tb, te-1, p->stencil_ctx, tid);
-#endif
     t2 = get_wall_time();
     // main wavefront loop
     yb = yb_r;
@@ -895,35 +885,21 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     xb0 = p->stencil.r;
     xe0 = p->ldomain_shape[2]-p->stencil.r;
 //    lstencil=(p->ldomain_shape[2]-p->lstencil_shape[2])/2; //pavel edition
-    p->stencil.mwd_func(p->ldomain_shape, p->stencil.r, yb, xb0,
-                        p->lstencil_shape[0]+p->stencil.r, ye, xe0, p->coef,
-                        p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
+    p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
+                        xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
+                        p->coef,p->U1,p->U1,p->U1,
+                        p->U2, p->U3,p->U4,p->U5,
                         p->dampx,p->dampy,p->dampz,
-                        p->t_dim, b_inc, e_inc, p->stencil.r, tb, te, p->stencil_ctx, tid);
+                        p->t_dim, b_inc, e_inc, p->stencil.r,
+                        tb,te,t0,p->stencil_ctx,tid,p->data);
+//    p->stencil.mwd_func(p->ldomain_shape, p->stencil.r, yb,
+//                        xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
+//                        p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
+//                        p->dampx,p->dampy,p->dampz,
+//                        p->t_dim, b_inc, e_inc, p->stencil.r,
+//                        tb, te,t0,p->stencil_ctx,tid,p->data);
+
     t3 = get_wall_time();
-
-    // wavefront epilogue
-#if 0
-    yb = yb_r;
-	ye = ye_r;
-
-	if(tb < p->t_dim) { // lower half of the diamond
-    yb -= b_inc;
-    ye += e_inc;
-  } else { // upper half of the diamond
-    yb += b_inc;
-    ye -= e_inc;
-  }
-
-
-	for(t=tb+1; t< te; t++){
-		xe[t] = p->ldomain_shape[2]-p->stencil.r;
-		xb[t] = p->ldomain_shape[2]-p->stencil.r - (t-tb)*p->stencil.r;
-	}
-
-	stat_sched_iso_ref_v2(p->ldomain_shape, p->stencil.r, yb, xb,
-                			  p->lstencil_shape[0]+p->stencil.r, ye, xe, p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5, p->t_dim, b_inc, e_inc, p->stencil.r, tb+1, te, p->stencil_ctx, tid);
-#endif
     p->stencil_ctx.t_wf_prologue[tid] += t2-t1;
     p->stencil_ctx.t_wf_main[tid]     += t3-t2;
     p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
@@ -1002,7 +978,8 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                         int tb = p->t_dim;
                         int te = p->t_dim*2+1;
                         if(p->stencil.type == REGULAR){
-                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                            // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
+                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,1);
                         }
                     }
                 }
@@ -1116,9 +1093,11 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                     {
                                         int tb = 0;
                                         int te = p->t_dim*2+1;
+                                        int t0=1+t_coord*(p->t_dim+1);
+//                                        MSG("t0=%d\n",t0);
                                         //@2
                                         if(p->stencil.type == REGULAR){
-                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0);
                                         }
                                     }
 
@@ -1165,8 +1144,9 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                 {
                     int tb = 0;
                     int te = p->t_dim+1;
+                    int t0 = t_len*(p->t_dim+1) + 1;
                     //@2
-                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid);
+                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0);
                 }
             }
         }
