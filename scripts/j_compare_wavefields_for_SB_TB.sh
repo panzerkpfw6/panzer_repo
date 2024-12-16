@@ -42,6 +42,7 @@ make install
 
 ############################### parameters
 nx=256;ny=256;nz=256;
+#nx=512;ny=512;nz=512;
 export TIME_TB_2nd=530; #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_2nd=530; #@pavel in SB the nt should one time less than in correponding TB. was 529,530
 
@@ -89,4 +90,10 @@ export OMP_NUM_THREADS=4;
 #  --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth $src_depth --order 1 --fmax 8 --dx 10;
 ##
 ./scripts_useful/diff_to ./snapshot_TB1st_537 ./snapshot_SB1st_537;
+
+
+
+#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_1st \
+# --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10 /
+#  >> aa.log;
 
