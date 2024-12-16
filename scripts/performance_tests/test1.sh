@@ -64,6 +64,7 @@ export NT_TB_2nd=502
 export NT_SB_2nd=505
 
 ##### COMPILATION #####
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
