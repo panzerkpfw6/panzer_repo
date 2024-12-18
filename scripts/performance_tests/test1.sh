@@ -7,7 +7,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --mem=50GB
 #SBATCH --time=24:00:00
-#SBATCH --nodelist=gbt07
+#SBATCH --nodelist=gbt04
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test_default_pars
 #SBATCH --output=logs/test1_.%J.out
@@ -31,8 +31,8 @@ echo $hostname
 #lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=128
-export OMP_NUM_THREADS=64
+export OMP_NUM_THREADS=128
+#export OMP_NUM_THREADS=64
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
