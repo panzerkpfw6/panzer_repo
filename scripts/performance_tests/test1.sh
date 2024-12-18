@@ -98,6 +98,7 @@ for i in $(seq 0 1); do
   th_z=${th_z_arr[$i]}
   t_dim=${tdim_arr[$i]}
   num_wf=${num_wf_arr[$i]}
+  tgs=$((th_x * th_y*th_z))
   ###*********** SB ************###
   echo "Running SB"
   echo "Running 1st order"
