@@ -152,8 +152,8 @@ typedef struct{
                             int tb, int te,int t0,stencil_ctx stencil_ctx, int mtid,tb_data_t * data)
 typedef void (*spt_blk_func_t)KERNEL_SIG;
 typedef void (*mwd_func_t)KERNEL_MWD_SIG;
-//////
 
+//////
 struct Stencil {
     const char *name;
     int r;

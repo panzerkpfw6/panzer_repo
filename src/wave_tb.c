@@ -4183,12 +4183,6 @@ void wave_tb_forward(tb_t* ctx,
     p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
     ////////////////////////////////////////////////////
     MSG("4161");
-//    tb_t* ctx,
-//    tb_data_t * data,
-//    tb_timer_t* timer,
-//    float * restrict u0,
-//    float * restrict v0,
-//    const float * restrict roc2
 
     p->U1 = u0;
     p->rU1 = u0;
@@ -4214,7 +4208,6 @@ void wave_tb_forward(tb_t* ctx,
     double elapse_time = 0.0;
     double *p_elapse_time;
     p_elapse_time = &elapse_time;
-
     //////////////////////////////////////////////////////////////////////
     p->data=data;
     //////////////////////
@@ -4226,11 +4219,23 @@ void wave_tb_forward(tb_t* ctx,
     cpu_bind_init(p);
     //@KADIR gcall
     double wall0 = get_wall_time();
-    MSG("4198,before dynamic_intra_diamond_ts_combined");
+//    MSG("4198,before dynamic_intra_diamond_ts_combined");
+
+    t1 = wtime();
+    t2 = wtime();
     dynamic_intra_diamond_ts_combined(p);
+    t3 = wtime();
+    t4 = wtime();
+
+    //////////////////////
     double wall1 = get_wall_time();
     *p_elapse_time = wall1 - wall0;
 
+    //////////////////////
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+    //////////////////////
     free(p->coef);
     free(p);
 }
@@ -4458,10 +4463,22 @@ void wave_tb_forward_1st(tb_t* ctx,
     //@KADIR gcall
     double wall0 = get_wall_time();
     MSG("4198,before dynamic_intra_diamond_ts_combined");
+
+    t1 = wtime();
+    t2 = wtime();
     dynamic_intra_diamond_ts_combined(p);
+    t3 = wtime();
+    t4 = wtime();
+
+    //////////////////////
     double wall1 = get_wall_time();
     *p_elapse_time = wall1 - wall0;
 
+    //////////////////////
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+    //////////////////////
     free(p->coef);
     free(p);
 }
@@ -4585,9 +4602,9 @@ void wave_tb_timer_info(tb_timer_t * timer,
     MSG(" ");
     MSG("-------------------------------------------");
     MSG("Global info:");
-    MSG("Total:        %f (s) -%06.2f%%",timer->total,        timer->total/timer->total*100.0);
-    MSG("mainloop:     %f (s) -%06.2f%%",timer->ts_main,      timer->ts_main/timer->total*100.0);
-    MSG("pro/epilogue: %f (s) -%06.2f%%",timer->ts_others,    timer->ts_others/timer->total*100.0);
+    MSG("Total:        %f (s) -%06.2f%%",timer->total,timer->total/timer->total*100.0);
+    MSG("mainloop:     %f (s) -%06.2f%%",timer->ts_main,timer->ts_main/timer->total*100.0);
+    MSG("pro/epilogue: %f (s) -%06.2f%%",timer->ts_others,timer->ts_others/timer->total*100.0);
     MSG("-------------------------------------------");
 
     MSG("Speed info:");
