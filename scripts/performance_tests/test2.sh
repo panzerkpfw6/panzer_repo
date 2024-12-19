@@ -7,6 +7,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --mem=50GB
 #SBATCH --time=24:00:00
+#SBATCH --nodelist=gbt04
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test2
 #SBATCH --output=logs/test2_.%J.out
@@ -44,7 +45,11 @@ export KMP_HW_SUBSET=1t
 module load icc/2020.2.254
 module load cmake
 
-###********** SB, TB parameters diapason *********###
+##### Shot information #####
+export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
+export src_depth=256;
+export fmax=8;
+export dx=10;
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -61,6 +66,9 @@ rm -rf ./logs/test2 #delete if existing
 mkdir ./logs/test2
 export logs_path=./logs/test2
 
+##### File to modify #####
+export file="./include/stencil/wave.h"
+
 ##### Run tests #####
 len=${#nx_arr[@]}
 for i in $(seq 0 $len); do
@@ -73,22 +81,28 @@ for i in $(seq 0 $len); do
         for y in 1 `seq 2 2 64 `;do
             grid_str="${nx}_${ny}_${nz}_${x}_${y}"
             echo $grid_str;
+            ##### Change cache blocking values #####
+            sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
+            sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
             ##### COMPILATION #####
-            cd ./SB_abc;
-            sed -i "s/const Myint _CB_SIZE_X = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_X = $x  ;/g" SB_kernel.h;
-            sed -i "s/const Myint _CB_SIZE_Y = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_Y = $y;/g" SB_kernel.h;
-            icpc -xHost -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_1st-abc.out
-
-            cd ../SB_order2_abc;
-            sed -i "s/const Myint _CB_SIZE_X = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_X = $x  ;/g" SB_kernel.h;
-            sed -i "s/const Myint _CB_SIZE_Y = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_Y = $y;/g" SB_kernel.h;
-            icpc -xHost -qopenmp -march=core-avx2 -mtune=core-avx2  -O3 -I. test_SB_kernel.cpp -o ../SB_2nd-abc.out
-            cd ..
+            mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+            CC=icc CXX=icpc cmake .
+            make clean
+            make VERBOSE=1
+            make install
             #####################
+            echo "Running SB"
             echo "Running 1st order"
-            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 ./SB_1st-abc.out  $nx $ny $nz $NT_SB_1st 3000 0 0 0 0 >> $logs_path/log-SB_1st-abc_$grid_str.log
+            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+            ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+            --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+            --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+
             echo "Running 2nd order"
-            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 ./SB_2nd-abc.out  $nx $ny $nz $NT_SB_2nd 3000 0 0 >> $logs_path/log-SB_2nd-abc_$grid_str.log
+#            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#            ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
+#            --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
+#            --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
         done
     done
 done

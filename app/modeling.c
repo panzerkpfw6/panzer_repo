@@ -517,7 +517,6 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
 
     wave_tb_init(ctx,s,p);
 
-
     wave_tb_info(ctx);
     wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));

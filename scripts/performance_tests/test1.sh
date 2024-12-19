@@ -64,6 +64,12 @@ export NT_SB_1st=505
 export NT_TB_2nd=502
 export NT_SB_2nd=505
 
+###### File to modify for SB cache blocking #####
+#file="./include/stencil/wave.h"
+## Use sed to replace the values of BLOCKX and BLOCKY with the new values
+#sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $NEW_BLOCKX/" "$file"
+#sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $NEW_BLOCKY/" "$file"
+
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
@@ -85,8 +91,8 @@ export dx=10;
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-#for i in $(seq 0 $len); do
-for i in $(seq 0 1); do
+for i in $(seq 0 $len); do
+#for i in $(seq 0 1); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}

@@ -4316,8 +4316,6 @@ void wave_tb_forward_1st(tb_t* ctx,
         exit(0);
     }
     p->stencil_ctx.num_wf = ctx->num_wf;
-    //p->stencil_ctx.num_wf = tgs;
-    //p->stencil_ctx.num_wf = 21;
 
     p->orig_thread_group_size = tgs;
     p->stencil_ctx.thread_group_size = tgs;
