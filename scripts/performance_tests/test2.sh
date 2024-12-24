@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
 #SBATCH --mem=50GB
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --nodelist=gbt04
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test2
@@ -77,7 +77,7 @@ for i in $(seq 0 $len); do
     ny=${ny_arr[$i]}
     nz=${nz_arr[$i]}
     echo "grid nx=${nx}, ny=${ny}, nz=${nz}, th_z=${OMP_NUM_THREADS}"
-    for x in 1 `seq 2 2 64 `;do     # 62 2 64
+    for x in 1 `seq 42 2 64 `;do     # 62 2 64
         for y in 1 `seq 2 2 64 `;do
             grid_str="${nx}_${ny}_${nz}_${x}_${y}"
             echo $grid_str;

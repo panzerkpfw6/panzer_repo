@@ -47,7 +47,8 @@ module load cmake
 
 ###********** TB parameters diapason *********###
 num_th_arr=(128)
-th_x_arr=(1 2 4 8 16 32)
+#th_x_arr=(1 2 4 8 16 32)
+th_x_arr=(8 16 32)
 th_y_arr=(1 2 4 8 16 32)
 th_z_arr=(1 2 4 8 16 32)
 num_wf_arr=(2 4 8 12 16 20 24 32 64)

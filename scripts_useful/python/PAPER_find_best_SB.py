@@ -13,6 +13,7 @@ import math
 # './scaling/Kanary','./scaling/Shaheen']
 ####### check logs from Shaheen3
 list_of_folders=['/home/plotnips/Dropbox/Apps/Overleaf/2024_pasc_stencil/figures/pavel/grid_perf/Genoa_X_on_intel/logs/test2']
+list_of_folders=['../../logs/test2']
 
 sim_info=[]
 times=[]
