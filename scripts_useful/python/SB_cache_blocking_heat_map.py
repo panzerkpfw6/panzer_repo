@@ -6,11 +6,6 @@ import matplotlib.pyplot as plt
 import glob
 import re
 import math
-#######################################
-#### data export from files
-# list_of_folders=['./scaling/7773X','./scaling/7763',
-# './scaling/Flamingo',
-# './scaling/Kanary','./scaling/Shaheen']
 ####### check logs from Shaheen3
 list_of_folders=['/home/plotnips/Dropbox/Apps/Overleaf/2024_pasc_stencil/figures/pavel/grid_perf/Genoa_X_on_intel/logs/test2']
 list_of_folders=['../../logs/test2']
