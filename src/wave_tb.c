@@ -4469,11 +4469,9 @@ void wave_tb_forward_1st(tb_t* ctx,
     dynamic_intra_diamond_ts_combined(p);
     t3 = wtime();
     t4 = wtime();
-
     //////////////////////
     double wall1 = get_wall_time();
     *p_elapse_time = wall1 - wall0;
-
     //////////////////////
     timer->ts_main   += (t3-t2);
     timer->ts_others += (t2-t1) + (t4-t3);
