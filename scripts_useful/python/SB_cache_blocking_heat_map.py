@@ -149,7 +149,7 @@ for i in range(len(data_summary)):  # Loops from 0 to 4
         x_index = np.where(cbx_val == cb_x_value)[0][0]  # [0][0] gets the first index
         y_index = np.where(cby_val == cb_y_value)[0][0]  # [0][0] gets the first index
 
-        perf_map[y_index,x_index] = data_summary.iloc[i]['giga_point_s']
+        perf_map[y_index,x_index] = 2*data_summary.iloc[i]['giga_point_s']
         if data_summary.iloc[i]['giga_point_s']==-10000:
             aa=1
 ####################################################

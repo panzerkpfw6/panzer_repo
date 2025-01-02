@@ -49,7 +49,9 @@ export OMP_NUM_THREADS=12;
 ### debugging with gprof
 rm gmon.out
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_1st \
-  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10  gmon.out > analysis.txt;
+  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10;
 gprof ./bin/modeling gmon.out > analysis.txt
 
+#./
+# --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax 8 --dx 10  gmon.out > analysis.txt;
 
