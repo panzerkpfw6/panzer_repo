@@ -20,7 +20,6 @@ echo $hostname
 #lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=48
 export OMP_NUM_THREADS=128
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
@@ -34,34 +33,52 @@ export KMP_HW_SUBSET=1t
 module load icc/2020.2.254
 module load cmake
 
-####################################################
-export TIME_TB_2nd=530 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-export TIME_SB_2nd=529 #@pavel in SB the nt should one time less than in correponding TB.
-export TIME_TB_1st=537 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-export TIME_SB_1st=536 #@pavel in SB the nt should one time less than in correponding TB.
+##### Shot information #####
+export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
+export src_depth=256;
+export fmax=8;
+export dx=10;
+
+###*********** Experiment setup ************###
+nx=512
+ny=512
+nz=512
+export NT_TB_2nd=530 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+export NT_SB_2nd=529 #@pavel in SB the nt should one time less than in correponding TB.
+export NT_TB_1st=537 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+export NT_SB_1st=536 #@pavel in SB the nt should one time less than in correponding TB.
 pwd
 
-##################### COMPILE
-rm SB_1st-abc.out
-rm SB_2nd_abc.out;
-rm TB_1st_abc.out;
-rm TB_2nd_abc.out;
-cd data
-
-
-cd ../SB_abc;
-x=10;y=22;
-sed -i "s/const Myint _CB_SIZE_X = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_X = $x  ;/g" SB_kernel.h;
-sed -i "s/const Myint _CB_SIZE_Y = [[:digit:]]\+[ ]*;/const Myint _CB_SIZE_Y = $y;/g" SB_kernel.h;
-icpc -xHost -qopenmp -march=core-avx2 -mtune=core-avx2 -O3 -I. test_SB_kernel.cpp -o ../SB_1st-abc.out
-cd ..
-#######################################
+##### Logs directory #####
 export logs_path="./logs/reproduce_sb"
 mkdir "$logs_path"
 
-nx=512; ny=512; nz=512;
+##### File to modify #####
+export file="./include/stencil/wave.h"
+
+##### Cache blocking to try #####
+x=10;y=22;
+
+##### Run tests #####
+
 grid_str="${nx}_${ny}_${nz}_${x}_${y}"
-################  1st   ################
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 ./SB_1st-abc.out $nx $ny $nz $TIME_SB_1st 3000 0 0 0 0 >> $logs_path/log-SB_1st-abc_$grid_str.log
-##################################################
+echo $grid_str;
+##### Change cache blocking values #####
+sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
+sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
+##### COMPILATION #####
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
+
+#####################
+echo "Running SB"
+echo "Running 1st order"
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+
 
