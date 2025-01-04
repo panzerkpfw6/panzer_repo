@@ -702,7 +702,8 @@ void wave_update_fields_block_1st(sismap_t *s,
     float *restrict vy0;
     float *restrict vz0;
     float *restrict rx;
-
+//    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
+//    exit(0);
     // loop on the blocks .velocity
 #pragma omp parallel for collapse(3) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {

@@ -57,7 +57,7 @@ mkdir "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=10;y=22;
+x=12;y=24;
 
 ##### Run tests #####
 

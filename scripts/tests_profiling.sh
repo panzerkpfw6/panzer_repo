@@ -29,8 +29,8 @@ make VERBOSE=1
 make install
 
 ############################### parameters
-nx=256;ny=256;nz=256;
-#nx=512;ny=512;nz=512;
+#nx=256;ny=256;nz=256;
+nx=512;ny=512;nz=512;
 export TIME_TB_2nd=530; #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_2nd=530; #@pavel in SB the nt should one time less than in correponding TB. was 529,530
 
