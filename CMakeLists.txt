@@ -15,7 +15,7 @@ message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
 
 ## configurable options for how we want to build project.
 #option(project_debug "Build project with the debug mode." OFF)
-option(project_debug "Enable debugging" ON)
+#option(project_debug "Enable debugging" ON)
 
 ## set the build type (DEFAULT is Release).
 if (NOT CMAKE_BUILD_TYPE)
