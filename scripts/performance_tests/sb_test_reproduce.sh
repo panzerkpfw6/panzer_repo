@@ -28,10 +28,17 @@ export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
-export CFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
-export CXXFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
-export FFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+#export CFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+#export CXXFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+#export FFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+#export CFLAGS="-O3 -qopenmp -xhost "
+#export CXXFLAGS="-O3 -qopenmp -xhost "
+#export FFLAGS="-O3 -qopenmp -xhost "
 
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#icpc -march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -I. test_SB_kernel.cpp -o bin.cray;
 ###********** MODULES *********###
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load icc/2020.2.254
