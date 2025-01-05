@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --mem=50GB
+####SBATCH --mem=50GB
 #SBATCH --time=24:00:00
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=reproduce_sb
@@ -27,6 +27,10 @@ export OMP_NESTED='True'
 export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
+
+export CFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+export CXXFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
+export FFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
 
 ###********** MODULES *********###
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
