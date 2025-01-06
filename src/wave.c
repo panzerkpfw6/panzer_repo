@@ -420,17 +420,17 @@ ux[z] = 2.0f * vx[z] - ux[z]                                                   \
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v()                        \
 vx0[z] = vx0[z]                                                                \
-      + s->dt/s->dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
+      + s->dt*inv_dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
                    + s->coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
                    + s->coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
                    + s->coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz])) ;  \
 vy0[z] = vy0[z]                                                                \
-        + s->dt/s->dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
+        + s->dt*inv_dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
                        + s->coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
                        + s->coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
                        + s->coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz])) ;  \
 vz0[z] = vz0[z]                                                         \
-      + s->dt/s->dz * (          s->coefz[0] * (pr0[z+1] - pr0[z])   \
+      + s->dt*inv_dz * (          s->coefz[0] * (pr0[z+1] - pr0[z])   \
                                + s->coefz[1] * (pr0[z+2] - pr0[z-1])   \
                                + s->coefz[2] * (pr0[z+3] - pr0[z-2])   \
                                + s->coefz[3] * (pr0[z+4] - pr0[z-3]))
@@ -438,32 +438,32 @@ vz0[z] = vz0[z]                                                         \
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p()                        \
 pr0[z] = pr0[z]                                                   \
       + rx[z] * (                                                             \
-                    s->coefx[0]/s->dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
-                   + s->coefy[0]/s->dy * (vy0[z]          - vy0[z-1*nnz   ])   \
-                   + s->coefz[0]/s->dz * (vz0[z]          - vz0[z-1  ])   \
-                   + s->coefx[1]/s->dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
-                   + s->coefy[1]/s->dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
-                   + s->coefz[1]/s->dz * (vz0[z+1]         -vz0[z-2])   \
-                   + s->coefx[2]/s->dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
-                   + s->coefy[2]/s->dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
-                   + s->coefz[2]/s->dz * (vz0[z+2]   -      vz0[z-3])   \
-                   + s->coefx[3]/s->dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
-                   + s->coefy[3]/s->dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
-                   + s->coefz[3]/s->dz * (vz0[z+ 3]   -     vz0[z-4])                 \
+                    s->coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
+                   + s->coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
+                   + s->coefz[0]*inv_dz * (vz0[z]          - vz0[z-1  ])   \
+                   + s->coefx[1]*inv_dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
+                   + s->coefy[1]*inv_dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
+                   + s->coefz[1]*inv_dz * (vz0[z+1]         -vz0[z-2])   \
+                   + s->coefx[2]*inv_dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
+                   + s->coefy[2]*inv_dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
+                   + s->coefz[2]*inv_dz * (vz0[z+2]   -      vz0[z-3])   \
+                   + s->coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
+                   + s->coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
+                   + s->coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4])                 \
                    )
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v_index()                            \
-    VX(z, y, x) = VX(z, y, x)+ s->dt/s->dx * \
+    VX(z, y, x) = VX(z, y, x)+ s->dt*inv_dx * \
         (s->coefx[0]*( U0(z,   y,   x+1) - U0(z,y,x))  \
         + s->coefx[1]*( U0(z,   y,   x+2) - U0(z,   y,   x-1))  \
         + s->coefx[2]*( U0(z,   y,   x+3) - U0(z,   y,   x-2))  \
         + s->coefx[3]*( U0(z,   y,   x+4) - U0(z,   y,   x-3))  );\
-    VY(z, y, x) = VY(z, y, x)+ s->dt/s->dy *\
+    VY(z, y, x) = VY(z, y, x)+ s->dt*inv_dy *\
         (s->coefy[0]*( U0(z,   y+1, x  ) - U0(z,   y, x  ))  \
         + s->coefy[1]*( U0(z,   y+2, x  ) - U0(z,   y-1, x  ))  \
         + s->coefy[2]*( U0(z,   y+3, x  ) - U0(z,   y-2, x  ))  \
         + s->coefy[3]*( U0(z,   y+4, x  ) - U0(z,   y-3, x  )));\
-    VZ(z, y, x) = VZ(z, y, x)+  s->dt/s->dz *\
+    VZ(z, y, x) = VZ(z, y, x)+  s->dt*inv_dz *\
         (s->coefz[0]*( U0(z+1, y,   x  ) - U0(z, y,   x  ))  \
         + s->coefz[1]*( U0(z+2, y,   x  ) - U0(z-1, y,   x  ))  \
         + s->coefz[2]*( U0(z+3, y,   x  ) - U0(z-2, y,   x  ))  \
@@ -471,18 +471,18 @@ pr0[z] = pr0[z]                                                   \
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p_index() \
     U0(z, y, x) = U0(z, y, x)+ROC2(z, y, x)*  \
-        ( s->coefx[0]/s->dx*( VX(z,   y,   x) - VX(z,y,x-1))                \
-        + s->coefy[0]/s->dy*( VY(z,   y,   x) - VY(z,y-1,x))                \
-        + s->coefz[0]/s->dz*( VZ(z,   y,   x) - VZ(z-1,y,x))                \
-        + s->coefx[1]/s->dx*( VX(z,   y,   x+1) - VX(z,   y,   x-2))  \
-        + s->coefy[1]/s->dy*( VY(z,   y+1,   x) - VY(z,   y-2,   x))  \
-        + s->coefz[1]/s->dz*( VZ(z+1,   y,   x) - VZ(z-2,   y,   x))      \
-        + s->coefx[2]/s->dx*( VX(z,   y,   x+2) - VX(z,y,x-3))                \
-        + s->coefy[2]/s->dy*( VY(z,   y+2,   x) - VY(z,y-3,x))                \
-        + s->coefz[2]/s->dz*( VZ(z+2,   y,   x) - VZ(z-3,y,x))  \
-        + s->coefx[3]/s->dx*( VX(z,   y,   x+3) - VX(z,   y,   x-4))  \
-        + s->coefy[3]/s->dy*( VY(z,   y+3,   x) - VY(z,   y-4,   x))      \
-        + s->coefz[3]/s->dz*( VZ(z+3,   y,   x) - VZ(z-4,y,x)));          \
+        ( s->coefx[0]*inv_dx*( VX(z,   y,   x) - VX(z,y,x-1))                \
+        + s->coefy[0]*inv_dy*( VY(z,   y,   x) - VY(z,y-1,x))                \
+        + s->coefz[0]*inv_dz*( VZ(z,   y,   x) - VZ(z-1,y,x))                \
+        + s->coefx[1]*inv_dx*( VX(z,   y,   x+1) - VX(z,   y,   x-2))  \
+        + s->coefy[1]*inv_dy*( VY(z,   y+1,   x) - VY(z,   y-2,   x))  \
+        + s->coefz[1]*inv_dz*( VZ(z+1,   y,   x) - VZ(z-2,   y,   x))      \
+        + s->coefx[2]*inv_dx*( VX(z,   y,   x+2) - VX(z,y,x-3))                \
+        + s->coefy[2]*inv_dy*( VY(z,   y+2,   x) - VY(z,y-3,x))                \
+        + s->coefz[2]*inv_dz*( VZ(z+2,   y,   x) - VZ(z-3,y,x))  \
+        + s->coefx[3]*inv_dx*( VX(z,   y,   x+3) - VX(z,   y,   x-4))  \
+        + s->coefy[3]*inv_dy*( VY(z,   y+3,   x) - VY(z,   y-4,   x))      \
+        + s->coefz[3]*inv_dz*( VZ(z+3,   y,   x) - VZ(z-4,y,x)));          \
     U0(z, y, x) = U0(z, y, x)*DAMPX(z, y, x)*DAMPY(z, y, x)*DAMPZ(z, y, x)
 
 #define WAVE_UPDATE_PML_FIELDS()                                            \
@@ -695,8 +695,11 @@ void wave_update_fields_block_1st(sismap_t *s,
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnz = s->dimz + 2 * s->sz;
-    const int nnxy = nnx * nny;
-    const int nnyz = nny * nnz;
+    const float inv_dx=1. /(s->dx);
+    const float inv_dy=1. /(s->dy);
+    const float inv_dz=1. /(s->dz);
+    long int nnxy = nnx * nny;
+    long int nnyz = nny * nnz;
     float *restrict pr0;
     float *restrict vx0;
     float *restrict vy0;
@@ -709,13 +712,9 @@ void wave_update_fields_block_1st(sismap_t *s,
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-                zmax = zmin + BLOCKZ;
-                if (zmax > s->dimz) zmax = s->dimz;
-                ymax = ymin + BLOCKY;
-                if (ymax > s->dimy) ymax = s->dimy;
-                xmax = xmin + BLOCKX;
-                if (xmax > s->dimx) xmax = s->dimx;
-
+                const Myint xmax = min(s->dimx, xmin + BLOCKX);
+                const Myint ymax = min(s->dimy, ymin + BLOCKY);
+                const Myint zmax = min(s->dimz, zmin + BLOCKZ);
                 for (int x = xmin; x < xmax; x++) {
                     for (int y = ymin; y < ymax; y++) {
 //                        MSG("x=%d, y=%d, z=%d\n",x,y,z);
