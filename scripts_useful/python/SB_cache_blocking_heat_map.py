@@ -9,12 +9,13 @@ import math
 ####### check logs from Shaheen3
 list_of_folders=['/home/plotnips/Dropbox/Apps/Overleaf/2024_pasc_stencil/figures/pavel/grid_perf/Genoa_X_on_intel/logs/test2']
 list_of_folders=['../../logs/test2']
+list_of_folders=['../../../../stencil-main/logs/test2_munich']
 
 sim_info=[]
 times=[]
 giga_points=[]
-giga_flops = []
-point_updates = []
+giga_flops=[]
+point_updates=[]
 flops=[]
 method=[]
 grids=[]
@@ -118,7 +119,8 @@ print(data.columns)
 
 ####################### Create summary for dataframe  #######################
 data_summary = data[['sim_info', 'grids', 'times', 'giga_point_s', 'cb_size','cb_x','cb_y','cb_z']]
-data_summary.to_excel(os.path.join("sb_data.xlsx"))
+data_summary.to_excel(os.path.join("sb_data_stencil_main_munich.xlsx"))
+# data_summary.to_excel(os.path.join("sb_data.xlsx"))
 
 data_summary = data_summary[data_summary['grids'] == '512 x 512 x 512']
 ####################### Find best parameters for TB 1st and 2nd order #######################

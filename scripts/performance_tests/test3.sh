@@ -72,7 +72,7 @@ make install
 
 ##### Logs directory #####
 mkdir ./logs
-rm -rf ./logs/test3 #delete if existing
+#####rm -rf ./logs/test3 #delete if existing
 mkdir ./logs/test3
 export logs_path=./logs/test3
 

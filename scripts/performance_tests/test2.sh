@@ -62,7 +62,7 @@ export NT_SB_2nd=501
 
 ##### Logs directory #####
 mkdir ./logs
-rm -rf ./logs/test2 #delete if existing
+#########rm -rf ./logs/test2 #delete if existing
 mkdir ./logs/test2
 export logs_path=./logs/test2
 
