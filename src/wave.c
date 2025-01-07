@@ -436,7 +436,7 @@ vz0[z] = vz0[z]                                                         \
                                + s->coefz[3] * (pr0[z+4] - pr0[z-3]))
 
 #define WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p()                        \
-pr0[z] = pr0[z]                                                   \
+pr0[z]=pr0[z]                                                   \
       + rx[z] * (                                                             \
                     s->coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
                    + s->coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
