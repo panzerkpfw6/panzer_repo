@@ -488,7 +488,7 @@ pr0[z]=pr0[z]                                                   \
 #define WAVE_UPDATE_PML_FIELDS()                                            \
   U1(z,y,x) =                                                               \
     ((2.-ETA(z,y,x)*ETA(z,y,x) + 2.*ETA(z,y,x))*U0(z,y,x)                   \
-    - U1(z,y,x) + ROC2(z,y,x)*(laplacian + PHI(z,y,x)))/(1.+2.*ETA(z,y,x)); \
+    - U1(z,y,x) + ROC2(z,y,x)*(laplacian + PHI(z,y,x)))/(1.+2.*ETA(z,y,x)   ); \
   PHI(z,y,x)= (PHI(z,y,x)-                                                  \
      (( ETA(z,   y,   x+1) - ETA(z,   y,   x-1))                            \
       *( U0(z,   y,   x+1) -  U0(z,   y,   x-1))*s->hdx2                    \

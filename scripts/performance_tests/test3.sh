@@ -114,12 +114,12 @@ for i in $(seq 0 $len); do
                 --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
                 --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> "${logs_path}/log-TB_1st_abc_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${t_dim}_${grid_str}.log";
 
-#                echo "Running 2nd order"
-#                srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
-#                ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
-#                --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-#                --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-#                --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> "${logs_path}/log-TB_2nd_abc_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${t_dim}_${grid_str}.log";
+                echo "Running 2nd order"
+                srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
+                ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
+                --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+                --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
+                --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> "${logs_path}/log-TB_2nd_abc_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${t_dim}_${grid_str}.log";
 
 #                srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread --threads-per-core=1 numactl --interleave=all ./TB_1st-abc.out $nx $ny $nz $NT_TB_1st 3000 $th_x $th_y $th_z $tdim $num_wf 0 0 0 0 >> "${logs_path}/log-TB_1st_abc_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${tdim}_${grid_str}.log"
 #                srun --ntasks=1 --cpus-per-task=$num_th --hint=nomultithread --threads-per-core=1 numactl --interleave=all ./TB_2nd-abc.out $nx $ny $nz $NT_TB_2nd 3000 $th_x $th_y $th_z $tdim $num_wf 0 0 >> "${logs_path}/log-TB_2nd_abc_${num_th}_${th_x}_${th_y}_${th_z}_${num_wf}_${tdim}_${grid_str}.log"

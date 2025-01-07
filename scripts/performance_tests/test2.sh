@@ -99,10 +99,10 @@ for i in $(seq 0 $len); do
             --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
             echo "Running 2nd order"
-#            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#            ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
-#            --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
-#            --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
+            srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+            ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
+            --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
+            --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
         done
     done
 done
