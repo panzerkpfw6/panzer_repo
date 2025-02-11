@@ -525,6 +525,9 @@ void wave_update_fields_1st(sismap_t *s,
                         float *u0, float *vx,float *vy,float *vz,
                         float *roc2, float *phi, float *eta) {
     unsigned int z, y, x;
+    const float inv_dx=1. /(s->dx);
+    const float inv_dy=1. /(s->dy);
+    const float inv_dz=1. /(s->dz);
 
     #pragma omp parallel for private(z, y, x)
         for (z = 0; z < s->dimz; z++) {     // v loop
@@ -712,9 +715,9 @@ void wave_update_fields_block_1st(sismap_t *s,
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-                const Myint xmax = min(s->dimx, xmin + BLOCKX);
-                const Myint ymax = min(s->dimy, ymin + BLOCKY);
-                const Myint zmax = min(s->dimz, zmin + BLOCKZ);
+                const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
                 for (int x = xmin; x < xmax; x++) {
                     for (int y = ymin; y < ymax; y++) {
 //                        MSG("x=%d, y=%d, z=%d\n",x,y,z);
