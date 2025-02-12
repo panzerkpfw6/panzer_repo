@@ -740,12 +740,9 @@ void wave_update_fields_block_1st(sismap_t *s,
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-                xmax = xmin + BLOCKX;
-                if (xmax > s->dimx) xmax = s->dimx;
-                ymax = ymin + BLOCKY;
-                if (ymax > s->dimy) ymax = s->dimy;
-                zmax = zmin + BLOCKZ;
-                if (zmax > s->dimz) zmax = s->dimz;
+                const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
 
                 for (int x = xmin; x < xmax; x++) {
                     for (int y = ymin; y < ymax; y++) {
