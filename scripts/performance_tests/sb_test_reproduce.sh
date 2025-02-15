@@ -51,9 +51,7 @@ export fmax=8;
 export dx=10;
 
 ###*********** Experiment setup ************###
-nx=512
-ny=512
-nz=512
+nx=1024; ny=1024; nz=512;
 export NT_TB_2nd=530 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export NT_SB_2nd=529 #@pavel in SB the nt should one time less than in correponding TB.
 export NT_TB_1st=537 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
@@ -68,7 +66,7 @@ mkdir "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=12;y=24;
+x=10;y=22;
 
 ##### Run tests #####
 
