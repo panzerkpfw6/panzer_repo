@@ -33,9 +33,9 @@ export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
 export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
 
 ###********** MODULES *********###
-#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-#module load icc/2020.2.254
+# Ensure you source the Intel setvars.sh file to load the correct compilers
 source ~/.bashrc
+source /home/hltaief/pavel/intel/oneapi/setvars.sh  # Ensure Intel environment is sourced
 module load cmake
 
 ##### Shot information #####
@@ -70,8 +70,10 @@ echo $grid_str;
 sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 ##### COMPILATION #####
-mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-CC=icc CXX=icpc cmake .
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    # Last CMakeCache.txt is saved
+# Explicitly set the compilers for CMake
+CC=icc CXX=icpx cmake .
+# Clean and rebuild the project
 make clean
 make VERBOSE=1
 make install
