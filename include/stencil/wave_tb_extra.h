@@ -20,6 +20,9 @@
 // Define the types for MPI real numbers (assuming MPI_FLOAT is defined in your environment)
 #define MPI_real_t MPI_FLOAT
 
+double get_wall_time();
+double get_cpu_time();
+
 // Enumeration types for stencil shapes, coefficients, and types
 enum Stencil_Shapes {
     STAR,
