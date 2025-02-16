@@ -30,6 +30,8 @@
 #include <stencil/parser.h>
 #include <stencil/mlbs.h>
 #include <stencil/bwriter.h>
+#include <stencil/wave_tb_extra.h>
+
 
 typedef struct tb_s tb_t;
 typedef struct tb_data_s tb_data_t;
