@@ -28,20 +28,14 @@ export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
-#export CFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
-#export CXXFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
-#export FFLAGS="-O3 -qopenmp -xhost -ipo -funroll-loops -align -restrict"
-#export CFLAGS="-O3 -qopenmp -xhost "
-#export CXXFLAGS="-O3 -qopenmp -xhost "
-#export FFLAGS="-O3 -qopenmp -xhost "
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
 
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#icpc -march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -I. test_SB_kernel.cpp -o bin.cray;
 ###********** MODULES *********###
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-module load icc/2020.2.254
+#module load icc/2020.2.254
+source ~/.bashrc
 module load cmake
 
 ##### Shot information #####
@@ -51,7 +45,6 @@ export fmax=8;
 export dx=10;
 
 ###*********** Experiment setup ************###
-#nx=1024; ny=1024; nz=512;
 nx=512; ny=512; nz=512;
 export NT_TB_2nd=530 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export NT_SB_2nd=529 #@pavel in SB the nt should one time less than in correponding TB.
@@ -91,4 +84,5 @@ srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-p
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
 --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
-
+# After execution, run gprof to generate the profiling report
+gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
