@@ -19,14 +19,21 @@
 #include <sys/time.h>
 #include <time.h>
 
-double get_wall_time(){
-	struct timeval time;
-	if (gettimeofday(&time,NULL)){
-		//  Handle error
-		return 0;
-	}
-	return (double)time.tv_sec + (double)time.tv_usec * .000001;
+// double get_wall_time(){
+// 	struct timeval time;
+// 	if (gettimeofday(&time,NULL)){
+// 		//  Handle error
+// 		return 0;
+// 	}
+// 	return (double)time.tv_sec + (double)time.tv_usec * .000001;
+// }
+
+double get_wall_time() {
+    struct timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);
+    return time.tv_sec + time.tv_nsec / 1000000000.0;
 }
+
 double get_cpu_time(){
 	return (double)clock()/CLOCKS_PER_SEC;
 }
