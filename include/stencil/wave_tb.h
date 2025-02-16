@@ -34,6 +34,7 @@
 typedef struct tb_s tb_t;
 typedef struct tb_data_s tb_data_t;
 typedef struct tb_timer_s tb_timer_t;
+int get_ntg(Parameters p);
 
 struct tb_s {
   // threads
