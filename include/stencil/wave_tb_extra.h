@@ -126,7 +126,6 @@ struct Stencil {
     enum Stencil_Shapes shape;
     enum Stencil_Coefficients coeff;
     enum Stencil_Type type;
-
     spt_blk_func_t spt_blk_func;
     spt_blk_func_t stat_sched_func;
     mwd_func_t mwd_func;
@@ -203,14 +202,10 @@ typedef struct{
     Halo h[3]; // Halo information for z,Y, and x directions
     mpi_topology t;
     Profile prof;
-
     struct Stencil stencil;
-
     // list of coefficients to be used in stencil operators
     real_t g_coef[11];
-
     int array_padding;
-
     int in_auto_tuning;
     int orig_thread_group_size; // to distingquish whether thread group size is set by the user
     tb_data_t * data;
@@ -222,6 +217,8 @@ extern real_t *recv_rec;  // Array for receiver recording
 extern size_t *irecv_rec; // Index array into recv_rec
 extern size_t isrc_exc;  // Number of source excitations performed so far
 
+
+int get_ntg(Parameters p);  // Function declaration
 // Function prototypes
 void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0, const int xb,
                         const int ze, const int ye_r0, const int xe,

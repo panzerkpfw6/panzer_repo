@@ -281,6 +281,11 @@ int mpi_size;
 #define T_POS_L(y) (st.t_pos[(((y)+(y_len_l))%(y_len_l))])
 #define T_POS_R(y) (st.t_pos[(((y)+(y_len_r))%(y_len_r))])
 Parameters *gp; //@KADIR global parameter within a node
+
+int get_ntg(Parameters p){
+    return (int) ceil(1.0*p.num_threads/p.stencil_ctx.thread_group_size);
+}
+
 static inline void update_state(int y_coord, Parameters *p){
     //@KADIR EXECUTED IN DIAMOND
     int sh;

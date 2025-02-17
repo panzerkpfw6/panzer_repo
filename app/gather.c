@@ -1,5 +1,6 @@
 /// Function 'gather' stacks rtm images for different shots.
 #include <stdio.h>
+#include <unistd.h>  // For getcwd
 #include <math.h>
 #include <string.h>
 #include <dirent.h>

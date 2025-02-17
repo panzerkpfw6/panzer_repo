@@ -21,7 +21,6 @@
 
 #define _GNU_SOURCE
 #include <sched.h>
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stencil/config.h>
@@ -30,13 +29,12 @@
 #include <stencil/parser.h>
 #include <stencil/mlbs.h>
 #include <stencil/bwriter.h>
-#include <stencil/wave_tb_extra.h>
-
+//#include <stencil/wave_tb_extra.h>
 
 typedef struct tb_s tb_t;
 typedef struct tb_data_s tb_data_t;
 typedef struct tb_timer_s tb_timer_t;
-int get_ntg(Parameters p);
+//int get_ntg(Parameters p);
 
 struct tb_s {
   // threads

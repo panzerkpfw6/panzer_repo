@@ -94,9 +94,6 @@ vz_x[i] = vz_x[i] \
                    + coefz[2] * (ux[i+3*nnxy] - ux[i-2*nnxy])   \
                    + coefz[3] * (ux[i+4*nnxy] - ux[i-3*nnxy])); \
 }
-int get_ntg(Parameters p){
-    return (int) ceil(1.0*p.num_threads/p.stencil_ctx.thread_group_size);
-}
 
 void kernel_spatial_blocking_separate_mode_1st_orig(const int nnx, const int nny, const int nnz,
                                                const int xb,  int yb_r, const int* zb,
