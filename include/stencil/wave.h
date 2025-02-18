@@ -61,17 +61,31 @@ void wave_print(sismap_t *s);
 /// @param w is a pointer to the wave descriptor to be updated
 void wave_update_fields(sismap_t *s, float *,
 	                      float *, float*, float*, float*);
-
+void wave_update_fields_1st(sismap_t *s,
+                            float *u0, float *vx,float *vy,float *vz,
+                            float *roc2, float *phi, float *eta);
 void wave_update_fields_block(sismap_t *s, float *,
                         float *, float*, float*, float*);
-
+void wave_update_fields_block_bis_orig(sismap_t *s,
+                                       float *restrict u0,
+                                       float *restrict u1,
+                                       float *restrict roc2,
+                                       float *restrict phi,
+                                       float *restrict eta);
 void wave_update_fields_block_bis(sismap_t *s,
                                   float* restrict u0,
                                   float* restrict u1,
                                   float* restrict roc2,
                                   float* restrict phi,
                                   float* restrict eta);
-
+void wave_update_fields_block_1st(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict vx,
+                                  float *restrict vy,
+                                  float *restrict vz,
+                                  float *restrict roc2,
+                                  float *restrict phi,
+                                  float *restrict eta);
 
 /// @brief Adds an impulse to the grid point situated at the
 /// source location
