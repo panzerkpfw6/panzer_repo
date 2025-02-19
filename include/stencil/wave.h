@@ -146,7 +146,7 @@ void wave_save_bwd_dbg(sismap_t* s, shot_t *shot, float* u1, unsigned int t);
 
 void wave_save_img(sismap_t* s, shot_t *shot, float* , float*);
 
-int  wave_check_fields(float *tab, size_t len);
+//int  wave_check_fields(float *tab, size_t len);
 
 void wave_min_max(char* str, float *tab, size_t len);
 

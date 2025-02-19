@@ -57,10 +57,10 @@ RM = /sw/workstations/apps/linux-ubuntu22.04-ivybridge/cmake/3.24.3/gcc-11.3.0/i
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/plotnips/disk2tb/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering
+CMAKE_SOURCE_DIR = /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/plotnips/disk2tb/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering
+CMAKE_BINARY_DIR = /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/plotnips/disk2tb/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/CMakeFiles /media/plotnips/disk2tb/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/CMakeFiles /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/plotnips/disk2tb/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

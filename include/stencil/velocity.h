@@ -40,4 +40,8 @@ void velocity_query_model(sismap_t *s);
 
 void velocity_load_model(sismap_t *s, float *vtab);
 
+void velocity_const_model2(sismap_t *s, float *vtab);
+
+void velocity_load_salt3d(sismap_t *s, float *vtab);
+
 #endif // __STENCIL_VELOCITY_H_

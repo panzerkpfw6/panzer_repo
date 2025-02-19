@@ -346,7 +346,7 @@ void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
         wave_tb_data_info(data);
 
         wave_tb_forward(ctx,data,timer,u0,u1,vel);
-        wave_tb_save_lastshot(s,shot,u0,u1,vel);
+        wave_tb_save_lastshot(s,shot,u0,u1);
         wave_tb_data_unset_src(data);
         wave_tb_data_unset_rcv(data);
 
@@ -399,6 +399,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     array_openmp_init(vy,s);
     CREATE_BUFFER_ONLY(vz,s->size);
     array_openmp_init(vz,s);
+
+//    exit(0);
 
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
     CREATE_BUFFER(pml_tmp, s->size_eff);
@@ -557,7 +559,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
         wave_tb_data_info(data);
 
         wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel);
-        wave_tb_save_lastshot_1st(s,shot,u0,vel);
+        wave_tb_save_lastshot_1st(s,shot,u0);
 
         wave_tb_data_unset_src(data);
         wave_tb_data_unset_rcv(data);

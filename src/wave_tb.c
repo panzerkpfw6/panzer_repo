@@ -2831,8 +2831,7 @@ void wave_tb_info(tb_t * ctx) {
 void wave_tb_save_lastshot(sismap_t* s,
                            shot_t *shot,
                            float* u0,
-                           float *u1,
-                           unsigned int t) {
+                           float *u1) {
     MSG("inside wave_tb_save_lastshot");
     FILE * fd;
 
@@ -2857,9 +2856,8 @@ void wave_tb_save_lastshot(sismap_t* s,
 
 void wave_tb_save_lastshot_1st(sismap_t* s,
                                shot_t *shot,
-                               float* u0,
-                               unsigned int t) {
-    MSG("inside wave_tb_save_lastshot");
+                               float* u0) {
+    MSG("inside wave_tb_save_lastshot_1st");
     FILE * fd;
     char *snap_fd_name = (char*)malloc(20*sizeof(char));
 //    sprintf(snap_fd_name, "snapshot_TB1st_%u",s->time_steps/2);

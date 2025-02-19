@@ -965,13 +965,13 @@ void wave_save_img(sismap_t *s, shot_t *shot,
         "failed to save img");
 }
 
-int wave_check_fields(float *tab, size_t len) {
-    int not_valid = 0;
-    for (size_t i = 0; i < len; ++i) {
-        if (isnan(tab[i])) not_valid++;
-    }
-    return not_valid;
-}
+//int wave_check_fields(float *tab, size_t len) {
+//    int not_valid = 0;
+//    for (size_t i = 0; i < len; ++i) {
+//        if (isnan(tab[i])) not_valid++;
+//    }
+//    return not_valid;
+//}
 
 void wave_min_max(char *str, float *tab, size_t len) {
     float max = 0.0;

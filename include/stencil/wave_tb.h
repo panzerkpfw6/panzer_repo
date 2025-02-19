@@ -283,8 +283,11 @@ void wave_tb_free(tb_t* ctx);
 void wave_tb_save_lastshot(sismap_t* s,
                            shot_t *shot,
                            float* u0,
-                           float * u1,
-                           unsigned int t);
+                           float * u1);
+
+void wave_tb_save_lastshot_1st(sismap_t* s,
+                           shot_t *shot,
+                           float* u0);
 
 void wave_tb_data_init(tb_data_t * data,
                        tb_t *tb,

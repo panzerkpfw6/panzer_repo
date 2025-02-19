@@ -22,8 +22,8 @@ module load cmake
 
 # Make sure the Intel environment is sourced properly
 # Set the correct compiler paths (ensure the Intel compiler is used)
-export CC=/media/plotnips/disk2tb/soft/intel/oneapi/compiler/2024.1/bin/icx
-export CXX=/media/plotnips/disk2tb/soft/intel/oneapi/compiler/2024.1/bin/icpx
+export CC=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icx
+export CXX=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icpx
 
 ##### Shot information #####
 export shot=32896;  # position of the source in x,y coordinates. Check ./data/acquisition.txt
@@ -37,6 +37,7 @@ export NT_TB_2nd=530  # @pavel in TB source injection starts from second time sa
 export NT_SB_2nd=529  # @pavel in SB the nt should one time less than in corresponding TB.
 export NT_TB_1st=537  # @pavel in TB source injection starts from second time sample (Nothing happens for one dt). This is code feature.
 export NT_SB_1st=536  # @pavel in SB the nt should one time less than in corresponding TB.
+export NT_SB_1st=100
 pwd
 
 ##### Logs directory #####
@@ -65,13 +66,25 @@ make VERBOSE=1
 make install
 
 #####################
-echo "Running SB"
-echo "Running 1st order"
+#echo "Running SB"
+#echo "Running 1st order"
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dx
+## >> $logs_path/log-SB_1st-abc_$grid_str.log
+### After execution, run gprof to generate the profiling report
+#gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
+
+#####################
+#echo "Profiling with perf..."
+#perf record -g ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dx
+#perf report > $logs_path/perf_report.txt
+
+#####################
+echo "Running memory check with valgrind..."
+valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
---dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
-
-# After execution, run gprof to generate the profiling report
-gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
-
-
+--dx $dx 2> $logs_path/valgrind_memcheck.txt

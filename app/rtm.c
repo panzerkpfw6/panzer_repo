@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <sys/sysinfo.h>
 //#include <cuda_runtime.h>
 #include <stencil/parser.h>
 #include <stencil/stencil.h>

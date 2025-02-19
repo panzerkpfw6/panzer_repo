@@ -34,5 +34,7 @@
 /// @param time_steps the number of the simulation time steps
 /// @param fmax is the max frequency of the input signal
 void source_ricker_wavelet(sismap_t *s, float* source);
+void source_ricker_wavelet_1st(sismap_t *s, float *source);
+void source_ricker_wavelet_2nd(sismap_t *s, float *source);
 
 #endif // __STENCIL_SOURCE_H_

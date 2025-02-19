@@ -407,7 +407,7 @@ void velocity_load_model_3d(sismap_t *s, float *vtab) {
 #endif //__DUMP_VEL
 }
 
-void velocity_const_model2(sismap_t *s, float *vtab, unsigned int layers) {
+void velocity_const_model2(sismap_t *s, float *vtab) {
     MSG("__________________________Inside function velocity_constant_model__________________________");
     unsigned int x, y, z, i;
     for (z=0; z < s->dimz; z++) {
