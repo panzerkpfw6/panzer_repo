@@ -36,16 +36,17 @@ export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 ###********** MODULES *********###
 # Load required modules
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-#module load icc/2020.2.254
-source ~/.bashrc
+module load icc/2020.2.254
+#source ~/.bashrc
 module load cmake
 
-# Make sure the Intel environment is sourced properly
-source /home/hltaief/pavel/intel/oneapi/setvars.sh  # Sourcing Intel environment
-
-# Set the correct compiler paths (ensure the Intel compiler is used)
-export CC=/home/hltaief/pavel/intel/oneapi/compiler/2024.1/bin/icx
-export CXX=/home/hltaief/pavel/intel/oneapi/compiler/2024.1/bin/icpx
+####################################################################
+## Make sure the Intel environment is sourced properly
+#source /home/hltaief/pavel/intel/oneapi/setvars.sh  # Sourcing Intel environment
+## Set the correct compiler paths (ensure the Intel compiler is used)
+#export CC=/home/hltaief/pavel/intel/oneapi/compiler/2024.1/bin/icx
+#export CXX=/home/hltaief/pavel/intel/oneapi/compiler/2024.1/bin/icpx
+####################################################################
 
 ##### Shot information #####
 export shot=32896;  # position of the source in x,y coordinates. Check ./data/acquisition.txt
@@ -81,7 +82,8 @@ sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt  # Save the last CMakeCache.txt
-cmake .
+CC=icc CXX=icpc cmake .
+#cmake .
 make clean
 make VERBOSE=1
 make install
