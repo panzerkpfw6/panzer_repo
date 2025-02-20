@@ -17,7 +17,8 @@ export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
 # Load required modules
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 #module load icc/2020.2.254
-source ~/.bashrc
+module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+#source ~/.bashrc
 module load cmake
 
 # Make sure the Intel environment is sourced properly
@@ -37,7 +38,7 @@ export NT_TB_2nd=530  # @pavel in TB source injection starts from second time sa
 export NT_SB_2nd=529  # @pavel in SB the nt should one time less than in corresponding TB.
 export NT_TB_1st=537  # @pavel in TB source injection starts from second time sample (Nothing happens for one dt). This is code feature.
 export NT_SB_1st=536  # @pavel in SB the nt should one time less than in corresponding TB.
-export NT_SB_1st=100
+#export NT_SB_1st=100
 pwd
 
 ##### Logs directory #####
