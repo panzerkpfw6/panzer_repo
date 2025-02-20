@@ -29,9 +29,9 @@ export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
 # Set compiler flags
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"  # -pg
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ###********** MODULES *********###
 # Load required modules
@@ -95,4 +95,4 @@ srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-p
 --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
 # After execution, run gprof to generate the profiling report
-gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
+#gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
