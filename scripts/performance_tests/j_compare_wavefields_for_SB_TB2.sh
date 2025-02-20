@@ -9,9 +9,9 @@ export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
 # Set compiler flags
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg"
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ###********** MODULES *********###
 # Load required modules
@@ -21,10 +21,12 @@ module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 #source ~/.bashrc
 module load cmake
 
+###***********************###
 # Make sure the Intel environment is sourced properly
 # Set the correct compiler paths (ensure the Intel compiler is used)
-export CC=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icx
-export CXX=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icpx
+#export CC=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icx
+#export CXX=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icpx
+###***********************###
 
 ##### Shot information #####
 export shot=32896;  # position of the source in x,y coordinates. Check ./data/acquisition.txt
@@ -38,7 +40,7 @@ export NT_TB_2nd=530  # @pavel in TB source injection starts from second time sa
 export NT_SB_2nd=529  # @pavel in SB the nt should one time less than in corresponding TB.
 export NT_TB_1st=537  # @pavel in TB source injection starts from second time sample (Nothing happens for one dt). This is code feature.
 export NT_SB_1st=536  # @pavel in SB the nt should one time less than in corresponding TB.
-#export NT_SB_1st=100
+export NT_SB_1st=100
 pwd
 
 ##### Logs directory #####
@@ -61,7 +63,8 @@ sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt  # Save the last CMakeCache.txt
-cmake .
+#cmake .
+CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
 make install

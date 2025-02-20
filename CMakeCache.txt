@@ -28,10 +28,10 @@ CMAKE_BUILD_TYPE:STRING=
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //CXX compiler
-CMAKE_CXX_COMPILER:FILEPATH=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icpx
+CMAKE_CXX_COMPILER:FILEPATH=/sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icpc
 
 //Flags used by the CXX compiler during all build types.
-CMAKE_CXX_FLAGS:STRING=-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg
+CMAKE_CXX_FLAGS:STRING=
 
 //Flags used by the CXX compiler during DEBUG builds.
 CMAKE_CXX_FLAGS_DEBUG:STRING=-g
@@ -46,10 +46,10 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:FILEPATH=/opt/intel/oneapi/compiler/2023.2.4/linux/bin/icx
+CMAKE_C_COMPILER:FILEPATH=/sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc
 
 //Flags used by the C compiler during all build types.
-CMAKE_C_FLAGS:STRING=-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -pg
+CMAKE_C_FLAGS:STRING=
 
 //Flags used by the C compiler during DEBUG builds.
 CMAKE_C_FLAGS_DEBUG:STRING=-g
@@ -197,10 +197,16 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //C compiler flags for OpenMP parallelization
-OpenMP_C_FLAGS:STRING=-fiopenmp
+OpenMP_C_FLAGS:STRING=-qopenmp
 
 //C compiler libraries for OpenMP parallelization
-OpenMP_C_LIB_NAMES:STRING=
+OpenMP_C_LIB_NAMES:STRING=iomp5;pthread
+
+//Path to the iomp5 library for OpenMP
+OpenMP_iomp5_LIBRARY:FILEPATH=/sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so
+
+//Path to the pthread library for OpenMP
+OpenMP_pthread_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpthread.a
 
 //Path to a program.
 XIAR:FILEPATH=/sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/xiar
@@ -377,17 +383,21 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 //Details about finding OpenMP
 FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][c ][v5.0()]
 //Details about finding OpenMP_C
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-fiopenmp][v5.0()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-qopenmp][/sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/usr/lib/x86_64-linux-gnu/libpthread.a][v5.0()]
 //Result of TRY_COMPILE
-OpenMP_COMPILE_RESULT_C_fiopenmp:INTERNAL=TRUE
+OpenMP_COMPILE_RESULT_C_qopenmp:INTERNAL=TRUE
 //ADVANCED property for variable: OpenMP_C_FLAGS
 OpenMP_C_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: OpenMP_C_LIB_NAMES
 OpenMP_C_LIB_NAMES-ADVANCED:INTERNAL=1
 //C compiler's OpenMP specification date
-OpenMP_C_SPEC_DATE:INTERNAL=201811
+OpenMP_C_SPEC_DATE:INTERNAL=201611
 //Result of TRY_COMPILE
 OpenMP_SPECTEST_C_:INTERNAL=TRUE
+//ADVANCED property for variable: OpenMP_iomp5_LIBRARY
+OpenMP_iomp5_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: OpenMP_pthread_LIBRARY
+OpenMP_pthread_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: XIAR
 XIAR-ADVANCED:INTERNAL=1
 //linker supports push/pop state

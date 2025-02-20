@@ -33,11 +33,8 @@ make install
 ############################### parameters
 #nx=256;ny=256;nz=256;
 nx=512;ny=512;nz=512;
-export TIME_TB_2nd=530; #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-export TIME_SB_2nd=530; #@pavel in SB the nt should one time less than in correponding TB. was 529,530
-
-export TIME_TB_1st=537; # 1074 @pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=537; #@pavel in SB the nt should one time less than in correponding TB.
+export TIME_SB_1st=100;
 
 dt=0.001;
 shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt

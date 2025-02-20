@@ -35,9 +35,9 @@ export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ###********** MODULES *********###
 # Load required modules
-#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load icc/2020.2.254
 #source ~/.bashrc
+#source /home/hltaief/pavel/intel/oneapi/setvars.sh
 module load cmake
 
 ####################################################################

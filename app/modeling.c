@@ -460,10 +460,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
             wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
-#ifdef __DEBUG
-            wave_save_fwd_dbg(s, shot, u0, (t+1)%s->nb_snap==0);
-#endif // __DEBUG
-
             t0 = wtime();
             wave_extract_sismos(s, u0, t+1, sismos);
             t_sismos += wtime() - t0;
