@@ -724,7 +724,19 @@ void wave_update_fields_block_1st(sismap_t *s,
                         vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
 #pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
-                            WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
+                            vx0[z] = vx0[z]+ s->dt*inv_dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
+                               + s->coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
+                               + s->coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
+                               + s->coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz]));  \
+                            vy0[z] = vy0[z]+ s->dt*inv_dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
+                                                   + s->coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
+                                                   + s->coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
+                                                   + s->coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz]));  \
+                            vz0[z] = vz0[z]+ s->dt*inv_dz * (s->coefz[0] * (pr0[z+1] - pr0[z])   \
+                                                           + s->coefz[1] * (pr0[z+2] - pr0[z-1])   \
+                                                           + s->coefz[2] * (pr0[z+3] - pr0[z-2])   \
+                                                           + s->coefz[3] * (pr0[z+4] - pr0[z-3]));
                         }
                     }
                 }
@@ -750,10 +762,24 @@ void wave_update_fields_block_1st(sismap_t *s,
                         rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
 #pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
-                            WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
-                            pr0[z] = s->dampx[x + s->sx] * pr0[z];
-                            pr0[z] = s->dampy[y + s->sy] * pr0[z];
-                            pr0[z] = s->dampz[z + s->sz] * pr0[z];
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
+                            pr0[z]=pr0[z]+ rx[z] * ( \
+                                s->coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
+                               + s->coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
+                               + s->coefz[0]*inv_dz * (vz0[z]          - vz0[z-1  ])   \
+                               + s->coefx[1]*inv_dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
+                               + s->coefy[1]*inv_dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
+                               + s->coefz[1]*inv_dz * (vz0[z+1]         -vz0[z-2])   \
+                               + s->coefx[2]*inv_dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
+                               + s->coefy[2]*inv_dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
+                               + s->coefz[2]*inv_dz * (vz0[z+2]   -      vz0[z-3])   \
+                               + s->coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
+                               + s->coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
+                               + s->coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4]) );
+                            // pr0[z] = s->dampx[x + s->sx] * pr0[z];
+                            // pr0[z] = s->dampy[y + s->sy] * pr0[z];
+                            // pr0[z] = s->dampz[z + s->sz] * pr0[z];
+                            pr0[z] = s->dampx[x + s->sx]*s->dampy[y + s->sy]*s->dampz[z + s->sz] * pr0[z];
                         }
                     }
                 }

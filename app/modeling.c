@@ -616,6 +616,15 @@ void run_modeling_1st_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p)
 /// - check the GPU results if asked by the user
 
 int main(int argc, char* argv[]) {
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[80];
+    // Start of program
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+    printf("Program started at: %s\n", buffer);
+
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
     /// create a parser.
