@@ -432,10 +432,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
         t0 = wtime();
         wave_extract_sismos(s,u0,0, sismos);
         t_sismos += wtime() - t0;
-#ifdef __DEBUG
-        wave_save_fwd_dbg(s, shot, u0, 0%s->nb_snap==0);
-//    wave_save_snapshot(s, shot, u0, 0%s->nb_snap==0);
-#endif // __DEBUG
+
         for(int t = 0; t <= s->time_steps-1; ++t) {
             int snap_freq = s->time_steps;
             if ((t+1) ==snap_freq) {

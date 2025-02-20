@@ -96,5 +96,5 @@ srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-p
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
 --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
-# After execution, run gprof to generate the profiling report
-#gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
+###### After execution, run gprof to generate the profiling report
+gprof ./bin/modeling gmon.out > $logs_path/gprof_report.txt
