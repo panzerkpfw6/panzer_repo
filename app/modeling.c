@@ -471,8 +471,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
 ///     we need factor 2, because this is 1st order code
         MSG("Speed:        %f Mstencils/s",2.0*s->time_steps*s->size_eff/1e6/(t2-t1));
         MSG("PropSpeed:    %f Mstencils/s",2.0*s->time_steps*s->size_eff/1e6/(t_prop) );
-/// save the seismic traces for the shot.
-        wave_save_sismos(s,shot,sismos);
+        /// save the seismic traces for the shot.
+        // wave_save_sismos(s,shot,sismos);
         /// release/close the resources related to the current shot.
         shot_release(shot);
     }
