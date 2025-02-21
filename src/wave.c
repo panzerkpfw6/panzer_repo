@@ -31,6 +31,8 @@
 #include <stencil/shot.h>
 #include <stencil/pml.h>
 #include <omp.h>
+#include <immintrin.h> // For AVX2 intrinsics
+#define ALIGNMENT 32 // For AVX2 (256-bit = 8 floats)
 
 #define U0(z,y,x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
@@ -680,117 +682,7 @@ void wave_update_fields_block_bis(sismap_t *s,
     }
 }
 
-// void wave_update_fields_block_1st(sismap_t *s,
-//                                   float *restrict u0,
-//                                   float *restrict vx,
-//                                   float *restrict vy,
-//                                   float *restrict vz,
-//                                   float *restrict roc2,
-//                                   float *restrict phi,
-//                                   float *restrict eta) {
-//     unsigned int z, y, x;
-//     float laplacian;
-//     unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
-//
-//     const int nnx = s->dimx + 2 * s->sx;
-//     const int nny = s->dimy + 2 * s->sy;
-//     const int nnz = s->dimz + 2 * s->sz;
-//     const float inv_dx=1. /(s->dx);
-//     const float inv_dy=1. /(s->dy);
-//     const float inv_dz=1. /(s->dz);
-//     long int nnxy = nnx * nny;
-//     long int nnyz = nny * nnz;
-//     float *restrict pr0;
-//     float *restrict vx0;
-//     float *restrict vy0;
-//     float *restrict vz0;
-//     float *restrict rx;
-// //    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
-// //    exit(0);
-//     // loop on the blocks .velocity
-// #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
-//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
-//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
-//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
-//                 for (int x = xmin; x < xmax; x++) {
-//                     for (int y = ymin; y < ymax; y++) {
-// //                        MSG("x=%d, y=%d, z=%d\n",x,y,z);
-//                         pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-// #pragma ivdep
-//                         for (int z = zmin; z < zmax; z++) {
-//                             // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
-//                             vx0[z] = vx0[z]+ s->dt*inv_dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
-//                                + s->coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
-//                                + s->coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
-//                                + s->coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz]));  \
-//                             vy0[z] = vy0[z]+ s->dt*inv_dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
-//                                                    + s->coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
-//                                                    + s->coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
-//                                                    + s->coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz]));  \
-//                             vz0[z] = vz0[z]+ s->dt*inv_dz * (s->coefz[0] * (pr0[z+1] - pr0[z])   \
-//                                                            + s->coefz[1] * (pr0[z+2] - pr0[z-1])   \
-//                                                            + s->coefz[2] * (pr0[z+3] - pr0[z-2])   \
-//                                                            + s->coefz[3] * (pr0[z+4] - pr0[z-3]));
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//
-//     // loop on the blocks.pressure
-// #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0,rx)
-//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
-//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
-//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
-//
-//                 for (int x = xmin; x < xmax; x++) {
-//                     for (int y = ymin; y < ymax; y++) {
-//                         pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
-// #pragma ivdep
-//                         for (int z = zmin; z < zmax; z++) {
-//                             // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
-//                             pr0[z]=pr0[z]+ rx[z] * ( \
-//                                 s->coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
-//                                + s->coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
-//                                + s->coefz[0]*inv_dz * (vz0[z]          - vz0[z-1  ])   \
-//                                + s->coefx[1]*inv_dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
-//                                + s->coefy[1]*inv_dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
-//                                + s->coefz[1]*inv_dz * (vz0[z+1]         -vz0[z-2])   \
-//                                + s->coefx[2]*inv_dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
-//                                + s->coefy[2]*inv_dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
-//                                + s->coefz[2]*inv_dz * (vz0[z+2]   -      vz0[z-3])   \
-//                                + s->coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
-//                                + s->coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
-//                                + s->coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4]) );
-//                             // pr0[z] = s->dampx[x + s->sx] * pr0[z];
-//                             // pr0[z] = s->dampy[y + s->sy] * pr0[z];
-//                             // pr0[z] = s->dampz[z + s->sz] * pr0[z];
-//                             pr0[z] = s->dampx[x + s->sx]*s->dampy[y + s->sy]*s->dampz[z + s->sz] * pr0[z];
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-//
-
-
-void wave_update_fields_block_1st(sismap_t *s,
+void wave_update_fields_block_1st_orig(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict vx,
                                   float *restrict vy,
@@ -800,61 +692,53 @@ void wave_update_fields_block_1st(sismap_t *s,
                                   float *restrict eta) {
     unsigned int z, y, x;
     float laplacian;
-    unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+    unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnz = s->dimz + 2 * s->sz;
-    const float inv_dx = 1. / (s->dx);
-    const float inv_dy = 1. / (s->dy);
-    const float inv_dz = 1. / (s->dz);
+    const float inv_dx=1. /(s->dx);
+    const float inv_dy=1. /(s->dy);
+    const float inv_dz=1. /(s->dz);
     long int nnxy = nnx * nny;
     long int nnyz = nny * nnz;
-
-    // Precompute constants
-    const float dt_inv_dx = s->dt * inv_dx;
-    const float dt_inv_dy = s->dt * inv_dy;
-    const float dt_inv_dz = s->dt * inv_dz;
-
-    // Loop for velocity updates
-    #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
+    float *restrict pr0;
+    float *restrict vx0;
+    float *restrict vy0;
+    float *restrict vz0;
+    float *restrict rx;
+//    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
+//    exit(0);
+    // loop on the blocks .velocity
+#pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
-
                 for (int x = xmin; x < xmax; x++) {
                     for (int y = ymin; y < ymax; y++) {
-                        float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-
-                        #pragma omp simd
+//                        MSG("x=%d, y=%d, z=%d\n",x,y,z);
+                        pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+#pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
-                            // Velocity updates
-                            vx0[z] += dt_inv_dx * (
-                                s->coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
-                                s->coefx[1] * (pr0[z + 2 * nnyz] - pr0[z - 1 * nnyz]) +
-                                s->coefx[2] * (pr0[z + 3 * nnyz] - pr0[z - 2 * nnyz]) +
-                                s->coefx[3] * (pr0[z + 4 * nnyz] - pr0[z - 3 * nnyz])
-                            );
-
-                            vy0[z] += dt_inv_dy * (
-                                s->coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
-                                s->coefy[1] * (pr0[z + 2 * nnz] - pr0[z - 1 * nnz]) +
-                                s->coefy[2] * (pr0[z + 3 * nnz] - pr0[z - 2 * nnz]) +
-                                s->coefy[3] * (pr0[z + 4 * nnz] - pr0[z - 3 * nnz])
-                            );
-
-                            vz0[z] += dt_inv_dz * (
-                                s->coefz[0] * (pr0[z + 1] - pr0[z]) +
-                                s->coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
-                                s->coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
-                                s->coefz[3] * (pr0[z + 4] - pr0[z - 3])
-                            );
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
+                            vx0[z] = vx0[z]+ s->dt*inv_dx*(s->coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
+                               + s->coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
+                               + s->coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
+                               + s->coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz]));  \
+                            vy0[z] = vy0[z]+ s->dt*inv_dy * (s->coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
+                                                   + s->coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
+                                                   + s->coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
+                                                   + s->coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz]));  \
+                            vz0[z] = vz0[z]+ s->dt*inv_dz * (s->coefz[0] * (pr0[z+1] - pr0[z])   \
+                                                           + s->coefz[1] * (pr0[z+2] - pr0[z-1])   \
+                                                           + s->coefz[2] * (pr0[z+3] - pr0[z-2])   \
+                                                           + s->coefz[3] * (pr0[z+4] - pr0[z-3]));
                         }
                     }
                 }
@@ -862,8 +746,8 @@ void wave_update_fields_block_1st(sismap_t *s,
         }
     }
 
-    // Loop for pressure updates
-    #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
+    // loop on the blocks.pressure
+#pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0,rx)
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
@@ -873,32 +757,31 @@ void wave_update_fields_block_1st(sismap_t *s,
 
                 for (int x = xmin; x < xmax; x++) {
                     for (int y = ymin; y < ymax; y++) {
-                        float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        float *rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
-
-                        #pragma omp simd
+                        pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                        rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+#pragma ivdep
                         for (int z = zmin; z < zmax; z++) {
-                            // Pressure updates
-                            pr0[z] += rx[z] * (
-                                s->coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
-                                s->coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +
-                                s->coefz[0] * inv_dz * (vz0[z] - vz0[z - 1]) +
-                                s->coefx[1] * inv_dx * (vx0[z + 1 * nnyz] - vx0[z - 2 * nnyz]) +
-                                s->coefy[1] * inv_dy * (vy0[z + 1 * nnz] - vy0[z - 2 * nnz]) +
-                                s->coefz[1] * inv_dz * (vz0[z + 1] - vz0[z - 2]) +
-                                s->coefx[2] * inv_dx * (vx0[z + 2 * nnyz] - vx0[z - 3 * nnyz]) +
-                                s->coefy[2] * inv_dy * (vy0[z + 2 * nnz] - vy0[z - 3 * nnz]) +
-                                s->coefz[2] * inv_dz * (vz0[z + 2] - vz0[z - 3]) +
-                                s->coefx[3] * inv_dx * (vx0[z + 3 * nnyz] - vx0[z - 4 * nnyz]) +
-                                s->coefy[3] * inv_dy * (vy0[z + 3 * nnz] - vy0[z - 4 * nnz]) +
-                                s->coefz[3] * inv_dz * (vz0[z + 3] - vz0[z - 4])
-                            );
-
-                            // Apply damping
-                            pr0[z] *= s->dampx[x + s->sx] * s->dampy[y + s->sy] * s->dampz[z + s->sz];
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
+                            pr0[z]=pr0[z]+ rx[z] * ( \
+                                s->coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
+                               + s->coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
+                               + s->coefz[0]*inv_dz * (vz0[z]          - vz0[z-1  ])   \
+                               + s->coefx[1]*inv_dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
+                               + s->coefy[1]*inv_dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
+                               + s->coefz[1]*inv_dz * (vz0[z+1]         -vz0[z-2])   \
+                               + s->coefx[2]*inv_dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
+                               + s->coefy[2]*inv_dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
+                               + s->coefz[2]*inv_dz * (vz0[z+2]   -      vz0[z-3])   \
+                               + s->coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
+                               + s->coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
+                               + s->coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4]) );
+                            // pr0[z] = s->dampx[x + s->sx] * pr0[z];
+                            // pr0[z] = s->dampy[y + s->sy] * pr0[z];
+                            // pr0[z] = s->dampz[z + s->sz] * pr0[z];
+                            pr0[z] = s->dampx[x + s->sx]*s->dampy[y + s->sy]*s->dampz[z + s->sz] * pr0[z];
                         }
                     }
                 }
@@ -906,6 +789,312 @@ void wave_update_fields_block_1st(sismap_t *s,
         }
     }
 }
+
+void wave_update_fields_block_1st(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict vx,
+                                  float *restrict vy,
+                                  float *restrict vz,
+                                  float *restrict roc2,
+                                  float *restrict phi __attribute__((unused)),
+                                  float *restrict eta __attribute__((unused))) {
+    const int nnx = s->dimx + 2 * s->sx;
+    const int nny = s->dimy + 2 * s->sy;
+    const int nnz = s->dimz + 2 * s->sz;
+    const long int nnxy = (long int)nnx * nny;
+    const long int nnyz = (long int)nny * nnz;
+
+    // Precompute coefficients with dt and inverse distances
+    const float dt_inv_dx = s->dt / s->dx;
+    const float dt_inv_dy = s->dt / s->dy;
+    const float dt_inv_dz = s->dt / s->dz;
+    float coefx[4] __attribute__((aligned(ALIGNMENT))) = {
+        s->coefx[0] * dt_inv_dx, s->coefx[1] * dt_inv_dx,
+        s->coefx[2] * dt_inv_dx, s->coefx[3] * dt_inv_dx
+    };
+    float coefy[4] __attribute__((aligned(ALIGNMENT))) = {
+        s->coefy[0] * dt_inv_dy, s->coefy[1] * dt_inv_dy,
+        s->coefy[2] * dt_inv_dy, s->coefy[3] * dt_inv_dy
+    };
+    float coefz[4] __attribute__((aligned(ALIGNMENT))) = {
+        s->coefz[0] * dt_inv_dz, s->coefz[1] * dt_inv_dz,
+        s->coefz[2] * dt_inv_dz, s->coefz[3] * dt_inv_dz
+    };
+
+    // Ensure arrays are aligned (assumes caller allocates aligned memory)
+    float *restrict pr0 = __builtin_assume_aligned(u0, ALIGNMENT);
+    float *restrict vx0 = __builtin_assume_aligned(vx, ALIGNMENT);
+    float *restrict vy0 = __builtin_assume_aligned(vy, ALIGNMENT);
+    float *restrict vz0 = __builtin_assume_aligned(vz, ALIGNMENT);
+    float *restrict rx = __builtin_assume_aligned(roc2, ALIGNMENT);
+
+    #pragma omp parallel
+    {
+        // Single parallel region to reduce overhead
+        #pragma omp for collapse(3) schedule(static) nowait
+        for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+            for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+                for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+                    const int xmax = xmin + BLOCKX < s->dimx ? xmin + BLOCKX : s->dimx;
+                    const int ymax = ymin + BLOCKY < s->dimy ? ymin + BLOCKY : s->dimy;
+                    const int zmax = zmin + BLOCKZ < s->dimz ? zmin + BLOCKZ : s->dimz;
+
+                    for (int x = xmin; x < xmax; x++) {
+                        for (int y = ymin; y < ymax; y++) {
+                            const long int base_idx = (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz;
+                            float *restrict p = pr0 + base_idx;
+                            float *restrict vx_p = vx0 + base_idx;
+                            float *restrict vy_p = vy0 + base_idx;
+                            float *restrict vz_p = vz0 + base_idx;
+                            float *restrict r = rx + (x * s->dimy * s->dimz + y * s->dimz);
+                            const float damp_xy = s->dampx[x + s->sx] * s->dampy[y + s->sy];
+
+                            // Vectorized inner loop (assuming zmax - zmin >= 8 for AVX2)
+                            int z;
+                            for (z = zmin; z <= zmax - 8; z += 8) {
+                                // Load 8 elements at once
+                                __m256 p_vec = _mm256_load_ps(p + z);
+                                __m256 vx_vec = _mm256_load_ps(vx_p + z);
+                                __m256 vy_vec = _mm256_load_ps(vy_p + z);
+                                __m256 vz_vec = _mm256_load_ps(vz_p + z);
+                                __m256 r_vec = _mm256_load_ps(r + z);
+                                __m256 damp_z = _mm256_load_ps(&s->dampz[z + s->sz]);
+
+                                // Velocity updates (x-direction)
+                                __m256 px0 = _mm256_load_ps(p + z + 1 * nnyz);
+                                __m256 px1 = _mm256_load_ps(p + z - 1 * nnyz);
+                                __m256 px2 = _mm256_load_ps(p + z + 2 * nnyz);
+                                __m256 px3 = _mm256_load_ps(p + z - 2 * nnyz);
+                                __m256 px4 = _mm256_load_ps(p + z + 3 * nnyz);
+                                __m256 px5 = _mm256_load_ps(p + z - 3 * nnyz);
+                                __m256 px6 = _mm256_load_ps(p + z + 4 * nnyz);
+                                __m256 px7 = _mm256_load_ps(p + z - 4 * nnyz);
+                                vx_vec = _mm256_add_ps(vx_vec, _mm256_mul_ps(_mm256_set1_ps(coefx[0]), _mm256_sub_ps(px0, p_vec)));
+                                vx_vec = _mm256_add_ps(vx_vec, _mm256_mul_ps(_mm256_set1_ps(coefx[1]), _mm256_sub_ps(px2, px1)));
+                                vx_vec = _mm256_add_ps(vx_vec, _mm256_mul_ps(_mm256_set1_ps(coefx[2]), _mm256_sub_ps(px4, px3)));
+                                vx_vec = _mm256_add_ps(vx_vec, _mm256_mul_ps(_mm256_set1_ps(coefx[3]), _mm256_sub_ps(px6, px7)));
+
+                                // Velocity updates (y-direction)
+                                __m256 py0 = _mm256_load_ps(p + z + 1 * nnz);
+                                __m256 py1 = _mm256_load_ps(p + z - 1 * nnz);
+                                __m256 py2 = _mm256_load_ps(p + z + 2 * nnz);
+                                __m256 py3 = _mm256_load_ps(p + z - 2 * nnz);
+                                __m256 py4 = _mm256_load_ps(p + z + 3 * nnz);
+                                __m256 py5 = _mm256_load_ps(p + z - 3 * nnz);
+                                __m256 py6 = _mm256_load_ps(p + z + 4 * nnz);
+                                __m256 py7 = _mm256_load_ps(p + z - 4 * nnz);
+                                vy_vec = _mm256_add_ps(vy_vec, _mm256_mul_ps(_mm256_set1_ps(coefy[0]), _mm256_sub_ps(py0, p_vec)));
+                                vy_vec = _mm256_add_ps(vy_vec, _mm256_mul_ps(_mm256_set1_ps(coefy[1]), _mm256_sub_ps(py2, py1)));
+                                vy_vec = _mm256_add_ps(vy_vec, _mm256_mul_ps(_mm256_set1_ps(coefy[2]), _mm256_sub_ps(py4, py3)));
+                                vy_vec = _mm256_add_ps(vy_vec, _mm256_mul_ps(_mm256_set1_ps(coefy[3]), _mm256_sub_ps(py6, py7)));
+
+                                // Velocity updates (z-direction)
+                                __m256 pz0 = _mm256_load_ps(p + z + 1);
+                                __m256 pz1 = _mm256_load_ps(p + z - 1);
+                                __m256 pz2 = _mm256_load_ps(p + z + 2);
+                                __m256 pz3 = _mm256_load_ps(p + z - 2);
+                                __m256 pz4 = _mm256_load_ps(p + z + 3);
+                                __m256 pz5 = _mm256_load_ps(p + z - 3);
+                                __m256 pz6 = _mm256_load_ps(p + z + 4);
+                                __m256 pz7 = _mm256_load_ps(p + z - 4);
+                                vz_vec = _mm256_add_ps(vz_vec, _mm256_mul_ps(_mm256_set1_ps(coefz[0]), _mm256_sub_ps(pz0, p_vec)));
+                                vz_vec = _mm256_add_ps(vz_vec, _mm256_mul_ps(_mm256_set1_ps(coefz[1]), _mm256_sub_ps(pz2, pz1)));
+                                vz_vec = _mm256_add_ps(vz_vec, _mm256_mul_ps(_mm256_set1_ps(coefz[2]), _mm256_sub_ps(pz4, pz3)));
+                                vz_vec = _mm256_add_ps(vz_vec, _mm256_mul_ps(_mm256_set1_ps(coefz[3]), _mm256_sub_ps(pz6, pz7)));
+
+                                // Pressure updates
+                                __m256 vx_diff0 = _mm256_sub_ps(vx_vec, _mm256_load_ps(vx_p + z - 1 * nnyz));
+                                __m256 vy_diff0 = _mm256_sub_ps(vy_vec, _mm256_load_ps(vy_p + z - 1 * nnz));
+                                __m256 vz_diff0 = _mm256_sub_ps(vz_vec, _mm256_load_ps(vz_p + z - 1));
+                                __m256 p_update = _mm256_mul_ps(_mm256_set1_ps(coefx[0]), vx_diff0);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefy[0]), vy_diff0, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefz[0]), vz_diff0, p_update);
+
+                                __m256 vx_diff1 = _mm256_sub_ps(_mm256_load_ps(vx_p + z + 1 * nnyz), _mm256_load_ps(vx_p + z - 2 * nnyz));
+                                __m256 vy_diff1 = _mm256_sub_ps(_mm256_load_ps(vy_p + z + 1 * nnz), _mm256_load_ps(vy_p + z - 2 * nnz));
+                                __m256 vz_diff1 = _mm256_sub_ps(_mm256_load_ps(vz_p + z + 1), _mm256_load_ps(vz_p + z - 2));
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefx[1]), vx_diff1, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefy[1]), vy_diff1, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefz[1]), vz_diff1, p_update);
+
+                                __m256 vx_diff2 = _mm256_sub_ps(_mm256_load_ps(vx_p + z + 2 * nnyz), _mm256_load_ps(vx_p + z - 3 * nnyz));
+                                __m256 vy_diff2 = _mm256_sub_ps(_mm256_load_ps(vy_p + z + 2 * nnz), _mm256_load_ps(vy_p + z - 3 * nnz));
+                                __m256 vz_diff2 = _mm256_sub_ps(_mm256_load_ps(vz_p + z + 2), _mm256_load_ps(vz_p + z - 3));
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefx[2]), vx_diff2, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefy[2]), vy_diff2, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefz[2]), vz_diff2, p_update);
+
+                                __m256 vx_diff3 = _mm256_sub_ps(_mm256_load_ps(vx_p + z + 3 * nnyz), _mm256_load_ps(vx_p + z - 4 * nnyz));
+                                __m256 vy_diff3 = _mm256_sub_ps(_mm256_load_ps(vy_p + z + 3 * nnz), _mm256_load_ps(vy_p + z - 4 * nnz));
+                                __m256 vz_diff3 = _mm256_sub_ps(_mm256_load_ps(vz_p + z + 3), _mm256_load_ps(vz_p + z - 4));
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefx[3]), vx_diff3, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefy[3]), vy_diff3, p_update);
+                                p_update = _mm256_fmadd_ps(_mm256_set1_ps(coefz[3]), vz_diff3, p_update);
+
+                                p_vec = _mm256_add_ps(p_vec, _mm256_mul_ps(r_vec, p_update));
+                                p_vec = _mm256_mul_ps(p_vec, _mm256_mul_ps(_mm256_set1_ps(damp_xy), damp_z));
+
+                                // Store results
+                                _mm256_store_ps(vx_p + z, vx_vec);
+                                _mm256_store_ps(vy_p + z, vy_vec);
+                                _mm256_store_ps(vz_p + z, vz_vec);
+                                _mm256_store_ps(p + z, p_vec);
+                            }
+
+                            // Handle remainder
+                            for (; z < zmax; z++) {
+                                vx_p[z] += coefx[0] * (p[z + 1 * nnyz] - p[z]) +
+                                          coefx[1] * (p[z + 2 * nnyz] - p[z - 1 * nnyz]) +
+                                          coefx[2] * (p[z + 3 * nnyz] - p[z - 2 * nnyz]) +
+                                          coefx[3] * (p[z + 4 * nnyz] - p[z - 3 * nnyz]);
+                                vy_p[z] += coefy[0] * (p[z + 1 * nnz] - p[z]) +
+                                          coefy[1] * (p[z + 2 * nnz] - p[z - 1 * nnz]) +
+                                          coefy[2] * (p[z + 3 * nnz] - p[z - 2 * nnz]) +
+                                          coefy[3] * (p[z + 4 * nnz] - p[z - 3 * nnz]);
+                                vz_p[z] += coefz[0] * (p[z + 1] - p[z]) +
+                                          coefz[1] * (p[z + 2] - p[z - 1]) +
+                                          coefz[2] * (p[z + 3] - p[z - 2]) +
+                                          coefz[3] * (p[z + 4] - p[z - 3]);
+
+                                float p_update = coefx[0] * (vx_p[z] - vx_p[z - 1 * nnyz]) +
+                                                coefy[0] * (vy_p[z] - vy_p[z - 1 * nnz]) +
+                                                coefz[0] * (vz_p[z] - vz_p[z - 1]) +
+                                                coefx[1] * (vx_p[z + 1 * nnyz] - vx_p[z - 2 * nnyz]) +
+                                                coefy[1] * (vy_p[z + 1 * nnz] - vy_p[z - 2 * nnz]) +
+                                                coefz[1] * (vz_p[z + 1] - vz_p[z - 2]) +
+                                                coefx[2] * (vx_p[z + 2 * nnyz] - vx_p[z - 3 * nnyz]) +
+                                                coefy[2] * (vy_p[z + 2 * nnz] - vy_p[z - 3 * nnz]) +
+                                                coefz[2] * (vz_p[z + 2] - vz_p[z - 3]) +
+                                                coefx[3] * (vx_p[z + 3 * nnyz] - vx_p[z - 4 * nnyz]) +
+                                                coefy[3] * (vy_p[z + 3 * nnz] - vy_p[z - 4 * nnz]) +
+                                                coefz[3] * (vz_p[z + 3] - vz_p[z - 4]);
+                                p[z] += r[z] * p_update;
+                                p[z] *= damp_xy * s->dampz[z + s->sz];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// void wave_update_fields_block_1st_deep_seek(sismap_t *s,
+//                                   float *restrict u0,
+//                                   float *restrict vx,
+//                                   float *restrict vy,
+//                                   float *restrict vz,
+//                                   float *restrict roc2,
+//                                   float *restrict phi,
+//                                   float *restrict eta) {
+//     unsigned int z, y, x;
+//     float laplacian;
+//     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+//
+//     const int nnx = s->dimx + 2 * s->sx;
+//     const int nny = s->dimy + 2 * s->sy;
+//     const int nnz = s->dimz + 2 * s->sz;
+//     const float inv_dx = 1. / (s->dx);
+//     const float inv_dy = 1. / (s->dy);
+//     const float inv_dz = 1. / (s->dz);
+//     long int nnxy = nnx * nny;
+//     long int nnyz = nny * nnz;
+//
+//     // Precompute constants
+//     const float dt_inv_dx = s->dt * inv_dx;
+//     const float dt_inv_dy = s->dt * inv_dy;
+//     const float dt_inv_dz = s->dt * inv_dz;
+//
+//     // Loop for velocity updates
+//     #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
+//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
+//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
+//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
+//
+//                 for (int x = xmin; x < xmax; x++) {
+//                     for (int y = ymin; y < ymax; y++) {
+//                         float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//
+//                         #pragma omp simd
+//                         for (int z = zmin; z < zmax; z++) {
+//                             // Velocity updates
+//                             vx0[z] += dt_inv_dx * (
+//                                 s->coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
+//                                 s->coefx[1] * (pr0[z + 2 * nnyz] - pr0[z - 1 * nnyz]) +
+//                                 s->coefx[2] * (pr0[z + 3 * nnyz] - pr0[z - 2 * nnyz]) +
+//                                 s->coefx[3] * (pr0[z + 4 * nnyz] - pr0[z - 3 * nnyz])
+//                             );
+//
+//                             vy0[z] += dt_inv_dy * (
+//                                 s->coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
+//                                 s->coefy[1] * (pr0[z + 2 * nnz] - pr0[z - 1 * nnz]) +
+//                                 s->coefy[2] * (pr0[z + 3 * nnz] - pr0[z - 2 * nnz]) +
+//                                 s->coefy[3] * (pr0[z + 4 * nnz] - pr0[z - 3 * nnz])
+//                             );
+//
+//                             vz0[z] += dt_inv_dz * (
+//                                 s->coefz[0] * (pr0[z + 1] - pr0[z]) +
+//                                 s->coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
+//                                 s->coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
+//                                 s->coefz[3] * (pr0[z + 4] - pr0[z - 3])
+//                             );
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//
+//     // Loop for pressure updates
+//     #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
+//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
+//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
+//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
+//
+//                 for (int x = xmin; x < xmax; x++) {
+//                     for (int y = ymin; y < ymax; y++) {
+//                         float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+//                         float *rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+//
+//                         #pragma omp simd
+//                         for (int z = zmin; z < zmax; z++) {
+//                             // Pressure updates
+//                             pr0[z] += rx[z] * (
+//                                 s->coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
+//                                 s->coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +
+//                                 s->coefz[0] * inv_dz * (vz0[z] - vz0[z - 1]) +
+//                                 s->coefx[1] * inv_dx * (vx0[z + 1 * nnyz] - vx0[z - 2 * nnyz]) +
+//                                 s->coefy[1] * inv_dy * (vy0[z + 1 * nnz] - vy0[z - 2 * nnz]) +
+//                                 s->coefz[1] * inv_dz * (vz0[z + 1] - vz0[z - 2]) +
+//                                 s->coefx[2] * inv_dx * (vx0[z + 2 * nnyz] - vx0[z - 3 * nnyz]) +
+//                                 s->coefy[2] * inv_dy * (vy0[z + 2 * nnz] - vy0[z - 3 * nnz]) +
+//                                 s->coefz[2] * inv_dz * (vz0[z + 2] - vz0[z - 3]) +
+//                                 s->coefx[3] * inv_dx * (vx0[z + 3 * nnyz] - vx0[z - 4 * nnyz]) +
+//                                 s->coefy[3] * inv_dy * (vy0[z + 3 * nnz] - vy0[z - 4 * nnz]) +
+//                                 s->coefz[3] * inv_dz * (vz0[z + 3] - vz0[z - 4])
+//                             );
+//
+//                             // Apply damping
+//                             pr0[z] *= s->dampx[x + s->sx] * s->dampy[y + s->sy] * s->dampz[z + s->sz];
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 void wave_update_source(sismap_t *s, shot_t *shot,float *u0,float sterm) {
