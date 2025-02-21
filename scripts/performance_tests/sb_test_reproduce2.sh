@@ -11,7 +11,7 @@
 #SBATCH --output=./logs/reproduce_sb.%J.out
 #SBATCH --error=./logs/reproduce_sb.%J.err
 #SBATCH --cpus-per-task=128
-#SBATCH --hint=nomultithread
+#SBATCH --hint=nomultithread    # Don't use hyperthreading
 ########################################
 ###******** HORODATED LOG WRITING *********###
 exec > >(while read line; do echo "$(date): $line"; done | tee test2.log) 2>&1
@@ -86,11 +86,10 @@ make install
 #--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
 #####################
-echo "Profiling with VTune..."
-vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$SLURM_JOB_ID"  # Unique per job
-sudo sysctl -w kernel.yama.ptrace_scope=0
-vtune -collect hotspots -r $vtune_result_dir \
+echo "Profiling with VTune (no ptrace)..."
+vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$SLURM_JOB_ID"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+vtune -collect hotspots --no-ptrace -r $vtune_result_dir -- \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
 vtune -report hotspots -r $vtune_result_dir > $logs_path/vtune_report_$grid_str_$SLURM_JOB_ID.txt
