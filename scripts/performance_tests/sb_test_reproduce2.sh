@@ -11,7 +11,7 @@
 #SBATCH --output=./logs/reproduce_sb.%J.out
 #SBATCH --error=./logs/reproduce_sb.%J.err
 #SBATCH --cpus-per-task=128
-#SBATCH --hint=nomultithread    # Don't use hyperthreading
+#SBATCH --hint=nomultithread
 ########################################
 ###******** HORODATED LOG WRITING *********###
 exec > >(while read line; do echo "$(date): $line"; done | tee test2.log) 2>&1
@@ -28,29 +28,28 @@ export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
 # Set compiler flags
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"  # Add -g for VTune
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
 export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
 export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
 
 ###********** MODULES *********###
-# Load required modules
 module load icc/2020.2.254
 module load cmake
-source /home/hltaief/pavel/intel/oneapi/setvars.sh  # Source VTune environment
+source /home/hltaief/pavel/intel/oneapi/setvars.sh
 
 ####################################################################
 ##### Shot information #####
-export shot=32896  # Position of the source in x,y coordinates. Check ./data/acquisition.txt
+export shot=32896
 export src_depth=256
 export fmax=8
 export dx=10
 
 ###*********** Experiment setup ************###
 nx=512; ny=512; nz=512
-export NT_TB_2nd=530  # TB 2nd order
-export NT_SB_2nd=529  # SB 2nd order
-export NT_TB_1st=537  # TB 1st order
-export NT_SB_1st=100  # SB 1st order
+export NT_TB_2nd=530
+export NT_SB_2nd=529
+export NT_TB_1st=537
+export NT_SB_1st=100
 pwd
 
 ##### Logs directory #####
@@ -72,7 +71,7 @@ sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 
 ##### COMPILATION #####
-mv -f ./CMakeCache.txt ./CMakeCache-old.txt  # Save the last CMakeCache.txt
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt
 CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
@@ -81,19 +80,20 @@ make install
 #####################
 echo "Running SB"
 echo "Running 1st order"
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
-#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-#--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
 #####################
 echo "Profiling with VTune..."
-####sudo sysctl -w kernel.yama.ptrace_scope=0  # Enable ptrace for VTune
-vtune -collect hotspots -r $logs_path/vtune_hotspots_$grid_str \
+vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$SLURM_JOB_ID"  # Unique per job
+sudo sysctl -w kernel.yama.ptrace_scope=0
+vtune -collect hotspots -r $vtune_result_dir \
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
-vtune -report hotspots -r $logs_path/vtune_hotspots_$grid_str > $logs_path/vtune_report_$grid_str.txt
+vtune -report hotspots -r $vtune_result_dir > $logs_path/vtune_report_$grid_str_$SLURM_JOB_ID.txt
 
 echo "Job completed"
 date
