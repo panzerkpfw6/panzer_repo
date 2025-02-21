@@ -86,13 +86,13 @@ make install
 #--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
 #####################
-echo "Profiling with VTune (no ptrace)..."
-vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$SLURM_JOB_ID"
+echo "Profiling with Callgrind..."
+callgrind_result_file="$logs_path/callgrind_$grid_str_$SLURM_JOB_ID.out"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-vtune -collect hotspots --no-ptrace -r $vtune_result_dir -- \
+valgrind --tool=callgrind --callgrind-out-file=$callgrind_result_file \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
-vtune -report hotspots -r $vtune_result_dir > $logs_path/vtune_report_$grid_str_$SLURM_JOB_ID.txt
+callgrind_annotate --auto=yes $callgrind_result_file > $logs_path/callgrind_report_$grid_str_$SLURM_JOB_ID.txt
 
 echo "Job completed"
 date
