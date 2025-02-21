@@ -60,7 +60,9 @@ mkdir -p "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=10; y=22;
+x=16;
+y=16;
+z=16;
 
 ##### Run tests #####
 grid_str="${nx}_${ny}_${nz}_${x}_${y}"
@@ -69,6 +71,7 @@ echo $grid_str
 ##### Change cache blocking values #####
 sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
+sed -i "s/#define BLOCKZ [0-9]\+/#define BLOCKZ $z/" "$file"
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt
