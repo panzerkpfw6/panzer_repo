@@ -1,11 +1,11 @@
 #!/bin/bash
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=48
+export OMP_NUM_THREADS=64  # Optimized for physical cores (assuming 64 on Milan-X)
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
-export OMP_NESTED='True'
+export OMP_MAX_ACTIVE_LEVELS=1  # Replaces deprecated OMP_NESTED
 export granularity=fine
-export KMP_AFFINITY=compact
+export KMP_AFFINITY=scatter  # Better core utilization
 export KMP_HW_SUBSET=1t
 
 ###********** MODULES *********###
@@ -33,15 +33,11 @@ mkdir -p "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=10; y=22
-
-##### Run tests #####
-grid_str="${nx}_${ny}_${nz}_${x}_${y}"
-echo $grid_str
-
-##### Change cache blocking values #####
+x=16; y=32  # Optimized for cache and threads
+echo "Updating cache blocking: BLOCKX=$x, BLOCKY=$y, BLOCKZ=16"
 sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
+sed -i "s/#define BLOCKZ [0-9]\+/#define BLOCKZ 16/" "$file"
 
 ##### COMPILATION #####
 export CFLAGS="-O3 -qopenmp -g"
@@ -57,9 +53,12 @@ echo "Running SB"
 echo "Running 1st order"
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
---dx $dx >> $logs_path/log-SB_1st-abc_3_$grid_str.log
+--dx $dx >> $logs_path/log-SB_1st-abc_4_$grid_str.log
 
 #####################
 echo "Profiling with VTune..."
-vtune -collect hotspots -r $logs_path/vtune_hotspots_$grid_str ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$(date +%s)"  # Unique timestamp
+/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -collect hotspots -r "$vtune_result_dir" \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
+/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -report hotspots -r "$vtune_result_dir" > "$logs_path/vtune_report_$grid_str_$(date +%s).txt"
