@@ -78,12 +78,12 @@ make VERBOSE=1
 make install
 
 #####################
-echo "Running SB"
-echo "Running 1st order"
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
---mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
---dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+#echo "Running SB"
+#echo "Running 1st order"
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
 #####################
 echo "Profiling with VTune..."
