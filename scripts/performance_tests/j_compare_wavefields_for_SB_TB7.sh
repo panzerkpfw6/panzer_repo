@@ -21,6 +21,8 @@ export dx=10
 
 ###*********** Experiment setup ************###
 nx=512; ny=512; nz=512
+grid_str="${nx}_${ny}_${nz}_${x}_${y}"
+echo $grid_str
 export NT_SB_1st=100
 cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering
 pwd
@@ -33,11 +35,12 @@ mkdir -p "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=16; y=32  # Optimized for cache and threads
-echo "Updating cache blocking: BLOCKX=$x, BLOCKY=$y, BLOCKZ=16"
+x=16; y=32; z=9999;  # Optimized for cache and threads
+echo "Updating cache blocking: BLOCKX=$x, BLOCKY=$y, BLOCKZ=$z"
 sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
-sed -i "s/#define BLOCKZ [0-9]\+/#define BLOCKZ 16/" "$file"
+sed -i "s/#define BLOCKZ [0-9]\+/#define BLOCKZ $z/" "$file"
+
 
 ##### COMPILATION #####
 export CFLAGS="-O3 -qopenmp -g"
@@ -53,7 +56,7 @@ echo "Running SB"
 echo "Running 1st order"
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
---dx $dx >> $logs_path/log-SB_1st-abc_4_$grid_str.log
+--dx $dx >> $logs_path/log-SB_1st-abc_5_$grid_str.log
 
 #####################
 echo "Profiling with VTune..."
