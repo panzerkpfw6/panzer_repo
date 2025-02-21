@@ -983,12 +983,13 @@ void wave_save_bwd_dbg(sismap_t *s, shot_t *shot, float *u1, unsigned int t) {
 
 void wave_save_img(sismap_t *s, shot_t *shot,
                    float *img_shot, float *ilm_shot) {
-
     CHK(fwrite(ilm_shot, sizeof(float), s->size_img, shot->fd_ilm) != s->size_img,
         "failed to save ilm");
 
     CHK(fwrite(img_shot, sizeof(float), s->size_img, shot->fd_img) != s->size_img,
         "failed to save img");
+    // printf("Stubbed wave_save_img called\n");
+    // return;
 }
 
 //int wave_check_fields(float *tab, size_t len) {
