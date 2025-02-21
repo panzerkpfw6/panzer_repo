@@ -35,7 +35,7 @@ mkdir -p "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=16; y=32; z=9999;  # Optimized for cache and threads
+x=10; y=22; z=9999;  # Optimized for cache and threads
 echo "Updating cache blocking: BLOCKX=$x, BLOCKY=$y, BLOCKZ=$z"
 sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
 sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
