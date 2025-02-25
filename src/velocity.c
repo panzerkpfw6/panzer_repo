@@ -43,7 +43,7 @@ mv salt3d_676x676x201_xyz.raw ./velocity_models/salt3d_676x676x201_xyz.raw \n\
 #define __DUMP_VEL
 
 void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
-    MSG("__________________________Inside function velocity_generate_model__________________________");
+//    MSG("__________________________Inside function velocity_generate_model__________________________");
     unsigned int x, y, z, i;
     float delta = layers == 1 ? (s->vmax - s->vmin) :
                   (s->vmax - s->vmin) / (layers - 1);
@@ -89,7 +89,7 @@ void velocity_generate_model(sismap_t *s, float *vtab, unsigned int layers) {
 }
 
 void velocity_query_model(sismap_t *s) {
-    MSG("__________________________Inside function velocity_query_model__________________________");
+//    MSG("__________________________Inside function velocity_query_model__________________________");
     if (strcmp("NONE", s->vel_file) == 0) {
         s->vmin = 1500.0;
         s->vmax = 4500.0;
@@ -169,7 +169,7 @@ void dump_vel(sismap_t *s, float *vtab) {
 }
 
 void velocity_load_model_2d(sismap_t *s, float *vtab) {
-    MSG("__________________________Inside function velocity_load_model_2d__________________________");
+//    MSG("__________________________Inside function velocity_load_model_2d__________________________");
     FILE *fd;
     float *vtmp, *tmp;
     if (strcmp("NONE", s->vel_file) == 0) {
@@ -280,7 +280,7 @@ void velocity_load_model_2d(sismap_t *s, float *vtab) {
 #define TMP(z, y, x) tmp[s->vel_dimx*(s->vel_dimy*(z) + y) + x]
 
 void velocity_load_model_3d(sismap_t *s, float *vtab) {
-    MSG("__________________________Inside function velocity_load_model_3d__________________________");
+//    MSG("__________________________Inside function velocity_load_model_3d__________________________");
     FILE *fd;
     if (strcmp("NONE", s->vel_file) == 0) {
         velocity_generate_model(s, vtab, 4);
@@ -408,7 +408,7 @@ void velocity_load_model_3d(sismap_t *s, float *vtab) {
 }
 
 void velocity_const_model2(sismap_t *s, float *vtab) {
-    MSG("__________________________Inside function velocity_constant_model__________________________");
+//    MSG("__________________________Inside function velocity_constant_model__________________________");
     unsigned int x, y, z, i;
     for (z=0; z < s->dimz; z++) {
         for (y = 0; y < s->dimy; y++) {
@@ -465,7 +465,6 @@ void velocity_const_model2(sismap_t *s, float *vtab) {
 }
 
 void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
-    MSG("__________________________Inside function velocity_constant_model__________________________");
     unsigned int x, y, z, i,val;
     for (z=0; z < s->dimz; z++) {
         if (z<80){
@@ -496,14 +495,14 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
 }
 
 void velocity_load_model(sismap_t *s, float *vtab) {
-    MSG("__________________________Inside function velocity_load_model__________________________");
+//    MSG("__________________________Inside function velocity_load_model__________________________");
     if (s->dim2) velocity_load_model_2d(s, vtab);
     else velocity_load_model_3d(s, vtab);
 }
 
 //
 void velocity_load_salt3d(sismap_t *s, float *vtab) {
-    MSG("__________________________Inside function velocity_load_salt3d__________________________");
+//    MSG("__________________________Inside function velocity_load_salt3d__________________________");
     /////////////////////////////////////////////////////
     const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
     FILE *fd;

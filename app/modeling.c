@@ -665,14 +665,11 @@ int main(int argc, char* argv[]) {
     /// contains the PML coefficients.
     float* pml_tab;
     /// get velocity min max from file and setup numerics.
-    MSG("... cpu=: %d\n", s->cpu);
     wave_init_numerics(s);
     /// initialize the velocity and the compute sizes.
     wave_init_dimensions(s);
-    MSG("wave_init_damp\n");
     wave_init_damp(s);
     /// initialize the geometry.
-    MSG("wave_init_acquisition\n");
     wave_init_acquisition(s);
     /// initialize the simulation buffers.
 
