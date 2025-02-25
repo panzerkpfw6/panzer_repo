@@ -657,6 +657,7 @@ int main(int argc, char* argv[]) {
     s->nb_snap = parser_get_int(p, "nbsnap");
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
+    printf("# THREADS : %d\n",omp_get_max_threads());
 
     /// contains the velocity values of the traversed mediums.
     float* vel;
