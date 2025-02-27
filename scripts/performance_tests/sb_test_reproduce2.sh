@@ -60,9 +60,9 @@ mkdir -p "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=16;
-y=16;
-z=16;
+x=10;
+y=22;
+z=9999;
 
 ##### Run tests #####
 grid_str="${nx}_${ny}_${nz}_${x}_${y}"
