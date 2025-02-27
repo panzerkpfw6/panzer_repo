@@ -49,7 +49,7 @@ nx=512; ny=512; nz=512
 export NT_TB_2nd=530
 export NT_SB_2nd=529
 export NT_TB_1st=537
-export NT_SB_1st=100
+export NT_SB_1st=536
 pwd
 
 ##### Logs directory #####
