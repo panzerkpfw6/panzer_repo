@@ -42,10 +42,16 @@ sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 sed -i "s/#define BLOCKZ [0-9]\+/#define BLOCKZ $z/" "$file"
 
 
-##### COMPILATION #####
+##### COMPILATION  (performance) #####
 export CFLAGS="-O3 -qopenmp -g"
 export CXXFLAGS="-O3 -qopenmp -g"
 export FFLAGS="-O3 -qopenmp -g"
+
+##### COMPILATION  (better debugging) #####
+#export CFLAGS="-O0 -qopenmp -g"  # Changed -O3 to -O0 for better debugging
+#export CXXFLAGS="-O0 -qopenmp -g"
+#export FFLAGS="-O0 -qopenmp -g"
+
 CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
@@ -54,14 +60,26 @@ make install
 #####################
 echo "Running SB"
 echo "Running 1st order"
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dx >> $logs_path/log-SB_1st-abc_5_$grid_str.log
+
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
---dx $dx >> $logs_path/log-SB_1st-abc_5_$grid_str.log
+--dx $dx
+
+#gdb --args ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dx
+
+
 
 #####################
-echo "Profiling with VTune..."
-vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$(date +%s)"  # Unique timestamp
-/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -collect hotspots -r "$vtune_result_dir" \
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
---mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
-/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -report hotspots -r "$vtune_result_dir" > "$logs_path/vtune_report_$grid_str_$(date +%s).txt"
+#echo "Profiling with VTune..."
+#vtune_result_dir="$logs_path/vtune_hotspots_$grid_str_$(date +%s)"  # Unique timestamp
+#/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -collect hotspots -r "$vtune_result_dir" \
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax --dx $dx
+#/media/plotnips/sdd1/soft/intel/oneapi/vtune/2024.1/bin64/vtune -report hotspots -r "$vtune_result_dir" > "$logs_path/vtune_report_$grid_str_$(date +%s).txt"
+
+#

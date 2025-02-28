@@ -87,36 +87,12 @@ t[2] /= pow(delta,1);                  \
 t[3] /= pow(delta,1);
 
 void array_openmp_init(float* u, sismap_t *s) {
-	const int nnx = s->dimx + 2 * s->sx;  // Total x-size with halo
-	const int nny = s->dimy + 2 * s->sy;  // Total y-size with halo
-	const int nnz = s->dimz + 2 * s->sz;  // Total z-size with halo
-    const int nnxy = nnx*nny;
-    float * restrict ux;
-    #pragma omp parallel for collapse(2) private(ux)
-    for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-        for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-        	int xmax = xmin + BLOCKX;
-        	if (xmax > s->dimx) xmax = s->dimx;
-            int ymax = ymin+BLOCKY;
-            if (ymax > s->dimy) ymax = s->dimy;
-            for(int x = xmin; x < xmax; x++) {
-                for(int y = ymin; y < ymax; y++) {
-                    ux = &(u[1ULL*(x+s->sx)*nnyz + (y + s->sy) * nnz + s->sz]);
-                    for (int z = 0; z < s->dimz; z++) {
-                        ux[z]=0.;
-                    }
-                }
-            }
-        }
-    }
-}
+    const int nnx = s->dimx + 2 * s->sx;  // Total x-size with halo
+    const int nny = s->dimy + 2 * s->sy;  // Total y-size with halo
+    const int nnz = s->dimz + 2 * s->sz;  // Total z-size with halo
+    const int nnyz = nny * nnz;           // Size of yz-plane for XYZ order
+    float *restrict ux;
 
-void array_openmp_inner_init(float *u, sismap_t *s) {
-	const int nnx = s->dimx + 2 * s->sx;  // Total x-size with halo
-	const int nny = s->dimy + 2 * s->sy;  // Total y-size with halo
-	const int nnz = s->dimz + 2 * s->sz;  // Total z-size with halo
-	const int nnyz = nny * nnz;           // Size of yz-plane for XYZ order
-    float * restrict ux;
 #pragma omp parallel for collapse(2) private(ux)
     for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
@@ -127,6 +103,29 @@ void array_openmp_inner_init(float *u, sismap_t *s) {
             for (int x = xmin; x < xmax; x++) {
                 for (int y = ymin; y < ymax; y++) {
                     ux = &(u[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+                    for (int z = 0; z < s->dimz; z++) {
+                        ux[z] = 0.;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void array_openmp_inner_init(float *u, sismap_t *s) {
+    const int nnyz = s->dimy * s->dimz;  // Physical yz-plane size (no halo)
+    float *restrict ux;
+
+    #pragma omp parallel for collapse(2) private(ux)
+    for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+        for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+            int xmax = xmin + BLOCKX;
+            if (xmax > s->dimx) xmax = s->dimx;
+            int ymax = ymin + BLOCKY;
+            if (ymax > s->dimy) ymax = s->dimy;
+            for (int x = xmin; x < xmax; x++) {
+                for (int y = ymin; y < ymax; y++) {
+                    ux = &(u[1ULL * x * nnyz + y * s->dimz]);
                     #pragma omp simd
                     for (int z = 0; z < s->dimz; z++) {
                         ux[z] = 0.;

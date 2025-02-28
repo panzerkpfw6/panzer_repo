@@ -455,7 +455,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
             wave_update_source(s,shot,u0,source[t]);
 //            MSG("t=%d,u(src)=%f",t,u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx]);
             t0=wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
+//            wave_update_fields_block_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
+            wave_update_fields_block_1st_orig(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
@@ -478,7 +479,9 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
         shot_release(shot);
     }
     /// free the simulation buffers.
+//    MSG("before DELETE_BUFFER(u0)");
     DELETE_BUFFER(u0);
+//    MSG("before DELETE_BUFFER(vx)");
     DELETE_BUFFER(vx);
     DELETE_BUFFER(vy);
     DELETE_BUFFER(vz);
