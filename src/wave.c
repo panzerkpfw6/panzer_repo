@@ -778,9 +778,6 @@ void wave_update_fields_block_1st_orig(sismap_t *s,
                                + s->coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
                                + s->coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
                                + s->coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4]) );
-                            // pr0[z] = s->dampx[x + s->sx] * pr0[z];
-                            // pr0[z] = s->dampy[y + s->sy] * pr0[z];
-                            // pr0[z] = s->dampz[z + s->sz] * pr0[z];
                             pr0[z] = s->dampx[x + s->sx]*s->dampy[y + s->sy]*s->dampz[z + s->sz] * pr0[z];
                         }
                     }
@@ -790,7 +787,7 @@ void wave_update_fields_block_1st_orig(sismap_t *s,
     }
 }
 
-void wave_update_fields_block_1st(sismap_t *s,
+void wave_update_fields_block_1st_(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict vx,
                                   float *restrict vy,
@@ -971,6 +968,255 @@ void wave_update_fields_block_1st(sismap_t *s,
                                 p[z] += r[z] * p_update;
                                 p[z] *= damp_xy * s->dampz[z + s->sz];
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void wave_update_fields_block_1st_v2(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict vx,
+                                  float *restrict vy,
+                                  float *restrict vz,
+                                  float *restrict roc2,
+                                  float *restrict phi,
+                                  float *restrict eta) {
+    unsigned int z, y, x;
+    float laplacian;
+    unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+
+    const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const int sx = s->sx;
+	const int sy = s->sy;
+	const int sz = s->sz;
+	const int nnx = dimx + 2 * sx;
+	const int nny = dimy + 2 * sy;
+	const int nnz = dimz + 2 * sz;
+
+    const float inv_dx=1. /(s->dx);
+    const float inv_dy=1. /(s->dy);
+    const float inv_dz=1. /(s->dz);
+
+    const long int nnyz = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+    const long int nnxy = (long int)nny * nnz;
+
+    // Precompute coefficients with dt for velocity updates
+	const float dt_inv_dx = s->dt * inv_dx;
+	const float dt_inv_dy = s->dt * inv_dy;
+	const float dt_inv_dz = s->dt * inv_dz;
+
+	// Hoist coefficient arrays outside the loop
+	const float *restrict coefx = s->coefx;
+	const float *restrict coefy = s->coefy;
+	const float *restrict coefz = s->coefz;
+	const float *restrict dampx = s->dampx;
+	const float *restrict dampy = s->dampy;
+	const float *restrict dampz = s->dampz;
+
+    float *restrict pr0;
+    float *restrict vx0;
+    float *restrict vy0;
+    float *restrict vz0;
+    float *restrict rx;
+//    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
+//    exit(0);
+    // loop on the blocks .velocity
+#pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+//                        MSG("x=%d, y=%d, z=%d\n",x,y,z);
+                        pr0 = &(u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+#pragma ivdep
+                        for (int z = zmin; z < zmax; z++) {
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_v();
+                            vx0[z] = vx0[z]+ dt_inv_dx*(coefx[0] * (pr0[z+1*nnyz] - pr0[z])   \
+                               + coefx[1] * (pr0[z+2*nnyz] - pr0[z-1*nnyz])   \
+                               + coefx[2] * (pr0[z+3*nnyz] - pr0[z-2*nnyz])   \
+                               + coefx[3] * (pr0[z+4*nnyz] - pr0[z-3*nnyz]));  \
+                            vy0[z] = vy0[z]+ dt_inv_dy * (coefy[0] * (pr0[z+1*nnz] - pr0[z])   \
+                                                   + coefy[1] * (pr0[z+2*nnz] - pr0[z-1*nnz])   \
+                                                   + coefy[2] * (pr0[z+3*nnz] - pr0[z-2*nnz])   \
+                                                   + coefy[3] * (pr0[z+4*nnz] - pr0[z-3*nnz]));  \
+                            vz0[z] = vz0[z]+ dt_inv_dz * (coefz[0] * (pr0[z+1] - pr0[z])   \
+                                                           + coefz[1] * (pr0[z+2] - pr0[z-1])   \
+                                                           + coefz[2] * (pr0[z+3] - pr0[z-2])   \
+                                                           + coefz[3] * (pr0[z+4] - pr0[z-3]));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // loop on the blocks.pressure
+#pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0,rx)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+                        pr0 = &(u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        rx = &(roc2[1ULL * x * dimy * dimz + y * dimz]);
+#pragma ivdep
+                        for (int z = zmin; z < zmax; z++) {
+                            // WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD_1st_p();
+                            pr0[z]=pr0[z]+ rx[z] * ( \
+                                 coefx[0]*inv_dx * (vx0[z]           - vx0[z-1*nnyz     ])   \
+                               + coefy[0]*inv_dy * (vy0[z]          - vy0[z-1*nnz   ])   \
+                               + coefz[0]*inv_dz * (vz0[z]          - vz0[z-1  ])   \
+                               + coefx[1]*inv_dx * (vx0[z+1*nnyz]   - vx0[z-2*nnyz])   \
+                               + coefy[1]*inv_dy * (vy0[z+1*nnz ]   - vy0[z-2*nnz ])   \
+                               + coefz[1]*inv_dz * (vz0[z+1]         -vz0[z-2])   \
+                               + coefx[2]*inv_dx * (vx0[z+2*nnyz]    -vx0[z-3*nnyz])   \
+                               + coefy[2]*inv_dy * (vy0[z+2*nnz ]    -vy0[z-3*nnz ])   \
+                               + coefz[2]*inv_dz * (vz0[z+2]   -      vz0[z-3])   \
+                               + coefx[3]*inv_dx * (vx0[z+3*nnyz]   - vx0[z-4*nnyz])   \
+                               + coefy[3]*inv_dy * (vy0[z+3*nnz ]   - vy0[z-4*nnz ])   \
+                               + coefz[3]*inv_dz * (vz0[z+ 3]   -     vz0[z-4]) );
+                            pr0[z] = dampx[x + sx]*dampy[y + sy]*dampz[z+sz] * pr0[z];
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void wave_update_fields_block_1st(sismap_t *s,
+                                     float *restrict u0,
+                                     float *restrict vx,
+                                     float *restrict vy,
+                                     float *restrict vz,
+                                     float *restrict roc2,
+                                     float *restrict phi,
+                                     float *restrict eta) {
+    unsigned int z, y, x;
+    float laplacian;
+    unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    const int sx = s->sx;
+    const int sy = s->sy;
+    const int sz = s->sz;
+    const int nnx = dimx + 2 * sx;
+    const int nny = dimy + 2 * sy;
+    const int nnz = dimz + 2 * sz;
+
+    const float inv_dx = 1. / (s->dx);
+    const float inv_dy = 1. / (s->dy);
+    const float inv_dz = 1. / (s->dz);
+
+    const long int nnyz = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+    const long int nnxy = (long int)nny * nnz;
+
+    // Precompute coefficients with dt for velocity updates
+    const float dt_inv_dx = s->dt * inv_dx;
+    const float dt_inv_dy = s->dt * inv_dy;
+    const float dt_inv_dz = s->dt * inv_dz;
+
+    // Hoist coefficient arrays outside the loop
+    const float *restrict coefx = s->coefx;
+    const float *restrict coefy = s->coefy;
+    const float *restrict coefz = s->coefz;
+    const float *restrict dampx = s->dampx;
+    const float *restrict dampy = s->dampy;
+    const float *restrict dampz = s->dampz;
+
+    float *restrict pr0;
+    float *restrict vx0;
+    float *restrict vy0;
+    float *restrict vz0;
+    float *restrict rx;
+
+    // Velocity update loop
+    #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+                        pr0 = &(u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        #pragma omp simd
+                        for (int z = zmin; z < zmax; z++) {
+                            vx0[z] = vx0[z] + dt_inv_dx * (coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
+                                                          coefx[1] * (pr0[z + 2 * nnyz] - pr0[z - 1 * nnyz]) +
+                                                          coefx[2] * (pr0[z + 3 * nnyz] - pr0[z - 2 * nnyz]) +
+                                                          coefx[3] * (pr0[z + 4 * nnyz] - pr0[z - 3 * nnyz]));
+                            vy0[z] = vy0[z] + dt_inv_dy * (coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
+                                                          coefy[1] * (pr0[z + 2 * nnz] - pr0[z - 1 * nnz]) +
+                                                          coefy[2] * (pr0[z + 3 * nnz] - pr0[z - 2 * nnz]) +
+                                                          coefy[3] * (pr0[z + 4 * nnz] - pr0[z - 3 * nnz]));
+                            vz0[z] = vz0[z] + dt_inv_dz * (coefz[0] * (pr0[z + 1] - pr0[z]) +
+                                                          coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
+                                                          coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
+                                                          coefz[3] * (pr0[z + 4] - pr0[z - 3]));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Pressure update loop
+    #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0, rx)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+                        pr0 = &(u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        rx = &(roc2[1ULL * x * dimy * dimz + y * dimz]);
+                        #pragma omp simd
+                        for (int z = zmin; z < zmax; z++) {
+                            pr0[z] = pr0[z] + rx[z] * (coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
+                                                      coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +
+                                                      coefz[0] * inv_dz * (vz0[z] - vz0[z - 1]) +
+                                                      coefx[1] * inv_dx * (vx0[z + 1 * nnyz] - vx0[z - 2 * nnyz]) +
+                                                      coefy[1] * inv_dy * (vy0[z + 1 * nnz] - vy0[z - 2 * nnz]) +
+                                                      coefz[1] * inv_dz * (vz0[z + 1] - vz0[z - 2]) +
+                                                      coefx[2] * inv_dx * (vx0[z + 2 * nnyz] - vx0[z - 3 * nnyz]) +
+                                                      coefy[2] * inv_dy * (vy0[z + 2 * nnz] - vy0[z - 3 * nnz]) +
+                                                      coefz[2] * inv_dz * (vz0[z + 2] - vz0[z - 3]) +
+                                                      coefx[3] * inv_dx * (vx0[z + 3 * nnyz] - vx0[z - 4 * nnyz]) +
+                                                      coefy[3] * inv_dy * (vy0[z + 3 * nnz] - vy0[z - 4 * nnz]) +
+                                                      coefz[3] * inv_dz * (vz0[z + 3] - vz0[z - 4]));
+                            pr0[z] *= dampx[x + sx] * dampy[y + sy] * dampz[z + sz];
                         }
                     }
                 }
