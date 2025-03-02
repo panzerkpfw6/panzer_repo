@@ -100,7 +100,7 @@ for i in $(seq 0 $len); do
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
   nz=${nz_arr[$i]}
-  echo "grid nx=${nx}, ny=${ny}, nz=${nz}, th_z=${OMP_NUM_THREADS}"
+  echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
   grid_str="${nx}_${ny}_${nz}"
   th_x=${th_x_arr[$i]}
   th_y=${th_y_arr[$i]}
