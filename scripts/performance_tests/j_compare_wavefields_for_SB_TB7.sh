@@ -14,13 +14,15 @@ module load cmake
 source /media/plotnips/sdd1/soft/intel/oneapi/setvars.sh
 
 ##### Shot information #####
-export shot=32896
+#export shot=32896
+export shot=524800
 export src_depth=256
 export fmax=8
 export dx=10
 
 ###*********** Experiment setup ************###
 nx=512; ny=512; nz=512
+nx=1024; ny=1024; nz=512
 grid_str="${nx}_${ny}_${nz}_${x}_${y}"
 echo $grid_str
 export NT_SB_1st=100

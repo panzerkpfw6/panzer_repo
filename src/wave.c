@@ -983,7 +983,8 @@ void wave_update_fields_block_1st_v2(sismap_t *s,
                                   float *restrict vz,
                                   float *restrict roc2,
                                   float *restrict phi,
-                                  float *restrict eta) {
+                                  float *restrict eta)
+{
     unsigned int z, y, x;
     float laplacian;
     unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
@@ -1110,9 +1111,9 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict vz,
 								 float *restrict roc2,
 								 float *restrict phi,
-								 float *restrict eta) {
+								 float *restrict eta)
+{
     unsigned int z, y, x;
-    float laplacian;
     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
 
     const int dimx = s->dimx;
@@ -1129,8 +1130,11 @@ void wave_update_fields_block_1st(sismap_t *s,
     const float inv_dy = 1. / (s->dy);
     const float inv_dz = 1. / (s->dz);
 
-    const long int nnyz = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
-    const long int nnxy = (long int)nny * nnz;
+    const long int nnxy = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+    const long int nnyz = (long int)nny * nnz;
+
+//    long int nnxy = nnx * nny; // XYZ order: x-slowest, z-fastest
+//    long int nnyz = nny * nnz;
 
     // Precompute coefficients with dt for velocity updates
     const float dt_inv_dx = s->dt * inv_dx;
@@ -1152,7 +1156,7 @@ void wave_update_fields_block_1st(sismap_t *s,
     float *restrict rx;
 
     // Velocity update loop
-    #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0)
+    #pragma omp parallel for collapse(3) schedule(dynamic) private(xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0)
     for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
@@ -1179,6 +1183,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                                                           coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
                                                           coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
                                                           coefz[3] * (pr0[z + 4] - pr0[z - 3]));
+//                            MSG("ux[x]=%f\n,",vz0[z]);
                         }
                     }
                 }
@@ -1187,7 +1192,7 @@ void wave_update_fields_block_1st(sismap_t *s,
     }
 
     // Pressure update loop
-    #pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0, rx)
+    #pragma omp parallel for collapse(3) schedule(dynamic) private(xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0, rx)
     for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
@@ -1216,7 +1221,8 @@ void wave_update_fields_block_1st(sismap_t *s,
                                                       coefx[3] * inv_dx * (vx0[z + 3 * nnyz] - vx0[z - 4 * nnyz]) +
                                                       coefy[3] * inv_dy * (vy0[z + 3 * nnz] - vy0[z - 4 * nnz]) +
                                                       coefz[3] * inv_dz * (vz0[z + 3] - vz0[z - 4]));
-                            pr0[z] *= dampx[x + sx] * dampy[y + sy] * dampz[z + sz];
+                            pr0[z]*=dampx[x + sx] * dampy[y + sy] * dampz[z + sz];
+//                            MSG("pr0[z]=%f\n,",pr0[z]);
                         }
                     }
                 }
