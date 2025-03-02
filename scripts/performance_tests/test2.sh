@@ -64,7 +64,7 @@ export NT_SB_2nd=200
 ##### Logs directory #####
 mkdir ./logs
 #########rm -rf ./logs/test2 #delete if existing
-export logs_file="./logs/test2_attempt1.log"
+export logs_file="./logs/test2_attempt2.log"
 
 ##### File to modify #####
 export file="./include/stencil/wave.h"
