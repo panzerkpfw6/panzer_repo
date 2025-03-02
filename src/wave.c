@@ -1104,13 +1104,13 @@ void wave_update_fields_block_1st_v2(sismap_t *s,
 }
 
 void wave_update_fields_block_1st(sismap_t *s,
-                                     float *restrict u0,
-                                     float *restrict vx,
-                                     float *restrict vy,
-                                     float *restrict vz,
-                                     float *restrict roc2,
-                                     float *restrict phi,
-                                     float *restrict eta) {
+								 float *restrict u0,
+								 float *restrict vx,
+								 float *restrict vy,
+								 float *restrict vz,
+								 float *restrict roc2,
+								 float *restrict phi,
+								 float *restrict eta) {
     unsigned int z, y, x;
     float laplacian;
     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;

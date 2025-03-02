@@ -51,10 +51,18 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % description_str='diff SB 2nd,TB 2nd. stencil';title1='SB2nd';title2='Analytical';
 % root='../../../../stencil-main'; fname=['SB_2nd_abc.raw'];
 % root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 1st
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 1st
 description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
 root='../../';  fname= ['snapshot_SB1st_505'];
 root2='../../'; fname2=['snapshot_TB1st_505'];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 2nd
+description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';
+root='../../';  fname= ['snapshot_SB2nd_514'];
+root2='../../'; fname2=['snapshot_TB2nd_514'];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm SB 1st,2nd
+description_str='diff SB 1st,SB 2nd. stencil-rtm';title1='SB1st';title2='SB2nd';
+root='../../';  fname= ['snapshot_SB1st_519'];
+root2='../../'; fname2=['snapshot_SB2nd_520'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fname=fullfile(root,fname);
 fname2=fullfile(root2,fname2);
@@ -194,9 +202,9 @@ RMS_val =rms(data_diff,"all")
 ss=1
 %%%%%%%%%%%%%%%%%%   plot trace %%%%%%%%%%%%%%%%%%%
 figure;
-plot(data(132,:,132));hold on
-plot(data2(132,:,132));
-% plot(data_diff(132,:,132));
+% plot(data(132,:,132));hold on
+% plot(data2(132,:,132));
+plot(data_diff(132,:,132));
 legend('SB','TB','diff');
 ss=1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

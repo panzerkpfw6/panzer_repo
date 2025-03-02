@@ -28,9 +28,9 @@ export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
 # Set compiler flags
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -g"
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ###********** MODULES *********###
 module load icc/2020.2.254
