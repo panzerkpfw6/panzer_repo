@@ -14,9 +14,8 @@
 #SBATCH --hint=nomultithread    # Don't use hyperthreading
 ########################################
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee test2.log) 2>&1
 echo $HOSTNAME
-#lscpu
+lscpu
 
 ###********** OPENMP PARAMETERS ***********###
 export OMP_NUM_THREADS=128

@@ -24,9 +24,8 @@
 #we need to load cmake,icpc modules from somewhere
 
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee test.log) 2>&1
 echo $hostname
-#lscpu
+lscpu
 
 ###********** OPENMP PARAMETERS ***********###
 export OMP_NUM_THREADS=128
@@ -38,11 +37,23 @@ export granularity=fine
 export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
+###********** Set compiler flags *********###
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+
 ###********** MODULES *********###
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 #module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
 module load icc/2020.2.254
 module load cmake
+source /home/hltaief/pavel/intel/oneapi/setvars.sh
+
+##### Shot information #####
+export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
+export src_depth=256;
+export fmax=8;
+export dx=10;
 
 ###********** Default SB, TB parameters *********###
 th_x_arr=(8 4 4)
@@ -50,6 +61,14 @@ th_y_arr=(2 2 2)
 th_z_arr=(1 1 1)
 tdim_arr=(7 7  7)
 num_wf_arr=(64 20 20)
+
+###### File to modify for SB cache blocking #####
+file="./include/stencil/wave.h"
+export _CB_SIZE_X=8;
+export _CB_SIZE_Y=1;
+## Use sed to replace the values of BLOCKX and BLOCKY with the new values
+sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $_CB_SIZE_X/" "$file"
+sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $_CB_SIZE_Y/" "$file"
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -59,14 +78,6 @@ export NT_TB_1st=505
 export NT_SB_1st=505
 export NT_TB_2nd=502
 export NT_SB_2nd=505
-
-###### File to modify for SB cache blocking #####
-file="./include/stencil/wave.h"
-export _CB_SIZE_X=8;
-export _CB_SIZE_Y=1;
-## Use sed to replace the values of BLOCKX and BLOCKY with the new values
-sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $_CB_SIZE_X/" "$file"
-sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $_CB_SIZE_Y/" "$file"
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -80,12 +91,6 @@ mkdir ./logs
 rm -rf ./logs/test1 #delete if existing
 mkdir ./logs/test1
 export logs_path=./logs/test1
-
-##### Shot information #####
-export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
-export src_depth=256;
-export fmax=8;
-export dx=10;
 
 ##### Run tests #####
 len=${#nx_arr[@]}
