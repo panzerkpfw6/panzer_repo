@@ -5,9 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --mem=50GB
 #SBATCH --time=24:00:00
-#SBATCH --nodelist=gbt04
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test_default_pars
 #SBATCH --output=logs/test1_.%J.out
@@ -47,8 +45,6 @@ module load icc/2020.2.254
 module load cmake
 
 ###********** Default SB, TB parameters *********###
-export _CB_SIZE_X=8;
-export _CB_SIZE_Y=1;
 th_x_arr=(8 4 4)
 th_y_arr=(2 2 2)
 th_z_arr=(1 1 1)
@@ -65,10 +61,12 @@ export NT_TB_2nd=502
 export NT_SB_2nd=505
 
 ###### File to modify for SB cache blocking #####
-#file="./include/stencil/wave.h"
+file="./include/stencil/wave.h"
+export _CB_SIZE_X=8;
+export _CB_SIZE_Y=1;
 ## Use sed to replace the values of BLOCKX and BLOCKY with the new values
-#sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $NEW_BLOCKX/" "$file"
-#sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $NEW_BLOCKY/" "$file"
+sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $_CB_SIZE_X/" "$file"
+sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $_CB_SIZE_Y/" "$file"
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -113,11 +111,11 @@ for i in $(seq 0 $len); do
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
   --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
 
-#  echo "Running 2nd order"
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
-#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
-#  --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
+  echo "Running 2nd order"
+  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
+  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
+  --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
   ###*********** TB ************##
   echo "Running TB"
   echo "Running 1st order"
@@ -128,10 +126,10 @@ for i in $(seq 0 $len); do
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
   --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/log-TB_1st-abc_$grid_str.log;
 
-#  echo "Running 2nd order"
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all \
-#  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
-#  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-#  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-#  --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> $logs_path/log-TB_2nd-abc_$grid_str.log;
+  echo "Running 2nd order"
+  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all \
+  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
+  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
+  --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> $logs_path/log-TB_2nd-abc_$grid_str.log;
 done
