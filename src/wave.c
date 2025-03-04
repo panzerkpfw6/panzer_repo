@@ -983,8 +983,7 @@ void wave_update_fields_block_1st_v2(sismap_t *s,
                                   float *restrict vz,
                                   float *restrict roc2,
                                   float *restrict phi,
-                                  float *restrict eta)
-{
+                                  float *restrict eta) {
     unsigned int z, y, x;
     float laplacian;
     unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
@@ -1111,9 +1110,9 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict vz,
 								 float *restrict roc2,
 								 float *restrict phi,
-								 float *restrict eta)
-{
+								 float *restrict eta) {
     unsigned int z, y, x;
+    float laplacian;
     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
 
     const int dimx = s->dimx;
@@ -1130,11 +1129,11 @@ void wave_update_fields_block_1st(sismap_t *s,
     const float inv_dy = 1. / (s->dy);
     const float inv_dz = 1. / (s->dz);
 
-    const long int nnxy = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
-    const long int nnyz = (long int)nny * nnz;
+//    const long int nnyz = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+//    const long int nnxy = (long int)nny * nnz;
 
-//    long int nnxy = nnx * nny; // XYZ order: x-slowest, z-fastest
-//    long int nnyz = nny * nnz;
+    long int nnyz = nnx * nny; // XYZ order: x-slowest, z-fastest
+    long int nnxy = nny * nnz;
 
     // Precompute coefficients with dt for velocity updates
     const float dt_inv_dx = s->dt * inv_dx;
@@ -1207,7 +1206,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                         vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         rx = &(roc2[1ULL * x * dimy * dimz + y * dimz]);
-                        #pragma omp simd
+//                        #pragma omp simd
                         for (int z = zmin; z < zmax; z++) {
                             pr0[z] = pr0[z] + rx[z] * (coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
                                                       coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +
