@@ -539,8 +539,6 @@ void kernel_spatial_blocking_separate_mode_1st(const int nnx, const int nny, con
     } // openmp
 }
 
-
-
 void kernel_spatial_blocking_separate_mode_io(const int nnx, const int nny, const int nnz,
                                               const int xb,  int yb_r, const int* zb,
                                               const int xe,  int ye_r, const int* ze,
@@ -3087,7 +3085,6 @@ void wave_tb_free(tb_t* ctx) {
     free(ctx->dampz); ctx->dampz = NULL;
 }
 
-
 static void intra_diamond_mwd_comp(tb_t * ctx,
                                    tb_data_t *data,
                                    tb_timer_t* timer,
@@ -3195,7 +3192,6 @@ static void intra_diamond_mwd_comp(tb_t * ctx,
     timer->t_wf_mainloop[groupid] += t3-t2;
     timer->t_wf_epilogue[groupid] += t4-t3;
 }
-
 
 static void intra_diamond_mwd_comp_1st(tb_t * ctx,
                                        tb_data_t *data,
@@ -3305,7 +3301,6 @@ static void intra_diamond_mwd_comp_1st(tb_t * ctx,
     timer->t_wf_mainloop[groupid] += t3-t2;
     timer->t_wf_epilogue[groupid] += t4-t3;
 }
-
 
 static inline void intra_diamond_get_info(tb_t *ctx,
                                           tb_timer_t * timer,
@@ -3538,7 +3533,6 @@ static inline void intra_diamond_resolve_1st(tb_t *ctx,
         }
     }
 }
-
 
 static inline void dynamic_intra_diamond_prologue(tb_t * ctx,
                                                   tb_data_t *data,
@@ -4394,7 +4388,6 @@ void wave_tb_forward_1st(tb_t* ctx,
         exit(1);
     }
 
-    MSG("4126");
     /// define source
     p->lsource_pt[0] = data->src_x;
     p->lsource_pt[1] = data->src_y;
@@ -4402,7 +4395,6 @@ void wave_tb_forward_1st(tb_t* ctx,
 //    MSG("!!!0=%d\n",data->src_x);
 //    MSG("!!0=%d, 1=%d, 2=%d\n",p->lsource_pt[0],p->lsource_pt[1],p->lsource_pt[2]);
     //////////////////
-    MSG("4143");
     p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
     p->stencil_ctx.idy = ((real_t)1.)/((real_t)data->dy);
     p->stencil_ctx.idx = ((real_t)1.)/((real_t)data->dx);
@@ -4430,7 +4422,6 @@ void wave_tb_forward_1st(tb_t* ctx,
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
     p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);
-    MSG("4177");
     int it=0;
     for (it=0;it<p->nt;it++)
     {
@@ -4440,7 +4431,6 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->dampy=ctx->dampy;
     p->dampz=ctx->dampz;
     gp = p;
-    MSG("4192");
     ////////////////////////////////////////////////////
     double elapse_time = 0.0;
     double *p_elapse_time;
@@ -4450,14 +4440,12 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->data=data;
     //////////////////////
 
-    MSG("4194");
     reset_timers(&(p->prof));
     reset_wf_timers(p);
     p->stencil_ctx.use_manual_cpu_bind=1;
     cpu_bind_init(p);
     //@KADIR gcall
     double wall0 = get_wall_time();
-    MSG("4198,before dynamic_intra_diamond_ts_combined");
 
     t1 = wtime();
     t2 = wtime();
@@ -4601,8 +4589,8 @@ void wave_tb_timer_info(tb_timer_t * timer,
     MSG("-------------------------------------------");
 
     MSG("Speed info:");
-    MSG("Total: %f Mstencils/s",nb_stencils_total/1e6/timer->total);
-    MSG("Main:  %f Mstencils/s",nb_stencils_main /1e6/timer->ts_main);
+    MSG("Total: %f Gstencils/s",nb_stencils_total/1e9/timer->total);
+    MSG("Main:  %f Gstencils/s",nb_stencils_main /1e9/timer->ts_main);
     MSG("-------------------------------------------");
 
     MSG("Wavefront info:");

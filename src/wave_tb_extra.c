@@ -952,12 +952,8 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 #if defined(_OPENMP)
     omp_set_nested(1);
 #endif
-    MSG("689");
-    MSG("gp->lsource_pt[0]=%d\n",gp->lsource_pt[0]);
-
     gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
     isrc_exc++;
-    MSG("692");
 
     // Prologue
     t1 = get_wall_time();
@@ -978,7 +974,6 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 #if defined(_OPENMP)
                 tid = omp_get_thread_num();
 #endif
-                MSG("712");
 #pragma omp for schedule(dynamic) private(i,yb,ye)
                 for(i=0; i<y_len_l; i++){
                     yb = p->stencil.r + i*diam_width;
