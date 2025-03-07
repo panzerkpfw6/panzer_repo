@@ -4464,6 +4464,244 @@ void wave_tb_forward_1st(tb_t* ctx,
     free(p);
 }
 
+/////////////////////////////////////////////////////////////
+
+void wave_tb_forward_1st_grok(tb_t* ctx,
+                         tb_data_t * data,
+                         tb_timer_t* timer,
+                         float * restrict u0,
+                         float * restrict vx,
+                         float * restrict vy,
+                         float * restrict vz,
+                         const float * restrict roc2) {
+    data->order=1;
+    double t1,t2,t3,t4;
+    if (data->src_depth !=-1) {
+        u0[1ULL*data->src_depth* ctx->nnx * ctx->nny + data->src_idx] += data->source[0];
+    }
+    ////////////////////////////////////////////////////
+    Parameters *p = (Parameters*) calloc(1, sizeof(Parameters));
+    if(p == NULL){
+        printf("Error in allocating for Girih Parameters.\n");
+        exit(0);
+    }
+    // girih print_param(p);
+    p->lstencil_shape[0] = ctx->stencilz;
+    p->lstencil_shape[1] = ctx->stencily;
+    p->lstencil_shape[2] = ctx->stencilx;
+    p->ldomain_shape[0] = ctx->nnz;
+    p->ldomain_shape[1] = ctx->nny;
+    p->ldomain_shape[2] = ctx->nnx;
+    p->stencil_ctx.bs_y = ctx->stencily;
+    p->stencil_ctx.dx = data->dx;
+    p->stencil_ctx.dy = data->dy;
+    p->stencil_ctx.dz = data->dz;
+    p->stencil_ctx.nx = ctx->stencilx;
+    p->stencil_ctx.ny = ctx->stencily;
+    p->stencil_ctx.nz = ctx->stencilz;
+
+    p->target_ts = 2;
+    p->stencil.r = 4; // Stencil Kernel semi-bandwidth
+    p->n_tests = 1;
+    p->verbose = 1;
+    p->t_dim=ctx->t_dim;
+    p->nt=ctx->time_steps*2; // Rached
+//    printf("data.dt:%f\n",data->dt);
+//    exit(0);
+    p->stencil_ctx.dt=data->dt;
+    int enable_all_sizes = 0;
+    if(enable_all_sizes == 0){
+        // round the number of time steps to the nearest valid number
+        int remain = (p->nt-2)%((p->t_dim+1)*2);
+        if(remain != 0){
+            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
+            if(nt2 != p->nt){
+                if( (p->verbose ==1) ){
+                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
+                    fflush(stdout);
+                }
+                p->nt=nt2;
+            }
+        }
+    }
+    uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
+    printf("nelm:%d\n",nelm);
+    int n_sample=0; n_sample = (uint64_t) p->nt * nelm;
+    // same as SB
+//  n_flop= p->nt * nelm * ((3 * 14) + 7+12) ;//pavel's proposed formula.
+//	n_flop   = nt_corrected * nelm * ((6 * NB_OP_O2_8) + 10 + 4);  // TODO CHECK
+    p->verify = 0;
+    p->alignment = 8;
+    p->source_point_enabled = 1;
+    p->halo_concat = 0;
+    int nthreads = 0;
+#pragma omp parallel
+    {
+        nthreads = omp_get_num_threads();
+    }
+    p->num_threads = nthreads;
+    int tgs = ctx->th_x * ctx->th_y * ctx->th_z;
+    if (nthreads % tgs){
+        printf("nthreads %d cannot be dividable by thread group size %d. The remainder is %d\n. Exiting...\n", nthreads, tgs, nthreads%tgs);
+        fflush(stdout);
+        exit(0);
+    }
+    p->stencil_ctx.num_wf = ctx->num_wf;
+
+    p->orig_thread_group_size = tgs;
+    p->stencil_ctx.thread_group_size = tgs;
+
+    // best on shaheen with tgs=4
+    p->stencil_ctx.th_x = ctx->th_x;//4;//2;
+    p->stencil_ctx.th_y = ctx->th_y;//2;
+    p->stencil_ctx.th_z = ctx->th_z;//1;
+    p->stencil_ctx.th_c = 1;
+
+    p->th_block = 1;
+    p->th_stride = 1;
+    p->t.shape[0] = 1;
+    p->t.shape[1] = 1;
+    p->t.shape[2] = 1;
+
+    // Kadir printed
+    p->stencil.type = REGULAR;
+    p->mwd_type = 1;
+    p->wavefront = -1;
+    p->is_last = 1;
+    p->in_auto_tuning = 0;
+    p->stencil_ctx.setsize = 8;
+    p->stencil_ctx.use_manual_cpu_bind = 1;
+
+    int diam_width = (p->t_dim+1) * 2 * p->stencil.r;
+    int diam_concurrency = (p->lstencil_shape[1]/p->t.shape[1]) / diam_width; //t is mpi topology so its shape is 1x1x1
+    int num_thread_groups = get_ntg(*p);
+
+    if(num_thread_groups > diam_concurrency)
+    {
+        printf("###ERROR: the number of thread groups exceed the available concurrency. Consider using %d thread groups or less. \
+                diam_concurrency:%d, num_thread_groups:%d, diam_width:%d, p->lstencil_shape[1]:%d, p->t.shape[1]:%d, p->lstencil_shape[1]/p->t.shape[1]:%d \
+                \n", ((diam_concurrency>1)?diam_concurrency-1:1), diam_concurrency, num_thread_groups, diam_width, p->lstencil_shape[1], p->t.shape[1], (p->lstencil_shape[1]/p->t.shape[1]));
+        exit(1);
+    }
+    // check for thread assignment validity
+    if(p->stencil_ctx.thread_group_size > p->num_threads){
+        printf("###WARNING: Requested thread group size is larger the total available threads \n");
+    }
+
+    // check thread group size validity
+    if(p->stencil_ctx.thread_group_size != p->stencil_ctx.th_x * p->stencil_ctx.th_y*
+                                           p->stencil_ctx.th_z * p->stencil_ctx.th_c){
+        fprintf(stderr, "###ERROR: Thread group size must be consistent with parallelizm in all dimensions\n");
+        exit(1);
+    }
+
+    // check number of threads along z-axis validity
+    if(p->stencil_ctx.th_z > p->lstencil_shape[0]){
+        fprintf(stderr, "###ERROR: no sufficient concurrency along the z-axis\n");
+        exit(1);
+    }
+    // check if thread group sizes are equal
+    if(p->num_threads%p->stencil_ctx.thread_group_size != 0){
+        fprintf(stderr, "###ERROR: threads number must be multiples of thread group size\n");
+        exit(1);
+    }
+
+    if( (p->stencil_ctx.num_wf%p->stencil_ctx.th_x != 0) && (p->stencil_ctx.thread_group_size != 1) ){
+        fprintf(stderr,"ERROR: num_wavefronts must be multiples of thread groups size\n");
+        exit(1);
+    }
+    if(p->t_dim < 1){
+        fprintf(stderr,"ERROR: Diamond method does not support unrolling in time less than 1\n");
+        exit(1);
+    }
+    if (p->lstencil_shape[1] < p->stencil.r*(p->t_dim+1)*2){
+        fprintf(stderr,"ERROR: Intra-diamond method requires the sub-domain size to fit at least one diamond: %d elements in Y [stencil_radius*2*(time_unrolls+1)]. Given %d elements\n"
+                ,p->stencil.r*(p->t_dim+1)*2, p->lstencil_shape[1]);
+        exit(1);
+    }
+    if (floor(p->lstencil_shape[1] / (p->stencil.r*(p->t_dim+1)*2.0)) != p->lstencil_shape[1] / (p->stencil.r*(p->t_dim+1)*2.0)){
+        fprintf(stderr,"ERROR: Intra-diamond method requires the sub-domain size to be multiples of the diamond width: %d elements [stencil_radius*2*(time_unrolls+1)]\n"
+                ,p->stencil.r*(p->t_dim+1)*2);
+        exit(1);
+    }
+
+    /// define source
+    p->lsource_pt[0] = data->src_x;
+    p->lsource_pt[1] = data->src_y;
+    p->lsource_pt[2] = data->src_z;
+//    MSG("!!!0=%d\n",data->src_x);
+//    MSG("!!0=%d, 1=%d, 2=%d\n",p->lsource_pt[0],p->lsource_pt[1],p->lsource_pt[2]);
+    //////////////////
+    p->stencil_ctx.idz = ((real_t)1.)/((real_t)data->dz);
+    p->stencil_ctx.idy = ((real_t)1.)/((real_t)data->dy);
+    p->stencil_ctx.idx = ((real_t)1.)/((real_t)data->dx);
+    p->stencil_ctx.idzyx_sum = p->stencil_ctx.idz + p->stencil_ctx.idy + p->stencil_ctx.idx;
+
+//	p->stencil.stat_sched_func = stat_sched_iso_ref;
+    p->stencil.mwd_func = femwd_iso_ref_1st;
+
+    // Allocate the wavefront profiling timers
+//	int num_thread_groups = get_ntg(*p);
+    p->stencil_ctx.t_wait        = (double *) malloc(sizeof(double)*p->num_threads);
+    p->stencil_ctx.t_wf_main     = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_comm = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_prologue = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_wf_epilogue = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.wf_num_resolved_diamonds = (double *) malloc(sizeof(double)*num_thread_groups);
+    p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
+    ////////////////////////////////////////////////////
+    p->U1 = u0;
+    p->rU1 = u0;
+    p->U2 = vx;
+    p->U3 = vy;
+    p->U4 = vz;
+    p->U5 = roc2;
+
+    size_t size_src_exc_coef = p->nt * sizeof(real_t);
+    p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);
+    int it=0;
+    for (it=0;it<p->nt;it++)
+    {
+        p->src_exc_coef[it] = data->source[it];
+    }
+    p->dampx=ctx->dampx;
+    p->dampy=ctx->dampy;
+    p->dampz=ctx->dampz;
+    gp = p;
+    ////////////////////////////////////////////////////
+    double elapse_time = 0.0;
+    double *p_elapse_time;
+    p_elapse_time = &elapse_time;
+
+    //////////////////////////////////////////////////////////////////////
+    p->data=data;
+    //////////////////////
+
+    reset_timers(&(p->prof));
+    reset_wf_timers(p);
+    p->stencil_ctx.use_manual_cpu_bind=1;
+    cpu_bind_init(p);
+    //@KADIR gcall
+    double wall0 = get_wall_time();
+
+    t1 = wtime();
+    t2 = wtime();
+    dynamic_intra_diamond_ts_combined(p);
+    t3 = wtime();
+    t4 = wtime();
+    //////////////////////
+    double wall1 = get_wall_time();
+    *p_elapse_time = wall1 - wall0;
+    //////////////////////
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+    //////////////////////
+    free(p->coef);
+    free(p);
+}
+
+/////////////////////////////////////////////////////////////
 
 void wave_tb_backward(tb_t* ctx,
                       tb_data_t * data,
