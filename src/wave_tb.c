@@ -4174,7 +4174,6 @@ void wave_tb_forward(tb_t* ctx,
     MSG("4161");
 
     p->U1 = u0;
-    p->rU1 = u0;
     p->U2 = v0;
     p->U3 = v0;
     p->U4 = v0;
@@ -4414,7 +4413,6 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
     ////////////////////////////////////////////////////
     p->U1 = u0;
-    p->rU1 = u0;
     p->U2 = vx;
     p->U3 = vy;
     p->U4 = vz;
@@ -4651,7 +4649,6 @@ void wave_tb_forward_1st_grok(tb_t* ctx,
     p->stencil_ctx.t_group_wait = (double *) malloc(sizeof(double)*num_thread_groups);
     ////////////////////////////////////////////////////
     p->U1 = u0;
-    p->rU1 = u0;
     p->U2 = vx;
     p->U3 = vy;
     p->U4 = vz;

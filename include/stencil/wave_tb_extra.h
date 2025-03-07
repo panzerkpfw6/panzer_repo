@@ -165,7 +165,7 @@ typedef struct{
 
     hFloat *  U1, *  U2, *  U3,*  U4, *  source;
     const float * U5;
-    hFloat *  rU1, *  rU2, *  rU3,*  rU4, *  rU5;
+//    hFloat *  rU1, *  rU2, *  rU3,*  rU4, *  rU5;
 
     // damping ABCs
     float * dampx;
