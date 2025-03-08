@@ -199,6 +199,54 @@ bwriter.c.s:
 	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/bwriter.c.s
 .PHONY : bwriter.c.s
 
+comparison1.o: comparison1.c.o
+.PHONY : comparison1.o
+
+# target to build an object file
+comparison1.c.o:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison1.c.o
+.PHONY : comparison1.c.o
+
+comparison1.i: comparison1.c.i
+.PHONY : comparison1.i
+
+# target to preprocess a source file
+comparison1.c.i:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison1.c.i
+.PHONY : comparison1.c.i
+
+comparison1.s: comparison1.c.s
+.PHONY : comparison1.s
+
+# target to generate assembly for a file
+comparison1.c.s:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison1.c.s
+.PHONY : comparison1.c.s
+
+comparison2.o: comparison2.c.o
+.PHONY : comparison2.o
+
+# target to build an object file
+comparison2.c.o:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison2.c.o
+.PHONY : comparison2.c.o
+
+comparison2.i: comparison2.c.i
+.PHONY : comparison2.i
+
+# target to preprocess a source file
+comparison2.c.i:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison2.c.i
+.PHONY : comparison2.c.i
+
+comparison2.s: comparison2.c.s
+.PHONY : comparison2.s
+
+# target to generate assembly for a file
+comparison2.c.s:
+	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/comparison2.c.s
+.PHONY : comparison2.c.s
+
 interp.o: interp.c.o
 .PHONY : interp.o
 
@@ -479,6 +527,12 @@ help:
 	@echo "... bwriter.o"
 	@echo "... bwriter.i"
 	@echo "... bwriter.s"
+	@echo "... comparison1.o"
+	@echo "... comparison1.i"
+	@echo "... comparison1.s"
+	@echo "... comparison2.o"
+	@echo "... comparison2.i"
+	@echo "... comparison2.s"
 	@echo "... interp.o"
 	@echo "... interp.i"
 	@echo "... interp.s"

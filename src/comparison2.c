@@ -1,3 +1,4 @@
+/*
 
 void femwd_iso_ref_1st(const int shape[3], const int zb, const int yb_r0,
                        const int xb, const int ze, const int ye_r0, const int xe,
@@ -287,3 +288,4 @@ void femwd_iso_ref_1st(const int shape[3], const int zb, const int yb_r0,
         }
     }
 }
+*/
