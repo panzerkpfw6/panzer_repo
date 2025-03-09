@@ -5,6 +5,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <omp.h>
@@ -2746,12 +2747,27 @@ void wave_tb_init(tb_t *ctx,
     ctx->avail_list = calloc(ctx->y_len_r,sizeof(int));
 
     // nb stencils main and total
-    ctx->nb_stencils_main = 1LL * ctx->t_len * (ctx->t_dim + 1)
-                            * ctx->stencilx * ctx->stencily * ctx->stencilz;
-
-    ctx->nb_stencils_total_fwd = 1LL * ctx->time_steps * ctx->stencilx * ctx->stencily * ctx->stencilz;
-
+    ctx->nb_stencils_main = ctx->t_len * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+    ctx->nb_stencils_total_fwd =  ctx->time_steps * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
     ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
+
+//    MSG("ctx->nb_stencils_main=%d",ctx->nb_stencils_main);
+//    MSG("ctx->nb_stencils_total_fwd=%d",ctx->nb_stencils_total_fwd);
+//    MSG("ctx->nb_stencils_total_fwd=%" PRIu64 "\n", ctx.nb_stencils_total_fwd);
+//    MSG("ctx->nb_stencils_total_bwd=%d",ctx->nb_stencils_total_bwd);
+
+//    printf("ctx->nb_stencils_main=%d\n",ctx->nb_stencils_main);
+//    printf("ctx->nb_stencils_total_fwd=%d\n",ctx->nb_stencils_total_fwd);
+//    printf("ctx->nb_stencils_total_bwd=%d\n",ctx->nb_stencils_total_bwd);
+
+//    MSG("ctx->nb_stencils_main=%llu\n", (unsigned long long)ctx->nb_stencils_main);
+//    MSG("ctx->nb_stencils_total_fwd=%llu\n", (unsigned long long)ctx->nb_stencils_total_fwd);
+//    MSG("ctx->nb_stencils_total_bwd=%llu\n", (unsigned long long)ctx->nb_stencils_total_bwd);
+
+    MSG("ctx->nb_stencils_main=%llu\n", ctx->nb_stencils_main);
+    MSG("ctx->nb_stencils_total_fwd=%llu\n",ctx->nb_stencils_total_fwd);
+    MSG("ctx->nb_stencils_total_bwd=%llu\n",ctx->nb_stencils_total_bwd);
+//    exit(1);
 
     // damping
     ctx->dampx = calloc(ctx->nnx, sizeof(float));
@@ -4522,9 +4538,25 @@ void wave_tb_forward_1st_grok(tb_t* ctx,
             }
         }
     }
+//    MSG("p->lstencil_shape[0]=%llu\n", p->lstencil_shape[0]);
+//    MSG("p->lstencil_shape[1]=%llu\n", p->lstencil_shape[1]);
+//    MSG("p->lstencil_shape[2]=%llu\n", p->lstencil_shape[2]);
+//    MSG("p->nt=%llu\n", p->nt);
     uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
-    printf("nelm:%d\n",nelm);
-    int n_sample=0; n_sample = (uint64_t) p->nt * nelm;
+//    printf("nelm:%llu\n",nelm);
+
+    uint64_t n_sample=0; n_sample=(uint64_t) p->nt * nelm;
+//    printf("n_sample:%llu\n",n_sample);
+
+    ctx->nb_stencils_main = ctx->t_len * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+//    ctx->nb_stencils_total_fwd =  p->nt * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+    ctx->nb_stencils_total_fwd =  n_sample; //1LL *
+    ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
+
+    MSG("ctx->nb_stencils_main=%llu", ctx->nb_stencils_main);
+	MSG("ctx->nb_stencils_total_fwd=%llu",ctx->nb_stencils_total_fwd);
+	MSG("ctx->nb_stencils_total_bwd=%llu",ctx->nb_stencils_total_bwd);
+
     // same as SB
 //  n_flop= p->nt * nelm * ((3 * 14) + 7+12) ;//pavel's proposed formula.
 //	n_flop   = nt_corrected * nelm * ((6 * NB_OP_O2_8) + 10 + 4);  // TODO CHECK

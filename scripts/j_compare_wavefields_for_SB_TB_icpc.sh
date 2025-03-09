@@ -36,6 +36,7 @@ nx=512;ny=512;nz=512;
 export TIME_SB_1st=537; #@pavel in SB the nt should one time less than in correponding TB.
 export TIME_SB_1st=100;
 export TIME_TB_1st=100;
+export TIME_TB_1st=537;
 
 
 dt=0.001;

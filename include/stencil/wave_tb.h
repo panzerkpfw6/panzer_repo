@@ -86,9 +86,9 @@ struct tb_s {
   int fwd_steps;
 
   // estimation
-  int64_t nb_stencils_main;
-  int64_t nb_stencils_total_fwd;
-  int64_t nb_stencils_total_bwd;
+  unsigned long long nb_stencils_main;
+  unsigned long long nb_stencils_total_fwd;
+  unsigned long long nb_stencils_total_bwd;
 
   // damping PML
   float * dampx;
