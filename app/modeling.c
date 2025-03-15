@@ -140,8 +140,8 @@ void run_modeling_SB(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
         MSG("Total:        %f (s)",t2-t1);
         MSG("PROP:         %f (s)",t_prop);
         MSG("SISMOS:       %f (s)",t_sismos);
-        MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-        MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop) );
+        MSG("Speed:        %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+        MSG("PropSpeed:    %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t_prop) );
         MSG("pot updates:    %f ",1.0*s->time_steps*s->size_eff/1e6 );
         /// save the seismic traces for the shot.
         wave_save_sismos(s, shot, sismos);
@@ -266,8 +266,8 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
     MSG("Total:        %f (s)",t2-t1);
     MSG("PROP:         %f (s)",t_prop);
     MSG("SISMOS:       %f (s)",t_sismos);
-    MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-    MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop) );
+    MSG("Speed:        %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+    MSG("PropSpeed:    %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t_prop) );
 /// save the seismic traces for the shot.
     wave_save_sismos(s, shot, sismos);
     /// release/close the resources related to the current shot.
@@ -471,8 +471,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
         MSG("PROP:         %f (s)",t_prop);
         MSG("SISMOS:       %f (s)",t_sismos);
 ///     we need factor 2, because this is 1st order code
-        MSG("Speed:        %f Mstencils/s",2.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-        MSG("PropSpeed:    %f Mstencils/s",2.0*s->time_steps*s->size_eff/1e6/(t_prop) );
+        MSG("Speed:        %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+        MSG("PropSpeed:    %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t_prop) );
         /// save the seismic traces for the shot.
         // wave_save_sismos(s,shot,sismos);
         /// release/close the resources related to the current shot.

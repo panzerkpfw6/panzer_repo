@@ -71,7 +71,7 @@ typedef struct __sismap_t {
     unsigned int next_snap;
     int time_steps;
     size_t size;
-    size_t size_eff;
+	size_t size_eff;
     size_t size_img;
     ///
     /// read-only arrays that won't changed during the simulation:

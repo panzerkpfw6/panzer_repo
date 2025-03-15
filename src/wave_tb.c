@@ -4856,8 +4856,8 @@ void wave_tb_timer_info(tb_timer_t * timer,
     MSG("-------------------------------------------");
 
     MSG("Speed info:");
-    MSG("Total: %f Gstencils/s",nb_stencils_total/1e9/timer->total);
-    MSG("Main:  %f Gstencils/s",nb_stencils_main /1e9/timer->ts_main);
+    MSG("Total: %f GStencils/s",nb_stencils_total/1e9/timer->total);
+    MSG("Main:  %f GStencils/s",nb_stencils_main /1e9/timer->ts_main);
     MSG("nb_stencils_total: %llu",nb_stencils_total);
     MSG("nb_stencils_main:  %llu",nb_stencils_main);
     MSG("-------------------------------------------");
