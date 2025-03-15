@@ -633,7 +633,6 @@ void wave_update_fields_block_bis_orig(sismap_t *s,
     }
 }
 
-
 void wave_update_fields_block_bis(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict u1,
@@ -710,7 +709,7 @@ void wave_update_fields_block_1st_orig(sismap_t *s,
 //    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
 //    exit(0);
     // loop on the blocks .velocity
-#pragma omp parallel for collapse(3) schedule(dynamic) private(laplacian,xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
+#pragma omp parallel for collapse(3) schedule(dynamic) private(xmin,xmax,zmin,zmax,ymin,ymax,pr0,vx0,vy0,vz0)
     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
@@ -1112,7 +1111,6 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict phi,
 								 float *restrict eta) {
     unsigned int z, y, x;
-    float laplacian;
     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
 
     const int dimx = s->dimx;
@@ -1129,18 +1127,21 @@ void wave_update_fields_block_1st(sismap_t *s,
     const float inv_dy = 1. / (s->dy);
     const float inv_dz = 1. / (s->dz);
 
-//    const long int nnyz = (long int)nnx * nny; // XYZ order: x-slowest, z-fastest
-//    const long int nnxy = (long int)nny * nnz;
-
-    long int nnyz = nnx * nny; // XYZ order: x-slowest, z-fastest
-    long int nnxy = nny * nnz;
+    const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+    const long int nnyz=(long int)nny * nnz;
+//    const unsigned long long  nnxy=nnx*nny; // XYZ order: x-slowest, z-fastest
+//    const unsigned long long  nnyz=nny*nnz;
 
     // Precompute coefficients with dt for velocity updates
     const float dt_inv_dx = s->dt * inv_dx;
     const float dt_inv_dy = s->dt * inv_dy;
     const float dt_inv_dz = s->dt * inv_dz;
 
-    // Hoist coefficient arrays outside the loop
+//    MSG("dt_inv_dx=%f\n",dt_inv_dx);
+//    MSG("nnyz=%llu\n",nnyz);
+
+
+    // Host coefficient arrays outside the loop
     const float *restrict coefx = s->coefx;
     const float *restrict coefy = s->coefy;
     const float *restrict coefz = s->coefz;
@@ -1163,6 +1164,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                 const Myint ymax = fmin(dimy, ymin + BLOCKY);
                 const Myint zmax = fmin(dimz, zmin + BLOCKZ);
                 for (int x = xmin; x < xmax; x++) {
+//                	MSG("vz0[z]=%f\n",vz0[z]);
                     for (int y = ymin; y < ymax; y++) {
                         pr0 = &(u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
@@ -1182,7 +1184,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                                                           coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
                                                           coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
                                                           coefz[3] * (pr0[z + 4] - pr0[z - 3]));
-//                            MSG("ux[x]=%f\n,",vz0[z]);
+//                            MSG("vz0[z]=%f\n,",vz0[z]);
                         }
                     }
                 }
@@ -1206,7 +1208,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                         vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         rx = &(roc2[1ULL * x * dimy * dimz + y * dimz]);
-//                        #pragma omp simd
+                        #pragma omp simd
                         for (int z = zmin; z < zmax; z++) {
                             pr0[z] = pr0[z] + rx[z] * (coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
                                                       coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +

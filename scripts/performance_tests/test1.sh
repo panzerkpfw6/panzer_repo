@@ -59,7 +59,7 @@ export dx=10;
 th_x_arr=(8 4 4)
 th_y_arr=(2 2 2)
 th_z_arr=(1 1 1)
-tdim_arr=(7 7  7)
+tdim_arr=(7 7 7)
 num_wf_arr=(64 20 20)
 
 ###### File to modify for SB cache blocking #####
@@ -124,7 +124,7 @@ for i in $(seq 0 $len); do
   ###*********** TB ************##
   echo "Running TB"
   echo "Running 1st order"
-  echo "num_th=${OMP_NUM_THREADS}, th_x=${th_x}, th_y=${th_y}, th_z=${th_z}, num_wf=${num_wf}, t_dim=${t_dim}"
+  echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all \
   ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
