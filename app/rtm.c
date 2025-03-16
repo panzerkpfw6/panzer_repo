@@ -145,9 +145,8 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
     NULIFY_BUFFER(u0, s->size);
     NULIFY_BUFFER(u1, s->size);
     NULIFY_BUFFER(pml_tmp, s->size_eff);
+
     /// forward modeling.
-
-
     t1 = wtime();
     t_snap   = 0.0;
     t_prop   = 0.0;
@@ -199,8 +198,8 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
     MSG("SNAP:         %f (s)",t_snap);
     MSG("PROP:         %f (s)",t_prop);
     MSG("SISMOS:       %f (s)",t_sismos);
-    MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-    MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop));
+    MSG("Speed:        %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+    MSG("PropSpeed:    %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t_prop));
 
 
     /// reset buffers for the shot (backward).
@@ -263,8 +262,8 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
     MSG("PROP:         %f (s)",t_prop);
     MSG("SISMOS:       %f (s)",t_sismos);
     MSG("IMAGE COND:   %f (s)",t_image);
-    MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-    MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop));
+    MSG("Speed:        %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+    MSG("PropSpeed:    %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t_prop));
 
     /// save the img/ilm of the shot:
     wave_save_img(s, shot, img_shot, ilm_shot);
@@ -422,8 +421,8 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
         MSG("SNAP:         %f (s)",t_snap);
         MSG("PROP:         %f (s)",t_prop);
         MSG("SISMOS:       %f (s)",t_sismos);
-        MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-        MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop));
+        MSG("Speed:        %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+        MSG("PropSpeed:    %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t_prop));
 
 
         /// reset buffers for the shot (backward).
@@ -484,8 +483,8 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
         MSG("PROP:         %f (s)",t_prop);
         MSG("SISMOS:       %f (s)",t_sismos);
         MSG("IMAGE COND:   %f (s)",t_image);
-        MSG("Speed:        %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t2-t1));
-        MSG("PropSpeed:    %f Mstencils/s",1.0*s->time_steps*s->size_eff/1e6/(t_prop));
+        MSG("Speed:        %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t2-t1));
+        MSG("PropSpeed:    %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t_prop));
 
         /// save the img/ilm of the shot:
         wave_save_img(s, shot, img_shot, ilm_shot);
@@ -529,7 +528,7 @@ void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     /// PML tmp tab.
     float *pml_tmp;
     /// wave-field arrays.
-    printf("allcoation\n");
+    printf("allocation\n");
     CREATE_BUFFER(u0, s->size);
     CREATE_BUFFER(u1, s->size);
     CREATE_BUFFER(img_shot, s->size_img);
@@ -923,8 +922,9 @@ int main(int argc, char *argv[]) {
     source[s->time_steps] = 0.0f; // an extra time step for girih.
     /// print info if needed.
     if (s->verbose) wave_print(s);
-    /// run RTM on CPU or GPU.
 
+    MSG("Before running RTM");
+    /// run RTM on CPU or GPU.
     if (s->cpu) {
         if (s->order==1) {
             MSG("run RTM 1st order TB");

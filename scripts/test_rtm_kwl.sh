@@ -33,12 +33,12 @@ module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 module load cmake
 
 #####
-#rm ./bin/rtm
+rm ./bin/rtm
 #mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-#CC=icc CXX=icpc cmake .
-#make clean
-#make VERBOSE=1
-#make install
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
