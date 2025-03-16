@@ -1,5 +1,4 @@
-/// Contains the main program that runs the Reverse Time Migration (RTM) using
-///
+/// Contains the main program that runs the Reverse Time Migration (RTM) using ///
 #include <stdio.h>
 #include <math.h>
 #include <string.h>

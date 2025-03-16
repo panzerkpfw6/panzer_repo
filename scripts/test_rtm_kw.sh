@@ -5,7 +5,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --mem=50GB
 #SBATCH --time=24:00:00
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test_rtm
@@ -30,7 +29,7 @@ export KMP_AFFINITY=compact
 ### export KMP_HW_SUBSET=1t
 ###********** MODULES & COMPILING *********###
 ###module load icc/2020.2.254
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 module load cmake
 
 ####**********  kanary ***********###

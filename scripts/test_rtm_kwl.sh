@@ -29,7 +29,7 @@ export KMP_AFFINITY=compact
 
 ###********** MODULES & COMPILING *********###
 ###module load icc/2020.2.254
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 module load cmake
 
 #####
@@ -54,8 +54,8 @@ first=16449;last=16449;
 echo !!SB!!
 #srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
 
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --dshot 1 --first $first --last $last -c --fwd_steps 3 --order 2 --fmax 8 --src_depth 5 --drcv 1
-./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --dshot 1 --first $first --last $last -c --fwd_steps 3 --order 2 --fmax 8 --src_depth 5 --drcv 1 --dir "./data"
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --dshot 1 --first $first --last $last --fwd_steps 3 --order 2 --fmax 8 --src_depth 5 --drcv 1
+#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --dshot 1 --first $first --last $last -c --fwd_steps 3 --order 2 --fmax 8 --src_depth 5 --drcv 1 --dir "./data"
 #####*********** TB tests ************########***********
 echo !!TB default!!
 #numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
