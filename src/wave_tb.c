@@ -4057,9 +4057,23 @@ void wave_tb_forward(tb_t* ctx,
             }
         }
     }
+    ///////////////////////////////////////////////
     uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
-    printf("nelm:%d\n",nelm);
-    int n_sample=0; n_sample = (uint64_t) p->nt * nelm;
+    //    printf("nelm:%llu\n",nelm);
+	uint64_t n_sample=0; n_sample=(uint64_t) p->nt * nelm;
+//    printf("n_sample:%llu\n",n_sample);
+	ctx->nb_stencils_main = ctx->t_len * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+//    ctx->nb_stencils_total_fwd =  p->nt * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+	ctx->nb_stencils_total_fwd =  n_sample; //1LL *
+	ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
+	MSG("ctx->nb_stencils_main=%llu", ctx->nb_stencils_main);
+	MSG("ctx->nb_stencils_total_fwd=%llu",ctx->nb_stencils_total_fwd);
+	MSG("ctx->nb_stencils_total_bwd=%llu",ctx->nb_stencils_total_bwd);
+    ////////////////////////////////////////////
+//    uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
+//    printf("nelm:%d\n",nelm);
+//    uint64_t n_sample=0; n_sample = (uint64_t) p->nt * nelm;
+    ////////////////////////////////////////////
     // same as SB
 //  n_flop= p->nt * nelm * ((3 * 14) + 7+12) ;//pavel's proposed formula.
 //	n_flop   = nt_corrected * nelm * ((6 * NB_OP_O2_8) + 10 + 4);  // TODO CHECK
