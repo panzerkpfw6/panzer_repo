@@ -3895,7 +3895,6 @@ void dynamic_intra_diamond_mainloop(tb_t* ctx,
     }
 }
 
-
 void dynamic_intra_diamond_mainloop_1st(tb_t* ctx,
                                         tb_data_t *data,
                                         tb_timer_t* timer,
@@ -3969,7 +3968,6 @@ void dynamic_intra_diamond_mainloop_1st(tb_t* ctx,
 
     }
 }
-
 
 void wave_tb_forward_orig(tb_t* ctx,
                           tb_data_t * data,
@@ -4791,7 +4789,6 @@ void wave_tb_backward_1st(tb_t* ctx,
     timer->ts_others += (t2-t1) + (t4-t3);
     timer->total     += timer->ts_main + timer->ts_others;
 }
-
 
 void wave_tb_timer_init(tb_timer_t * timer,
                         const int thread_group_size,

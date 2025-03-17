@@ -50,15 +50,14 @@
 #define FWD(z,y,x)  (fwd[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define ROC2(z,y,x) (roc2[x + (s->dimx * (s->dimy*(z) + y))])
-#define  PHI(z,y,x) ( phi[x + (s->dimx * (s->dimy*(z) + y))])
-#define  ETA(z,y,x) ( eta[(2+s->dimx)*((2+s->dimy)*(z+1) + (y+1)) + (x+1)])
+#define PHI(z,y,x) (phi[x + (s->dimx * (s->dimy*(z) + y))])
+#define ETA(z,y,x) (eta[(2+s->dimx)*((2+s->dimy)*(z+1) + (y+1)) + (x+1)])
 
 #define IMG_S(z,y,x)  (img_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
 #define ILM_S(z,y,x)  (ilm_shot[x + (s->img_dimx * (s->img_dimy*(z) + y))])
-#define   IMG(z,y,x)  (img[x + (s->img_dimx * (s->img_dimy*(z) + y))])
+#define IMG(z,y,x)  (img[x + (s->img_dimx * (s->img_dimy*(z) + y))])
 
 #define NDAMP 20
-
 
 #define SETUP_STENCIL_COEFFS(t) \
 t[0] = -205. /  72.;            \
@@ -636,43 +635,63 @@ void wave_update_fields_block_bis_orig(sismap_t *s,
 void wave_update_fields_block_bis(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict u1,
-                                  float *restrict roc2,
-                                  float *restrict phi,
-                                  float *restrict eta) {
-    unsigned int z, y, x;
-    float laplacian;
-    float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
-    unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
-
+                                  float *restrict roc2) {
+    // Precompute constant values
+    const float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
     const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnz = s->dimz + 2 * s->sz;
-    const int nnxy = nnx * nny;
     const int nnyz = nny * nnz;
 
-    float *restrict ux;
-    float *restrict vx;
-    float *restrict rx;
-#pragma omp parallel for collapse(3) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, ux, vx, rx)
-    for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-        for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-            for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+    // Declare coefficient arrays as const
+    const float *restrict coefx = s->coefx;
+    const float *restrict coefy = s->coefy;
+    const float *restrict coefz = s->coefz;
+
+#pragma omp parallel for collapse(3)
+    for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+        for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+            for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
 
                 for (int x = xmin; x < xmax; x++) {
+                    const long long base_x = (x + s->sx) * nnyz + s->sz;
+                    float *restrict ux_base = u1 + base_x;
+                    float *restrict vx_base = u0 + base_x;
+                    float *restrict rx_base = roc2 + x * s->dimy * s->dimz;
+                    const float damp_x = s->dampx[x + s->sx];
+
                     for (int y = ymin; y < ymax; y++) {
-//                        s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
-                        ux = &(u1[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        vx = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
-#pragma ivdep
-                        for (int z = zmin; z < zmax; z++) {
-                            WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD();
-                            ux[z] = s->dampx[x + s->sx] * ux[z] + (1 - s->dampx[x + s->sx]) * vx[z];
-                            ux[z] = s->dampy[y + s->sy] * ux[z] + (1 - s->dampy[y + s->sy]) * vx[z];
-                            ux[z] = s->dampz[z + s->sz] * ux[z] + (1 - s->dampz[z + s->sz]) * vx[z];
+                        const long long offset_y = (y + s->sy) * nnz;
+                        float *restrict ux = ux_base + offset_y;
+                        float *restrict vx = vx_base + offset_y;
+                        float *restrict rx = rx_base + y * s->dimz;
+                        const float damp_xy = damp_x * s->dampy[y + s->sy];
+
+#pragma omp simd
+                        for (int z = zmin; z < zmax; z += 4) {
+                            for (int i = 0; i < 4 && z + i < zmax; i++) {
+                                const int zi = z + i;
+                                ux[zi] = 2.0f * vx[zi] - ux[zi] + rx[zi] * (
+                                    coef0 * vx[zi] +
+                                    coefx[1] * (vx[zi + nnyz] + vx[zi - nnyz]) +
+                                    coefy[1] * (vx[zi + nnz] + vx[zi - nnz]) +
+                                    coefz[1] * (vx[zi + 1] + vx[zi - 1]) +
+                                    coefx[2] * (vx[zi + 2 * nnyz] + vx[zi - 2 * nnyz]) +
+                                    coefy[2] * (vx[zi + 2 * nnz] + vx[zi - 2 * nnz]) +
+                                    coefz[2] * (vx[zi + 2] + vx[zi - 2]) +
+                                    coefx[3] * (vx[zi + 3 * nnyz] + vx[zi - 3 * nnyz]) +
+                                    coefy[3] * (vx[zi + 3 * nnz] + vx[zi - 3 * nnz]) +
+                                    coefz[3] * (vx[zi + 3] + vx[zi - 3]) +
+                                    coefx[4] * (vx[zi + 4 * nnyz] + vx[zi - 4 * nnyz]) +
+                                    coefy[4] * (vx[zi + 4 * nnz] + vx[zi - 4 * nnz]) +
+                                    coefz[4] * (vx[zi + 4] + vx[zi - 4])
+                                );
+                                const float damp_xyz = damp_xy * s->dampz[zi + s->sz];
+                                ux[zi] = damp_xyz * ux[zi] + (1.0f - damp_xyz) * vx[zi];
+                            }
                         }
                     }
                 }
@@ -1232,124 +1251,6 @@ void wave_update_fields_block_1st(sismap_t *s,
     }
 }
 
-// void wave_update_fields_block_1st_deep_seek(sismap_t *s,
-//                                   float *restrict u0,
-//                                   float *restrict vx,
-//                                   float *restrict vy,
-//                                   float *restrict vz,
-//                                   float *restrict roc2,
-//                                   float *restrict phi,
-//                                   float *restrict eta) {
-//     unsigned int z, y, x;
-//     float laplacian;
-//     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
-//
-//     const int nnx = s->dimx + 2 * s->sx;
-//     const int nny = s->dimy + 2 * s->sy;
-//     const int nnz = s->dimz + 2 * s->sz;
-//     const float inv_dx = 1. / (s->dx);
-//     const float inv_dy = 1. / (s->dy);
-//     const float inv_dz = 1. / (s->dz);
-//     long int nnxy = nnx * nny;
-//     long int nnyz = nny * nnz;
-//
-//     // Precompute constants
-//     const float dt_inv_dx = s->dt * inv_dx;
-//     const float dt_inv_dy = s->dt * inv_dy;
-//     const float dt_inv_dz = s->dt * inv_dz;
-//
-//     // Loop for velocity updates
-//     #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
-//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
-//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
-//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
-//
-//                 for (int x = xmin; x < xmax; x++) {
-//                     for (int y = ymin; y < ymax; y++) {
-//                         float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//
-//                         #pragma omp simd
-//                         for (int z = zmin; z < zmax; z++) {
-//                             // Velocity updates
-//                             vx0[z] += dt_inv_dx * (
-//                                 s->coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
-//                                 s->coefx[1] * (pr0[z + 2 * nnyz] - pr0[z - 1 * nnyz]) +
-//                                 s->coefx[2] * (pr0[z + 3 * nnyz] - pr0[z - 2 * nnyz]) +
-//                                 s->coefx[3] * (pr0[z + 4 * nnyz] - pr0[z - 3 * nnyz])
-//                             );
-//
-//                             vy0[z] += dt_inv_dy * (
-//                                 s->coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
-//                                 s->coefy[1] * (pr0[z + 2 * nnz] - pr0[z - 1 * nnz]) +
-//                                 s->coefy[2] * (pr0[z + 3 * nnz] - pr0[z - 2 * nnz]) +
-//                                 s->coefy[3] * (pr0[z + 4 * nnz] - pr0[z - 3 * nnz])
-//                             );
-//
-//                             vz0[z] += dt_inv_dz * (
-//                                 s->coefz[0] * (pr0[z + 1] - pr0[z]) +
-//                                 s->coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
-//                                 s->coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
-//                                 s->coefz[3] * (pr0[z + 4] - pr0[z - 3])
-//                             );
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//
-//     // Loop for pressure updates
-//     #pragma omp parallel for collapse(3) schedule(static) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax)
-//     for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-//         for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-//             for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-//                 const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
-//                 const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
-//                 const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
-//
-//                 for (int x = xmin; x < xmax; x++) {
-//                     for (int y = ymin; y < ymax; y++) {
-//                         float *pr0 = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vx0 = &(vx[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vy0 = &(vy[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *vz0 = &(vz[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-//                         float *rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
-//
-//                         #pragma omp simd
-//                         for (int z = zmin; z < zmax; z++) {
-//                             // Pressure updates
-//                             pr0[z] += rx[z] * (
-//                                 s->coefx[0] * inv_dx * (vx0[z] - vx0[z - 1 * nnyz]) +
-//                                 s->coefy[0] * inv_dy * (vy0[z] - vy0[z - 1 * nnz]) +
-//                                 s->coefz[0] * inv_dz * (vz0[z] - vz0[z - 1]) +
-//                                 s->coefx[1] * inv_dx * (vx0[z + 1 * nnyz] - vx0[z - 2 * nnyz]) +
-//                                 s->coefy[1] * inv_dy * (vy0[z + 1 * nnz] - vy0[z - 2 * nnz]) +
-//                                 s->coefz[1] * inv_dz * (vz0[z + 1] - vz0[z - 2]) +
-//                                 s->coefx[2] * inv_dx * (vx0[z + 2 * nnyz] - vx0[z - 3 * nnyz]) +
-//                                 s->coefy[2] * inv_dy * (vy0[z + 2 * nnz] - vy0[z - 3 * nnz]) +
-//                                 s->coefz[2] * inv_dz * (vz0[z + 2] - vz0[z - 3]) +
-//                                 s->coefx[3] * inv_dx * (vx0[z + 3 * nnyz] - vx0[z - 4 * nnyz]) +
-//                                 s->coefy[3] * inv_dy * (vy0[z + 3 * nnz] - vy0[z - 4 * nnz]) +
-//                                 s->coefz[3] * inv_dz * (vz0[z + 3] - vz0[z - 4])
-//                             );
-//
-//                             // Apply damping
-//                             pr0[z] *= s->dampx[x + s->sx] * s->dampy[y + s->sy] * s->dampz[z + s->sz];
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-
 void wave_update_source(sismap_t *s, shot_t *shot,float *u0,float sterm) {
 //    MSG("shot->srcidx=%d\n",shot->srcidx);
     const int nnz = s->dimz + 2 * s->sz;
@@ -1457,11 +1358,11 @@ void wave_image_condition_block(sismap_t *s, float *u1,
                         imgx = &(img_shot[1ULL * z * s->dimx * s->dimy + y * s->dimx]);
                         ilmx = &(ilm_shot[1ULL * z * s->dimx * s->dimy + y * s->dimx]);
 //            #pragma simd
-                        for (int x = 0; x < s->img_dimx; x++) {
+                        for (int x = 0; x < s->img_dimx;x++) {
 //                            if (ux[x]>0.0001)
 //                                {MSG("ux[x]=%f,wx[x]=%f,I=%f",ux[x],wx[x],ux[x]*wx[x]);}
-                            imgx[x] += ux[x] * wx[x];
-                            ilmx[x] += wx[x] * wx[x];
+                            imgx[x] += ux[x]*wx[x];
+                            ilmx[x] += wx[x]*wx[x];
 //              IMG_S(z, y, x)+=  U1(z,y+s->pmly,x+s->pmlx)*FWD(z,y+s->pmly,x+s->pmlx);
 //              ILM_S(z, y, x)+= FWD(z,y+s->pmly,x+s->pmlx)*FWD(z,y+s->pmly,x+s->pmlx);
                         }
