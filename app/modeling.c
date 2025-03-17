@@ -244,14 +244,10 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
 
         t0 = wtime();
 //        MSG("... !before wave_update_fields_block_bis! ...");
-        wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+//        wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+        wave_update_fields_block_bis_orig(s, u0, u1, vel, pml_tmp, pml_tab);
 //        MSG("pr0=%f",u1[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx+2]);
         t_prop += wtime() - t0;
-
-        #ifdef __DEBUG
-        wave_save_fwd_dbg(s, shot, u1, (t+1)%s->nb_snap==0);
-        //      wave_save_snapshot(s, shot, u1, (t+1)%s->nb_snap==0);
-        #endif // __DEBUG
 
         t0 = wtime();
         wave_extract_sismos(s,u1, t+1, sismos);
@@ -269,7 +265,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
     MSG("Speed:        %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t2-t1));
     MSG("PropSpeed:    %f GStencils/s",1.0*s->time_steps*s->size_eff/1e9/(t_prop) );
 /// save the seismic traces for the shot.
-    wave_save_sismos(s, shot, sismos);
+    wave_save_sismos(s,shot,sismos);
     /// release/close the resources related to the current shot.
     shot_release(shot);
   }
