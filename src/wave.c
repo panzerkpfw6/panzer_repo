@@ -582,48 +582,75 @@ void wave_update_fields_block(sismap_t *s,
     }
 }
 
-void wave_update_fields_block_bis_orig(sismap_t *s,
-                                  float *restrict u0,
-                                  float *restrict u1,
-                                  float *restrict roc2,
-                                  float *restrict phi,
-                                  float *restrict eta) {
-    unsigned int z, y, x;
-    float laplacian;
-    float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
-    unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+void wave_update_fields_block_bis(sismap_t *s,
+                                       float *restrict u0,
+                                       float *restrict u1,
+                                       float *restrict roc2) {
+    const float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    const int sx = s->sx;
+    const int sy = s->sy;
+    const int sz = s->sz;
+    const int nnx = dimx + 2 * sx;
+    const int nny = dimy + 2 * sy;
+    const int nnz = dimz + 2 * sz;
+    const long int nnyz = (long int)nny * nnz;
 
-    const int nnx = s->dimx + 2 * s->sx;
-    const int nny = s->dimy + 2 * s->sy;
-    const int nnz = s->dimz + 2 * s->sz;
-    const int nnxy = nnx * nny;
-    const int nnyz = nny * nnz;
+    // Host coefficient arrays as const
+    const float *restrict coefx = s->coefx;
+    const float *restrict coefy = s->coefy;
+    const float *restrict coefz = s->coefz;
+    const float *restrict dampx = s->dampx;
+    const float *restrict dampy = s->dampy;
+    const float *restrict dampz = s->dampz;
 
-    float *restrict ux;
-    float *restrict vx;
-    float *restrict rx;
-#pragma omp parallel for collapse(3) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, ux, vx, rx)
-    for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-        for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-            for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-                zmax = zmin + BLOCKZ;
-                if (zmax > s->dimz) zmax = s->dimz;
-                ymax = ymin + BLOCKY;
-                if (ymax > s->dimy) ymax = s->dimy;
-                xmax = xmin + BLOCKX;
-                if (xmax > s->dimx) xmax = s->dimx;
+#pragma omp parallel for collapse(3) schedule(dynamic)
+    for (int xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (int ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (int zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
 
                 for (int x = xmin; x < xmax; x++) {
+                    const long long base_x = (x + sx) * nnyz + sz;
+                    float *restrict ux_base = u1 + base_x;
+                    float *restrict vx_base = u0 + base_x;
+                    float *restrict rx_base = roc2 + x * dimy * dimz;
+                    const float damp_x = dampx[x + sx];
+
                     for (int y = ymin; y < ymax; y++) {
-//                        s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
-                        ux = &(u1[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        vx = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
-                        rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+                        const long long offset_y = (y + sy) * nnz;
+                        float *restrict ux = ux_base + offset_y;
+                        float *restrict vx = vx_base + offset_y;
+                        float *restrict rx = rx_base + y * dimz;
+                        const float damp_xy = damp_x * dampy[y + sy];
+
+#pragma omp simd
                         for (int z = zmin; z < zmax; z++) {
-                            WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD();
-                            ux[z] = s->dampx[x + s->sx] * ux[z] + (1 - s->dampx[x + s->sx]) * vx[z];
-                            ux[z] = s->dampy[y + s->sy] * ux[z] + (1 - s->dampy[y + s->sy]) * vx[z];
-                            ux[z] = s->dampz[z + s->sz] * ux[z] + (1 - s->dampz[z + s->sz]) * vx[z];
+                            ux[z] = 2.0f * vx[z] - ux[z] + rx[z] * (
+                                coef0 * vx[z] +
+                                coefx[1] * (vx[z + nnyz] + vx[z - nnyz]) +
+                                coefy[1] * (vx[z + nnz] + vx[z - nnz]) +
+                                coefz[1] * (vx[z + 1] + vx[z - 1]) +
+                                coefx[2] * (vx[z + 2 * nnyz] + vx[z - 2 * nnyz]) +
+                                coefy[2] * (vx[z + 2 * nnz] + vx[z - 2 * nnz]) +
+                                coefz[2] * (vx[z + 2] + vx[z - 2]) +
+                                coefx[3] * (vx[z + 3 * nnyz] + vx[z - 3 * nnyz]) +
+                                coefy[3] * (vx[z + 3 * nnz] + vx[z - 3 * nnz]) +
+                                coefz[3] * (vx[z + 3] + vx[z - 3]) +
+                                coefx[4] * (vx[z + 4 * nnyz] + vx[z - 4 * nnyz]) +
+                                coefy[4] * (vx[z + 4 * nnz] + vx[z - 4 * nnz]) +
+                                coefz[4] * (vx[z + 4] + vx[z - 4])
+                            );
+
+                            // Optimized damping
+                            const float damp_z = dampz[z + sz];
+                            const float damp_xyz = damp_xy * damp_z;
+                            const float v_coeff = (1.0f - damp_x) + (1.0f - dampy[y + sy]) * damp_x + (1.0f - damp_z) * damp_xy;
+                            ux[z] = damp_xyz * ux[z] + v_coeff * vx[z];
                         }
                     }
                 }
@@ -632,72 +659,53 @@ void wave_update_fields_block_bis_orig(sismap_t *s,
     }
 }
 
-void wave_update_fields_block_bis(sismap_t *s,
+
+void wave_update_fields_block_bis_old(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict u1,
                                   float *restrict roc2) {
-    // Precompute constant values
-    const float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
-    const int nnx = s->dimx + 2 * s->sx;
-    const int nny = s->dimy + 2 * s->sy;
-    const int nnz = s->dimz + 2 * s->sz;
-    const int nnyz = nny * nnz;
+	unsigned int z, y, x;
+	float laplacian;
+	float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 
-    // Declare coefficient arrays as const
-    const float *restrict coefx = s->coefx;
-    const float *restrict coefy = s->coefy;
-    const float *restrict coefz = s->coefz;
+	const int nnx = s->dimx + 2 * s->sx;
+	const int nny = s->dimy + 2 * s->sy;
+	const int nnz = s->dimz + 2 * s->sz;
+	const int nnxy = nnx * nny;
+	const int nnyz = nny * nnz;
 
-#pragma omp parallel for collapse(3)
-    for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
-        for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-            for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-                const Myint xmax = fmin(s->dimx, xmin + BLOCKX);
-                const Myint ymax = fmin(s->dimy, ymin + BLOCKY);
-                const Myint zmax = fmin(s->dimz, zmin + BLOCKZ);
+	float *restrict ux;
+	float *restrict vx;
+	float *restrict rx;
+#pragma omp parallel for collapse(3) private(laplacian, xmin, xmax, zmin, zmax, ymin, ymax, ux, vx, rx)
+	for (xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
+		for (ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
+			for (zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
+				zmax = zmin + BLOCKZ;
+				if (zmax > s->dimz) zmax = s->dimz;
+				ymax = ymin + BLOCKY;
+				if (ymax > s->dimy) ymax = s->dimy;
+				xmax = xmin + BLOCKX;
+				if (xmax > s->dimx) xmax = s->dimx;
 
-                for (int x = xmin; x < xmax; x++) {
-                    const long long base_x = (x + s->sx) * nnyz + s->sz;
-                    float *restrict ux_base = u1 + base_x;
-                    float *restrict vx_base = u0 + base_x;
-                    float *restrict rx_base = roc2 + x * s->dimy * s->dimz;
-                    const float damp_x = s->dampx[x + s->sx];
-
-                    for (int y = ymin; y < ymax; y++) {
-                        const long long offset_y = (y + s->sy) * nnz;
-                        float *restrict ux = ux_base + offset_y;
-                        float *restrict vx = vx_base + offset_y;
-                        float *restrict rx = rx_base + y * s->dimz;
-                        const float damp_xy = damp_x * s->dampy[y + s->sy];
-
-#pragma omp simd
-                        for (int z = zmin; z < zmax; z += 4) {
-                            for (int i = 0; i < 4 && z + i < zmax; i++) {
-                                const int zi = z + i;
-                                ux[zi] = 2.0f * vx[zi] - ux[zi] + rx[zi] * (
-                                    coef0 * vx[zi] +
-                                    coefx[1] * (vx[zi + nnyz] + vx[zi - nnyz]) +
-                                    coefy[1] * (vx[zi + nnz] + vx[zi - nnz]) +
-                                    coefz[1] * (vx[zi + 1] + vx[zi - 1]) +
-                                    coefx[2] * (vx[zi + 2 * nnyz] + vx[zi - 2 * nnyz]) +
-                                    coefy[2] * (vx[zi + 2 * nnz] + vx[zi - 2 * nnz]) +
-                                    coefz[2] * (vx[zi + 2] + vx[zi - 2]) +
-                                    coefx[3] * (vx[zi + 3 * nnyz] + vx[zi - 3 * nnyz]) +
-                                    coefy[3] * (vx[zi + 3 * nnz] + vx[zi - 3 * nnz]) +
-                                    coefz[3] * (vx[zi + 3] + vx[zi - 3]) +
-                                    coefx[4] * (vx[zi + 4 * nnyz] + vx[zi - 4 * nnyz]) +
-                                    coefy[4] * (vx[zi + 4 * nnz] + vx[zi - 4 * nnz]) +
-                                    coefz[4] * (vx[zi + 4] + vx[zi - 4])
-                                );
-                                const float damp_xyz = damp_xy * s->dampz[zi + s->sz];
-                                ux[zi] = damp_xyz * ux[zi] + (1.0f - damp_xyz) * vx[zi];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+				for (int x = xmin; x < xmax; x++) {
+					for (int y = ymin; y < ymax; y++) {
+//                        s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
+						ux = &(u1[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+						vx = &(u0[1ULL * (x + s->sx) * nnyz + (y + s->sy) * nnz + s->sz]);
+						rx = &(roc2[1ULL * x * s->dimy * s->dimz + y * s->dimz]);
+						for (int z = zmin; z < zmax; z++) {
+							WAVE_COMPUTE_LAPLACIAN_AND_UPDATE_INNER_FIELD();
+							ux[z] = s->dampx[x + s->sx] * ux[z] + (1 - s->dampx[x + s->sx]) * vx[z];
+							ux[z] = s->dampy[y + s->sy] * ux[z] + (1 - s->dampy[y + s->sy]) * vx[z];
+							ux[z] = s->dampz[z + s->sz] * ux[z] + (1 - s->dampz[z + s->sz]) * vx[z];
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void wave_update_fields_block_1st_orig(sismap_t *s,
