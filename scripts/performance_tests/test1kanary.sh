@@ -70,7 +70,7 @@ export dx=10;
 ##### Run tests #####
 len=${#nx_arr[@]}
 #for i in $(seq 0 $len); do
-for i in $(seq 0 1); do
+for i in $(seq 2 3); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
