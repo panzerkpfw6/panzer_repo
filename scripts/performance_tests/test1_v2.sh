@@ -15,7 +15,7 @@
 
 ###******** COMMENT *********###
 # In this test we check performance with best SB,TB parameters for AMD MilanX.
-# be aware that cache blocking should be different for 1st order and second order 
+# be aware that cache blocking should be different for 1st order and second order
 # 1)please change SLURM CONFIGURATION accordingly
 #  partition,
 # number of cpus-per-task should be equal to number of available cores.
@@ -63,14 +63,6 @@ th_z_arr=(1 1 1)
 tdim_arr=(7 7 7)
 num_wf_arr=(64 20 20)
 
-###### File to modify for SB cache blocking #####
-file="./include/stencil/wave.h"
-export _CB_SIZE_X=8;
-export _CB_SIZE_Y=1;
-## Use sed to replace the values of BLOCKX and BLOCKY with the new values
-sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $_CB_SIZE_X/" "$file"
-sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $_CB_SIZE_Y/" "$file"
-
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
@@ -112,17 +104,18 @@ for i in $(seq 0 $len); do
   ###*********** SB ************###
   echo "Running SB"
   echo "Running 1st order"
-
+  cbx=8; cby=1; cbz=9999;
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-  --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log-SB_1st-abc_$grid_str.log
 
   echo "Running 2nd order"
+  cbx=16; cby=4; cbz=9999;
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
-  --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log-SB_2nd-abc_$grid_str.log
   ###*********** TB ************##
 #  echo "Running TB"
 #  echo "Running 1st order"
