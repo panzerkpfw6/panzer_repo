@@ -31,13 +31,13 @@ module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
 module load cmake
 
 ###********** Default SB, TB parameters *********###
-export _CB_SIZE_X=8;
-export _CB_SIZE_Y=1;
-th_x_arr=(8 4 4)
+export _CB_SIZE_X=16;
+export _CB_SIZE_Y=4;
+th_x_arr=(4 4 4)
 th_y_arr=(2 2 2)
-th_z_arr=(1 1 1)
+th_z_arr=(2 1 1)
+num_wf_arr=(64 4 4)
 tdim_arr=(7 7  7)
-num_wf_arr=(64 20 20)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -84,17 +84,17 @@ for i in $(seq 0 1); do
   num_wf=${num_wf_arr[$i]}
   tgs=$((th_x * th_y*th_z))
   ###*********** SB ************###
+  cbx=16; cby=4; cbz=9999;
   echo "Running SB"
   echo "Running 1st order"
-#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
-#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-#  --dx $dx >> $logs_path/log-SB_1st-abc_$grid_str.log
+  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log-SB_1st-abc_$grid_str.log
 
-#  echo "Running 2nd order"
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
-#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
-#  --dx $dx >> $logs_path/log-SB_2nd-abc_$grid_str.log
+  echo "Running 2nd order"
+  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
+  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log-SB_2nd-abc_$grid_str.log
   ###*********** TB ************##
   echo "Running TB"
   echo "Running 1st order"
@@ -104,10 +104,9 @@ for i in $(seq 0 1); do
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
   --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/log-TB_1st-abc_$grid_str.log;
 
-#  echo "Running 2nd order"
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all \
-#  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
-#  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-#  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-#  --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> $logs_path/log-TB_2nd-abc_$grid_str.log;
+  echo "Running 2nd order"
+  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
+  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
+  --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> $logs_path/log-TB_2nd-abc_$grid_str.log;
 done
