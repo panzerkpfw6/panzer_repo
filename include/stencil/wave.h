@@ -30,10 +30,7 @@
 #include <stencil/sismap.h>
 #include <stencil/shot.h>
 
-/// in the code only BLOCKY,BLOCKZ are used
-#define BLOCKX 10
-#define BLOCKY 22
-#define BLOCKZ 9999
+/// SB cache blocking parameters.We prefer not to hardcode it. def:10,22,9999
 
 void array_openmp_init(float* u,sismap_t*s);
 void array_openmp_inner_init(float* u,sismap_t*s);

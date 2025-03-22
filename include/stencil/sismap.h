@@ -89,6 +89,8 @@ typedef struct __sismap_t {
     float *d_coefx, *d_coefy, *d_coefz;
     /// receivers.
     unsigned int *d_rcv;
+    /// SB cache blocking parameters.
+    int blockx,blocky,blockz;
     ///
     /// control flags:
     ///

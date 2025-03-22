@@ -44,6 +44,9 @@ void cmemcpy_omp(char *dst,
 }
 
 void memcpy_omp(float* u, float *v,sismap_t*s) {
+  const int BLOCKX=s->blockx;
+  const int BLOCKY=s->blocky;
+  const int BLOCKZ=s->blockz;
   const int nnx = s->dimx + 2* s->sx;
   const int nny = s->dimy + 2* s->sy;
   const int nnxy = nnx*nny;

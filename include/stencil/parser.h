@@ -263,5 +263,8 @@ parser_put(p, INT,0, "tb_num_wf", "1","tb_num_wf");                             
 parser_put(p, INT,0, "mode", "2","mode (1 MEM 2 I/O, 0 FUSE)");                     \
 parser_put(p, INT,0, "fwd_steps", "1","tb param, save wavefield every fwd_steps diamonds");   \
 parser_put(p, STRING,0,"tb_affinity", "NONE", "Affinity setup file");              \
+parser_put(p, INT,0, "cbx", "10", "SB cache blocking in x");                               \
+parser_put(p, INT,0, "cby", "22", "SB cache blocking in y");                               \
+parser_put(p, INT,0, "cbz", "9999", "SB cache blocking in z");                               \
 parser_put(p, INT,0,"order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
 #endif //  __STENCIL_PARSER_H_

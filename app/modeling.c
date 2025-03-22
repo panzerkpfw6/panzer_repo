@@ -12,8 +12,6 @@
 //#include <cuda_runtime.h>
 
 void run_modeling_SB(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
-    MSG("... !SB MODE! ...");
-    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
     /// seismic traces for a given shot.
     float *sismos;
     /// PML temporary tab.
@@ -244,7 +242,8 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
 
         t0 = wtime();
 //        MSG("... !before wave_update_fields_block_bis! ...");
-        wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+//        wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+        wave_update_fields_block_bis_old(s, u0, u1, vel, pml_tmp, pml_tab);
 //        wave_update_fields_block_bis_orig(s, u0, u1, vel, pml_tmp, pml_tab);
 //        MSG("pr0=%f",u1[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx+2]);
         t_prop += wtime() - t0;
@@ -385,7 +384,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_ta
     /// PML temporary tab.
     float *pml_tmp;
     MSG("... !SB MODE! ...");
-    MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",BLOCKX,BLOCKY,BLOCKZ);
     CREATE_BUFFER_ONLY(u0, s->size);
     array_openmp_init(u0,s);
     CREATE_BUFFER_ONLY(vx, s->size);
@@ -678,6 +676,14 @@ int main(int argc, char* argv[]) {
     if (s->cpu) {
         CREATE_BUFFER(vel, s->size_eff);
     } else {
+        // Read cache blocking parameters for SB method //
+        s->blockx=parser_get_int(p,"cbx");
+        s->blocky=parser_get_int(p,"cby");
+        s->blockz=parser_get_int(p,"cbz");
+        MSG("... !SB MODE! ...");
+        MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",s->blockx,s->blocky,s->blockz);
+//        exit(1);
+        //////////////
         CREATE_BUFFER_ONLY(vel, s->size_eff);
         array_openmp_inner_init(vel, s);
     }

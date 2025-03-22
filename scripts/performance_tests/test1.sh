@@ -15,6 +15,7 @@
 
 ###******** COMMENT *********###
 # In this test we check performance with best SB,TB parameters for AMD MilanX.
+# be aware that cache blocking should be different for 1st order and second order 
 # 1)please change SLURM CONFIGURATION accordingly
 #  partition,
 # number of cpus-per-task should be equal to number of available cores.

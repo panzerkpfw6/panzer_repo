@@ -91,6 +91,9 @@ void array_openmp_init(float* u, sismap_t *s) {
     const int nnz = s->dimz + 2 * s->sz;  // Total z-size with halo
     const int nnyz = nny * nnz;           // Size of yz-plane for XYZ order
     float *restrict ux;
+    const int BLOCKX=s->blockx;
+    const int BLOCKY=s->blocky;
+    const int BLOCKZ=s->blockz;
 
 #pragma omp parallel for collapse(2) private(ux)
     for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
@@ -114,6 +117,9 @@ void array_openmp_init(float* u, sismap_t *s) {
 void array_openmp_inner_init(float *u, sismap_t *s) {
     const int nnyz = s->dimy * s->dimz;  // Physical yz-plane size (no halo)
     float *restrict ux;
+    const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
 
     #pragma omp parallel for collapse(2) private(ux)
     for (int xmin = 0; xmin < s->dimx; xmin += BLOCKX) {
@@ -502,6 +508,9 @@ void wave_update_fields(sismap_t *s,
                         float *u0, float *u1,
                         float *roc2, float *phi, float *eta) {
     unsigned int z, y, x;
+    const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
     float laplacian;
     float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
 #pragma omp parallel for private(laplacian, z, y, x)
@@ -526,6 +535,9 @@ void wave_update_fields_1st(sismap_t *s,
                         float *u0, float *vx,float *vy,float *vz,
                         float *roc2, float *phi, float *eta) {
     unsigned int z, y, x;
+    const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
     const float inv_dx=1. /(s->dx);
     const float inv_dy=1. /(s->dy);
     const float inv_dz=1. /(s->dz);
@@ -551,6 +563,9 @@ void wave_update_fields_1st(sismap_t *s,
 void wave_update_fields_block(sismap_t *s,
                               float *u0, float *u1,
                               float *roc2, float *phi, float *eta) {
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
     unsigned int z, y, x;
     float laplacian;
     float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
@@ -588,6 +603,9 @@ void wave_update_fields_block_bis(sismap_t *s,
                                   float *restrict roc2,
                                   float *restrict phi,
                                   float *restrict eta) {
+    const int BLOCKX=s->blockx;
+    const int BLOCKY=s->blocky;
+    const int BLOCKZ=s->blockz;
     unsigned int z, y, x;
     float laplacian;
     const float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
@@ -671,6 +689,9 @@ void wave_update_fields_block_bis_old(sismap_t *s,
                                   float *restrict u0,
                                   float *restrict u1,
                                   float *restrict roc2) {
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
 	unsigned int z, y, x;
 	float laplacian;
 	float coef0 = s->coefx[0] + s->coefy[0] + s->coefz[0];
@@ -723,7 +744,10 @@ void wave_update_fields_block_1st_orig(sismap_t *s,
                                   float *restrict roc2,
                                   float *restrict phi,
                                   float *restrict eta) {
-    unsigned int z, y, x;
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	unsigned int z, y, x;
     float laplacian;
     unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 
@@ -828,7 +852,10 @@ void wave_update_fields_block_1st_(sismap_t *s,
                                   float *restrict roc2,
                                   float *restrict phi __attribute__((unused)),
                                   float *restrict eta __attribute__((unused))) {
-    const int nnx = s->dimx + 2 * s->sx;
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	const int nnx = s->dimx + 2 * s->sx;
     const int nny = s->dimy + 2 * s->sy;
     const int nnz = s->dimz + 2 * s->sz;
     const long int nnxy = (long int)nnx * nny;
@@ -1017,7 +1044,10 @@ void wave_update_fields_block_1st_v2(sismap_t *s,
                                   float *restrict roc2,
                                   float *restrict phi,
                                   float *restrict eta) {
-    unsigned int z, y, x;
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	unsigned int z, y, x;
     float laplacian;
     unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 
@@ -1144,7 +1174,10 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict roc2,
 								 float *restrict phi,
 								 float *restrict eta) {
-    unsigned int z, y, x;
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	unsigned int z, y, x;
     unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
 
     const int dimx = s->dimx;
@@ -1344,19 +1377,18 @@ void wave_image_condition_block(sismap_t *s, float *u1,
                                 float *fwd,
                                 float *img_shot, float *ilm_shot,
                                 unsigned int t) {
+    const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
     if (t % s->nb_snap == 0) {
         const int nnx = s->dimx + 2 * s->sx;
         const int nny = s->dimy + 2 * s->sy;
         const int nnxy = nnx * nny;
 
-        float *restrict
-        ux;
-        float *restrict
-        wx;
-        float *restrict
-        imgx;
-        float *restrict
-        ilmx;
+        float *restrict ux;
+        float *restrict wx;
+        float *restrict imgx;
+        float *restrict ilmx;
 
 #pragma omp parallel for collapse(2) private(ux, imgx, ilmx, wx)
         for (int zmin = 0; zmin < s->img_dimz; zmin += BLOCKZ) {
