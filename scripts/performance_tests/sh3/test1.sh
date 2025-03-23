@@ -54,11 +54,11 @@ export fmax=8;
 export dx=10;
 
 ###********** Default SB, TB parameters *********###
-th_x_arr=(8 4 4)
+th_x_arr=(3 4 4)
 th_y_arr=(2 2 2)
-th_z_arr=(1 1 1)
-tdim_arr=(7 7 7)
-num_wf_arr=(64 20 20)
+th_z_arr=(2 1 1)
+tdim_arr=(3 3 7)
+num_wf_arr=(24 20 4)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -101,14 +101,14 @@ for i in $(seq 0 $len); do
   ###*********** SB ************###
   echo "Running SB"
   echo "Running 1st order"
-  cbx=8; cby=1; cbz=9999;
+  cbx=64; cby=22; cbz=9999;
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
   --dx $dx --cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log-SB_1st-abc_$grid_str.log
 
   echo "Running 2nd order"
-  cbx=16; cby=4; cbz=9999;
+#  cbx=16; cby=4; cbz=9999;
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
