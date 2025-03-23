@@ -33,11 +33,18 @@ module load cmake
 ###********** Default SB, TB parameters *********###
 export _CB_SIZE_X=16;
 export _CB_SIZE_Y=4;
-th_x_arr=(4 4 4)
+#th_x_arr=(4 4 4)
+#th_y_arr=(2 2 2)
+#th_z_arr=(2 2 2)
+#num_wf_arr=(64 64 64)
+#tdim_arr=(7 7  7)
+
+th_x_arr=(8 4 4)
 th_y_arr=(2 2 2)
-th_z_arr=(2 2 2)
-num_wf_arr=(64 64 64)
-tdim_arr=(7 7  7)
+th_z_arr=(1 1 1)
+tdim_arr=(7 7 7)
+num_wf_arr=(64 20 20)
+
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
