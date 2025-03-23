@@ -44,7 +44,8 @@ export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ###********** MODULES *********###
-module load intel/2024.2.1
+########module load intel/2024.2.1
+module load intel-oneapi/2023.1.0
 module load cmake
 
 ##### Shot information #####
