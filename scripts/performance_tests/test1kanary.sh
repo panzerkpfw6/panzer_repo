@@ -35,7 +35,7 @@ export _CB_SIZE_X=16;
 export _CB_SIZE_Y=4;
 th_x_arr=(4 4 4)
 th_y_arr=(2 2 2)
-th_z_arr=(2 1 1)
+th_z_arr=(2 2 2)
 num_wf_arr=(64 64 64)
 tdim_arr=(7 7  7)
 
