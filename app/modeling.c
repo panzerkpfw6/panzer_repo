@@ -243,6 +243,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
         t0 = wtime();
 //        MSG("... !before wave_update_fields_block_bis! ...");
         wave_update_fields_block_bis(s, u0, u1, vel, pml_tmp, pml_tab);
+
 //        wave_update_fields_block_bis_old(s, u0, u1, vel, pml_tmp, pml_tab);
 //        wave_update_fields_block_bis_better(s, u0, u1, vel, pml_tmp, pml_tab);
 //        wave_update_fields_block_bis_orig(s, u0, u1, vel, pml_tmp, pml_tab);
