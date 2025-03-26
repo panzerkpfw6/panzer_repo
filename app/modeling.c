@@ -662,7 +662,9 @@ int main(int argc, char* argv[]) {
 
     /// contains the velocity values of the traversed mediums.
     float* vel;
-    /// contains the terms of the source.
+    /// contains the velocity values of the traversed mediums.
+	float* dens;
+	/// contains the terms of the source.
     float* source;
     /// contains the PML coefficients.
     float* pml_tab;
