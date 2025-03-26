@@ -29,19 +29,29 @@ echo $hostname
 lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=192
-#export OMP_NUM_THREADS=64
-export OMP_PROC_BIND=true
-export OMP_PLACES=threads
-export OMP_NESTED='True'
-export granularity=fine
-export KMP_AFFINITY=compact
-export KMP_HW_SUBSET=1t
+#export OMP_NUM_THREADS=192
+##export OMP_NUM_THREADS=64
+#export OMP_PROC_BIND=true
+#export OMP_PLACES=threads
+#export OMP_NESTED='True'
+#export granularity=fine
+#export KMP_AFFINITY=compact
+#export KMP_HW_SUBSET=1t
 
 ###********** Set compiler flags *********###
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+
+######################################################
+export OMP_PLACES=cores;
+export OMP_PROC_BIND=close;
+export OMP_STACKSIZE=64M;
+export OMP_NUM_THREADS=192;
+srun --nodes=1 --cpus-per-task=192 --threads-per-core=1 -t 1-0:00 --hint=nomultithread ./bin.cray $gx $gy $gz $nt 2504
+export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
 ###********** MODULES *********###
 ########module load intel/2024.2.1
