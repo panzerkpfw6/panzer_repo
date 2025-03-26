@@ -48,7 +48,6 @@ export OMP_PLACES=cores;
 export OMP_PROC_BIND=close;
 export OMP_STACKSIZE=64M;
 export OMP_NUM_THREADS=192;
-srun --nodes=1 --cpus-per-task=192 --threads-per-core=1 -t 1-0:00 --hint=nomultithread ./bin.cray $gx $gy $gz $nt 2504
 export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
