@@ -701,6 +701,9 @@ int main(int argc, char* argv[]) {
 //    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
 
+    /// load/generate the density model.
+
+
     /// compute PML parameters.
     pml_compute_coefs(s,pml_tab);
 

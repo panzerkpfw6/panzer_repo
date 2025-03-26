@@ -500,7 +500,6 @@ void velocity_load_model(sismap_t *s, float *vtab) {
     else velocity_load_model_3d(s, vtab);
 }
 
-//
 void velocity_load_salt3d(sismap_t *s, float *vtab) {
 //    MSG("__________________________Inside function velocity_load_salt3d__________________________");
     /////////////////////////////////////////////////////
@@ -533,4 +532,10 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
     /////////////////////////////////////////////////////
     fill_vcoef_matrix(s,vtab);
 }
+
+////////////
+
+
+////////////
+
 
