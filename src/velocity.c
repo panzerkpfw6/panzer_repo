@@ -120,47 +120,99 @@ void velocity_query_model(sismap_t *s) {
     }
 }
 
-void fill_vcoef_matrix(sismap_t *s, float *vtab) {
+void fill_coef_matrix(sismap_t *s,float *vtab,float *dens) {
     unsigned int x, y, z;
-    /// fill vtab matrix with v^2*dt or v^2*dt2 value
-    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
+
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)dimy*dimz;
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+	/// fill vtab matrix with rho*v^2*dt or rho*v^2*dt2 value
+
     if (s->order==1) {
         MSG("order=1,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            s->dt*pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+#pragma omp parallel for collapse(3)
+		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+					const Myint xmax = fmin(dimx, xmin + BLOCKX);
+					const Myint ymax = fmin(dimy, ymin + BLOCKY);
+					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+					// loop on grid points inside block
+					for (int x = xmin; x < xmax; x++) {
+						for (int y = ymin; y < ymax; y++) {
+	#pragma omp simd
+							for (int z = zmin; z < zmax; z++) {
+								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
+										s->dt*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
+							}
+						}
+					}
+				}
+			}
+		}
     }else
     {
         MSG("order=2,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
+#pragma omp parallel for collapse(3)
+		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+					const Myint xmax = fmin(dimx, xmin + BLOCKX);
+					const Myint ymax = fmin(dimy, ymin + BLOCKY);
+					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+					// loop on grid points inside block
+					for (int x = xmin; x < xmax; x++) {
+						for (int y = ymin; y < ymax; y++) {
+	#pragma omp simd
+							for (int z = zmin; z < zmax; z++) {
+								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
+										pow(s->dt,2)*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
+							}
+						}
+					}
+				}
+			}
+		}
     }
-//    printf("__DUMP_VEL=%s",__DUMP_VEL);
-#ifdef __DUMP_VEL
-    MSG("... augmented_vel2 ...");
-    char tmp2[512];
-    sprintf(tmp2, "mkdir -p %s", OUTDIR);
-    CHK(system(tmp2), "failed to create output directory for snapshots");
-    sprintf(tmp2, "%s/augmented_vel2.raw", OUTDIR);
-    FILE *fd2 = fopen(tmp2, "wb");
-    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd2) != 1,
-        "failed to write the velocity file");
-    fclose(fd2);
-#endif //__DUMP_VEL
 }
 
-void dump_vel(sismap_t *s, float *vtab) {
+void dump_vel(sismap_t *s,float *vtab,float *dens) {
 #ifdef __DUMP_VEL
-    MSG("... dump v ...");
+    MSG("... dump velocity ...");
     char tmp[512];
     sprintf(tmp, "mkdir -p %s", OUTDIR);
     CHK(system(tmp), "failed to create output directory for snapshots");
-    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
+    sprintf(tmp, "%s/velocity.raw", OUTDIR);
+    FILE *fd = fopen(tmp, "wb");
+    CHK(fwrite(vtab, s->size_eff * sizeof(float),1,fd) != 1,
+        "failed to write the velocity file");
+    fclose(fd);
+    ////////////////////////////////
+    MSG("... dump density ...");
+	char tmp2[512];
+	sprintf(tmp2, "mkdir -p %s", OUTDIR);
+	CHK(system(tmp2), "failed to create output directory for snapshots");
+	sprintf(tmp2,"%s/density.raw", OUTDIR);
+	FILE *fd2 = fopen(tmp2, "wb");
+	CHK(fwrite(dens, s->size_eff * sizeof(float),1,fd2) != 1,
+		"failed to write the density file");
+	fclose(fd2);
+#endif //__DUMP_VEL
+}
+
+void dump_coef(sismap_t *s, float *vtab) {
+#ifdef __DUMP_VEL
+    MSG("... dump coefficient matrix ...");
+    char tmp[512];
+    sprintf(tmp, "mkdir -p %s", OUTDIR);
+    CHK(system(tmp), "failed to create output directory for snapshots");
+    sprintf(tmp, "%s/coef.raw", OUTDIR);
     FILE *fd = fopen(tmp, "wb");
     CHK(fwrite(vtab, s->size_eff * sizeof(float),1,fd) != 1,
         "failed to write the velocity file");
@@ -408,60 +460,39 @@ void velocity_load_model_3d(sismap_t *s, float *vtab) {
 }
 
 void velocity_const_model2(sismap_t *s, float *vtab) {
-//    MSG("__________________________Inside function velocity_constant_model__________________________");
-    unsigned int x, y, z, i;
-    for (z=0; z < s->dimz; z++) {
-        for (y = 0; y < s->dimy; y++) {
-            for (x = 0; x < s->dimx; x++) {
-                vtab[1ULL * s->dimx * (s->dimy * z + y) + x] = 1500;
-            }
-        }
-    }
+	MSG("... ! in velocity_const_model2! ...");
+	unsigned int x, y, z, i;
 
-#ifdef __DUMP_VEL
-    char tmp[512];
-    sprintf(tmp, "mkdir -p %s", OUTDIR);
-    CHK(system(tmp), "failed to create output directory for snapshots");
-    sprintf(tmp, "%s/augmented_vel.raw", OUTDIR);
-    FILE *fd = fopen(tmp, "wb");
-    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd) != 1,
-        "failed to write the velocity file");
-    fclose(fd);
-#endif //__DUMP_VEL
-    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
-
-    if (s->order==1) {
-        MSG("order=1,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++)
-                    vtab[s->dimx * (s->dimy * z + y) + x]=
-                            s->dt*pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
-    }else
-    {
-        MSG("order=2,vtab\n");
-        for (z = 0; z < s->dimz; z++)
-            for (y = 0; y < s->dimy; y++)
-                for (x = 0; x < s->dimx; x++){
-//                    MSG("v=%f, dt=%f\n",vtab[s->dimx * (s->dimy * z + y) +x],s->dt );
-//                    MSG("vtab=%f\n",pow(s->dt,2)*pow(vtab[s->dimx * (s->dimy * z + y) + x],2));
-                    vtab[s->dimx * (s->dimy * z + y) + x]=pow(s->dt, 2) * pow(vtab[s->dimx * (s->dimy * z + y) + x],2);
-//                    MSG("vtab=1\n");
-                }
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)dimy*dimz;
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+#pragma omp parallel for collapse(3)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
+				const Myint ymax = fmin(dimy, ymin + BLOCKY);
+				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+				MSG("xmax=%d,ymax=%d,zmax=%d",xmax,ymax,zmax);
+				// loop on grid points inside block
+				for (int x = xmin; x < xmax; x++) {
+					for (int y = ymin; y < ymax; y++) {
+#pragma omp simd
+						for (int z = zmin; z < zmax; z++) {
+//							MSG("x=%d,y=%d,z=%d",x,y,z);
+							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=1500;
+						}
+					}
+				}
+			}
+		}
     }
-//    exit(0);
-//    printf("__DUMP_VEL=%s",__DUMP_VEL);
-#ifdef __DUMP_VEL
-    MSG("... augmented_vel2 ...");
-    char tmp2[512];
-    sprintf(tmp2, "mkdir -p %s", OUTDIR);
-    CHK(system(tmp2), "failed to create output directory for snapshots");
-    sprintf(tmp2, "%s/augmented_vel2.raw", OUTDIR);
-    FILE *fd2 = fopen(tmp2, "wb");
-    CHK(fwrite(vtab, s->size_eff * sizeof(float), 1, fd2) != 1,
-        "failed to write the velocity file");
-    fclose(fd2);
-#endif //__DUMP_VEL
 }
 
 void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
@@ -491,7 +522,6 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
     fclose(fd);
 #endif //__DUMP_VEL
     /////////////////////////////////////////////////////
-    fill_vcoef_matrix(s,vtab);
 }
 
 void velocity_load_model(sismap_t *s, float *vtab) {
@@ -501,7 +531,6 @@ void velocity_load_model(sismap_t *s, float *vtab) {
 }
 
 void velocity_load_salt3d(sismap_t *s, float *vtab) {
-//    MSG("__________________________Inside function velocity_load_salt3d__________________________");
     /////////////////////////////////////////////////////
     const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
     FILE *fd;
@@ -519,6 +548,7 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
     CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,"failed to read from the velocity file");
     fclose(fd);
 
+    /////////////////////////////////
     float val = 0;
     unsigned int x, y, z;
     for (z = 0; z < s->dimz; z++)
@@ -526,15 +556,75 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
             for (x = 0; x < s->dimx; x++)
 //                MSG("V=%f",tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)]);
                 vtab[s->dimx*(s->dimy*z+y)+x]=tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)];
+    /////////////////////////////////
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)dimy*dimz;
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+#pragma omp parallel for collapse(3)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
+				const Myint ymax = fmin(dimy, ymin + BLOCKY);
+				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+				// loop on grid points inside block
+				for (int x = xmin; x < xmax; x++) {
+					for (int y = ymin; y < ymax; y++) {
+#pragma omp simd
+						for (int z = zmin; z < zmax; z++) {
+							// if velocity file is recorded in ZYX order
+							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=tmp[1ULL*dimx*(dimy*(z)+(y))+(x) ];
+							/////// if velocity file is recorded in XYZ order
+//							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=tmp[1ULL*(x)*nnyz+(y)*dimz+z];
+						}
+					}
+				}
+			}
+		}
+    }
+    /////////////////////////////////
     MSG("custom velocity model read in memory");
-    /////////////////////////////////////////////////////
-    dump_vel(s,vtab);
-    /////////////////////////////////////////////////////
-    fill_vcoef_matrix(s,vtab);
 }
 
 ////////////
+void density_const_model(sismap_t *s, float *dens) {
+	unsigned int x, y, z, i;
 
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)dimy*dimz;
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
+#pragma omp parallel for collapse(3)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
+				const Myint ymax = fmin(dimy, ymin + BLOCKY);
+				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+				// loop on grid points inside block
+				for (int x = xmin; x < xmax; x++) {
+					for (int y = ymin; y < ymax; y++) {
+#pragma omp simd
+						for (int z = zmin; z < zmax; z++) {
+							dens[1ULL*(x)*nnyz+(y)*dimz+z]=1000;
+						}
+					}
+				}
+			}
+		}
+    }
+}
 
 ////////////
 

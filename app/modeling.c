@@ -679,6 +679,7 @@ int main(int argc, char* argv[]) {
 
     if (s->cpu) {
         CREATE_BUFFER(vel, s->size_eff);
+        CREATE_BUFFER(dens, s->size_eff);
     } else {
         // Read cache blocking parameters for SB method //
         s->blockx=parser_get_int(p,"cbx");
@@ -690,9 +691,15 @@ int main(int argc, char* argv[]) {
         //////////////
         CREATE_BUFFER_ONLY(vel, s->size_eff);
         array_openmp_inner_init(vel, s);
+        CREATE_BUFFER_ONLY(dens,s->size_eff);
+        array_openmp_inner_init(dens,s);
     }
     CREATE_BUFFER(source, s->time_steps + 1);
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
+
+    MSG("s->dt=%f,s->dx=%d",s->dt,s->dx);
+    /// print info if needed.
+    if (s->verbose) wave_print(s);
 
     /// load/generate the velocity model.
 //    velocity_load_model(s,vel);
@@ -702,10 +709,18 @@ int main(int argc, char* argv[]) {
 //    velocity_load_salt3d(s,vel);
 
     /// load/generate the density model.
+    density_const_model(s,dens);
 
+    /// dump velocity and density grids.
+    dump_vel(s,vel,dens);
+
+    /// generate coefficient matrix.
+    fill_coef_matrix(s,vel,dens);
+    /// dump coefficient matrix.
+    dump_coef(s,vel);
 
     /// compute PML parameters.
-    pml_compute_coefs(s,pml_tab);
+//    pml_compute_coefs(s,pml_tab);
 
     /// generate the ricker source.
     if (s->order==1) {
@@ -718,11 +733,10 @@ int main(int argc, char* argv[]) {
         source_ricker_wavelet_2nd(s, source);
     }
 //    source_ricker_wavelet(s, source);
-    source[s->time_steps] = 0.0f; // an extra time step for girih.
-    /// print info if needed.
-    if (s->verbose) wave_print(s);
+    source[s->time_steps]=0.0f; // an extra time step for girih.
 
     /// run RTM on CPU or GPU.
+
 
     if (s->cpu) {
 //        run_modeling_tb_cpu(s, vel, source, p);

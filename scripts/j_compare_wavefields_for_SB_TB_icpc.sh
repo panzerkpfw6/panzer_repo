@@ -53,7 +53,7 @@ x=2; y=2; z=1; t=7; w=20; tgs=4;
 export OMP_NUM_THREADS=12;
 ############################### small test
 export TIME_SB_1st=30;
-nx=1024;ny=1024;nz=512;
+#nx=1024;ny=1024;nz=512;
 ############################### compare_wavefields_for_SB_TB_2nd_order
 ## SB
 #gdb --args ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_SB_2nd \
