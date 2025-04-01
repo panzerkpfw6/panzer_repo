@@ -1,4 +1,6 @@
 ```
+This branch represents acoustic code based on homogeneous density with XYZ ordering imported from stencil-dev code.
+
 NAME
 	stencil - a synthetic wave simulator
 SYNTAX
