@@ -86,6 +86,7 @@ do {                                      \
 
 #define MAX(a,b)    (a>b?a:b)
 #define MIN(a,b)    (a<b?a:b)
+
 #define CREATE_BUFFER(buffer, size)                               \
   CHK(posix_memalign((void**)&buffer, 4096, (size)*sizeof(float)),\
       "failed to allocate heap memory");                          \

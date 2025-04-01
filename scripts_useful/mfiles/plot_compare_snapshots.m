@@ -52,13 +52,13 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % root='../../../../stencil-main'; fname=['SB_2nd_abc.raw'];
 % root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 1st
-description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
-root='../../';  fname= ['snapshot_SB1st_505'];
-root2='../../'; fname2=['snapshot_TB1st_505'];
+% description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
+% root='../../';  fname= ['snapshot_SB1st_505'];
+% root2='../../'; fname2=['snapshot_TB1st_505'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 2nd
-% description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';
-% root='../../';  fname= ['snapshot_SB2nd_514'];
-% root2='../../'; fname2=['snapshot_TB2nd_514'];
+description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';
+root='../../';  fname= ['snapshot_SB2nd_514'];
+root2='../../'; fname2=['snapshot_TB2nd_514'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm SB 1st,2nd
 % description_str='diff SB 1st,SB 2nd. stencil-rtm';title1='SB1st';title2='SB2nd';
 % root='../../';  fname= ['snapshot_SB1st_519'];
@@ -128,31 +128,34 @@ val=1.5e-4;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 a=5*1e-2;
 % a=7;
+a=max(abs(data2(:)));
 r2=68;c2=132;p2=260;
 r2=132;c2=132;p2=260;
 r2=132;c2=132;p2=132;
+max(abs(data2(:)))
 figure
 subplot(1,3,1)
-% imagesc( squeeze(data2(r2,:,:)).' );    %p2
-imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(r2,:,:)).' );    %p2
+% imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',x=',num2str(r2)) );
 xlabel('Y');ylabel('Z');
 colorbar
 
 subplot(1,3,2)
-% imagesc( squeeze(data2(:,c2,:)).' );    %p2
-imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(:,c2,:)).' );    %p2
+% imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',y=',num2str(c2)));
 xlabel('X');ylabel('Z');
 colorbar
 
 subplot(1,3,3)
-% imagesc( squeeze(data2(:,:,p2)).');    %p2
-imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
+imagesc( squeeze(data2(:,:,p2)).');    %p2
+% imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
 title(strcat(title2,',z=',num2str(p2)));
 xlabel('X');ylabel('Y');
 colorbar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+a=max(abs(data(:)));
 % r=68;c=132;p=260;
 r=r2;c=c2;p=p2;
 figure

@@ -679,7 +679,7 @@ int main(int argc, char* argv[]) {
 
     if (s->cpu) {
         CREATE_BUFFER(vel, s->size_eff);
-        CREATE_BUFFER(dens, s->size_eff);
+        CREATE_BUFFER(dens,s->size_eff);
     } else {
         // Read cache blocking parameters for SB method //
         s->blockx=parser_get_int(p,"cbx");

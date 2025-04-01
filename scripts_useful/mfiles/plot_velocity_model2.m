@@ -11,7 +11,13 @@ fname=['../rtm_munich/data/augmented_vel.raw'];
 
 dims=[676,676,201];
 fname=['../stencil-rtm/data/augmented_vel.raw'];
-
+%%
+dims=[256,256,256];
+fname=['../../data/velocity.raw'];
+fname=['../../data/density.raw'];
+fname=['../../data/coef_1st.raw'];
+% fname=['../../data/coef_2nd.raw'];
+%%
 % some file size calculations
 s = dir(fname);         
 filesize = s.bytes ;
@@ -20,7 +26,7 @@ domain_size=dims(1)*dims(2)*dims(3)*4;
 format longG
 disp(strcat('true size=',int2str(filesize)))
 disp(strcat('calculated domain size=',int2str(domain_size)))
-data=read_snap(fname,'simwave',dims);   %velocity
+data=read_snap(fname,'stencil',dims);   %velocity
 
 [M,I] = max(data,[],1);
 [mxv,idx] = max(abs(data(:)));

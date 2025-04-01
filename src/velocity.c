@@ -134,51 +134,80 @@ void fill_coef_matrix(sismap_t *s,float *vtab,float *dens) {
 	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 	/// fill vtab matrix with rho*v^2*dt or rho*v^2*dt2 value
 
+	MSG("entering fill_coef_matrix\n");
     if (s->order==1) {
         MSG("order=1,vtab\n");
-#pragma omp parallel for collapse(3)
-		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
-			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
-				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
-					const Myint xmax = fmin(dimx, xmin + BLOCKX);
-					const Myint ymax = fmin(dimy, ymin + BLOCKY);
-					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
-					// loop on grid points inside block
-					for (int x = xmin; x < xmax; x++) {
-						for (int y = ymin; y < ymax; y++) {
-	#pragma omp simd
-							for (int z = zmin; z < zmax; z++) {
-								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
-										s->dt*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
-							}
-						}
+		for (x = 0; x < dimx; x++) {
+			for (y = 0; y < dimy; y++) {
+				for (z = 0; z < dimz; z++) {
+					unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+					if (idx >= s->size_eff) {
+						fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",
+								idx, s->size_eff);
+						exit(EXIT_FAILURE);
 					}
+					vtab[idx]=s->dt*dens[idx]*pow(vtab[idx],2);
 				}
 			}
 		}
+
+//#pragma omp parallel for collapse(3)
+//		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+//			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+//				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+//					const Myint xmax = fmin(dimx, xmin + BLOCKX);
+//					const Myint ymax = fmin(dimy, ymin + BLOCKY);
+//					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+//					// loop on grid points inside block
+//					for (int x = xmin; x < xmax; x++) {
+//						for (int y = ymin; y < ymax; y++) {
+//	#pragma omp simd
+//							for (int z = zmin; z < zmax; z++) {
+//								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
+//										s->dt*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
     }else
     {
         MSG("order=2,vtab\n");
-#pragma omp parallel for collapse(3)
-		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
-			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
-				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
-					const Myint xmax = fmin(dimx, xmin + BLOCKX);
-					const Myint ymax = fmin(dimy, ymin + BLOCKY);
-					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
-					// loop on grid points inside block
-					for (int x = xmin; x < xmax; x++) {
-						for (int y = ymin; y < ymax; y++) {
-	#pragma omp simd
-							for (int z = zmin; z < zmax; z++) {
-								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
-										pow(s->dt,2)*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
-							}
-						}
+        for (x = 0; x < dimx; x++) {
+			for (y = 0; y < dimy; y++) {
+				for (z = 0; z < dimz; z++) {
+					unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+					if (idx >= s->size_eff) {
+						fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",
+								idx, s->size_eff);
+						exit(EXIT_FAILURE);
 					}
+					vtab[idx]=pow(s->dt,2)*dens[idx]*pow(vtab[idx],2);
 				}
 			}
 		}
+
+//#pragma omp parallel for collapse(3)
+//		for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+//			for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+//				for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+//					const Myint xmax = fmin(dimx, xmin + BLOCKX);
+//					const Myint ymax = fmin(dimy, ymin + BLOCKY);
+//					const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+//					// loop on grid points inside block
+//					for (int x = xmin; x < xmax; x++) {
+//						for (int y = ymin; y < ymax; y++) {
+//	#pragma omp simd
+//							for (int z = zmin; z < zmax; z++) {
+//								vtab[1ULL*(x)*nnyz+(y)*dimz+z]=
+//										pow(s->dt,2)*dens[(x)*nnyz+(y)*dimz+z]*pow(vtab[(x)*nnyz+(y)*dimz+z],2);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
     }
 }
 
@@ -212,7 +241,12 @@ void dump_coef(sismap_t *s, float *vtab) {
     char tmp[512];
     sprintf(tmp, "mkdir -p %s", OUTDIR);
     CHK(system(tmp), "failed to create output directory for snapshots");
-    sprintf(tmp, "%s/coef.raw", OUTDIR);
+    if (s->order==1) {
+    	sprintf(tmp, "%s/coef_1st.raw", OUTDIR);
+    }
+    else{
+    	sprintf(tmp, "%s/coef_2nd.raw", OUTDIR);
+    }
     FILE *fd = fopen(tmp, "wb");
     CHK(fwrite(vtab, s->size_eff * sizeof(float),1,fd) != 1,
         "failed to write the velocity file");
@@ -460,7 +494,7 @@ void velocity_load_model_3d(sismap_t *s, float *vtab) {
 }
 
 void velocity_const_model2(sismap_t *s, float *vtab) {
-	MSG("... ! in velocity_const_model2! ...");
+//	MSG("... ! in velocity_const_model2! ...");
 	unsigned int x, y, z, i;
 
 	const int BLOCKX=s->blockx;
@@ -472,27 +506,49 @@ void velocity_const_model2(sismap_t *s, float *vtab) {
 	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
 	const long int nnyz=(long int)dimy*dimz;
 	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
-#pragma omp parallel for collapse(3)
-    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
-        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
-            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
-            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
-				const Myint ymax = fmin(dimy, ymin + BLOCKY);
-				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
-				MSG("xmax=%d,ymax=%d,zmax=%d",xmax,ymax,zmax);
-				// loop on grid points inside block
-				for (int x = xmin; x < xmax; x++) {
-					for (int y = ymin; y < ymax; y++) {
-#pragma omp simd
-						for (int z = zmin; z < zmax; z++) {
-//							MSG("x=%d,y=%d,z=%d",x,y,z);
-							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=1500;
-						}
-					}
+
+//	MSG("... ! before the loop! ...");
+//	MSG("dimx=%d, dimy=%d, dimz=%d\n",dimx,dimy,dimz);
+//	MSG("s->size_eff=%d\n",s->size_eff);
+//#pragma omp parallel for collapse(3)
+//    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+//    	MSG("xmin=%d",xmin);
+//        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+//            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+//            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
+//				const Myint ymax = fmin(dimy, ymin + BLOCKY);
+//				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+////				MSG("xmax=%d,ymax=%d,zmax=%d",xmax,ymax,zmax);
+//				// loop on grid points inside block
+//				for (int x = xmin; x < xmax; x++) {
+//					for (int y = ymin; y < ymax; y++) {
+//#pragma omp simd
+//						for (int z = zmin; z < zmax; z++) {
+////							MSG("x=%d,y=%d,z=%d",x,y,z);
+//							unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+//							vtab[idx]=1500;
+//						}
+//					}
+//				}
+//			}
+//		}
+//    }
+    ////////////////////////////////
+	for (x = 0; x < dimx; x++) {
+		for (y = 0; y < dimy; y++) {
+			for (z = 0; z < dimz; z++) {
+				unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+				if (idx >= s->size_eff) {
+					fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",
+							idx, s->size_eff);
+					exit(EXIT_FAILURE);
 				}
+				vtab[idx] = 1500.0f;
 			}
 		}
-    }
+	}
+    ////////////////////////////////
+    MSG("Exiting velocity_const_model2\n");
 }
 
 void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
@@ -605,25 +661,19 @@ void density_const_model(sismap_t *s, float *dens) {
 	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
 	const long int nnyz=(long int)dimy*dimz;
 	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
-#pragma omp parallel for collapse(3)
-    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
-        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
-            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
-            	const Myint xmax = fmin(dimx, xmin + BLOCKX);
-				const Myint ymax = fmin(dimy, ymin + BLOCKY);
-				const Myint zmax = fmin(dimz, zmin + BLOCKZ);
-				// loop on grid points inside block
-				for (int x = xmin; x < xmax; x++) {
-					for (int y = ymin; y < ymax; y++) {
-#pragma omp simd
-						for (int z = zmin; z < zmax; z++) {
-							dens[1ULL*(x)*nnyz+(y)*dimz+z]=1000;
-						}
-					}
+	for (x = 0; x < dimx; x++) {
+		for (y = 0; y < dimy; y++) {
+			for (z = 0; z < dimz; z++) {
+				unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+				if (idx >= s->size_eff) {
+					fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",
+							idx, s->size_eff);
+					exit(EXIT_FAILURE);
 				}
+				dens[idx] = 1.0f;
 			}
 		}
-    }
+	}
 }
 
 ////////////

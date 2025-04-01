@@ -224,13 +224,19 @@ void wave_init_dimensions(sismap_t *s) {
     s->img_dimy = (s->vel_dimy - 1) * s->dtrpy + 1;// ceil(((float)s->vel_dimy*s->dline)/(float)s->dy);
     s->img_dimz = (s->vel_dimz - 1) * s->dtrpz + 1;// ceil(((float)s->vel_dimz*s->ddepth)/(float)s->dz);
     s->size_img = 1ULL * (s->img_dimx) * (s->img_dimy) * (s->img_dimz);
+
+    /// Commented out because I am nousing PML regions
     /// augment the dimensions to take into accounts the PML and free surface.
-    s->dimx = s->img_dimx + 2 * s->pmlx;
-    s->dimy = s->dim2 ? 1 : s->img_dimy + 2 * s->pmly;
-    s->dimz = s->img_dimz + 1 * s->pmlz; /// free surface on the top.
+//    s->dimx = s->img_dimx + 2 * s->pmlx;
+//    s->dimy = s->dim2 ? 1 : s->img_dimy + 2 * s->pmly;
+//    s->dimz = s->img_dimz + 1 * s->pmlz; /// free surface on the top.
+
+    s->dimx = s->img_dimx;
+    s->dimy = s->img_dimy;
+    s->dimz = s->img_dimz;
+
     s->size = 1ULL * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy) * (2 * s->sz + s->dimz);
     s->size_eff = 1ULL * (s->dimx) * (s->dimy) * (s->dimz);
-
 }
 
 void wave_init_damp(sismap_t *s) {
