@@ -117,5 +117,5 @@ export src_depth=128;
 ################################
 #echo "compare_sismos_for_SBabc_TBabc"
 ################################
-#echo "test_sismos_options_for_SB"
-###############################
+echo "test_sismos_options_for_SB"
+##############################
