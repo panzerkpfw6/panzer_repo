@@ -568,7 +568,7 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-void femwd_iso_ref_1st_orig( const int shape[3], const int zb, const int yb_r0,
+void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
                         const int xb, const int ze, const int ye_r0, const int xe,
                     const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
                     hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
@@ -879,7 +879,7 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-void intra_diamond_mwd_comp_std_orig(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -917,7 +917,7 @@ void intra_diamond_mwd_comp_std_orig(Parameters *p, int yb_r, int ye_r, int b_in
     p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
 }
 
-void dynamic_intra_diamond_ts_combined_orig(Parameters *p) {
+void dynamic_intra_diamond_ts_combined(Parameters *p) {
     //@5
     MSG("inside dynamic_intra_diamond_ts_combined");
     int t_dim = p->t_dim;
@@ -1168,6 +1168,7 @@ void dynamic_intra_diamond_ts_combined_orig(Parameters *p) {
     free((void *) avail_list);
 }
 
+
 void reset_timers(Profile * p){
     p->compute = 0.;
     p->communicate = 0.;
@@ -1266,7 +1267,7 @@ void cpu_bind_init(Parameters *p){
 
 //////////////////////// groc functions
 
-void femwd_iso_ref_1st(const int shape[3], const int zb, const int yb_r0,
+void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0,
                        const int xb, const int ze, const int ye_r0, const int xe,
                        const real_t *coef, hFloat *p11, hFloat *p12, hFloat *p13,
                        hFloat *p21, hFloat *p22, hFloat *p23, const hFloat *roc2,
@@ -1555,7 +1556,7 @@ void femwd_iso_ref_1st(const int shape[3], const int zb, const int yb_r0,
     }
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
+void intra_diamond_mwd_comp_std_grok(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -1593,7 +1594,7 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
 }
 
-void dynamic_intra_diamond_ts_combined(Parameters *p) {
+void dynamic_intra_diamond_ts_combined_grok(Parameters *p) {
     //@5
     MSG("inside dynamic_intra_diamond_ts_combined");
     int t_dim = p->t_dim;
