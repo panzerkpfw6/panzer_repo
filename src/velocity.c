@@ -649,7 +649,7 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
 }
 
 ////////////
-void density_const_model(sismap_t *s, float *dens) {
+void density_const_model(sismap_t *s,float *dens,float *inv_rho) {
 	unsigned int x, y, z, i;
 
 	const int BLOCKX=s->blockx;
@@ -670,7 +670,8 @@ void density_const_model(sismap_t *s, float *dens) {
 							idx, s->size_eff);
 					exit(EXIT_FAILURE);
 				}
-				dens[idx] = 1.0f;
+				dens[idx]=2000.0f;
+				inv_rho[idx]=1/dens[idx];
 			}
 		}
 	}

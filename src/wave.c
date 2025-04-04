@@ -1263,6 +1263,7 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict vy,
 								 float *restrict vz,
 								 float *restrict roc2,
+								 float *restrict inv_rho,
 								 float *restrict phi,
 								 float *restrict eta) {
 	const int BLOCKX=s->blockx;
@@ -1312,6 +1313,7 @@ void wave_update_fields_block_1st(sismap_t *s,
     float *restrict vy0;
     float *restrict vz0;
     float *restrict rx;
+    float *restrict inv_r;
 
     // Velocity update loop
     #pragma omp parallel for collapse(3) schedule(dynamic) private(xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0)
@@ -1328,17 +1330,18 @@ void wave_update_fields_block_1st(sismap_t *s,
                         vx0 = &(vx[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         vy0 = &(vy[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
                         vz0 = &(vz[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        inv_r = &(inv_rho[1ULL * x * dimy * dimz + y * dimz]);
                         #pragma omp simd
                         for (int z = zmin; z < zmax; z++) {
-                            vx0[z] = vx0[z] + dt_inv_dx * (coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
+                            vx0[z] = vx0[z] + inv_r[z]*dt_inv_dx * (coefx[0] * (pr0[z + 1 * nnyz] - pr0[z]) +
                                                           coefx[1] * (pr0[z + 2 * nnyz] - pr0[z - 1 * nnyz]) +
                                                           coefx[2] * (pr0[z + 3 * nnyz] - pr0[z - 2 * nnyz]) +
                                                           coefx[3] * (pr0[z + 4 * nnyz] - pr0[z - 3 * nnyz]));
-                            vy0[z] = vy0[z] + dt_inv_dy * (coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
+                            vy0[z] = vy0[z] + inv_r[z]*dt_inv_dy * (coefy[0] * (pr0[z + 1 * nnz] - pr0[z]) +
                                                           coefy[1] * (pr0[z + 2 * nnz] - pr0[z - 1 * nnz]) +
                                                           coefy[2] * (pr0[z + 3 * nnz] - pr0[z - 2 * nnz]) +
                                                           coefy[3] * (pr0[z + 4 * nnz] - pr0[z - 3 * nnz]));
-                            vz0[z] = vz0[z] + dt_inv_dz * (coefz[0] * (pr0[z + 1] - pr0[z]) +
+                            vz0[z] = vz0[z] + inv_r[z]*dt_inv_dz * (coefz[0] * (pr0[z + 1] - pr0[z]) +
                                                           coefz[1] * (pr0[z + 2] - pr0[z - 1]) +
                                                           coefz[2] * (pr0[z + 3] - pr0[z - 2]) +
                                                           coefz[3] * (pr0[z + 4] - pr0[z - 3]));

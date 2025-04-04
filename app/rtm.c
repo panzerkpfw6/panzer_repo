@@ -396,7 +396,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
         wave_update_source(s, shot, u0, source[0]);
         for(int t = 0; t < s->time_steps; ++t) {
             t0 = wtime();
-            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+//            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
@@ -467,7 +467,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
             t_image += wtime() - t0;
 
             t0 = wtime();
-            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+//            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
@@ -844,6 +844,15 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
 }
 
 int main(int argc, char *argv[]) {
+	time_t rawtime;
+	struct tm *timeinfo;
+	char buffer[80];
+	// Start of program
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+	printf("Program started at: %s\n",buffer);
+
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
     /// create a parser.
@@ -884,6 +893,10 @@ int main(int argc, char *argv[]) {
 
     /// contains the velocity values of the traversed mediums.
     float* vel;
+    /// contains the density values of the traversed mediums.
+	float* rho;
+	/// contains the inverse density values of the traversed mediums.
+	float* inv_rho;
     /// contains the terms of the source.
     float* source;
     /// contains the PML coefficients.
@@ -895,22 +908,42 @@ int main(int argc, char *argv[]) {
     wave_init_damp(s);
     /// initialize the geometry.
     wave_init_acquisition(s);
+
     /// initialize the simulation buffers.
     if (s->cpu) {
         CREATE_BUFFER(vel, s->size_eff);
+        CREATE_BUFFER(rho,s->size_eff);
+        CREATE_BUFFER(inv_rho,s->size_eff);
     } else {
         CREATE_BUFFER_ONLY(vel, s->size_eff);
         array_openmp_inner_init(vel, s);
+        CREATE_BUFFER_ONLY(rho, s->size_eff);
+		array_openmp_inner_init(rho, s);
+		CREATE_BUFFER_ONLY(inv_rho,s->size_eff);
+		array_openmp_inner_init(inv_rho, s);
     }
     CREATE_BUFFER(source, s->time_steps + 1);
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
 
     /// load/generate the velocity model.
 //    velocity_load_model(s, vel);
+    velocity_const_model2(s,vel);
+//    velocity_load_salt3d(s,vel);
 //    velocity_2layer_model(s,vel);
-    velocity_load_salt3d(s,vel);
+
+    /// load/generate the density model.
+	density_const_model(s,rho,inv_rho);
+
+	/// dump velocity and density grids.
+	dump_vel(s,vel,rho);
+
+	/// generate coefficient matrix.
+	fill_coef_matrix(s,vel,rho);
+	/// dump coefficient matrix.
+	dump_coef(s,vel);
+
     /// compute PML parameters.
-    pml_compute_coefs(s,pml_tab);
+//    pml_compute_coefs(s,pml_tab);
 
     /// generate the Ricker source.
     if (s->order==1) {
@@ -948,6 +981,8 @@ int main(int argc, char *argv[]) {
     }
     /// free the simulation buffers.
     DELETE_BUFFER(vel);
+    DELETE_BUFFER(rho);
+    DELETE_BUFFER(inv_rho);
     DELETE_BUFFER(source);
     DELETE_BUFFER(pml_tab);
     /// release stencil.
