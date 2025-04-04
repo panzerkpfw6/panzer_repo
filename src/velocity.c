@@ -670,7 +670,7 @@ void density_const_model(sismap_t *s,float *dens,float *inv_rho) {
 							idx, s->size_eff);
 					exit(EXIT_FAILURE);
 				}
-				dens[idx]=2000.0f;
+				dens[idx]=2000.0f;		// 2000
 				inv_rho[idx]=1/dens[idx];
 			}
 		}

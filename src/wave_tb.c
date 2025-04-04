@@ -41,7 +41,6 @@ ux[i] = dampx[i] * ux[i] + (1 - dampx[i]) * vx[i];                          \
 ux[i] = dampy[j] * ux[i] + (1 - dampy[j]) * vx[i];                          \
 ux[i] = dampz[k] * ux[i] + (1 - dampz[k]) * vx[i];                          \
 }
-
 #else
 #define FUNC_BODY() {                                                       \
 ux[i] = 2.0f * vx[i] - ux[i]                                                \
@@ -3646,7 +3645,6 @@ static inline void dynamic_intra_diamond_prologue_full(tb_t * ctx,
     }
 }
 
-
 static inline void dynamic_intra_diamond_prologue_full_1st(tb_t * ctx,
                                                            tb_data_t *data,
                                                            tb_timer_t* timer,
@@ -4206,6 +4204,7 @@ void wave_tb_forward(tb_t* ctx,
     p->U3 = v0;
     p->U4 = v0;
     p->U5 = roc2;
+    p->U6 = roc2;
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
     p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);
@@ -4263,7 +4262,8 @@ void wave_tb_forward_1st(tb_t* ctx,
                          float * restrict vx,
                          float * restrict vy,
                          float * restrict vz,
-                         const float * restrict roc2) {
+                         const float * restrict roc2,
+						 const float *restrict inv_rho) {
     data->order=1;
     double t1,t2,t3,t4;
     if (data->src_depth !=-1) {
@@ -4445,6 +4445,7 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->U3 = vy;
     p->U4 = vz;
     p->U5 = roc2;
+    p->U6 = inv_rho;
 
     size_t size_src_exc_coef = p->nt * sizeof(real_t);
     p->src_exc_coef = (real_t*) malloc(size_src_exc_coef);

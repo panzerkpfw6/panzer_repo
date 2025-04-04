@@ -290,7 +290,7 @@ void run_rtm_cpu(sismap_t *s,float* vel,float *source,float *pml_tab) {
   DELETE_BUFFER(pml_tmp);
 }
 /// 1st order rtm
-void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
+void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float *pml_tab) {
     /// contains the fields pressure value at time step t.
     float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.
@@ -513,9 +513,8 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab) {
     DELETE_BUFFER(pml_tmp);
 }
 ///
-/// Reverse Time Migration on CPU.
-///
-///
+
+/// Reverse Time Migration on CPU.///
 void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
                     parser *p) {
     /// contains the fields pressure value at time step t.
@@ -671,7 +670,8 @@ void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     DELETE_BUFFER(sismos);
     DELETE_BUFFER(pml_tmp);
 }
-void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
+
+void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, float *pml_tab,
                     parser *p) {
     /// contains the fields pressure value at time step t.
     float* u0;
@@ -773,7 +773,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
 
-        wave_tb_forward_1st(ctx, data, timer, u0, vx,vy,vz, vel);
+        wave_tb_forward_1st(ctx, data, timer, u0, vx,vy,vz,vel,inv_rho);
 
         wave_tb_data_unset_src(data);
         MSG("before wave_tb_timer_info");
@@ -964,7 +964,7 @@ int main(int argc, char *argv[]) {
     if (s->cpu) {
         if (s->order==1) {
             MSG("run RTM 1st order TB");
-            run_rtm_1st_tb_cpu(s, vel, source, pml_tab, p);
+            run_rtm_1st_tb_cpu(s,vel,inv_rho,source, pml_tab, p);
         } else {
             MSG("run RTM 2nd order TB, deprecated.");
             run_rtm_tb_cpu(s, vel, source, pml_tab, p);
@@ -972,7 +972,7 @@ int main(int argc, char *argv[]) {
     } else {
         if (s->order==1) {
             MSG("run RTM 1st order SB");
-            run_rtm_1st_cpu(s, vel, source, pml_tab);
+            run_rtm_1st_cpu(s,vel,inv_rho,source, pml_tab);
         } else {
             MSG("run RTM 2nd order SB");
             run_rtm_cpu(s, vel, source, pml_tab);

@@ -80,8 +80,8 @@ void wave_update_fields_block_1st(sismap_t *s,
                                   float *restrict vx,
                                   float *restrict vy,
                                   float *restrict vz,
-                                  float *restrict roc2,
-								  float *restrict inv_rho,
+                                  const float *restrict roc2,
+								  const float *restrict inv_rho,
                                   float *restrict phi,
                                   float *restrict eta);
 

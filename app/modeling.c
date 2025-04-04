@@ -338,7 +338,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
     DELETE_BUFFER(pml_tmp);
 }
 
-void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_dens,float *source, parser *p) {
+void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source, parser *p) {
     /// contains the fields pressure value at time step t.
     float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.
@@ -379,7 +379,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_dens,float *sourc
         /// retrieve the shot descriptor.
         shot = s->shots[sidx];
         /// initialize the current shot.
-        shot_init(shot, true, s->modeling);
+        shot_init(shot,true,s->modeling);
         /// reset some buffers for the shot.
         NULIFY_BUFFER(u0, s->size);
         NULIFY_BUFFER(vx, s->size);
@@ -404,8 +404,8 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_dens,float *sourc
         wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_data_info(data);
 
-//        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel);
-        wave_tb_forward_1st_grok(ctx,data,timer,u0,vx,vy,vz,vel);
+        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel,inv_rho);
+//        wave_tb_forward_1st_grok(ctx,data,timer,u0,vx,vy,vz,vel);
         wave_tb_save_lastshot_1st(s,shot,u0);
 
         wave_tb_data_unset_src(data);
@@ -605,7 +605,7 @@ int main(int argc, char* argv[]) {
             run_modeling_1st_tb_cpu(s,vel,inv_rho,source,p);
         } else {
             MSG("run 2nd order TB, deprecated.");
-            run_modeling_tb_cpu(s, vel, source, p);
+//            run_modeling_tb_cpu(s, vel, source, p);
         }
     } else {
 //        run_modeling_SB(s, vel, source, pml_tab);

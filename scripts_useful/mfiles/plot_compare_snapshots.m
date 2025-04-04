@@ -53,8 +53,7 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 1st
 description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
-root='../../';  fname= ['snapshot_SB1st_505'];
-% root2='../../'; fname2=['snapshot_TB1st_505'];
+root='../../';  fname= ['snapshot_TB1st_505'];
 root2='../../'; fname2=['snapshot_SB1st_505'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 2nd
 % description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';

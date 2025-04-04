@@ -342,7 +342,8 @@ void wave_tb_forward_1st(tb_t* ctx,
                      float * restrict vx,
                      float * restrict vy,
                      float * restrict vz,
-                     const float * restrict roc2);
+                     const float * restrict roc2,
+					 const float *restrict inv_rho);
 
 void wave_tb_backward_1st(tb_t* ctx,
                      tb_data_t* data,

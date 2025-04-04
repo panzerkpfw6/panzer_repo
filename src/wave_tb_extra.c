@@ -153,7 +153,8 @@ typedef struct{
 #define KERNEL_MWD_SIG ( const int shape[3], const int zb, const int yb_r, \
                             const int xb, const int ze, const int ye_r, const int xe, \
                             const real_t *coef, hFloat *u1, hFloat *u2, hFloat *u3,   \
-                            hFloat *v1, hFloat *v2, hFloat *v3, const hFloat *roc2, \
+                            hFloat *v1, hFloat *v2, hFloat *v3, \
+							const hFloat *roc2, const hFloat *inv_rho, \
                             float *dampx, float *dampy, float *dampz,      \
                             int t_dim, int b_inc, int e_inc, int NHALO,    \
                             int tb, int te,int t0,stencil_ctx stencil_ctx, int mtid,tb_data_t * data)
@@ -206,6 +207,7 @@ typedef struct{
 
     hFloat *  U1, *  U2, *  U3,*  U4, *  source;
     const float * U5;
+    const float * U6;
 //////    hFloat *  rU1, *  rU2, *  rU3,*  rU4, *  rU5;
 
     // damping ABCs
@@ -365,213 +367,12 @@ static inline void update_state(int y_coord, Parameters *p){
 }
 
 // Function definitions below
-void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0,
-                        const int xb, const int ze, const int ye_r0, const int xe,
-                    const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
-                    hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
-                    float * dampx,float * dampy,float * dampz,
-                    int t_dim, int b_inc, int e_inc,int NHALO,
-                    int tb, int te,int t0,stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
-{
-#pragma omp parallel shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO,recv_rec,irecv_rec) \
-firstprivate(b_inc, e_inc) \
-num_threads(stencil_ctx.thread_group_size)
-    {
-        int lstencil=NHALO;// @pavel  allocate variable lstencil
-        int tgs, nwf, th_nwf, tid, gtid, xi, yb, ye, ib, ie, kt, t, ix, iy, iz, q, r, err;
-        double t_start;
-
-        const int nny =shape[1];
-        const int nnz =shape[0];
-        const unsigned long nnzy = 1UL * nnz * nny;
-        const unsigned long nnyz = nnzy;
-        // index notation for velocity array
-        const int nnz_v=stencil_ctx.nz;
-        const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
-
-        uint64_t  ln_domain = ((uint64_t) 1)* shape[0]*shape[1]*shape[2];
-
-        tgs = stencil_ctx.thread_group_size;
-        nwf = stencil_ctx.num_wf;
-
-        tid = 0;
-        gtid = 0;
-
-#if defined(_OPENMP)
-        tid = omp_get_thread_num();
-		gtid = tid + mtid * tgs;
-#endif
-
-        if(stencil_ctx.use_manual_cpu_bind == 1){
-            err = sched_setaffinity(0, stencil_ctx.setsize, stencil_ctx.bind_masks[mtid*tgs+tid]);
-            if(err==-1) printf("WARNING: Could not set CPU Affinity\n");
-        }
-
-        hFloat *  u1 = p11;
-        hFloat *  v1 = p21;
-
-        int th_z = stencil_ctx.th_z;
-        int th_y = stencil_ctx.th_y;
-        int th_x = stencil_ctx.th_x;
-
-        // tid = tid_x*(th_z*th_y) + tid_y*th_z + tid_z
-        int tid_z = tid%th_z;
-        int tid_y = tid/th_z;
-        int tid_x = tid/(th_z*th_y);
-
-        int yb_r = yb_r0;
-        int ye_r = ye_r0;
-
-        if(stencil_ctx.th_y>1 ){
-            if(b_inc !=0 && e_inc!=0){ // split only at full diamonds
-                if (tid_y%2 == 0){ // left thread
-                    ye_r = (yb_r + ye_r)/2;
-                    e_inc = 0;
-                } else{
-                    yb_r = (yb_r + ye_r)/2;
-                    b_inc = 0;
-                }
-            }else{// use the y-threads along x-axis make sure to use sufficient number of frontlines
-                th_x *= th_y;
-                tid_x = tid/th_z;
-                if (nwf < th_x) nwf = th_x;
-            }
-        }
-
-        int nbz = (ze-zb)/th_z;
-        q = (int)((ze-zb)/th_z);
-        r = (ze-zb)%th_z;
-        if(tid_z < r) {
-            ib = zb + tid_z * (q+1);
-            ie = ib + (q+1);
-        }else {
-            ib = zb + r * (q+1) + (tid_z - r) * q;
-            ie = ib + q;
-        }
-
-        th_nwf = nwf/th_x;
-
-        int printed = 0; //@KADIR
-        int iz_=data->rcv_depth; //@pavel
-        int end=0;
-
-        const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx);
-        const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
-        const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz);
-
-        for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
-
-            if(xe-xi <= nwf){
-                nwf = xe-xi;
-                end =1;
-            }
-
-            yb = yb_r;
-            ye = ye_r;
-
-            kt = xi;
-            int kte=kt+nwf;
-
-
-            for(t=tb; t< te; t++){ // Diamond blocking in time
-                int mod = (t)%2;
-                if (mod) {
-                    u1 = p11 ;
-                    v1 = p21 ;
-                } else {
-                    u1 = p21 ;
-                    v1 = p11 ;
-                }
-//#pragma omp barrier
-//                MSG("stencil_ctx.dz=%f\n",stencil_ctx.dz);
-//                MSG("inv_dx2=%f\n",inv_dx2);
-                const Myfloat coef = stencil_ctx.dt;
-                for(ix=kt; ix<kte; ix++){
-                    if( ((ix)/th_nwf)%th_x == tid_x ) {
-                        for(iy=yb; iy<ye; iy++) {
-                            float *  pr0_v = &(u1[ix*nnyz+iy*nnz]);
-                            float *  vx0_v = &(v1[ix*nnyz+iy*nnz]);
-                            const float *  coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-#pragma ivdep
-                            for(iz=ib; iz<ie; iz++) {
-                                Myfloat d2_pr_x = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnyz + iz]
-                                                     + FDM_O2_8_2_A1 * (pr0_v[-1*nnyz + iz] + pr0_v[ 1*nnyz + iz])
-                                                     + FDM_O2_8_2_A2 * (pr0_v[-2*nnyz + iz] + pr0_v[ 2*nnyz + iz])
-                                                     + FDM_O2_8_2_A3 * (pr0_v[-3*nnyz + iz] + pr0_v[ 3*nnyz + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnyz + iz] + pr0_v[ 4*nnyz + iz])) * inv_dx2;
-
-                                Myfloat d2_pr_y = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnz + iz]
-                                                     + FDM_O2_8_2_A1 * (pr0_v[-1*nnz + iz] + pr0_v[ 1*nnz + iz])
-                                                     + FDM_O2_8_2_A2 * (pr0_v[-2*nnz + iz] + pr0_v[ 2*nnz + iz])
-                                                     + FDM_O2_8_2_A3 * (pr0_v[-3*nnz + iz] + pr0_v[ 3*nnz + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnz + iz] + pr0_v[ 4*nnz + iz])) * inv_dy2;
-
-                                Myfloat d2_pr_z = (  FDM_O2_8_2_A0 *  pr0_v[ 0 + iz]
-                                                     + FDM_O2_8_2_A1 * (pr0_v[-1 + iz] + pr0_v[ 1 + iz])
-                                                     + FDM_O2_8_2_A2 * (pr0_v[-2 + iz] + pr0_v[ 2 + iz])
-                                                     + FDM_O2_8_2_A3 * (pr0_v[-3 + iz] + pr0_v[ 3 + iz])
-                                                     + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2;
-
-//                                MSG("vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
-//                                MSG("vx0_v=%f\n",vx0_v[iz],",pr0_v=%f\n",pr0_v[iz],",=%f\n",pr0_v[iz]);
-//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
-//                                MSG("stencil_ctx.dt=%f\n",stencil_ctx.dt);
-//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
-                                vx0_v[iz] = coef0_v[(iz-NHALO)]*(d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
-//                                if (fabs(vx0_v[iz]) > 10) {
-//                                    MSG("!alarm! vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
-//                                }
-
-                                // ABCs
-//                                MSG("vx0_v[iz]=%d\n",vx0_v[iz]);
-                                vx0_v[iz] = dampx[ix+lstencil] * vx0_v[iz] + (1 -dampx[ix+lstencil]) * pr0_v[iz];
-                                vx0_v[iz] = dampy[iy+lstencil] * vx0_v[iz] + (1 -dampy[iy+lstencil]) * pr0_v[iz];
-                                vx0_v[iz] = dampz[iz+lstencil] * vx0_v[iz] + (1 -dampz[iz+lstencil]) * pr0_v[iz];
-                            }
-
-                        }
-
-
-                        if( (gp->source_point_enabled==1)
-                            && (gp->lsource_pt[2] >= ib ) //@KADIR
-                            && (gp->lsource_pt[2] <  ie ) //@KADIR
-                            && (gp->lsource_pt[1] >= yb ) //@KADIR
-                            && (gp->lsource_pt[1] <  ye ) //@KADIR
-                            && (gp->lsource_pt[0] == ix ) //@KADIR
-                                )
-                        {
-                            V1_xyz(gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]) += gp->src_exc_coef[isrc_exc];
-//                            MSG("gp->src_exc_coef[isrc_exc]=%f\n",gp->src_exc_coef[isrc_exc]);
-                            isrc_exc++;
-                        }
-                    }
-                }
-                // Update block size in Y
-                if(t< t_dim){ // lower half of the diamond
-                    yb += -b_inc;
-                    ye += e_inc;
-                }else{ // upper half of the diamond
-                    yb += b_inc;
-                    ye += -e_inc;
-                }
-//                MSG("line 540");
-                kte=max(kte-NHALO,xb);
-                if (end==1) kte =xe;
-                kt=max(kt-NHALO,xb);
-                t_start = get_wall_time();
-//                MSG("line 545");
-#pragma omp barrier
-                stencil_ctx.t_wait[gtid] += get_wall_time() - t_start;
-//                MSG("line 548");
-            } // diamond blocking in time (time loop)
-        } // wavefront loop
-    } // parallel region
-}
 
 void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
                         const int xb, const int ze, const int ye_r0, const int xe,
                     const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
-                    hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
+                    hFloat *  p21, hFloat *  p22, hFloat *  p23,
+					const hFloat * roc2, const hFloat * inv_rho,
                     float * dampx,float * dampy,float * dampz,
                     int t_dim, int b_inc, int e_inc,int NHALO,
                     int tb, int te,int t0, stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
@@ -662,7 +463,12 @@ num_threads(stencil_ctx.thread_group_size)
         int iz_=data->rcv_depth; //@pavel
         int end=0;
 
-        const Myfloat inv_dx = 1. / (stencil_ctx.dx);
+        // Precompute coefficients with dt for velocity updates
+		const Myfloat dt_inv_dx = stencil_ctx.dt / (stencil_ctx.dx);
+		const Myfloat dt_inv_dy = stencil_ctx.dt / (stencil_ctx.dy);
+		const Myfloat dt_inv_dz = stencil_ctx.dt / (stencil_ctx.dz);
+
+        const Myfloat inv_dx = 1./ (stencil_ctx.dx);
         const Myfloat inv_dy = 1. / (stencil_ctx.dy);
         const Myfloat inv_dz = 1. / (stencil_ctx.dz);
 
@@ -683,6 +489,7 @@ num_threads(stencil_ctx.thread_group_size)
             float * __restrict u2_v;
             float * __restrict u3_v;
             const float * __restrict coef0_v;
+            const float * __restrict inv_rho_v;
             int t_real=0;
             int tb_real=(tb)/2+1;
             int t0_real=(t0)/2+1;
@@ -710,6 +517,7 @@ num_threads(stencil_ctx.thread_group_size)
                                     u1_v = &(u1[ix*nnyz+iy*nnz]);
                                     u2_v = &(u2[ix*nnyz+iy*nnz]);
                                     u3_v = &(u3[ix*nnyz+iy*nnz]);
+                                    inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
 #pragma ivdep
                                     for(int iz=ib; iz<ie; iz++) {
                                         const Myfloat xum4 = u1_v[-3*nnyz + iz];
@@ -724,9 +532,9 @@ num_threads(stencil_ctx.thread_group_size)
                                         Myfloat d_pr_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
                                                               + FDM_O1_8_2_A2 * (xup1 - xum2)
                                                               + FDM_O1_8_2_A3 * (xup2 - xum3)
-                                                              + FDM_O1_8_2_A4 * (xup3 - xum4)) * inv_dx) ;
+                                                              + FDM_O1_8_2_A4 * (xup3 - xum4)) ) ;
 
-                                        v1_v[iz] += stencil_ctx.dt * d_pr_x;
+                                        v1_v[iz] += inv_rho_v[iz]*dt_inv_dx* d_pr_x;
 
                                         const Myfloat yum4 = u1_v[-3*nnz + iz];
                                         const Myfloat yum3 = u1_v[-2*nnz + iz];
@@ -740,9 +548,9 @@ num_threads(stencil_ctx.thread_group_size)
                                         Myfloat d_pr_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
                                                               + FDM_O1_8_2_A2 * (yup1 - yum2)
                                                               + FDM_O1_8_2_A3 * (yup2 - yum3)
-                                                              + FDM_O1_8_2_A4 * (yup3 - yum4)) * inv_dy) ;
+                                                              + FDM_O1_8_2_A4 * (yup3 - yum4)) ) ;
 
-                                        v2_v[iz] += stencil_ctx.dt * d_pr_y;
+                                        v2_v[iz] += inv_rho_v[iz]*dt_inv_dy* d_pr_y;
 
                                         const Myfloat zum4 = u1_v[-3 + iz];
                                         const Myfloat zum3 = u1_v[-2 + iz];
@@ -756,9 +564,9 @@ num_threads(stencil_ctx.thread_group_size)
                                         Myfloat d_pr_z  = ( ( FDM_O1_8_2_A1 * (zu0  - zum1)
                                                               + FDM_O1_8_2_A2 * (zup1 - zum2)
                                                               + FDM_O1_8_2_A3 * (zup2 - zum3)
-                                                              + FDM_O1_8_2_A4 * (zup3 - zum4)) * inv_dz) ;
+                                                              + FDM_O1_8_2_A4 * (zup3 - zum4)) ) ;
 
-                                        v3_v[iz] += stencil_ctx.dt * d_pr_z;
+                                        v3_v[iz] += inv_rho_v[iz]*dt_inv_dz * d_pr_z;
                                     }
                                 }
                             }
@@ -900,7 +708,8 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
                         p->coef,p->U1,p->U1,p->U1,
-                        p->U2, p->U3,p->U4,p->U5,
+                        p->U2, p->U3,p->U4,
+						p->U5,p->U6,
                         p->dampx,p->dampy,p->dampz,
                         p->t_dim, b_inc, e_inc, p->stencil.r,
                         tb,te,t0,p->stencil_ctx,tid,p->data);
@@ -1577,7 +1386,7 @@ void intra_diamond_mwd_comp_std_grok(Parameters *p, int yb_r, int ye_r, int b_in
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
                         p->coef,p->U1,p->U1,p->U1,
-                        p->U2, p->U3,p->U4,p->U5,
+                        p->U2, p->U3,p->U4,p->U5,p->U6,
                         p->dampx,p->dampy,p->dampz,
                         p->t_dim, b_inc, e_inc, p->stencil.r,
                         tb,te,t0,p->stencil_ctx,tid,p->data);
@@ -1845,8 +1654,208 @@ void dynamic_intra_diamond_ts_combined_grok(Parameters *p) {
     free((void *) avail_list);
 }
 
-
 ////////////////////////
+void femwd_iso_ref_2nd( const int shape[3], const int zb, const int yb_r0,
+                        const int xb, const int ze, const int ye_r0, const int xe,
+                    const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
+                    hFloat *  p21, hFloat *  p22, hFloat *  p23,const hFloat *  roc2,
+					const hFloat *  inv_rho,
+                    float * dampx,float * dampy,float * dampz,
+                    int t_dim, int b_inc, int e_inc,int NHALO,
+                    int tb, int te,int t0,stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
+{
+#pragma omp parallel shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO,recv_rec,irecv_rec) \
+firstprivate(b_inc, e_inc) \
+num_threads(stencil_ctx.thread_group_size)
+    {
+        int lstencil=NHALO;// @pavel  allocate variable lstencil
+        int tgs, nwf, th_nwf, tid, gtid, xi, yb, ye, ib, ie, kt, t, ix, iy, iz, q, r, err;
+        double t_start;
+
+        const int nny =shape[1];
+        const int nnz =shape[0];
+        const unsigned long nnzy = 1UL * nnz * nny;
+        const unsigned long nnyz = nnzy;
+        // index notation for velocity array
+        const int nnz_v=stencil_ctx.nz;
+        const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
+
+        uint64_t  ln_domain = ((uint64_t) 1)* shape[0]*shape[1]*shape[2];
+
+        tgs = stencil_ctx.thread_group_size;
+        nwf = stencil_ctx.num_wf;
+
+        tid = 0;
+        gtid = 0;
+
+#if defined(_OPENMP)
+        tid = omp_get_thread_num();
+		gtid = tid + mtid * tgs;
+#endif
+
+        if(stencil_ctx.use_manual_cpu_bind == 1){
+            err = sched_setaffinity(0, stencil_ctx.setsize, stencil_ctx.bind_masks[mtid*tgs+tid]);
+            if(err==-1) printf("WARNING: Could not set CPU Affinity\n");
+        }
+
+        hFloat *  u1 = p11;
+        hFloat *  v1 = p21;
+
+        int th_z = stencil_ctx.th_z;
+        int th_y = stencil_ctx.th_y;
+        int th_x = stencil_ctx.th_x;
+
+        // tid = tid_x*(th_z*th_y) + tid_y*th_z + tid_z
+        int tid_z = tid%th_z;
+        int tid_y = tid/th_z;
+        int tid_x = tid/(th_z*th_y);
+
+        int yb_r = yb_r0;
+        int ye_r = ye_r0;
+
+        if(stencil_ctx.th_y>1 ){
+            if(b_inc !=0 && e_inc!=0){ // split only at full diamonds
+                if (tid_y%2 == 0){ // left thread
+                    ye_r = (yb_r + ye_r)/2;
+                    e_inc = 0;
+                } else{
+                    yb_r = (yb_r + ye_r)/2;
+                    b_inc = 0;
+                }
+            }else{// use the y-threads along x-axis make sure to use sufficient number of frontlines
+                th_x *= th_y;
+                tid_x = tid/th_z;
+                if (nwf < th_x) nwf = th_x;
+            }
+        }
+
+        int nbz = (ze-zb)/th_z;
+        q = (int)((ze-zb)/th_z);
+        r = (ze-zb)%th_z;
+        if(tid_z < r) {
+            ib = zb + tid_z * (q+1);
+            ie = ib + (q+1);
+        }else {
+            ib = zb + r * (q+1) + (tid_z - r) * q;
+            ie = ib + q;
+        }
+
+        th_nwf = nwf/th_x;
+
+        int printed = 0; //@KADIR
+        int iz_=data->rcv_depth; //@pavel
+        int end=0;
+
+        const Myfloat inv_dx2 = 1. / (stencil_ctx.dx*stencil_ctx.dx);
+        const Myfloat inv_dy2 = 1. / (stencil_ctx.dy*stencil_ctx.dy);
+        const Myfloat inv_dz2 = 1. / (stencil_ctx.dz*stencil_ctx.dz);
+
+        for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
+
+            if(xe-xi <= nwf){
+                nwf = xe-xi;
+                end =1;
+            }
+
+            yb = yb_r;
+            ye = ye_r;
+
+            kt = xi;
+            int kte=kt+nwf;
 
 
+            for(t=tb; t< te; t++){ // Diamond blocking in time
+                int mod = (t)%2;
+                if (mod) {
+                    u1 = p11 ;
+                    v1 = p21 ;
+                } else {
+                    u1 = p21 ;
+                    v1 = p11 ;
+                }
+//#pragma omp barrier
+//                MSG("stencil_ctx.dz=%f\n",stencil_ctx.dz);
+//                MSG("inv_dx2=%f\n",inv_dx2);
+                const Myfloat coef = stencil_ctx.dt;
+                for(ix=kt; ix<kte; ix++){
+                    if( ((ix)/th_nwf)%th_x == tid_x ) {
+                        for(iy=yb; iy<ye; iy++) {
+                            float *  pr0_v = &(u1[ix*nnyz+iy*nnz]);
+                            float *  vx0_v = &(v1[ix*nnyz+iy*nnz]);
+                            const float *  coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+#pragma ivdep
+                            for(iz=ib; iz<ie; iz++) {
+                                Myfloat d2_pr_x = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnyz + iz]
+                                                     + FDM_O2_8_2_A1 * (pr0_v[-1*nnyz + iz] + pr0_v[ 1*nnyz + iz])
+                                                     + FDM_O2_8_2_A2 * (pr0_v[-2*nnyz + iz] + pr0_v[ 2*nnyz + iz])
+                                                     + FDM_O2_8_2_A3 * (pr0_v[-3*nnyz + iz] + pr0_v[ 3*nnyz + iz])
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnyz + iz] + pr0_v[ 4*nnyz + iz])) * inv_dx2;
+
+                                Myfloat d2_pr_y = (  FDM_O2_8_2_A0 *  pr0_v[ 0*nnz + iz]
+                                                     + FDM_O2_8_2_A1 * (pr0_v[-1*nnz + iz] + pr0_v[ 1*nnz + iz])
+                                                     + FDM_O2_8_2_A2 * (pr0_v[-2*nnz + iz] + pr0_v[ 2*nnz + iz])
+                                                     + FDM_O2_8_2_A3 * (pr0_v[-3*nnz + iz] + pr0_v[ 3*nnz + iz])
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4*nnz + iz] + pr0_v[ 4*nnz + iz])) * inv_dy2;
+
+                                Myfloat d2_pr_z = (  FDM_O2_8_2_A0 *  pr0_v[ 0 + iz]
+                                                     + FDM_O2_8_2_A1 * (pr0_v[-1 + iz] + pr0_v[ 1 + iz])
+                                                     + FDM_O2_8_2_A2 * (pr0_v[-2 + iz] + pr0_v[ 2 + iz])
+                                                     + FDM_O2_8_2_A3 * (pr0_v[-3 + iz] + pr0_v[ 3 + iz])
+                                                     + FDM_O2_8_2_A4 * (pr0_v[-4 + iz] + pr0_v[ 4 + iz])) * inv_dz2;
+
+//                                MSG("vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
+//                                MSG("vx0_v=%f\n",vx0_v[iz],",pr0_v=%f\n",pr0_v[iz],",=%f\n",pr0_v[iz]);
+//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
+//                                MSG("stencil_ctx.dt=%f\n",stencil_ctx.dt);
+//                                MSG("coef0_v[iz]=%f\n",coef0_v[iz]);
+                                vx0_v[iz] = coef0_v[(iz-NHALO)]*(d2_pr_x + d2_pr_y + d2_pr_z) - vx0_v[iz] + (Myfloat)(2.0) * pr0_v[iz];
+//                                if (fabs(vx0_v[iz]) > 10) {
+//                                    MSG("!alarm! vx0_v=%f, pr0_v=%f\n",vx0_v[iz],pr0_v[iz]);
+//                                }
+
+                                // ABCs
+//                                MSG("vx0_v[iz]=%d\n",vx0_v[iz]);
+                                vx0_v[iz] = dampx[ix+lstencil] * vx0_v[iz] + (1 -dampx[ix+lstencil]) * pr0_v[iz];
+                                vx0_v[iz] = dampy[iy+lstencil] * vx0_v[iz] + (1 -dampy[iy+lstencil]) * pr0_v[iz];
+                                vx0_v[iz] = dampz[iz+lstencil] * vx0_v[iz] + (1 -dampz[iz+lstencil]) * pr0_v[iz];
+                            }
+
+                        }
+
+
+                        if( (gp->source_point_enabled==1)
+                            && (gp->lsource_pt[2] >= ib ) //@KADIR
+                            && (gp->lsource_pt[2] <  ie ) //@KADIR
+                            && (gp->lsource_pt[1] >= yb ) //@KADIR
+                            && (gp->lsource_pt[1] <  ye ) //@KADIR
+                            && (gp->lsource_pt[0] == ix ) //@KADIR
+                                )
+                        {
+                            V1_xyz(gp->lsource_pt[0],gp->lsource_pt[1],gp->lsource_pt[2]) += gp->src_exc_coef[isrc_exc];
+//                            MSG("gp->src_exc_coef[isrc_exc]=%f\n",gp->src_exc_coef[isrc_exc]);
+                            isrc_exc++;
+                        }
+                    }
+                }
+                // Update block size in Y
+                if(t< t_dim){ // lower half of the diamond
+                    yb += -b_inc;
+                    ye += e_inc;
+                }else{ // upper half of the diamond
+                    yb += b_inc;
+                    ye += -e_inc;
+                }
+//                MSG("line 540");
+                kte=max(kte-NHALO,xb);
+                if (end==1) kte =xe;
+                kt=max(kt-NHALO,xb);
+                t_start = get_wall_time();
+//                MSG("line 545");
+#pragma omp barrier
+                stencil_ctx.t_wait[gtid] += get_wall_time() - t_start;
+//                MSG("line 548");
+            } // diamond blocking in time (time loop)
+        } // wavefront loop
+    } // parallel region
+}
 
