@@ -3,12 +3,17 @@
 #include <math.h>
 #include <string.h>
 #include <sys/sysinfo.h>
-//#include <cuda_runtime.h>
+#include <errno.h>
 #include <stencil/parser.h>
 #include <stencil/stencil.h>
 #include <stencil/wave_tb.h>
+#include <stencil/wave.h>
 #include <stencil/wtime.h>
 #include <stencil/macros.h>
+
+
+//#include <cuda_runtime.h>
+
 void wave_tb_data_close_open(tb_data_t * data,const int nb_thread_groups,const int shotid) {
   char tmp[512];
   sprintf(tmp, "mkdir -p %s", OUTDIR);
@@ -463,7 +468,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             t_snap += wtime() - t0;
 
             t0 = wtime();
-            wave_image_condition_block(s, u0, fwd, img_shot, ilm_shot, t+1);
+            wave_image_condition_block_xyz(s,u0,fwd,img_shot,ilm_shot,t+1);
             t_image += wtime() - t0;
 
             t0 = wtime();
@@ -844,14 +849,16 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 }
 
 int main(int argc, char *argv[]) {
-	time_t rawtime;
-	struct tm *timeinfo;
-	char buffer[80];
-	// Start of program
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
-	printf("Program started at: %s\n",buffer);
+//	MSG("Hi");
+	printf("Hi\n");
+//	time_t rawtime;
+//	struct tm *timeinfo;
+//	char buffer[80];
+//	// Start of program
+//	time(&rawtime);
+//	timeinfo = localtime(&rawtime);
+//	strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+//	printf("Program started at: %s\n",buffer);
 
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t *) malloc(sizeof(sismap_t));
@@ -887,6 +894,11 @@ int main(int argc, char *argv[]) {
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
 
+    // Read cache blocking parameters for SB method //
+	s->blockx=parser_get_int(p,"cbx");
+	s->blocky=parser_get_int(p,"cby");
+	s->blockz=parser_get_int(p,"cbz");
+
     int ncpus=get_nprocs();
     printf("ncpus : %d\n",ncpus);
     printf("# THREADS : %d\n",omp_get_max_threads());
@@ -909,12 +921,18 @@ int main(int argc, char *argv[]) {
     /// initialize the geometry.
     wave_init_acquisition(s);
 
+    printf("cpu=%d, time_steps=%d, size_eff=%ld, dimx=%d, dimy=%d, dimz=%d\n",
+               s->cpu, s->time_steps, s->size_eff, s->dimx, s->dimy, s->dimz);
+
     /// initialize the simulation buffers.
     if (s->cpu) {
         CREATE_BUFFER(vel, s->size_eff);
         CREATE_BUFFER(rho,s->size_eff);
         CREATE_BUFFER(inv_rho,s->size_eff);
     } else {
+		MSG("... !SB MODE! ...");
+		MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",s->blockx,s->blocky,s->blockz);
+		///////////////////////////////////////
         CREATE_BUFFER_ONLY(vel, s->size_eff);
         array_openmp_inner_init(vel, s);
         CREATE_BUFFER_ONLY(rho, s->size_eff);
@@ -922,14 +940,15 @@ int main(int argc, char *argv[]) {
 		CREATE_BUFFER_ONLY(inv_rho,s->size_eff);
 		array_openmp_inner_init(inv_rho, s);
     }
+    printf("Before CREATE_BUFFER(source \n");
     CREATE_BUFFER(source, s->time_steps + 1);
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
 
     /// load/generate the velocity model.
 //    velocity_load_model(s, vel);
-    velocity_const_model2(s,vel);
+//    velocity_const_model2(s,vel);
+    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
-//    velocity_2layer_model(s,vel);
 
     /// load/generate the density model.
 	density_const_model(s,rho,inv_rho);
@@ -940,7 +959,7 @@ int main(int argc, char *argv[]) {
 	/// generate coefficient matrix.
 	fill_coef_matrix(s,vel,rho);
 	/// dump coefficient matrix.
-	dump_coef(s,vel);
+	dump_coef(s,vel,rho);
 
     /// compute PML parameters.
 //    pml_compute_coefs(s,pml_tab);

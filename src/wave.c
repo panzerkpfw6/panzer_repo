@@ -303,7 +303,7 @@ void wave_init_acquisition(sismap_t *s) {
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
              x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
             s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
-//            s->rcv[ir++]=(s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy);   //stencil:xyz
+//            s->rcv[ir]=(s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy);   //stencil:xyz
             fprintf(fd,"rec %3d in [%3d, %3d, %3d] at %3d\n",ir,x,y,s->rcv_depth,(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx));   //simwave:zyx
             ir++;
         }
@@ -1281,13 +1281,12 @@ void wave_update_fields_block_1st(sismap_t *s,
     const int nnx = dimx + 2 * sx;
     const int nny = dimy + 2 * sy;
     const int nnz = dimz + 2 * sz;
+    const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+    const long int nnyz=(long int)nny * nnz;
 
     const float inv_dx = 1. / (s->dx);
     const float inv_dy = 1. / (s->dy);
     const float inv_dz = 1. / (s->dz);
-
-    const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
-    const long int nnyz=(long int)nny * nnz;
 //    const unsigned long long  nnxy=nnx*nny; // XYZ order: x-slowest, z-fastest
 //    const unsigned long long  nnyz=nny*nnz;
 
@@ -1409,7 +1408,10 @@ void wave_update_source(sismap_t *s, shot_t *shot,float *u0,float sterm) {
 
 void wave_extract_sismos(sismap_t *s, float *u1, unsigned int t, float *sismos) {
     for (unsigned int ir = 0; ir < s->rcv_len; ir++) {
-        sismos[s->rcv_len * t + ir] = u1[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy)+s->rcv[ir]];
+//    	MSG("ir=%d",ir);
+        sismos[s->rcv_len * t + ir] = u1[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy)+ s->rcv[ir]];
+        // from stencil-dev
+//        sismos[s->rcv_len * t + ir]=u1[ (rcvx+s->sx)*nnyz+(rcvy+s->sy)*nnz+(s->rcv_depth+s->sz) ];
     }
 }
 
@@ -1511,6 +1513,69 @@ void wave_image_condition_block(sismap_t *s, float *u1,
                 }
             }
         }
+    }
+}
+
+void wave_image_condition_block_xyz(sismap_t *s, float *u1,
+                                float *fwd,
+                                float *img_shot, float *ilm_shot,
+                                unsigned int t) {
+    const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+
+	const int img_dimx = s->img_dimx;
+	const int img_dimy = s->img_dimy;
+	const int img_dimz = s->img_dimz;
+
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+
+	const int nnx = s->dimx + 2 * s->sx;
+	const int nny = s->dimy + 2 * s->sy;
+	const int nnz = s->dimz + 2 * s->sz;
+	const int sx = s->sx;
+	const int sy = s->sy;
+	const int sz = s->sz;
+
+	const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)nny * nnz;
+
+	unsigned int z, y, x;
+	unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+
+    if (t % s->nb_snap == 0) {
+        float *restrict ux;
+        float *restrict wx;
+        float *restrict imgx;
+        float *restrict ilmx;
+
+#pragma omp parallel for collapse(3) schedule(dynamic) private(ux,imgx,ilmx,wx)
+		for (xmin = 0; xmin < img_dimx; xmin += BLOCKX) {
+			for (ymin = 0; ymin < img_dimy; ymin += BLOCKY) {
+				for (zmin = 0; zmin < img_dimz; zmin += BLOCKZ) {
+					const Myint xmax = fmin(img_dimx, xmin + BLOCKX);
+					const Myint ymax = fmin(img_dimy, ymin + BLOCKY);
+					const Myint zmax = fmin(img_dimz, zmin + BLOCKZ);
+					for (int x = xmin; x < xmax; x++) {
+		//                	MSG("vz0[z]=%f\n",vz0[z]);
+						for (int y = ymin; y < ymax; y++) {
+							ux = &(u1[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+							wx = &(fwd[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+							imgx = &(img_shot[1ULL * x * dimy * dimz + y * dimz]);
+							ilmx = &(ilm_shot[1ULL * x * dimy * dimz + y * dimz]);
+							#pragma omp simd
+							for (int z = zmin; z < zmax; z++) {
+								imgx[z] += ux[z]*wx[z];
+								ilmx[z] += wx[z]*wx[z];
+		//                            MSG("vz0[z]=%f\n,",vz0[z]);
+							}
+						}
+					}
+				}
+			}
+		}
     }
 }
 

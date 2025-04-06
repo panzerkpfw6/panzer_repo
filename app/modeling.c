@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <sys/sysinfo.h>
 #include <errno.h>
 #include <stencil/parser.h>
 #include <stencil/stencil.h>
@@ -323,7 +324,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
         MSG("Speed:        %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t2-t1));
         MSG("PropSpeed:    %f GStencils/s",2.0*s->time_steps*s->size_eff/1e9/(t_prop) );
         /// save the seismic traces for the shot.
-        // wave_save_sismos(s,shot,sismos);
+        wave_save_sismos(s,shot,sismos);
         /// release/close the resources related to the current shot.
         shot_release(shot);
     }
@@ -512,6 +513,11 @@ int main(int argc, char* argv[]) {
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
 
+    // Read cache blocking parameters for SB method //
+	s->blockx=parser_get_int(p,"cbx");
+	s->blocky=parser_get_int(p,"cby");
+	s->blockz=parser_get_int(p,"cbz");
+
     int ncpus=get_nprocs();
     printf("ncpus : %d\n",ncpus);
     printf("# THREADS : %d\n",omp_get_max_threads());
@@ -540,10 +546,6 @@ int main(int argc, char* argv[]) {
         CREATE_BUFFER(rho,s->size_eff);
         CREATE_BUFFER(inv_rho,s->size_eff);
     } else {
-        // Read cache blocking parameters for SB method //
-        s->blockx=parser_get_int(p,"cbx");
-        s->blocky=parser_get_int(p,"cby");
-        s->blockz=parser_get_int(p,"cbz");
         MSG("... !SB MODE! ...");
         MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",s->blockx,s->blocky,s->blockz);
 //        exit(1);
@@ -564,8 +566,8 @@ int main(int argc, char* argv[]) {
 
     /// load/generate the velocity model.
 //    velocity_load_model(s,vel);
-    velocity_const_model2(s,vel);
-//    velocity_2layer_model(s,vel);
+//    velocity_const_model2(s,vel);
+    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
 
     /// load/generate the density model.

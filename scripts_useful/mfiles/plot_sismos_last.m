@@ -3,8 +3,12 @@ close all
 % fname=['../rtm_munich/data/sismos_16447.raw'];
 % fname=['../rtm_munich/data/sismos_91.raw'];
 fname=['../stencil-rtm/data/sismos_91.raw'];
+fname=['../../data/sismos_1.raw'];
 nt=1200;nx=128;ny=256;
 nt=200;nx=676;ny=676;
+
+nt=2200;nx=128;ny=256;
+
 dims=[nx,ny,nt];
 rcv_len=nx*ny;
 ccnt=rcv_len*nt;
@@ -33,7 +37,7 @@ data1_max_loc=[r,c,p,mxv];
 val=1e-1;
 figure
 % imagesc( squeeze(data(:,123,:)).',[-val,val] );
-imagesc( squeeze(data(:,270,:)).' );
+imagesc( squeeze(data(:,120,:)).' );
 % clim([-val,val])
 colorbar
 

@@ -173,11 +173,17 @@ int main(int argc, char* argv[]) {
   DELETE_BUFFER(img_only);
   DELETE_BUFFER(img_shot);
   DELETE_BUFFER(ilm_shot);
-  /// release stencil.
-  wave_release(s);
+
+//  printf("before wave_release\n");
+  /// release stencil by each variable.not working.
+//  wave_release(s);
+
   /// release the simulation structure.
+  printf("before free(s)\n");
   free(s);
+
   /// delete the parser.
+  printf("before parser_delete(p)\n");
   parser_delete(p);
   return EXIT_SUCCESS;
 }

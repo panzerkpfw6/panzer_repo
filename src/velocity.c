@@ -552,6 +552,11 @@ void velocity_const_model2(sismap_t *s, float *vtab) {
 }
 
 void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const long int nnxy=(long int)dimx*dimy; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)dimy*dimz;
     unsigned int x, y, z, i,val;
     for (z=0; z < s->dimz; z++) {
         if (z<80){
@@ -562,7 +567,8 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
         }
         for (y = 0; y < s->dimy; y++) {
             for (x = 0; x < s->dimx; x++) {
-                vtab[1ULL * s->dimx * (s->dimy * z + y) + x] = val;
+            	unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
+                vtab[idx]=val;
             }
         }
     }
