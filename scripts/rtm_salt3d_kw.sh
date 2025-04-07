@@ -5,7 +5,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --mem=50GB
 #SBATCH --time=24:00:00
 #SBATCH --partition=7773X  # Milan-X 128
 #SBATCH --job-name=test_rtm
@@ -15,13 +14,20 @@
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee log-rtm.log) 2>&1
 echo $hostname
 #lscpu
 
+rm ./bin/modeling
+rm ./bin/rtm
+rm ./bin/gather
+rm ./data/*ilm*
+rm ./data/*img*
+rm ./data/*sismos*
+rm ./data/*snap*
+
 ###**********  workstation ***********###
 ###********** OPENMP PARAMETERS  ***********###
-export OMP_NUM_THREADS=48
+export OMP_NUM_THREADS=36
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
@@ -30,7 +36,7 @@ export KMP_AFFINITY=compact
 ### export KMP_HW_SUBSET=1t
 ###********** MODULES & COMPILING *********###
 ###module load icc/2020.2.254
-module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 module load cmake
 
 ####**********  kanary ***********###
@@ -42,16 +48,11 @@ module load cmake
 #export granularity=fine
 #export KMP_AFFINITY=compact
 #### export KMP_HW_SUBSET=1t
-####********** MODULES & COMPILING *********###
-####module load icc/2020.2.254
-#module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
-#module load cmake
 
-#####
-#rm ./bin/rtm
-#rm ./bin/gather
+####********** MODULES & COMPILING *********###
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
+#CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-g -O0" .
 make clean
 make VERBOSE=1
 make install
@@ -61,13 +62,20 @@ make install
 #rm ./data/*.txt*
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
-timesteps=400
+#timesteps=2000
+timesteps=2200
 #nb_snap=100
-nx=676;ny=676;nz=201;
-first=16449;last=16450;
 
-first=90;last=91;
-dshot=2000;fmax=10;
+nx=128;ny=256;nz=512;
+nx=256;ny=128;nz=128;
+#first=1;last=10;
+first=16390;last=16506;
+first=1626;last=1638;
+dshot=10;
+fmax=11;
+#####*********** SB tests ************###
+echo !!SB!!
+#srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
 
 #####*********** order 2
 #./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1
@@ -75,13 +83,16 @@ dshot=2000;fmax=10;
 #./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last -c --fwd_steps 3 --order 2 --src_depth 5 --rcv_depth 5 --drcv 1 --dir "./data"
 
 #####*********** order 1
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 5 --drcv 1
+echo "Model data for RTM"
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
 
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1
-#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last 16454 -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data"
-## gather experiments
-##./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --src_depth 5 --drcv 1 --dir "./data" -c
-##./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --dir "./data" -c
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --mode 2  --dshot 1 --first $first --last $last --src_depth 5 --drcv 1 --order 2 --fmax 8
+echo "Perform RTM"
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
+
+#gdb --args ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 \
+# --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1;
+
+echo "Gather images"
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data"
+
 
