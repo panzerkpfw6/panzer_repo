@@ -49,33 +49,46 @@ void cmemcpy_omp(char *dst,
 }
 
 void memcpy_omp(float* u, float *v,sismap_t*s) {
-  const int BLOCKX=s->blockx;
-  const int BLOCKY=s->blocky;
-  const int BLOCKZ=s->blockz;
-  const int nnx = s->dimx + 2* s->sx;
-  const int nny = s->dimy + 2* s->sy;
-  const int nnxy = nnx*nny;
-  float * restrict ux;
-  float * restrict vx;
-  #pragma omp parallel for collapse(2) private(ux,vx)
-  for (int zmin = 0; zmin < s->dimz; zmin += BLOCKZ) {
-    for (int ymin = 0; ymin < s->dimy; ymin += BLOCKY) {
-      int zmax = zmin+BLOCKZ;
-      if (zmax > s->dimz) zmax = s->dimz;
-      int ymax = ymin+BLOCKY;
-      if (ymax > s->dimy) ymax = s->dimy;
-      for(int z = zmin; z < zmax ; z++) {
-        for(int y = ymin; y < ymax; y++) {
-          ux = &(  u[1ULL* (z+s->sz) * nnxy            + (y+s->sy) * nnx + s->sx]);
-          vx = &(  v[1ULL* (z+s->sz) * nnxy            + (y+s->sy) * nnx + s->sx]);
-//          #pragma simd
-          for(int x = 0; x < s->dimx; x++) {
-            ux[x] = vx[x];
-          }
+	const int BLOCKX=s->blockx;
+	const int BLOCKY=s->blocky;
+	const int BLOCKZ=s->blockz;
+
+	unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const int sx = s->sx;
+	const int sy = s->sy;
+	const int sz = s->sz;
+	const int nnx = dimx + 2 * sx;
+	const int nny = dimy + 2 * sy;
+	const int nnz = dimz + 2 * sz;
+	const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)nny * nnz;
+	float * restrict ux;
+	float * restrict vx;
+	/////////////
+#pragma omp parallel for collapse(3) schedule(dynamic) private(xmin, xmax, zmin, zmax, ymin, ymax, ux,vx)
+    for (xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            for (zmin = 0; zmin < dimz; zmin += BLOCKZ) {
+                const Myint xmax = fmin(dimx, xmin + BLOCKX);
+                const Myint ymax = fmin(dimy, ymin + BLOCKY);
+                const Myint zmax = fmin(dimz, zmin + BLOCKZ);
+                for (int x = xmin; x < xmax; x++) {
+                    for (int y = ymin; y < ymax; y++) {
+                        ux = &(  u[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        vx = &(  v[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+                        #pragma omp simd
+                        for (int z = zmin; z < zmax; z++) {
+                        	ux[z] = vx[z];
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
+    /////////////
 }
 
 ///
@@ -401,7 +414,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
         wave_update_source(s, shot, u0, source[0]);
         for(int t = 0; t < s->time_steps; ++t) {
             t0 = wtime();
-//            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp,pml_tab);
             t_prop += wtime() - t0;
 
             t0 = wtime();
@@ -465,7 +478,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             }  else {
                 wave_read_snapshot(s, shot, fwd, t+1);
             }
-            t_snap += wtime() - t0;
+            t_snap += wtime()-t0;
 
             t0 = wtime();
             wave_image_condition_block_xyz(s,u0,fwd,img_shot,ilm_shot,t+1);
@@ -473,10 +486,10 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
 
             t0 = wtime();
 //            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
-            t_prop += wtime() - t0;
+            t_prop += wtime()-t0;
 
             t0 = wtime();
-            wave_inject_sismos(s, u0, t, sismos);
+            wave_inject_sismos(s,u0,t,sismos);
             t_sismos += wtime() - t0;
 
 //            WAVE_SWAP_POINTERS(u0, u1);

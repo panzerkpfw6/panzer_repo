@@ -298,6 +298,79 @@ void wave_init_acquisition(sismap_t *s) {
     printf("%s\n", tmp);
     CHK(fd == NULL, "failed to open rcv file");
 
+	for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
+		 x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
+		for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
+			 y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
+//            s->rcv[ir]=(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx);   //simwave:zyx
+            s->rcv[ir]=(s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy);   //stencil:xyz
+//            fprintf(fd,"rec %3d in [%3d, %3d, %3d] at %3d\n",ir,x,y,s->rcv_depth,(s->sy+y)*(s->dimx+2*s->sx)+(x+s->sx));   //simwave:zyx
+            fprintf(fd,"rec %3d in [%3d, %3d, %3d] at %3d\n",ir,x,y,s->rcv_depth,(s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy));   //stencil:xyz
+            ir++;
+        }
+        fprintf(fd, "\n");
+    }
+    fclose(fd);
+
+    /// record shots file.
+    char tmp2[512];
+    sprintf(tmp2,"%s/shots.txt", OUTDIR);
+    FILE *fd2 = fopen(tmp2, "w");
+    printf("%s\n", tmp2);
+    CHK(fd2 == NULL, "failed to open shots file");
+
+    /// setup shots geometries.
+    s->snap_idx = 0;
+    s->nb_shots = 0;
+    for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
+        s->nb_shots++;
+    }
+    if (s->first == -1) s->first = 0;
+    if (s->last == -1) s->last = s->nb_shots - 1;
+    s->shots = (shot_t **) malloc(sizeof(shot_t * ) * s->nb_shots);
+
+    for (unsigned int idx = 0; idx < s->nb_shots; idx++)
+        s->shots[idx] = (shot_t *) malloc(sizeof(shot_t));
+
+    unsigned int idx = 0;
+    for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
+//        s->shots[idx]->srcidx = s->rcv[ir]+s->drcv/2;   // should I really use "s->drcv/2"?
+        s->shots[idx]->srcidx=s->rcv[ir];
+        s->shots[idx]->id=idx;
+        fprintf(fd2,"ir=%3d at %3d,shot id=%3d\n",ir,s->shots[idx]->srcidx,s->shots[idx]->id);
+        ////////////////////////////////
+////////////////////////////////
+        idx++;
+    }
+    fclose(fd2);
+}
+
+void wave_init_acquisition_orig(sismap_t *s) {
+    /// initialize shots geometry:
+    int a = 0;
+    s->rcv_len = 0;
+
+    for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
+         y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
+        a++;
+        for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
+             x < s->dimx - s->pmlx; x += (s->drcv * s->dtrpx)) {
+            s->rcv_len = s->rcv_len + 1;
+        }
+    }
+    MSG(" s->rcv_len, %d\n", s->rcv_len);
+    MSG("number of receivers in y direction, %d\n",a);
+    s->rcv = (unsigned int *) malloc(s->rcv_len * sizeof(unsigned int));
+//    int ir = -1;
+    int ir=0;
+
+    /// record acquisition file.
+    char tmp[512];
+    sprintf(tmp,"%s/acquisition.txt", OUTDIR);
+    FILE *fd = fopen(tmp, "w");
+    printf("%s\n", tmp);
+    CHK(fd == NULL, "failed to open rcv file");
+
     for (int y = (s->dim2 ? 0 : s->pmly + (s->drcv * s->dtrpy) - 1);
          y < s->dimy - s->pmly; y += (s->drcv * s->dtrpy)) {
         for (int x = s->pmlx + (s->drcv * s->dtrpx) - 1;
@@ -327,8 +400,10 @@ void wave_init_acquisition(sismap_t *s) {
     if (s->first == -1) s->first = 0;
     if (s->last == -1) s->last = s->nb_shots - 1;
     s->shots = (shot_t **) malloc(sizeof(shot_t * ) * s->nb_shots);
+
     for (unsigned int idx = 0; idx < s->nb_shots; idx++)
         s->shots[idx] = (shot_t *) malloc(sizeof(shot_t));
+
     unsigned int idx = 0;
     for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
 //        s->shots[idx]->srcidx = s->rcv[ir]+s->drcv/2;   // should I really use "s->drcv/2"?
@@ -1270,8 +1345,8 @@ void wave_update_fields_block_1st(sismap_t *s,
 	const int BLOCKY=s->blocky;
 	const int BLOCKZ=s->blockz;
 	unsigned int z, y, x;
-    unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
 
+	unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
     const int dimx = s->dimx;
     const int dimy = s->dimy;
     const int dimz = s->dimz;
@@ -1395,30 +1470,41 @@ void wave_update_fields_block_1st(sismap_t *s,
 void wave_update_source(sismap_t *s, shot_t *shot,float *u0,float sterm) {
 //    MSG("shot->srcidx=%d\n",shot->srcidx);
     const int nnz = s->dimz + 2 * s->sz;
-//    const int nnx = s->dimx + 2 * s->sx;
-//    const int nny = s->dimy + 2 * s->sy;
-//    const int nnxy = nnx * nny;
-//    const int nnyz = nny * nnz;
-//    s->rcv[ir++] = (s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy);   //stencil:xyz
-
-//    u0[shot->srcidx*nnz+(s->src_depth+s->sz)]+=sterm; // stencil:xyz
-
-    u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx] += sterm; // simwave:zyx
+    const int nnx = s->dimx + 2 * s->sx;
+    const int nny = s->dimy + 2 * s->sy;
+    const int nnxy = nnx * nny;
+    const int nnyz = nny * nnz;
+//    u0[(s->src_depth + s->sz) * (2 * s->sx + s->dimx)*(2 * s->sy + s->dimy)+shot->srcidx] += sterm; // simwave:zyx
+    u0[ shot->srcidx*nnz + (s->src_depth + s->sz) ] += sterm; // stencil:xyz
 }
 
 void wave_extract_sismos(sismap_t *s, float *u1, unsigned int t, float *sismos) {
+	const int sz = s->sz;
+	const int nnz=s->dimz + 2*sz;
     for (unsigned int ir = 0; ir < s->rcv_len; ir++) {
-//    	MSG("ir=%d",ir);
-        sismos[s->rcv_len * t + ir] = u1[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy)+ s->rcv[ir]];
         // from stencil-dev
 //        sismos[s->rcv_len * t + ir]=u1[ (rcvx+s->sx)*nnyz+(rcvy+s->sy)*nnz+(s->rcv_depth+s->sz) ];
+        sismos[s->rcv_len * t + ir]=u1[ 1ULL*s->rcv[ir] * nnz + (s->rcv_depth+s->sz) ];
     }
 }
 
 void wave_inject_sismos(sismap_t *s, float *u0, unsigned int t, float *sismos) {
+	const int dimx = s->dimx;
+	const int dimy = s->dimy;
+	const int dimz = s->dimz;
+	const int sx = s->sx;
+	const int sy = s->sy;
+	const int sz = s->sz;
+	const int nnx = dimx + 2 * sx;
+	const int nny = dimy + 2 * sy;
+	const int nnz = dimz + 2 * sz;
+	const long int nnxy=(long int)nnx * nny; // XYZ order: x-slowest, z-fastest
+	const long int nnyz=(long int)nny * nnz;
+
     for (unsigned int ir = 0; ir < s->rcv_len; ir++) {
-        u0[(s->rcv_depth + s->sz)*(2*s->sx + s->dimx)*(2*s->sy + s->dimy)+ s->rcv[ir]] += sismos[s->rcv_len*t + ir];
-        u0[(s->rcv_depth + s->sz) * (2 * s->sx + s->dimx) * (2 * s->sy + s->dimy)+ s->rcv[ir]] += sismos[s->rcv_len * t + ir];
+    	//// u0[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]
+    	//// s->rcv[ir]=(s->sx+x)*(s->dimy+2*s->sy)+(y+s->sy);
+    	u0[ 1ULL*s->rcv[ir] * nnz + (s->rcv_depth+s->sz) ]+= sismos[s->rcv_len*t + ir];
     }
 }
 

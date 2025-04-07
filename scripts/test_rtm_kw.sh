@@ -22,6 +22,8 @@ rm ./bin/rtm
 rm ./bin/gather
 rm ./data/*ilm*
 rm ./data/*img*
+rm ./data/*sismos*
+rm ./data/*snap*
 
 ###**********  workstation ***********###
 ###********** OPENMP PARAMETERS  ***********###
@@ -63,13 +65,14 @@ make install
 #timesteps=2000
 timesteps=2200
 #nb_snap=100
-nx=128;ny=256;nz=512;
-first=16449;last=16450;
 
-nx=128;ny=256;nz=128;
+nx=128;ny=256;nz=512;
+nx=256;ny=128;nz=128;
 #first=1;last=10;
-first=1;last=3;
-dshot=1000;fmax=20;
+first=16390;last=16506;
+first=1626;last=1638;
+dshot=10;
+fmax=11;
 #####*********** SB tests ************###
 echo !!SB!!
 #srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
@@ -81,10 +84,10 @@ echo !!SB!!
 
 #####*********** order 1
 echo "Model data for RTM"
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1;
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
 
 echo "Perform RTM"
-./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1;
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
 
 #gdb --args ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 \
 # --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1;
@@ -116,18 +119,18 @@ echo "Gather images"
 
 
 #####*********** TB tests ************########***********
-echo !!TB default!!
-#numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
-echo !!TB with parameters!!
-#export FIRST_TOUCH=1m
-#srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size  --n2 $size --n3 512 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf   --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
-mode=2
-th_x=8
-th_y=2
-th_z=1
-tgs=16
-t_dim=7
-num_wf=64
+#echo !!TB default!!
+##numactl --interleave=all ./bin/rtm --cpu --verbose --n1 $size  --n2 $size --n3 $size --iter $timesteps --dshot 1 --first 1301 --last 1301
+#echo !!TB with parameters!!
+##export FIRST_TOUCH=1m
+##srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --unbuffered numactl --interleave=all ./bin/modeling --verbose --n1 $size  --n2 $size --n3 512 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf   --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
+#mode=2
+#th_x=8
+#th_y=2
+#th_z=1
+#tgs=16
+#t_dim=7
+#num_wf=64
 
 ################srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $size1  --n2 $size1 --n3 $size2 --iter $timesteps --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf --mode $mode  --dshot 1 --first 1301 --last 1301  --fwd_steps 3 -c
 #./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 --first $first --last $last --fwd_steps 3 --order 2 --fmax 11 --src_depth 5 --rcv_depth 8 --drcv 1 --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z --tb_t_dim $t_dim --tb_num_wf $num_wf -c

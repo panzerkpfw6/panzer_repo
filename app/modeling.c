@@ -279,7 +279,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
         t_sismos = 0.0;
 
         t0 = wtime();
-        wave_extract_sismos(s,u0,0, sismos);
+        wave_extract_sismos(s,u0,0,sismos);
         t_sismos += wtime() - t0;
 
         for(int t = 0; t <= s->time_steps-1; ++t) {

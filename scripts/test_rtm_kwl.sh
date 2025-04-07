@@ -49,7 +49,7 @@ nx=128;ny=256;nz=512;
 first=16449;last=16450;
 
 nx=128;ny=256;nz=128;
-first=16449;last=16449;
+first=16384;last=16511;
 #####*********** SB tests ************###
 echo !!SB!!
 #srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
