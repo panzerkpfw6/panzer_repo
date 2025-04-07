@@ -236,7 +236,6 @@ void dump_vel(sismap_t *s,float *vtab,float *dens) {
 }
 
 void dump_coef(sismap_t *s, float *vtab) {
-#ifdef __DUMP_VEL
     MSG("... dump coefficient matrix ...");
     char tmp[512];
     sprintf(tmp, "mkdir -p %s", OUTDIR);
@@ -251,7 +250,6 @@ void dump_coef(sismap_t *s, float *vtab) {
     CHK(fwrite(vtab, s->size_eff * sizeof(float),1,fd) != 1,
         "failed to write the velocity file");
     fclose(fd);
-#endif //__DUMP_VEL
 }
 
 void velocity_load_model_2d(sismap_t *s, float *vtab) {

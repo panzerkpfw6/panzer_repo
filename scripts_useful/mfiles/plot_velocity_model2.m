@@ -18,6 +18,9 @@ fname=['../../data/density.raw'];
 fname=['../../data/coef_1st.raw'];
 % fname=['../../data/coef_2nd.raw'];
 %%
+dims=[676,676,201];
+fname=['../../data/velocity.raw'];
+%%
 % some file size calculations
 s = dir(fname);         
 filesize = s.bytes ;
@@ -38,7 +41,8 @@ iy1=30;iy2=230;
 %
 figure
 ax1=gca();
-imagesc( squeeze(data(64,:,:)).');
+% imagesc( squeeze(data(:,310,:)).');
+imagesc( squeeze(data(310,:,:)).');
 colorbar
 title(ax1,'Velocity (m/sec)');
 colormap(ax1,'parula');

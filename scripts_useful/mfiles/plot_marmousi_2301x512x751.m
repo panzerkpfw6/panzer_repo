@@ -27,7 +27,7 @@ min(data,[],'all')
 max(data,[],'all')
 
 figure
-imagesc( squeeze(data(:,210,:))' );
+imagesc( squeeze(data(:,310,:))' );
 colorbar
 
 ss=1;
