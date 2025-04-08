@@ -430,7 +430,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             t_snap += wtime() - t0;
 
             t0 = wtime();
-            wave_update_source(s, shot, u0, source[t+1]);
+            wave_update_source(s, shot, u0, source[t]);
             t_sismos += wtime() - t0;
 
 //            WAVE_SWAP_POINTERS(u0, u1);
@@ -485,7 +485,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             t_image += wtime() - t0;
 
             t0 = wtime();
-//            wave_update_fields_block_1st(s, u0,vx,vy,vz,vel, pml_tmp, pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp, pml_tab);
             t_prop += wtime()-t0;
 
             t0 = wtime();

@@ -3,6 +3,7 @@ close all
 
 % dims=[128,256,512];
 dims=[256,128,128];
+dims=[676,676,201];
 fname=['/Volumes/ssd1/SIMWAVE/simwave/models/benchmark_512_3d.raw'];
 fname=['/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/data/augmented_vel.raw'];
 fname=['../rtm_munich/data/augmented_vel.raw'];
@@ -33,8 +34,9 @@ fname2=['../rtm_munich/data/img.raw'];
 fname2=['../../data/img_1632.raw'];
 % fname2=['../rtm_munich/data/snap_16449.raw'];
 fname2=['../../data/ilm_only.raw'];     % img_only.raw
-% fname2=['../../data/img_only.raw'];     % img_only.raw
-fname2=['../../data/img_1636.raw'];
+fname2=['../../data/img_only.raw'];     % img_only.raw
+fname2=['../../data/img_20470.raw'];     % img_only.raw
+% fname2=['../../data/ilm_20468.raw'];
 
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
 ccnt=dims2(1)*dims2(2)*dims2(3);
@@ -46,11 +48,12 @@ data2=read_snap(fname2,'stencil',dims2);   %rtm
 data2_max_loc=[r,c,p,mxv];
 %% %% plotting
 val1=1e-8; val2=1e-3;
-val1=-1e-1; val2=-val1;
+val1=-1e-4; val2=-val1;
 iy1=30;iy2=230;
 %
 figure
-imagesc( squeeze(data2(128,:,:)).');
+% imagesc( squeeze(data2(128,:,:)).');
+imagesc( squeeze(data2(310,:,:)).');
 % imagesc( squeeze(data2(:,128,:)).',[-val,val] );
 % imagesc( squeeze(data2(:,133,:)).');
 colormap('gray');

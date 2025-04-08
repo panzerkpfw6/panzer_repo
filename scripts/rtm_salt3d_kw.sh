@@ -52,20 +52,43 @@ make install
 ###********** mode, grid, time steps ***********###
 timesteps=2200
 nx=676;ny=676;nz=201;
-#### Profile x=310
+#### Profile x=31
 first=20957;last=21023;
+#### Profile x=310. Salt3D. no mistake
+first=20468;last=20507;
 dshot=10;
 fmax=11;
 
 #####*********** order 1
 echo "Model data for RTM"
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
- --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
+first=20468;last=20507;
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
+
+#####*********** Back up data 
+### Configuration
+#DATA_DIR="./data"
+#ORIG_DATA_DIR="./data/orig_data"
+#nproc=4
+#mkdir $DATA_DIR
+#mkdir $ORIG_DATA_DIR
+#PATTERN="*sismos*"
+## Ensure destination directory exists
+#mkdir -p "$ORIG_DATA_DIR"
+## Find all files matching the pattern and copy them in parallel
+#find "$DATA_DIR" -maxdepth 1 -type f -name "$PATTERN" | parallel -j "$(nproc)" cp {} "$ORIG_DATA_DIR"
+#echo "Backup complete."
+########exit 0;
+### remove_direct_wave from the modeled real data
+#scp ./data/*sismos* ./data/orig_data
+##python ./scripts_useful/python/remove_direct_wave.py
+########################
 
 echo "Perform RTM"
+first=20468;last=20484;
+first=20472;last=20473;
 ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 	--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
-
 
 echo "Gather images"
 ./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
@@ -73,7 +96,7 @@ echo "Gather images"
 
 
 #####*********** Cluster ************###
-echo !!SB!!
+#echo !!SB!!
 #srun --ntasks=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --unbuffered numactl --interleave=all ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --first 1301 --last 1301 #--nbsnap $nb_snap
 
 

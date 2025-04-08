@@ -131,6 +131,7 @@ int main(int argc, char* argv[]) {
 //            MSG('dir=%s',dir);
 //            MSG('idx=%s',idx);
 			// read img:
+  		    MSG("... stacking %s and %s", img_file,ilm_file);
 			FILE *fd = fopen(img_file, "rb");
 			CHK(fd == NULL, "failed to open img file");
 			CHK(fread(img_shot, sizeof(float), s->size_img, fd) != s->size_img,
@@ -143,7 +144,6 @@ int main(int argc, char* argv[]) {
           "failed to read ilm file");
 			fclose(fd);
 			// do the shot gather:
-			MSG("... stacking %s and %s", img_file, ilm_file);
 			gather_img_div_ilm(s->size_img, img_shot, ilm_shot, img);
 			gather_img_ilm(s->size_img, img_shot, ilm_shot, img_only, ilm_only);
 		}

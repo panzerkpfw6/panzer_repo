@@ -584,6 +584,8 @@ int main(int argc, char* argv[]) {
     /// compute PML parameters.
 //    pml_compute_coefs(s,pml_tab);
 
+//    exit(1);
+
     /// generate the ricker source.
     if (s->order==1) {
         MSG("source 1st order");
@@ -635,7 +637,7 @@ int main(int argc, char* argv[]) {
     /// delete the parser.
     parser_delete(p);
 
-    MSG("END\n");
+    MSG("END of modeling\n");
     return EXIT_SUCCESS;
 }
 
