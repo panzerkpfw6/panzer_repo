@@ -642,9 +642,10 @@ num_threads(stencil_ctx.thread_group_size)
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////
-//                                if (data->rcv_len>0){
+                                if (data->rcv_len>0){
 //                                    data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(iy-4)*(nnx-2*lstencil)+(ix-4)]=(v3_v[iz_]);
-//                                }
+                                    data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*lstencil)+(iy-4)]=(v3_v[iz_]);
+                                }
                                 //////////////////////////////////////////
                             }
                             ///

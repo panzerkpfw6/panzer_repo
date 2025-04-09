@@ -2962,8 +2962,8 @@ void wave_tb_data_set_src(tb_data_t * data,
     data->src_idx   = src_idx;
     data->src_depth = s->src_depth + 4;
 
-    data->src_x = data->src_idx % (s->dimx + 2* s->sx);
-    data->src_y = data->src_idx / (s->dimx + 2* s->sx);
+    data->src_x = data->src_idx / (s->dimy + 2* s->sy);
+    data->src_y = data->src_idx % (s->dimy + 2* s->sy);
     data->src_z = data->src_depth;
     MSG("SRC: ix=%d,iy=%d,iz=%d\n",data->src_x,data->src_y,data->src_z);
 //    exit(0);
@@ -2977,15 +2977,15 @@ void wave_tb_data_set_rcv(tb_data_t * data,
                           sismap_t *s,
                           float* sismos) {
     data->rcv       = s->rcv;
-    data->rcv_depth = s->rcv_depth + 4;
     data->rcv_len   = s->rcv_len;
+    data->rcv_depth = s->rcv_depth + 4;
     data->sismos    = sismos;
 
 //  printf("set rcv stride : %d\n",s->dimx + 2 * s->sx);
 
     for (int i = 0; i < s->rcv_len; i++) {
-        data->ix[i] = s->rcv[i] % (s->dimx + 2 * s->sx);
-        data->iy[i] = s->rcv[i] / (s->dimx + 2 * s->sx);
+        data->ix[i] = s->rcv[i] / (s->dimy + 2 * s->sy);
+        data->iy[i] = s->rcv[i] % (s->dimy + 2 * s->sy);
     }
 }
 
