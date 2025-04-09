@@ -77,17 +77,16 @@ nx=676;ny=676;nz=201;
 #### Profile x=310. Salt3D. no mistake
 first=20957;last=21023;
 #### Profile x=?. Salt3D. no mistake
-first=1;last=110;
-dshot=450;
+first=1;last=100;
+dshot=4568;
 fmax=11;
 
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
- --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-   >> $logs_path/log_model_water.log;
-exit 1;
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#   >> $logs_path/log_model_water.log;
+#exit 1;
 
 echo "Model data for RTM. water halfspace."
-first=20468;last=20507;
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
  --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
