@@ -74,8 +74,8 @@ export logs_path=./logs/test1
 ###********** mode, grid, time steps ***********###
 timesteps=2200
 nx=676;ny=676;nz=201;
-#### Profile x=310. Salt3D. no mistake
-first=20957;last=21023;
+##### Profile x=310. Salt3D. no mistake
+#first=20957;last=21023;
 #### Profile x=?. Salt3D. no mistake
 first=1;last=100;
 dshot=4568;
@@ -86,31 +86,32 @@ fmax=11;
 #   >> $logs_path/log_model_water.log;
 #exit 1;
 
-echo "Model data for RTM. water halfspace."
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
- --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-   >> $logs_path/log_model_water.log;
- 
-#echo "Do Python filtering of real data." 
-# 
-#echo "Model data for RTM. salt3d."
+#echo "Model data for RTM. water halfspace."
 #srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 #./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-# >> $logs_path/log_model_salt3d.log;
-#
-#echo "Perform RTM"
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#>> $logs_path/log_rtm_salt3d.log;
-#	
-#
-#echo "Gather images"
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
-# --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
-# >> $logs_path/log_gather_salt3d.log;
+# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#   >> $logs_path/log_model_water.log;
+ 
+#echo "Do Python filtering of real data." 
+
+
+echo "Model data for RTM. salt3d."
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+ >> $logs_path/log_model_salt3d.log;
+
+echo "Perform RTM"
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+>> $logs_path/log_rtm_salt3d.log;
+
+
+echo "Gather images"
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
+ --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
+ >> $logs_path/log_gather_salt3d.log;
 
 

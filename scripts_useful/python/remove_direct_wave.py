@@ -429,11 +429,91 @@ def main():
 
         aa=1
 
-# print(os.getcwd())
-# main();
+def main2():
+    # Parameters
+    nx=676;ny=676;nt=500;
+    dims=[nx,ny,nt]
+    print(f"data: {nx} inlines, {ny} crosslines, {nt} samples")
+    v_direct = 1500.0  # Direct wave velocity (m/s, e.g., water)
+    dx = 25.0          # Inline spacing (m, adjust based on your data)
+    dy = 25.0          # Crossline spacing (m, adjust based on your data)
+    dt=0.001
+    x=np.arange(nx)*dx
+    y=np.arange(ny)*dy
+    t=np.arange(nt)*dt*1000
+    ###########################
+    print(os.getcwd())
+    root_dir='../../data'
+    data_dir=os.path.join(root_dir,'orig_data')
+    data_dir2=os.path.join(root_dir,'data_water_halfspace')
+    save_data_dir=os.path.join(root_dir,'filtered_real_data')
+    os.makedirs(save_data_dir,exist_ok=True)
+    ###########################
+    shots=read_acquisition(os.path.join(root_dir,'shots.txt'), dims )
+    ###########################
+    file_list=fnmatch.filter(os.listdir(data_dir), '*sismos*')
+    file_list=sorted(file_list)
+    file_list=['sismos_20470.raw']
+    
+    for file in file_list:
+        input_file=os.path.join(data_dir,file)
+        input_file2=os.path.join(data_dir2,file)
+        output_file=os.path.join(save_data_dir,file)
+        ### shot id
+        match = re.search(r'sismos_(\d+)\.raw', file)
+        shot_id = int(match.group(1))
+        shot_info = shots[shots["shot_id"] == shot_id]
+        ### shot location
+        isx=(shot_info.isx.values[0])
+        isy=(shot_info.isy.values[0])
+        isz=(shot_info.isz.values[0])
+        isz_rcv=(shot_info.isz_rcv.values[0])
+        ###
+        print("processing ",file)
+        # Load data
+        data = load_data(input_file,dims)
+        data_water = load_data(input_file2,dims)
+
+        # Apply model-based direct wave subtraction
+        filtered_data=data.copy()-data_water.copy()
+
+        # plot
+        data1=data[isx,:,:]
+        data2=filtered_data[isx,:,:]
+
+        val=5*1e-3
+        fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
+        # First subplot (like imagesc)
+        im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        ax1.set_title('orig')
+        ax1.set_xlabel('Y, m')
+        ax1.set_ylabel('time,msec')
+        fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
+        # Second subplot (like imagesc)
+        im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        ax2.set_title('filtered')
+        ax2.set_xlabel('Y, m')
+        ax2.set_ylabel('time,msec')
+        fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
+        # Third subplot (like imagesc)
+        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        ax3.set_title('filtered')
+        ax3.set_xlabel('Y, m')
+        ax3.set_ylabel('time,msec')
+        fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
+        # Adjust layout to prevent overlap
+        plt.tight_layout()
+        # Show the plot
+        plt.show()
+
+        ss=1
+        # Save filtered data
+        # save_filtered_data(filtered_data, output_file, dims)
+
 
 if __name__ == "__main__":
-    main()
+    # main()
+    main2()
 
 
 

@@ -567,9 +567,9 @@ int main(int argc, char* argv[]) {
 
     /// load/generate the velocity model.
 //    velocity_load_model(s,vel);
-    velocity_const_model2(s,vel);
+//    velocity_const_model2(s,vel);
 //    velocity_2layer_model(s,vel);
-//    velocity_load_salt3d(s,vel);
+    velocity_load_salt3d(s,vel);
 
     /// load/generate the density model.
     density_const_model(s,rho,inv_rho);
