@@ -35,7 +35,7 @@ fname2=['../../data/img_1632.raw'];
 % fname2=['../rtm_munich/data/snap_16449.raw'];
 fname2=['../../data/ilm_only.raw'];     % img_only.raw
 fname2=['../../data/img_only.raw'];     % img_only.raw
-fname2=['../../data/img_20470.raw'];     % img_only.raw
+% fname2=['../../data/img_20472.raw'];     % img_only.raw
 % fname2=['../../data/ilm_20468.raw'];
 
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
@@ -53,7 +53,7 @@ iy1=30;iy2=230;
 %
 figure
 % imagesc( squeeze(data2(128,:,:)).');
-imagesc( squeeze(data2(310,:,:)).');
+imagesc( squeeze(data2(303,:,:)).');
 % imagesc( squeeze(data2(:,128,:)).',[-val,val] );
 % imagesc( squeeze(data2(:,133,:)).');
 colormap('gray');

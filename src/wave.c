@@ -337,7 +337,10 @@ void wave_init_acquisition(sismap_t *s) {
 //        s->shots[idx]->srcidx = s->rcv[ir]+s->drcv/2;   // should I really use "s->drcv/2"?
         s->shots[idx]->srcidx=s->rcv[ir];
         s->shots[idx]->id=idx;
-        fprintf(fd2,"ir=%3d at %3d,shot id=%3d\n",ir,s->shots[idx]->srcidx,s->shots[idx]->id);
+        int isx = (s->rcv[ir] / (s->dimy + 2 * s->sy)) - s->sx;
+        int isy = (s->rcv[ir] % (s->dimy + 2 * s->sy)) - s->sy;
+//        fprintf(fd2,"ir=%3d at %3d,shot id=%3d, isx=%d, isy=%d, isz=%d\n",ir,s->shots[idx]->srcidx,s->shots[idx]->id,isx,isy,isz);
+        fprintf(fd2,"ir=%3d,shot id=%3d, isx=%d, isy=%d, isz=%d, isz_rcv=%d\n",ir,s->shots[idx]->id,isx,isy,s->src_depth,s->rcv_depth);
         ////////////////////////////////
 ////////////////////////////////
         idx++;

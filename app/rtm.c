@@ -53,7 +53,7 @@ void memcpy_omp(float* u, float *v,sismap_t*s) {
 	const int BLOCKY=s->blocky;
 	const int BLOCKZ=s->blockz;
 
-	unsigned int xmin, xmax, zmin, zmax, ymin, ymax;
+	unsigned int xmin,xmax,zmin,zmax,ymin,ymax;
 	const int dimx = s->dimx;
 	const int dimy = s->dimy;
 	const int dimz = s->dimz;

@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 import os,sys
 import pandas as pd
@@ -14,6 +15,33 @@ import pyfftw.interfaces.numpy_fft as fft
 import fnmatch
 from scipy import signal
 #######################################
+
+
+def read_acquisition(filename,dims):
+    # Replace with file reading if needed
+    with open(filename, "r") as file:
+        content=file.read()
+    # Parse the content
+    lines = content.strip().split("\n")
+    data = []
+    pattern = r"ir=\s*(\d+),\s*shot id=\s*(\d+),\s*isx=(\d+),\s*isy=(\d+),\s*isz=(\d+),\s*isz_rcv=(\d+)"
+
+    for line in lines:
+        if line.strip():
+            match = re.match(pattern, line)
+            if match:
+                data.append({
+                    "ir": int(match.group(1)),
+                    "shot_id": int(match.group(2)),
+                    "isx": int(match.group(3)),
+                    "isy": int(match.group(4)),
+                    "isz":  int(match.group(5)),
+                    "isz_rcv": int(match.group(6))
+                })
+
+    # Create the DataFrame
+    df = pd.DataFrame(data)
+    return df
 
 def load_data(filename, dims):
     """
@@ -217,10 +245,106 @@ def fkk_filter(data, dt, dx, dy, v_direct, mute_width=0.4, taper_width=0.15, plo
 
     return filtered_data
 
+def ricker_wavelet(nt, dt, fmax):
+    """
+    Generate a Ricker wavelet for the given number of time steps, sampling interval, and peak frequency.
+    
+    Parameters:
+        nt (int): Number of time steps
+        dt (float): Time sampling interval (s)
+        fmax (float): Peak frequency (Hz)
+    
+    Returns:
+        wavelet (ndarray): Ricker wavelet array of length nt
+    """
+    PI = np.pi
+    a = PI * fmax
+    a2 = a * a
+    t0 = 1.5 * np.sqrt(6.0) / (PI * fmax)  # Time shift
+
+    wavelet = np.zeros(nt, dtype=np.float32)
+    for it in range(nt):
+        t1 = it * dt
+        deltaT = t1 - t0
+        deltaT2 = deltaT * deltaT
+        wavelet[it] = np.exp(-a2 * deltaT2) * (1.0 - 2.0 * a2 * deltaT2)
+
+    # Normalize the wavelet
+    # wavelet /= np.max(np.abs(wavelet))
+    return wavelet
+
+# New Model-Based Direct Wave Subtraction function
+def model_direct_wave_subtraction(data,dt,dx,dy,v_direct,shot_info,fmax=11):
+    """
+    Model and subtract the direct wave from 3D seismic data using the velocity model.
+    
+    Parameters:
+        data (ndarray): 3D seismic data (nx, ny, nt)
+        dt (float): Time sampling interval (s)
+        dx (float): Inline spacing (m)
+        dy (float): Crossline spacing (m)
+        v_direct (float): Direct wave velocity (m/s) or 2D array [nx, ny] for spatially varying velocity
+        shot_info (pd.DataFrame): Shot information with columns 'isx', 'isy', 'isz', 'isz_rcv'
+        wavelet_width (int): Width of the Gaussian wavelet for the direct wave (in samples)
+    
+    Returns:
+        filtered_data (ndarray): Data with direct wave removed
+    """
+    nx, ny, nt = data.shape
+    filtered_data = data.copy()
+
+    # Extract shot location and receiver depth
+    isx = float(shot_info['isx'].values[0])  # Source x-coordinate (m)
+    isy = float(shot_info['isy'].values[0])  # Source y-coordinate (m)
+    isz = float(shot_info['isz'].values[0])  # Source depth (m)
+    isz_rcv = float(shot_info['isz_rcv'].values[0])  # Receiver depth (m)
+
+    # Generate the Ricker wavelet
+    wavelet = ricker_wavelet(nt, dt, fmax)
+
+    # Model the direct wave
+    direct_wave_model = np.zeros_like(data)
+
+    # Compute the direct wave’s arrival time for each trace
+    for i in range(nx):
+        for j in range(ny):
+            # Receiver position in meters
+            x_rcv = i * dx
+            y_rcv = j * dy
+            z_rcv = isz_rcv
+
+            # Distance from source to receiver
+            x_offset = x_rcv - isx
+            y_offset = y_rcv - isy
+            z_offset = z_rcv - isz
+            distance = np.sqrt(x_offset**2 + y_offset**2 + z_offset**2)
+
+            # Arrival time
+            v = v_direct
+            t_arrival = distance / v
+            t_idx = int(t_arrival / dt)
+
+            # Ensure the index is within bounds
+            if 0 <= t_idx < nt:
+                # Estimate the direct wave’s amplitude from the data
+                amp = data[i, j, t_idx]
+                # Shift the wavelet to the arrival time
+                shifted_wavelet = np.zeros(nt, dtype=np.float32)
+                if t_idx + nt <= nt:  # Ensure we don’t exceed array bounds
+                    shifted_wavelet[t_idx:] = wavelet[:nt - t_idx]
+                else:
+                    shifted_wavelet[t_idx:] = wavelet[:nt - t_idx]
+                direct_wave_model[i, j, :] = shifted_wavelet
+
+    # Subtract the modeled direct wave
+    filtered_data -= direct_wave_model
+
+    return filtered_data
+
 # Main processing
 def main():
     # Parameters
-    nx=676;ny=676;nt=800;
+    nx=676;ny=676;nt=2200;
     dims=[nx,ny,nt]
     print(f"data: {nx} inlines, {ny} crosslines, {nt} samples")
     v_direct = 1500.0  # Direct wave velocity (m/s, e.g., water)
@@ -230,15 +354,15 @@ def main():
     x=np.arange(nx)*dx
     y=np.arange(ny)*dy
     t=np.arange(nt)*dt*1000
-
+    ###########################
     print(os.getcwd())
-    data_dir='../../data/orig_data'
-
-    # save_data_dir='../../data'
-    ###
-    result = subprocess.run("mkdir ../../data/filtered_real_data", shell=True, capture_output=True, text=True)
-    save_data_dir='../../data/filtered_real_data'
-
+    root_dir='../../data'
+    data_dir=os.path.join(root_dir,'orig_data')
+    save_data_dir=os.path.join(root_dir,'filtered_real_data')
+    os.makedirs(save_data_dir,exist_ok=True)
+    ###########################
+    shots=read_acquisition(os.path.join(root_dir,'shots.txt'), dims )
+    ###########################
     file_list=fnmatch.filter(os.listdir(data_dir), '*sismos*')
     file_list=sorted(file_list)
     file_list=['sismos_20470.raw']
@@ -246,26 +370,40 @@ def main():
     for file in file_list:
         input_file=os.path.join(data_dir,file)
         output_file=os.path.join(save_data_dir,file)
+        ### shot id
+        match = re.search(r'sismos_(\d+)\.raw', file)
+        shot_id = int(match.group(1))
+        shot_info = shots[shots["shot_id"] == shot_id]
+        ### shot location
+        isx=(shot_info.isx.values[0])
+        isy=(shot_info.isy.values[0])
+        isz=(shot_info.isz.values[0])
+        isz_rcv=(shot_info.isz_rcv.values[0])
+        ###
         print("processing ",file)
         # Load data
         data = load_data(input_file,dims)
 
-        # Apply F-K-K filtering
-        filtered_data = fkk_filter(data, dt, dx, dy, v_direct)
-        # filtered_data=data
-        print("F-K-K filtering completed")
+        # Apply model-based direct wave subtraction
+        filtered_data = model_direct_wave_subtraction(
+            data, dt, dx, dy, v_direct, shot_info)
+        print("Filtering completed")
+
+        # # Apply F-K-K filtering
+        # filtered_data = fkk_filter(data, dt, dx, dy, v_direct)
+        # # filtered_data=data
+        # print("F-K-K filtering completed")
 
         # Save filtered data
         # save_filtered_data(filtered_data, output_file, dims)
-
         # filtered_data2 = load_data(output_file,dims)
 
         # plot
-        data1=data[310,:,:]
-        data2=filtered_data[310,:,:]
+        data1=data[isx,:,:]
+        data2=filtered_data[isx,:,:]
 
         val=1e-3
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
+        fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
         # First subplot (like imagesc)
         im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
         ax1.set_title('orig')
@@ -278,6 +416,12 @@ def main():
         ax2.set_xlabel('Y, m')
         ax2.set_ylabel('time,msec')
         fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
+        # Third subplot (like imagesc)
+        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        ax3.set_title('filtered')
+        ax3.set_xlabel('Y, m')
+        ax3.set_ylabel('time,msec')
+        fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
         # Adjust layout to prevent overlap
         plt.tight_layout()
         # Show the plot
