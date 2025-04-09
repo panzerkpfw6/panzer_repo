@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
-#SBATCH --partition=workq  # Milan-X 128
+#SBATCH --partition=workq
 #SBATCH --job-name=test_default_pars
 #SBATCH --output=logs/test1_.%J.out
 #SBATCH --error=logs/test1_.%J.err
@@ -57,33 +57,6 @@ export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 module load intel-oneapi/2023.1.0
 module load cmake
 
-##### Shot information #####
-export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
-export src_depth=256;
-export fmax=8;
-export dx=10;
-
-###********** Default SB, TB parameters *********###
-th_x_arr_1st=(3 4 4)
-th_y_arr_1st=(2 2 2)
-th_z_arr_1st=(2 1 1)
-tdim_arr_1st=(3 3 7)
-num_wf_arr_1st=(24 20 4)
-
-th_x_arr_2nd=(3 4 2)
-th_y_arr_2nd=(2 2 2)
-th_z_arr_2nd=(2 1 1)
-tdim_arr_2nd=(3 3 3)
-num_wf_arr_2nd=(24 32 32)
-###*********** Experiment setup ************###
-nx_arr=(  512  1024  2048  )
-ny_arr=(  512  1024  2048  )
-nz_arr=(  512  512   512   )
-export NT_TB_1st=505
-export NT_SB_1st=505
-export NT_TB_2nd=502
-export NT_SB_2nd=505
-
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
@@ -96,6 +69,54 @@ mkdir ./logs
 rm -rf ./logs/test1 #delete if existing
 mkdir ./logs/test1
 export logs_path=./logs/test1
+
+####*********** RUNNING RTM ************###
+###********** mode, grid, time steps ***********###
+timesteps=2200
+nx=676;ny=676;nz=201;
+#### Profile x=310. Salt3D. no mistake
+first=20957;last=21023;
+#### Profile x=?. Salt3D. no mistake
+first=1;last=110;
+dshot=450;
+fmax=11;
+
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+ --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+   >> $logs_path/log_model_water.log;
+exit 1;
+
+echo "Model data for RTM. water halfspace."
+first=20468;last=20507;
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+ --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+   >> $logs_path/log_model_water.log;
+ 
+#echo "Do Python filtering of real data." 
+# 
+#echo "Model data for RTM. salt3d."
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+# >> $logs_path/log_model_salt3d.log;
+#
+#echo "Perform RTM"
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#>> $logs_path/log_rtm_salt3d.log;
+#	
+#
+#echo "Gather images"
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
+# --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
+# >> $logs_path/log_gather_salt3d.log;
+
+
+
+
 
 ##### Run tests #####
 len=${#nx_arr[@]}
