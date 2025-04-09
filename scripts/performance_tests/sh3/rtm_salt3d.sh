@@ -80,6 +80,7 @@ nx=676;ny=676;nz=201;
 first=1;last=100;
 dshot=4568;
 fmax=11;
+cbx=64;cby=22;cbz=9999;
 
 #./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 # --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
@@ -99,19 +100,19 @@ echo "Model data for RTM. salt3d."
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
- >> $logs_path/log_model_salt3d.log;
+--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_model_salt3d.log;
 
 echo "Perform RTM"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 ./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
->> $logs_path/log_rtm_salt3d.log;
+--cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log_rtm_salt3d.log;
 
 
 echo "Gather images"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 ./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
  --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
- >> $logs_path/log_gather_salt3d.log;
+--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_gather_salt3d.log;
 
 
