@@ -3,11 +3,14 @@ close all
 % fname=['../rtm_munich/data/sismos_16447.raw'];
 % fname=['../rtm_munich/data/sismos_91.raw'];
 fname=['../stencil-rtm/data/sismos_91.raw'];
-fname=['../../data/sismos_1.raw'];
+fname=['../../data/sismos_sb/sismos_1.raw'];
+fname=['../../data/sismos_sb/sismos_41100.raw'];
 nt=1200;nx=128;ny=256;
 nt=200;nx=676;ny=676;
 
 nt=2200;nx=128;ny=256;
+
+nt=505;nx=256;ny=256;
 
 dims=[nx,ny,nt];
 rcv_len=nx*ny;

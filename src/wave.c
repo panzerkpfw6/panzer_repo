@@ -1340,8 +1340,8 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict vx,
 								 float *restrict vy,
 								 float *restrict vz,
-								 const float *restrict roc2,
-								 const float *restrict inv_rho,
+								 float *restrict roc2,
+								 float *restrict inv_rho,
 								 float *restrict phi,
 								 float *restrict eta) {
 	const int BLOCKX=s->blockx;
@@ -1389,8 +1389,8 @@ void wave_update_fields_block_1st(sismap_t *s,
     float *restrict vx0;
     float *restrict vy0;
     float *restrict vz0;
-    const float *restrict rx;
-    const float *restrict inv_r;
+    float *restrict rx;
+    float *restrict inv_r;
 
     // Velocity update loop
     #pragma omp parallel for collapse(3) schedule(dynamic) private(xmin, xmax, zmin, zmax, ymin, ymax, pr0, vx0, vy0, vz0)

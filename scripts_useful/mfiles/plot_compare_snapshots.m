@@ -53,8 +53,8 @@ root2='../../'; fname2=['snapshot_TB2nd_530'];
 % root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 1st
 description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
-root='../../';  fname= ['snapshot_TB1st_505'];
-root2='../../'; fname2=['snapshot_SB1st_505'];
+root='../../';  fname= ['snapshot_SB1st_505'];
+root2='../../'; fname2=['snapshot_TB1st_505'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 2nd
 % description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';
 % root='../../';  fname= ['snapshot_SB2nd_514'];
@@ -70,6 +70,7 @@ fname2=fullfile(root2,fname2);
 % add 8 points to each dimension
 dims1=[128+8,256+8,512+8];
 dims1=[256+8,256+8,256+8];
+% dims1=[200+8,256+8,256+8];
 % dims1=[676+8,676+8,201+8];
 ccnt=dims1(1)*dims1(2)*dims1(3);
 %%%%%%%%%%%%%%%%%%%%%%%%% check sizes
@@ -135,27 +136,27 @@ r2=132;c2=132;p2=132;
 max(abs(data2(:)))
 figure
 subplot(1,3,1)
-imagesc( squeeze(data2(r2,:,:)).' );    %p2
-% imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
+% imagesc( squeeze(data2(r2,:,:)).' );    %p2
+imagesc( squeeze(data2(r2,:,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',x=',num2str(r2)) );
 xlabel('Y');ylabel('Z');
 colorbar
 
 subplot(1,3,2)
-imagesc( squeeze(data2(:,c2,:)).' );    %p2
-% imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
+% imagesc( squeeze(data2(:,c2,:)).' );    %p2
+imagesc( squeeze(data2(:,c2,:)).' ,[-a,a] );    %p2
 title(strcat(title2,',y=',num2str(c2)));
 xlabel('X');ylabel('Z');
 colorbar
 
 subplot(1,3,3)
-imagesc( squeeze(data2(:,:,p2)).');    %p2
-% imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
+% imagesc( squeeze(data2(:,:,p2)).');    %p2
+imagesc( squeeze(data2(:,:,p2)).' ,[-a,a] );    %p2
 title(strcat(title2,',z=',num2str(p2)));
 xlabel('X');ylabel('Y');
 colorbar
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-a=max(abs(data(:)));
+% a=max(abs(data(:)));
 % r=68;c=132;p=260;
 r=r2;c=c2;p=p2;
 figure
@@ -208,7 +209,7 @@ figure;
 % plot(data(132,:,132));hold on
 % plot(data2(132,:,132));
 plot(data_diff(132,:,132));
-legend('SB','TB','diff');
+legend(title1,title2,'diff');
 ss=1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function data=read_snap(fname,ordering,dims)
