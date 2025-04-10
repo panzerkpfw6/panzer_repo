@@ -8,53 +8,10 @@ close all
 c=1500;hh=10;dt=0.001;
 3*c^2*dt^2/(hh^2)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% comparison 1
-% root='../../stencil-main';fname= ['SB_1st_abc.raw'];
-% root2='../rtm_munich'; fname2=['snapshot_504'];
-%%%%% comparison2. SB 1st,SB 2nd.
-title1='SB1st';title2='SB2nd';
-description_str='diff SB 1st,SB 2nd';
-root='../../';  fname= ['snapshot_SB1st_504'];
-root2='../../'; fname2=['snapshot_SB2nd_504'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 2nd
-description_str='diff SB 2nd,TB 2nd. simwave';title1='SB2nd';title2='TB2nd';
-root='../../';  fname= ['snapshot_SB2nd_529'];
-root='../../';  fname= ['snapshot_SB2nd_530'];
-root2='../../'; fname2=['snapshot_TB2nd_530'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% compare "simwave" and "stencil",2nd TB
-% description_str='diff TB 2nd. simwave,stencil';title1='simwave';title2='stencil';
-% root='../../';  fname= ['snapshot_TB2nd_530'];
-% root2='../../../../stencil-main'; fname2=['TB_2nd_abc.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% simwave 1st
-% description_str='diff SB 1st,TB 1st. simwave';title1='SB1st';title2='TB1st';
-% % root='../../';  fname= ['snapshot_SB1st_545'];
-% % root2='../../'; fname2=['snapshot_TB1st_546'];
-% root='../../';  fname= ['snapshot_SB1st_537'];
-% root2='../../'; fname2=['snapshot_TB1st_537'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil 2nd
-% description_str='diff SB 2nd,TB 2nd.stencil';title1='SB2nd stencil';title2='TB2nd stencil';
-% root='../../../../stencil-main';  fname= ['SB_2nd_abc.raw'];
-% root2='../../../../stencil-main'; fname2=['TB_2nd_abc.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil 1st
-% description_str='diff SB 1st,TB 1st.stencil';title1='SB1st stencil';title2='TB1st stencil';
-% root='../../../../stencil-main';  fname= ['SB_1st_abc.raw'];
-% root2='../../../../stencil-main'; fname2=['TB_1st_abc.raw'];
-%%%%%%%%%%%%%%%%%%  compare simwave and stencil. SB 2nd order.!!!!!!!!!!!!!!!!
-% description_str='diff SB 2nd,.simwave VS stencil';title1='simwave SB2nd';title2='stencil SB2nd';
-% root='../../';  fname= ['snapshot_SB2nd_530'];
-% root2='../../../../stencil-main'; fname2=['SB_2nd_abc.raw'];
-%%%%%%%%%%%%%  compare simwave and stencil. SB 1st order.!!!!!!!!!!!!!!!!!!!!
-% description_str='diff SB 1st,.simwave VS stencil';title1='simwave SB1st';title2='stencil SB1st';
-% root='../../';  fname= ['snapshot_SB1st_536'];
-% root2='../../../../stencil-main'; fname2=['SB_1st_abc.raw'];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% analytical
-% description_str='diff SB 2nd,TB 2nd. stencil';title1='SB2nd';title2='Analytical';
-% root='../../../../stencil-main'; fname=['SB_2nd_abc.raw'];
-% root2='../../../../stencil-main'; fname2=['analytical_sol_529.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 1st
 description_str='diff SB 1st,TB 1st. stencil-rtm';title1='SB1st';title2='TB1st';
-root='../../';  fname= ['snapshot_SB1st_505'];
-root2='../../'; fname2=['snapshot_TB1st_505'];
+root='../../data/sismos_sb';  fname= ['sismos_41100.raw'];
+root2='../../data/sismos_tb'; fname2=['sismos_41100.raw'];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% stencil-rtm 2nd
 % description_str='diff SB 2nd,TB 2nd. stencil-rtm';title1='SB2nd';title2='TB2nd';
 % root='../../';  fname= ['snapshot_SB2nd_514'];
@@ -67,11 +24,7 @@ root2='../../'; fname2=['snapshot_TB1st_505'];
 fname=fullfile(root,fname);
 fname2=fullfile(root2,fname2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% add 8 points to each dimension
-dims1=[128+8,256+8,512+8];
-dims1=[256+8,256+8,256+8];
-% dims1=[200+8,256+8,256+8];
-% dims1=[676+8,676+8,201+8];
+dims1=[200,256,505];
 ccnt=dims1(1)*dims1(2)*dims1(3);
 %%%%%%%%%%%%%%%%%%%%%%%%% check sizes
 pwd
@@ -91,10 +44,10 @@ A2=fread(fileID,ccnt,'float32');
 fclose(fileID);
 %%%%%%%%%%%%%%%%%%%%%%%%% data
 % data=read_snap(fname,'simwave',dims1);
-data=read_snap(fname,'stencil',dims1);
+data=read_sismos(fname,dims1);
 %%%%%%%%%%%%%%%%%%%%%%%%% data2
 % data2=read_snap(fname2,'simwave',dims1);
-data2=read_snap(fname2,'stencil',dims1);
+data2=read_sismos(fname2,dims1);
 %%%%%%%%%%%%%%%%%%%%%%%%%
 data_diff=data-data2;
 1+1e-11-1
@@ -130,9 +83,9 @@ val=1.5e-4;
 a=5*1e-2;
 % a=7;
 a=max(abs(data2(:)));
-r2=68;c2=132;p2=260;
 r2=132;c2=132;p2=260;
-r2=132;c2=132;p2=132;
+r2=160;c2=140;p2=450;
+
 max(abs(data2(:)))
 figure
 subplot(1,3,1)
@@ -206,9 +159,10 @@ RMS_val =rms(data_diff,"all")
 ss=1
 %%%%%%%%%%%%%%%%%%   plot trace %%%%%%%%%%%%%%%%%%%
 figure;
-% plot(data(132,:,132));hold on
-% plot(data2(132,:,132));
-plot(data_diff(132,:,132));
+% plot(squeeze(data(r2,c2,:)));
+% hold on
+% plot(squeeze(data2(r2,c2,:)));
+plot(squeeze(data_diff(r2,c2,:)));
 legend(title1,title2,'diff');
 ss=1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,4 +196,24 @@ elseif ordering=='simwave'
         end
     end
 end
+end
+function data=read_sismos(fname,dims)
+    ccnt=dims(1)*dims(2)*dims(3);
+    fileID = fopen(fname,'r');
+    A=fread(fileID,ccnt,'float32');
+    fclose(fileID);
+    s = dir(fname);filesize = s.bytes;
+    
+    nx=dims(1);
+    ny=dims(2);
+    nt=dims(3);
+    data=nan(dims);
+    tmp=1;
+    for k=1:nt    %z
+%         disp(k)
+        for i=1:nx    %x
+            data(i,:,k)=A(tmp:(tmp+ny-1));    %x
+            tmp=tmp+ny;
+        end
+    end
 end

@@ -381,6 +381,8 @@ void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
 firstprivate(b_inc, e_inc) \
 num_threads(stencil_ctx.thread_group_size)
     {
+//    	MSG("xb=%d,xe=%d",xb,xe);
+
         int lstencil=NHALO;// @pavel  allocate variable lstencil
         int tgs, nwf, th_nwf, tid, gtid, xi, yb, ye, ib, ie, kt, t,  q, r, err;
         double t_start;
@@ -479,6 +481,7 @@ num_threads(stencil_ctx.thread_group_size)
             }
             yb = yb_r;
             ye = ye_r;
+//            MSG("xb=%d,xe=%d,yb=%d,ye=%d",xb,xe,yb,ye);
             kt = xi;
             int kte=kt+nwf;
 
@@ -645,10 +648,7 @@ num_threads(stencil_ctx.thread_group_size)
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////
-                                if (data->rcv_len>0){
-//                                    data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(iy-4)*(nnx-2*lstencil)+(ix-4)]=(v3_v[iz_]);
-                                    data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*lstencil)+(iy-4)]=(v3_v[iz_]);
-                                }
+								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
                                 //////////////////////////////////////////
                             }
                             ///

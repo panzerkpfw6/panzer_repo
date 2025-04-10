@@ -88,21 +88,21 @@ nx=200;ny=256;nz=160;
 
 x=2; y=2; z=1; t=7; w=20; tgs=4;
 export shot=41100;  # position of the source:isx=160,isy=140
-export src_depth=60;
+export src_depth=20;
 export rcv_depth=4;
 
-mkdir ./data/sismos_sb
-rm ./data/sismos_sb/*
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
-mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
+#mkdir ./data/sismos_sb
+#rm ./data/sismos_sb/*
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
+#  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
+#mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
   
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
  --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
- --src_depth $src_depth --order 1 --fmax 8;
+ --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax 8;
 mv ./data/sismos_${shot}.raw ./data/sismos_tb/sismos_${shot}.raw
 
 ./scripts_useful/diff_to ./snapshot_TB1st_505 ./snapshot_SB1st_505

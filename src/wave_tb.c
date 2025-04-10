@@ -2983,6 +2983,8 @@ void wave_tb_data_set_rcv(tb_data_t * data,
     data->rcv       = s->rcv;
     data->rcv_len   = s->rcv_len;
     data->rcv_depth = s->rcv_depth + 4;
+    MSG("data->rcv_depth=%d,s->rcv_depth=%d",data->rcv_depth,s->rcv_depth);
+//    exit(1);
     data->sismos    = sismos;
 
 //  printf("set rcv stride : %d\n",s->dimx + 2 * s->sx);
