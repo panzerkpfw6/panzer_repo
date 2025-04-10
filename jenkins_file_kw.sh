@@ -86,7 +86,7 @@ export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correpo
 nx=256;ny=256;nz=256;
 x=2; y=2; z=1; t=7; w=20; tgs=4;
 export shot=41100;  # position of the source:isx=160,isy=140
-export src_depth=5;
+export src_depth=60;
 export rcv_depth=4;
 
 mkdir ./data/sismos_sb
