@@ -84,6 +84,8 @@ export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sa
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
 ### grid size 256*256*256
 nx=256;ny=256;nz=256;
+nx=200;ny=256;nz=160;
+
 x=2; y=2; z=1; t=7; w=20; tgs=4;
 export shot=41100;  # position of the source:isx=160,isy=140
 export src_depth=60;

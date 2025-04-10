@@ -636,9 +636,12 @@ num_threads(stencil_ctx.thread_group_size)
                                                           + FDM_O1_8_2_A3 * (zup2 - zum3)
                                                           + FDM_O1_8_2_A4 * (zup3 - zum4)) * inv_dz);
                                     v3_v[iz] += coef0_v[iz] * (d_vx_x + d_vy_y + d_vz_z);
-                                    v3_v[iz] = dampx[ix+lstencil] * v3_v[iz];
-                                    v3_v[iz] = dampy[iy+lstencil] * v3_v[iz];
-                                    v3_v[iz] = dampz[iz+lstencil] * v3_v[iz];
+//                                    v3_v[iz] = dampx[ix+lstencil] * v3_v[iz];
+//                                    v3_v[iz] = dampy[iy+lstencil] * v3_v[iz];
+//                                    v3_v[iz] = dampz[iz+lstencil] * v3_v[iz];
+//                                    v3_v[iz]*=dampx[ix+lstencil] * dampy[iy+lstencil] * dampz[iz+lstencil];
+
+                                    v3_v[iz]*=dampx[ix] * dampy[iy] * dampz[iz];
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////

@@ -70,7 +70,7 @@ fname2=fullfile(root2,fname2);
 % add 8 points to each dimension
 dims1=[128+8,256+8,512+8];
 dims1=[256+8,256+8,256+8];
-% dims1=[200+8,256+8,256+8];
+dims1=[200+8,256+8,160+8];
 % dims1=[676+8,676+8,201+8];
 ccnt=dims1(1)*dims1(2)*dims1(3);
 %%%%%%%%%%%%%%%%%%%%%%%%% check sizes
@@ -133,6 +133,7 @@ a=max(abs(data2(:)));
 r2=68;c2=132;p2=260;
 r2=132;c2=132;p2=260;
 r2=132;c2=132;p2=132;
+r2=160;c2=140;p2=60;
 max(abs(data2(:)))
 figure
 subplot(1,3,1)
@@ -196,7 +197,7 @@ xlabel('X');ylabel('Z');
 colorbar
 
 subplot(1,3,3)
-imagesc(squeeze(data_diff(:,:,p2)).' );    %p2
+imagesc(squeeze(data_diff(:,:,p2)) );    %p2
 title(strcat(description_str,',z=',num2str(p2)));
 xlabel('X');ylabel('Y');
 colorbar
@@ -206,9 +207,12 @@ RMS_val =rms(data_diff,"all")
 ss=1
 %%%%%%%%%%%%%%%%%%   plot trace %%%%%%%%%%%%%%%%%%%
 figure;
-% plot(data(132,:,132));hold on
-% plot(data2(132,:,132));
-plot(data_diff(132,:,132));
+% plot(data(r2,:,p2));hold on
+% plot(data2(r2,:,p2));
+% plot(data_diff(r2,:,p2));
+% plot(data(:,c2,p2));hold on
+% plot(data2(:,c2,p2));
+plot(data_diff(:,c2,p2));
 legend(title1,title2,'diff');
 ss=1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
