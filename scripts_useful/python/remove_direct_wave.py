@@ -357,7 +357,8 @@ def main():
     ###########################
     print(os.getcwd())
     root_dir='../../data'
-    data_dir=os.path.join(root_dir,'orig_data')
+    # data_dir=os.path.join(root_dir,'orig_data')
+    data_dir=os.path.join(root_dir)
     save_data_dir=os.path.join(root_dir,'filtered_real_data')
     os.makedirs(save_data_dir,exist_ok=True)
     ###########################
@@ -365,7 +366,7 @@ def main():
     ###########################
     file_list=fnmatch.filter(os.listdir(data_dir), '*sismos*')
     file_list=sorted(file_list)
-    file_list=['sismos_20470.raw']
+    file_list=['sismos_44.raw']
     
     for file in file_list:
         input_file=os.path.join(data_dir,file)
@@ -444,7 +445,8 @@ def main2():
     ###########################
     print(os.getcwd())
     root_dir='../../data'
-    data_dir=os.path.join(root_dir,'orig_data')
+    data_dir=root_dir
+    # data_dir=os.path.join(root_dir,'orig_data')
     data_dir2=os.path.join(root_dir,'data_water_halfspace')
     save_data_dir=os.path.join(root_dir,'filtered_real_data')
     os.makedirs(save_data_dir,exist_ok=True)
@@ -453,7 +455,7 @@ def main2():
     ###########################
     file_list=fnmatch.filter(os.listdir(data_dir), '*sismos*')
     file_list=sorted(file_list)
-    file_list=['sismos_20470.raw']
+    file_list=['sismos_55.raw']
     
     for file in file_list:
         input_file=os.path.join(data_dir,file)
@@ -512,8 +514,8 @@ def main2():
 
 
 if __name__ == "__main__":
-    # main()
-    main2()
+    main()
+    # main2()
 
 
 

@@ -60,11 +60,11 @@ dshot=10;
 fmax=11;
 
 #####*********** order 1
-echo "Model data for RTM"
-first=20468;last=20507;
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
- --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
-exit 1;
+#echo "Model data for RTM"
+#first=20468;last=20507;
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
+#exit 1;
 
 #####*********** Back up data 
 ### Configuration
@@ -87,7 +87,8 @@ exit 1;
 
 #echo "Perform RTM"
 #first=20468;last=20507;
-##first=20472;last=20473;
+
+first=20472;last=20473;
 #./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 #	--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;
 #	
@@ -95,9 +96,9 @@ exit 1;
 #./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 #	--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1;	
 #
-#echo "Gather images"
-##./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
-## --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data"
+echo "Gather images"
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot 1 --mode 2 \
+ --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data"
 
 
 #####*********** Cluster ************###
