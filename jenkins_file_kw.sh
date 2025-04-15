@@ -148,5 +148,5 @@ mv ./data/sismos_${shot}.raw ./data/sismos_tb/sismos_${shot}.raw
 ################################
 #echo "compare_sismos_for_SBabc_TBabc"
 ################################
-echo "test_sismos_options_for_SB"
+#echo "test_sismos_options_for_SB"
 ##############################

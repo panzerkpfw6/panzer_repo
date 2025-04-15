@@ -1650,14 +1650,14 @@ void wave_image_condition_block_xyz(sismap_t *s, float *u1,
 					for (int x = xmin; x < xmax; x++) {
 		//                	MSG("vz0[z]=%f\n",vz0[z]);
 						for (int y = ymin; y < ymax; y++) {
-							ux = &(u1[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
-							wx = &(fwd[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);
+							ux = &(u1[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);	// backward. receiver wavefield.
+							wx = &(fwd[1ULL * (x + sx) * nnyz + (y + sy) * nnz + sz]);	// forward. source wavefield.
 							imgx = &(img_shot[1ULL * x * dimy * dimz + y * dimz]);
 							ilmx = &(ilm_shot[1ULL * x * dimy * dimz + y * dimz]);
 							#pragma omp simd
 							for (int z = zmin; z < zmax; z++) {
 								imgx[z] += ux[z]*wx[z];
-								ilmx[z] += wx[z]*wx[z];
+								ilmx[z] += wx[z]*wx[z]; //source wavefield illumination
 		//                            MSG("vz0[z]=%f\n,",vz0[z]);
 							}
 						}
