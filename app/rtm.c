@@ -372,14 +372,13 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
 
         /// retrieve the shot descriptor.
         shot = s->shots[sidx];
-//    printf("debug point 2\n");
+
         /// initialize the current shot.
         shot_init(shot, true, s->modeling);
-//    printf("debug point 0\n");
+
         /// load the seismic traces for the shot.
         wave_read_sismos(s, shot, sismos);
 
-//    printf("debug point 1\n");
         wave_min_max("sismos", sismos, s->rcv_len*(s->time_steps+1));
 
         /// reset buffers for the shot (forward).
@@ -481,11 +480,13 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             t_snap += wtime()-t0;
 
             t0 = wtime();
-            wave_image_condition_block_xyz(s,u0,fwd,img_shot,ilm_shot,t+1);
+            if ((t+1)%s->nb_snap == 0) {
+            	wave_image_condition_block_xyz(s,u0,fwd,img_shot,ilm_shot,t+1);
+            }
             t_image += wtime() - t0;
 
             t0 = wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp, pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp,pml_tab);
             t_prop += wtime()-t0;
 
             t0 = wtime();
