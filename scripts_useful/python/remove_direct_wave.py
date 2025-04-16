@@ -366,7 +366,7 @@ def main():
     ###########################
     file_list=fnmatch.filter(os.listdir(data_dir), '*sismos*')
     file_list=sorted(file_list)
-    file_list=['sismos_44.raw']
+    file_list=['sismos_61.raw']
     
     for file in file_list:
         input_file=os.path.join(data_dir,file)

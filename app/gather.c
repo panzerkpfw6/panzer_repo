@@ -69,7 +69,6 @@ int main(int argc, char* argv[]) {
   /// initialize the velocity and the compute sizes.
   wave_init_numerics(s);
   wave_init_dimensions(s);
-  wave_init_acquisition(s);
   /// init the buffers:
   CREATE_BUFFER(img, s->size_img);
   NULIFY_BUFFER(img, s->size_img);
