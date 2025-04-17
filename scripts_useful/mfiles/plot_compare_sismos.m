@@ -212,7 +212,7 @@ function data=read_sismos(fname,dims)
     for k=1:nt    %z
 %         disp(k)
         for i=1:nx    %x
-            data(i,:,k)=A(tmp:(tmp+ny-1));    %x
+            data(i,:,k)=A(tmp:(tmp+ny-1));    %y
             tmp=tmp+ny;
         end
     end

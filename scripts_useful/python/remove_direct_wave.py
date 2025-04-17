@@ -345,7 +345,7 @@ def model_direct_wave_subtraction(data,dt,dx,dy,v_direct,shot_info,fmax=11):
 # Main processing
 def main():
     # Parameters
-    nx=676;ny=676;nt=5200;
+    nx=676;ny=676;nt=4000;
     dims=[nx,ny,nt]
     print(f"data: {nx} inlines, {ny} crosslines, {nt} samples")
     v_direct = 1500.0  # Direct wave velocity (m/s, e.g., water)
@@ -391,13 +391,13 @@ def main():
             data, dt, dx, dy, v_direct, shot_info)
         print("Filtering completed")
 
-        # # Apply F-K-K filtering
+        # Apply F-K-K filtering
         # filtered_data = fkk_filter(data, dt, dx, dy, v_direct)
         # # filtered_data=data
         # print("F-K-K filtering completed")
 
         # Save filtered data
-        # save_filtered_data(filtered_data, output_file, dims)
+        save_filtered_data(filtered_data, output_file, dims)
         # filtered_data2 = load_data(output_file,dims)
 
         # plot
