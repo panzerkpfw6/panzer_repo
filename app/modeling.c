@@ -538,8 +538,10 @@ int main(int argc, char* argv[]) {
     wave_init_numerics(s);
     /// initialize the velocity and the compute sizes.
     wave_init_dimensions(s);
+    printf("before wave_init_damp : \n");
     wave_init_damp(s);
     /// initialize the geometry.
+    printf("before wave_init_acquisition \n");
     wave_init_acquisition(s);
 //    exit(1);
 
