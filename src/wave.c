@@ -201,7 +201,7 @@ void wave_init_numerics(sismap_t *s) {
         s->courant_number += 2. * fabs(s->coefz[i]);
     s->courant_number = 2. / sqrt(s->courant_number);
 //    s->dt = s->cfl * s->courant_number / s->vmax; // for 2nd order
-    s->dt =0.001;
+//    s->dt =0.001;
     // check that nbsnap is < Nyquist limit:
     s->nyquist_sampling = floor(1.0 / (2.0 * s->fmax) / s->dt) + 1;
     if (s->nb_snap == -1) {
