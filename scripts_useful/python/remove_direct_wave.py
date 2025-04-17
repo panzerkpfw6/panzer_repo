@@ -292,11 +292,12 @@ def model_direct_wave_subtraction(data,dt,dx,dy,v_direct,shot_info,fmax=11):
     """
     nx, ny, nt = data.shape
     filtered_data = data.copy()
+    dz=dx
 
     # Extract shot location and receiver depth
-    isx = float(shot_info['isx'].values[0])  # Source x-coordinate (m)
-    isy = float(shot_info['isy'].values[0])  # Source y-coordinate (m)
-    isz = float(shot_info['isz'].values[0])  # Source depth (m)
+    isx = float(shot_info['isx'].values[0])*dx  # Source x-coordinate (m)
+    isy = float(shot_info['isy'].values[0])*dy  # Source y-coordinate (m)
+    isz = float(shot_info['isz'].values[0])*dz  # Source depth (m)
     isz_rcv = float(shot_info['isz_rcv'].values[0])  # Receiver depth (m)
 
     # Generate the Ricker wavelet
@@ -311,7 +312,7 @@ def model_direct_wave_subtraction(data,dt,dx,dy,v_direct,shot_info,fmax=11):
             # Receiver position in meters
             x_rcv = i * dx
             y_rcv = j * dy
-            z_rcv = isz_rcv
+            z_rcv = isz_rcv*dz
 
             # Distance from source to receiver
             x_offset = x_rcv - isx
@@ -348,6 +349,7 @@ def main():
     dims=[nx,ny,nt]
     print(f"data: {nx} inlines, {ny} crosslines, {nt} samples")
     v_direct = 1500.0  # Direct wave velocity (m/s, e.g., water)
+    v_direct = 3000.0  # Direct wave velocity (m/s, e.g., water)
     dx = 25.0          # Inline spacing (m, adjust based on your data)
     dy = 25.0          # Crossline spacing (m, adjust based on your data)
     dt=0.001
@@ -406,19 +408,19 @@ def main():
         val=1e-3
         fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
         # First subplot (like imagesc)
-        im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
         ax1.set_title('orig')
         ax1.set_xlabel('Y, m')
         ax1.set_ylabel('time,msec')
         fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
         # Second subplot (like imagesc)
-        im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
         ax2.set_title('filtered')
         ax2.set_xlabel('Y, m')
         ax2.set_ylabel('time,msec')
         fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
         # Third subplot (like imagesc)
-        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val,vmax=val)
+        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
         ax3.set_title('filtered')
         ax3.set_xlabel('Y, m')
         ax3.set_ylabel('time,msec')
