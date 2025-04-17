@@ -80,7 +80,7 @@ export logs_path=./logs/test1
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
-timesteps=2200; dt=0.001;
+timesteps=4000; dt=0.001;
 nx=676;ny=676;nz=201;dh=25;
 ##### Profile x=310. Salt3D. no mistake
 #first=20957;last=21023;

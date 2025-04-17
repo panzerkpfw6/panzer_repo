@@ -345,11 +345,10 @@ def model_direct_wave_subtraction(data,dt,dx,dy,v_direct,shot_info,fmax=11):
 # Main processing
 def main():
     # Parameters
-    nx=676;ny=676;nt=2200;
+    nx=676;ny=676;nt=5200;
     dims=[nx,ny,nt]
     print(f"data: {nx} inlines, {ny} crosslines, {nt} samples")
     v_direct = 1500.0  # Direct wave velocity (m/s, e.g., water)
-    v_direct = 3000.0  # Direct wave velocity (m/s, e.g., water)
     dx = 25.0          # Inline spacing (m, adjust based on your data)
     dy = 25.0          # Crossline spacing (m, adjust based on your data)
     dt=0.001

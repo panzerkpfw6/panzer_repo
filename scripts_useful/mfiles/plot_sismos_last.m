@@ -5,12 +5,15 @@ close all
 fname=['../stencil-rtm/data/sismos_91.raw'];
 fname=['../../data/sismos_sb/sismos_1.raw'];
 fname=['../../data/sismos_sb/sismos_41100.raw'];
+fname=['../../data/sismos_61.raw'];
 nt=1200;nx=128;ny=256;
 nt=200;nx=676;ny=676;
 
 nt=2200;nx=128;ny=256;
 
 nt=505;nx=256;ny=256;
+
+nt=5200;nx=676;ny=676;
 
 dims=[nx,ny,nt];
 rcv_len=nx*ny;
