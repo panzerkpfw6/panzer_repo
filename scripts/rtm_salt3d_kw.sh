@@ -86,8 +86,9 @@ cbx=64;cby=22;cbz=9999;
 #scp ./data/*sismos* ./data/orig_data
 ##python ./scripts_useful/python/remove_direct_wave.py
 ########################
-
 echo "Model data for RTM. salt3d."
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 --cbx $cbx --cby $cby --cbz $cbz;
+
 ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
 --dx $dh --dy $dh --dz $dh \

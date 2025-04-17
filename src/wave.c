@@ -217,9 +217,12 @@ void wave_init_numerics(sismap_t *s) {
 }
 
 void wave_init_dimensions(sismap_t *s) {
-    s->dtrpx = s->dcdp / s->dx;
-    s->dtrpy = s->dim2 ? 1 : s->dline / s->dy;
-    s->dtrpz = s->ddepth / s->dz;
+//    s->dtrpx = s->dcdp / s->dx;
+//    s->dtrpy = s->dim2 ? 1 : s->dline / s->dy;
+//    s->dtrpz = s->ddepth / s->dz;
+    /// set to 1 for simplicity
+    s->dtrpx=1;s->dtrpy=1;s->dtrpz=1;
+
     s->img_dimx = (s->vel_dimx - 1) * s->dtrpx + 1;// ceil(((float)s->vel_dimx*s->dcdp)/(float)s->dx);
     s->img_dimy = (s->vel_dimy - 1) * s->dtrpy + 1;// ceil(((float)s->vel_dimy*s->dline)/(float)s->dy);
     s->img_dimz = (s->vel_dimz - 1) * s->dtrpz + 1;// ceil(((float)s->vel_dimz*s->ddepth)/(float)s->dz);
@@ -243,6 +246,9 @@ void wave_init_damp(sismap_t *s) {
     CREATE_BUFFER(s->dampx, 2 * s->sx + s->dimx);
     CREATE_BUFFER(s->dampy, 2 * s->sy + s->dimy);
     CREATE_BUFFER(s->dampz, 2 * s->sz + s->dimz);
+
+//    MSG("s->sx=%d\n",s->sx);
+//    MSG("s->dimx=%d\n",s->dimx);
 
     float alpha = 0.2;
     float tabdamp[NDAMP];
@@ -445,7 +451,7 @@ void wave_print(sismap_t *s) {
         s->img_dimx, s->img_dimy, s->img_dimz,
         s->size_img / 1024. / 1024.);
     MSG("... cdp,line,depth      = %u x %u x %u", s->dcdp, s->dline, s->ddepth);
-    MSG("... dS                  = %u x %u x %u", s->dx, s->dy, s->dz);
+    MSG("... dS                  = %f x %f x %f", s->dx, s->dy, s->dz);
     MSG("... dtrp                = %u x %u x %u", s->dtrpx, s->dtrpy, s->dtrpz);
     MSG("... dt                  = %g", s->dt);
     MSG("... stencil size        = %u x %u x %u", 2 * s->sx + 1, 2 * s->sy + 1, 2 * s->sz + 1);
