@@ -31,10 +31,10 @@ lscpu
 rm ./bin/modeling
 rm ./bin/rtm
 rm ./bin/gather
-rm ./data/*ilm*
-rm ./data/*img*
-rm ./data/*sismos*
-rm ./data/*snap*
+#rm ./data/*ilm*
+#rm ./data/*img*
+#rm ./data/*sismos*
+#rm ./data/*snap*
 
 ###********** OPENMP PARAMETERS ***********###
 #export OMP_NUM_THREADS=192
