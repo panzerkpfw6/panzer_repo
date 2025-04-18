@@ -15,6 +15,12 @@ import pyfftw.interfaces.numpy_fft as fft
 import fnmatch
 from scipy import signal
 #######################################
+from multiprocessing import Pool, cpu_count
+import time
+# Configure pyfftw to use multiple threads for FFT
+import pyfftw
+pyfftw.config.NUM_THREADS = cpu_count()-4
+#######################################
 
 
 def read_acquisition(filename,dims):
@@ -141,7 +147,255 @@ def save_filtered_data(filtered_data, output_fname, dims):
     
     return None
 
+def apply_lowpass_filter(trace, sos):
+    """
+    Apply low-pass filter to a single trace (1D array).
+    
+    Parameters:
+        trace (ndarray): 1D array of shape (n_samples,)
+        sos (ndarray): Second-order sections for the filter
+    
+    Returns:
+        filtered_trace (ndarray): Filtered 1D array
+    """
+    return signal.sosfiltfilt(sos, trace)
+
 def fkk_filter(data, dt, dx, dy, v_direct, mute_width=0.4, taper_width=0.15, plot_fkk=False):
+    """
+    Apply 3D F-K-K filtering to remove direct waves from seismic data with tapering, optimized for multi-core.
+    
+    Parameters:
+        data (ndarray): 3D seismic data (n_inline, n_crossline, n_samples)
+        dt (float): Time sampling interval (s)
+        dx (float): Inline spacing (m)
+        dy (float): Crossline spacing (m)
+        v_direct (float): Direct wave velocity (m/s)
+        mute_width (float): Width of the mute zone in F-K-K domain (fraction of max wavenumber)
+        taper_width (float): Width of the taper zone (fraction of max wavenumber)
+        plot_fkk (bool): If True, plot the F-K-K spectrum before applying the taper
+    
+    Returns:
+        filtered_data (ndarray): Filtered 3D seismic data
+    """
+    # Start total execution timer
+    total_start = time.time()
+
+    n_inline, n_crossline, n_samples = data.shape
+
+    # Low-pass filter to avoid aliasing
+    start = time.time()
+    k_max = 1 / (2 * dx)  # Maximum wavenumber
+    f_max_alias = v_direct * k_max  # Maximum frequency without aliasing
+    print(f"Maximum frequency to avoid aliasing: {f_max_alias:.2f} Hz")
+    sos = signal.butter(4, f_max_alias, fs=1/dt, btype='low', output='sos')
+
+    # Parallelize low-pass filtering over spatial dimensions
+    data_flat = data.reshape(-1, n_samples)  # Flatten spatial dimensions: (n_inline * n_crossline, n_samples)
+    with Pool(processes=cpu_count()) as pool:
+        filtered_flat = pool.starmap(apply_lowpass_filter, [(trace, sos) for trace in data_flat])
+    data = np.array(filtered_flat).reshape(n_inline, n_crossline, n_samples)
+    print(f"Low-pass filtering time: {time.time() - start:.2f} seconds")
+
+    # 3D FFT to F-K-K domain
+    start = time.time()
+    data_fkk = fft.rfftn(data, axes=(0, 1, 2))
+    freq_shape = data_fkk.shape[-1]
+    print(f"3D FFT time: {time.time() - start:.2f} seconds")
+
+    # Frequency and wavenumber axes
+    freqs = fft.rfftfreq(n_samples, dt)
+    kx = fft.fftfreq(n_inline, dx)
+    ky = fft.fftfreq(n_crossline, dy)
+
+    # Broadcasting for 3D grid
+    kx = kx.reshape(-1, 1, 1)
+    ky = ky.reshape(1, -1, 1)
+    freqs = freqs.reshape(1, 1, -1)
+
+    # Direct wave in F-K-K domain: |f| = v * sqrt(kx^2 + ky^2)
+    k_magnitude = np.sqrt(kx**2 + ky**2)
+    max_k = np.max(k_magnitude)
+    freq_diff = np.abs(freqs - v_direct * k_magnitude)
+
+    # Define mute and taper thresholds
+    mute_threshold = mute_width * v_direct * max_k
+    taper_threshold = (mute_width + taper_width) * v_direct * max_k
+
+    # Create and apply a smooth taper
+    start = time.time()
+    taper = np.ones_like(data_fkk, dtype=np.float32)
+    mute_mask = freq_diff < mute_threshold
+    taper_mask = (freq_diff >= mute_threshold) & (freq_diff < taper_threshold)
+
+    taper[mute_mask] = 0.0
+    taper[taper_mask] = (freq_diff[taper_mask] - mute_threshold) / (taper_threshold - mute_threshold)
+    data_fkk *= taper
+    print(f"Taper computation and application time: {time.time() - start:.2f} seconds")
+
+    # Plot the F-K-K spectrum if requested
+    if plot_fkk:
+        start = time.time()
+        amp_spectrum = np.abs(data_fkk)
+        amp_spectrum = np.log10(amp_spectrum + 1e-10)
+
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+
+        freq_idx = freq_shape // 2
+        slice_kx_ky = amp_spectrum[:, :, freq_idx]
+        im1 = ax1.imshow(slice_kx_ky, cmap='jet', extent=[ky.min(), ky.max(), kx.max(), kx.min()])
+        ax1.set_title(f'kx-ky at f={freqs[0, 0, freq_idx]:.2f} Hz')
+        ax1.set_xlabel('ky (1/m)')
+        ax1.set_ylabel('kx (1/m)')
+        fig.colorbar(im1, ax=ax1, label='Log10(Amplitude)')
+
+        ky_idx = n_crossline // 2
+        slice_kx_f = amp_spectrum[:, ky_idx, :]
+        im2 = ax2.imshow(slice_kx_f, cmap='jet', extent=[freqs.min(), freqs.max(), kx.max(), kx.min()])
+        ax2.set_title(f'kx-f at ky={ky[0, ky_idx, 0]:.2e} 1/m')
+        ax2.set_xlabel('Frequency (Hz)')
+        ax2.set_ylabel('kx (1/m)')
+        fig.colorbar(im2, ax=ax2, label='Log10(Amplitude)')
+        ax2.contour(freq_diff[:, ky_idx, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
+
+        kx_idx = n_inline // 2
+        slice_ky_f = amp_spectrum[kx_idx, :, :]
+        im3 = ax3.imshow(slice_ky_f, cmap='jet', extent=[freqs.min(), freqs.max(), ky.max(), ky.min()])
+        ax3.set_title(f'ky-f at kx={kx[kx_idx, 0, 0]:.2e} 1/m')
+        ax3.set_xlabel('Frequency (Hz)')
+        ax3.set_ylabel('ky (1/m)')
+        fig.colorbar(im3, ax=ax3, label='Log10(Amplitude)')
+        ax3.contour(freq_diff[kx_idx, :, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
+
+        plt.tight_layout()
+        plt.show()
+        print(f"Plotting time: {time.time() - start:.2f} seconds")
+
+    # Inverse 3D FFT
+    start = time.time()
+    filtered_data = fft.irfftn(data_fkk, s=(n_inline, n_crossline, n_samples), axes=(0, 1, 2))
+    print(f"Inverse 3D FFT time: {time.time() - start:.2f} seconds")
+
+    # Total execution time
+    print(f"Total execution time for fkk_filter: {time.time() - total_start:.2f} seconds")
+
+    return filtered_data
+
+def fkk_filter_single(data, dt, dx, dy, v_direct, mute_width=0.4, taper_width=0.15, plot_fkk=False):
+    """
+    Apply 3D F-K-K filtering to remove direct waves from seismic data with tapering.
+    
+    Parameters:
+        data (ndarray): 3D seismic data (n_inline, n_crossline, n_samples)
+        dt (float): Time sampling interval (s)
+        dx (float): Inline spacing (m)
+        dy (float): Crossline spacing (m)
+        v_direct (float): Direct wave velocity (m/s)
+        mute_width (float): Width of the mute zone in F-K-K domain (fraction of max wavenumber)
+        taper_width (float): Width of the taper zone (fraction of max wavenumber)
+        plot_fkk (bool): If True, plot the F-K-K spectrum before applying the taper
+    
+    Returns:
+        filtered_data (ndarray): Filtered 3D seismic data
+    """
+    # Start total execution timer
+    total_start = time.time()
+
+    n_inline, n_crossline, n_samples = data.shape
+
+    # 3D FFT to F-K-K domain
+    start = time.time()
+    data_fkk = fft.rfftn(data, axes=(0, 1, 2))
+    freq_shape = data_fkk.shape[-1]
+    print(f"3D FFT time: {time.time() - start:.2f} seconds")
+
+    # Frequency and wavenumber axes
+    freqs = fft.rfftfreq(n_samples, dt)
+    kx = fft.fftfreq(n_inline, dx)
+    ky = fft.fftfreq(n_crossline, dy)
+
+    # Broadcasting for 3D grid
+    kx = kx.reshape(-1, 1, 1)
+    ky = ky.reshape(1, -1, 1)
+    freqs = freqs.reshape(1, 1, -1)
+
+    # Direct wave in F-K-K domain: |f| = v * sqrt(kx^2 + ky^2)
+    k_magnitude = np.sqrt(kx**2 + ky**2)
+    max_k = np.max(k_magnitude)
+    freq_diff = np.abs(freqs - v_direct * k_magnitude)
+
+    # Define mute and taper thresholds
+    mute_threshold = mute_width * v_direct * max_k
+    taper_threshold = (mute_width + taper_width) * v_direct * max_k
+
+    # Create and apply a smooth taper
+    start = time.time()
+    taper = np.ones_like(data_fkk, dtype=np.float32)
+    mute_mask = freq_diff < mute_threshold
+    taper_mask = (freq_diff >= mute_threshold) & (freq_diff < taper_threshold)
+
+    taper[mute_mask] = 0.0
+    taper[taper_mask] = (freq_diff[taper_mask] - mute_threshold) / (taper_threshold - mute_threshold)
+    # data_fkk *= taper
+    print(f"Taper computation and application time: {time.time() - start:.2f} seconds")
+
+    # Plot the F-K-K spectrum if requested
+    if plot_fkk:
+        start = time.time()
+
+        amp_spectrum = np.abs(data_fkk)
+        amp_spectrum = np.log10(amp_spectrum + 1e-10)
+
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+        freq_idx = freq_shape // 2
+        freq_idx=78
+        slice_kx_ky = amp_spectrum[:, :, freq_idx]
+        im1 = ax1.imshow(slice_kx_ky, cmap='jet', extent=[ky.min(), ky.max(), kx.max(), kx.min()])
+        ax1.set_title(f'kx-ky at f={freqs[0, 0, freq_idx]:.2f} Hz')
+        ax1.set_xlabel('ky (1/m)')
+        ax1.set_ylabel('kx (1/m)')
+        fig.colorbar(im1, ax=ax1, label='Log10(Amplitude)')
+
+        ky_idx = n_crossline // 2
+        ky_idx =136
+        slice_kx_f = amp_spectrum[:, ky_idx, :]
+        # im2 = ax2.imshow(slice_kx_f, cmap='jet', extent=[freqs.min(), freqs.max(), kx.max(), kx.min()])
+        im2 = ax2.imshow(slice_kx_f, cmap='jet')
+        ax2.set_title(f'kx-f at ky={ky[0, ky_idx, 0]:.2e} 1/m')
+        ax2.set_xlabel('Frequency (Hz)')
+        ax2.set_ylabel('kx (1/m)')
+        fig.colorbar(im2, ax=ax2, label='Log10(Amplitude)')
+        ax2.contour(freq_diff[:, ky_idx, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
+
+        kx_idx = n_inline // 2
+        kx_idx=412
+        slice_ky_f = amp_spectrum[kx_idx, :, :]
+        # im3 = ax3.imshow(slice_ky_f, cmap='jet', extent=[freqs.min(), freqs.max(), ky.max(), ky.min()])
+        im3 = ax3.imshow(slice_ky_f, cmap='jet')
+        ax3.set_title(f'ky-f at kx={kx[kx_idx, 0, 0]:.2e} 1/m')
+        ax3.set_xlabel('Frequency (Hz)')
+        ax3.set_ylabel('ky (1/m)')
+        fig.colorbar(im3, ax=ax3, label='Log10(Amplitude)')
+        ax3.contour(freq_diff[kx_idx, :, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
+
+        plt.tight_layout()
+        plt.show()
+
+        print(f"Plotting time: {time.time() - start:.2f} seconds")
+        ss=1
+
+    data_fkk *= taper
+
+    # Inverse 3D FFT
+    start = time.time()
+    filtered_data = fft.irfftn(data_fkk, s=(n_inline, n_crossline, n_samples), axes=(0, 1, 2))
+    print(f"Inverse 3D FFT time: {time.time() - start:.2f} seconds")
+
+    # Total execution time
+    print(f"Total execution time for fkk_filter: {time.time() - total_start:.2f} seconds")
+
+    return filtered_data
+
+def fkk_filter3(data, dt, dx, dy, v_direct, mute_width=0.5, taper_width=0.2, plot_fkk=False):
     """
     Apply 3D F-K-K filtering to remove direct waves from seismic data with tapering.
     
@@ -191,37 +445,21 @@ def fkk_filter(data, dt, dx, dy, v_direct, mute_width=0.4, taper_width=0.15, plo
         amp_spectrum = np.abs(data_fkk)
         amp_spectrum = np.log10(amp_spectrum + 1e-10)
 
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+        # Choose a frequency for the kx-ky spectrum (below aliasing limit)
+        f_plot = min(5.0, f_max_alias)  # Use 5 Hz or f_max_alias
+        freq_idx = np.argmin(np.abs(freqs[0, 0, :] - f_plot))
 
-        # kx-ky plane at a fixed frequency
-        freq_idx = freq_shape // 2
-        slice_kx_ky = amp_spectrum[:, :, freq_idx]
-        im1 = ax1.imshow(slice_kx_ky, cmap='jet', extent=[ky.min(), ky.max(), kx.max(), kx.min()])
-        ax1.set_title(f'kx-ky at f={freqs[0, 0, freq_idx]:.2f} Hz')
-        ax1.set_xlabel('ky (1/m)')
-        ax1.set_ylabel('kx (1/m)')
-        fig.colorbar(im1, ax=ax1, label='Log10(Amplitude)')
-
-        # kx-f plane at a fixed ky
-        ky_idx = n_crossline // 2
-        slice_kx_f = amp_spectrum[:, ky_idx, :]
-        im2 = ax2.imshow(slice_kx_f, cmap='jet', extent=[freqs.min(), freqs.max(), kx.max(), kx.min()])
-        ax2.set_title(f'kx-f at ky={ky[0, ky_idx, 0]:.2e} 1/m')
-        ax2.set_xlabel('Frequency (Hz)')
-        ax2.set_ylabel('kx (1/m)')
-        fig.colorbar(im2, ax=ax2, label='Log10(Amplitude)')
-        ax2.contour(freq_diff[:, ky_idx, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
-
-        # ky-f plane at a fixed kx
-        kx_idx = n_inline // 2
-        slice_ky_f = amp_spectrum[kx_idx, :, :]
-        im3 = ax3.imshow(slice_ky_f, cmap='jet', extent=[freqs.min(), freqs.max(), ky.max(), ky.min()])
-        ax3.set_title(f'ky-f at kx={kx[kx_idx, 0, 0]:.2e} 1/m')
-        ax3.set_xlabel('Frequency (Hz)')
-        ax3.set_ylabel('ky (1/m)')
-        fig.colorbar(im3, ax=ax3, label='Log10(Amplitude)')
-        ax3.contour(freq_diff[kx_idx, :, :] < mute_threshold, levels=[0], colors='white', linestyles='--')
-
+        # Plot kx-ky spectrum
+        fig = plt.figure(figsize=(6, 5))
+        plt.imshow(amp_spectrum[:, :, freq_idx], cmap='jet', extent=[ky.min(), ky.max(), kx.max(), kx.min()])
+        plt.colorbar(label='Log10(Amplitude)')
+        plt.title(f'kx-ky Spectrum at f={freqs[0, 0, freq_idx]:.2f} Hz')
+        plt.xlabel('ky (1/m)')
+        plt.ylabel('kx (1/m)')
+        # Overlay the expected direct wave circle
+        k_expected = f_plot / v_direct
+        circle = plt.Circle((0, 0), k_expected, color='white', fill=False, linestyle='--')
+        plt.gca().add_patch(circle)
         plt.tight_layout()
         plt.show()
 
@@ -387,47 +625,55 @@ def main():
         data = load_data(input_file,dims)
 
         # Apply model-based direct wave subtraction
-        filtered_data = model_direct_wave_subtraction(
-            data, dt, dx, dy, v_direct, shot_info)
-        print("Filtering completed")
+        # filtered_data = model_direct_wave_subtraction(
+        #     data, dt, dx, dy, v_direct, shot_info)
+        # print("Filtering completed")
 
         # Apply F-K-K filtering
-        # filtered_data = fkk_filter(data, dt, dx, dy, v_direct)
+        # filtered_data = fkk_filter_single(data, dt, dx, dy, v_direct)
+        # filtered_data = fkk_filter3(data, dt, dx, dy, v_direct)
+        filtered_data = fkk_filter3(
+            data, dt, dx, dy, v_direct, mute_width=0.5, taper_width=0.2, plot_fkk=True)
         # # filtered_data=data
-        # print("F-K-K filtering completed")
+        print("F-K-K filtering completed")
 
         # Save filtered data
-        save_filtered_data(filtered_data, output_file, dims)
+        # save_filtered_data(filtered_data, output_file, dims)
         # filtered_data2 = load_data(output_file,dims)
 
         # plot
         data1=data[isx,:,:]
         data2=filtered_data[isx,:,:]
 
-        val=1e-3
-        fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
-        # First subplot (like imagesc)
-        im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
-        ax1.set_title('orig')
-        ax1.set_xlabel('Y, m')
-        ax1.set_ylabel('time,msec')
-        fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
-        # Second subplot (like imagesc)
-        im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
-        ax2.set_title('filtered')
-        ax2.set_xlabel('Y, m')
-        ax2.set_ylabel('time,msec')
-        fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
-        # Third subplot (like imagesc)
-        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
-        ax3.set_title('filtered')
-        ax3.set_xlabel('Y, m')
-        ax3.set_ylabel('time,msec')
-        fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
-        # Adjust layout to prevent overlap
-        plt.tight_layout()
-        # Show the plot
-        plt.show()
+val=5*1e-3;val2=val
+val2=1e-5
+
+fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
+# First subplot (like imagesc)
+im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
+# im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+ax1.set_title('orig data')
+ax1.set_xlabel('Y, m')
+ax1.set_ylabel('time,msec')
+fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
+# Second subplot (like imagesc)
+im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
+# im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+ax2.set_title('filtered data')
+ax2.set_xlabel('Y, m')
+ax2.set_ylabel('time,msec')
+fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
+# Third subplot (like imagesc)
+im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val2,vmax=val2,extent=[0,y[-1],t[-1],0])
+# im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+ax3.set_title('filtered residual')
+ax3.set_xlabel('Y, m')
+ax3.set_ylabel('time,msec')
+fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
+# Adjust layout to prevent overlap
+plt.tight_layout()
+# Show the plot
+plt.show()
 
         aa=1
 

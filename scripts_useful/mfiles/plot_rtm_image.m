@@ -6,7 +6,7 @@ dims=[256,128,128];
 dims=[676,676,201];
 
 root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/'
-root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/att2'
+root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/att3'
 fname=['/Volumes/ssd1/SIMWAVE/simwave/models/benchmark_512_3d.raw'];
 fname=['/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/data/augmented_vel.raw'];
 fname=['../rtm_munich/data/augmented_vel.raw'];
@@ -42,8 +42,8 @@ fname2=['../../data/img_only.raw'];     % img_only.raw
 % fname2=['../../data/img_20472.raw'];     % img_only.raw
 % fname2=['../../data/ilm_20468.raw'];
 fname2=fullfile(root,'img_only.raw');
-% fname2=fullfile(root,'img.raw');
-% fname2=fullfile(root,'ilm_only.raw');
+fname2=fullfile(root,'img.raw');
+fname2=fullfile(root,'ilm_only.raw');
 
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
 ccnt=dims2(1)*dims2(2)*dims2(3);
@@ -53,6 +53,10 @@ data2=read_snap(fname2,'stencil',dims2);   %rtm
 [mxv,idx] = max(abs(data2(:)));
 [r,c,p] = ind2sub(size(data2),idx);
 data2_max_loc=[r,c,p,mxv];
+%%
+% z1=25;
+% data=data(:,:,z1:end);
+% data2=data2(:,:,z1:end);
 %% delete over-amplified top of rtm image
 % data=data(:,:,20:end);
 % data2=data2(:,:,20:end);
@@ -66,7 +70,6 @@ z=(0:(dims2(3)-1))*dz;
 [x_,y_,z_] = meshgrid(x,y,z);
 %% %% plotting
 val1=1e-8; val2=1e-3;
-
 val1=-1e-4; val2=-val1;
 iy1=30;iy2=230;
 ix=303;
@@ -83,7 +86,8 @@ colorbar
 %%
 ix=413;
 iy=300;
-val1=-2.5*1e-4; 
+val1=-9.5*1e-2; % img_only.raw scaling
+
 val2=-val1;
 figure
 subplot(1,2,1);
@@ -102,8 +106,8 @@ xlabel('Y, m');ylabel('Z, m');
 colormap(ax2,'gray');
 colorbar
 %%
-val1=-1.0*1e-3; 
-val2=-val1;
+% val1=-1.0*1e-3; 
+% val2=-val1;
 figure
 subplot(1,2,1);
 imagesc(x,z, squeeze(data(:,iy,:)).');
@@ -156,8 +160,8 @@ ylim([0 16.875])
 
 set(h,'edgecolor','none')
 view(70.930049261083752,29.243382352941175)
-% Save the figure with specified DPI using print
-print(f1, fullfile(picture_dir, 'salt_3d_rtm3_'), '-dpng', '-r400');
+% % Save the figure with specified DPI using print
+% print(f1, fullfile(picture_dir, 'salt_3d_rtm3_'), '-dpng', '-r400');
 %%
 
 f1=figure('units','pixels','position',[2003 303 1200 600]);
