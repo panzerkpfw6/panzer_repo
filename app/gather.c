@@ -16,6 +16,18 @@ void gather_img_div_ilm(unsigned int len,
   }
 }
 
+void gather_img_div_ilm_smart(unsigned int len,
+                        float *img_shot, float *ilm_shot, float *img) {
+    #pragma omp parallel for
+    for (unsigned int i = 0; i < len; i++) {
+        if (fabs(ilm_shot[i]) > 1e-6) {  // Avoid division by zero or near-zero
+            img[i] += img_shot[i] / ilm_shot[i];
+        } else {
+            img[i] += 0.0;  // Skip contribution or use a small constant
+        }
+    }
+}
+
 void gather_img_ilm(unsigned int len,
                     float *img_shot, float *ilm_shot, float *img, float *ilm) {
   #pragma omp parallel for
@@ -143,7 +155,7 @@ int main(int argc, char* argv[]) {
           "failed to read ilm file");
 			fclose(fd);
 			// do the shot gather:
-			gather_img_div_ilm(s->size_img, img_shot, ilm_shot, img);
+			gather_img_div_ilm_smart(s->size_img, img_shot, ilm_shot, img);
 			gather_img_ilm(s->size_img, 	img_shot, ilm_shot, img_only, ilm_only);
 		}
   }

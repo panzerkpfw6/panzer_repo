@@ -6,13 +6,13 @@ dims=[256,128,128];
 dims=[676,676,201];
 
 root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/'
-root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/att3'
+root='/media/plotnips/sdd1/Dropbox/Apps/download_to_laptop/salt_sh3_sb_rtm/att4'
 fname=['/Volumes/ssd1/SIMWAVE/simwave/models/benchmark_512_3d.raw'];
 fname=['/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/data/augmented_vel.raw'];
 fname=['../rtm_munich/data/augmented_vel.raw'];
 % fname=['../../stencil-main/data/used_vel_model.raw'];
 fname=['../../data/velocity.raw'];
-fname=fullfile(root,'velocity.raw');
+% fname=fullfile(root,'velocity.raw');
 picture_dir='/media/plotnips/sdd1/Dropbox/Apps/Overleaf/2025_stencil_rtm/figures/rtm_salt/'
 
 % some file size calculations
@@ -43,7 +43,7 @@ fname2=['../../data/img_only.raw'];     % img_only.raw
 % fname2=['../../data/ilm_20468.raw'];
 fname2=fullfile(root,'img_only.raw');
 fname2=fullfile(root,'img.raw');
-fname2=fullfile(root,'ilm_only.raw');
+% fname2=fullfile(root,'ilm_only.raw');
 
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
 ccnt=dims2(1)*dims2(2)*dims2(3);
