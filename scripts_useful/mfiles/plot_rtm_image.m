@@ -48,20 +48,20 @@ fname2=fullfile(root,'img.raw');
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
 ccnt=dims2(1)*dims2(2)*dims2(3);
 
-data2=read_snap(fname2,'stencil',dims2);   %rtm
-[M,I] = max(data2,[],1);
-[mxv,idx] = max(abs(data2(:)));
-[r,c,p] = ind2sub(size(data2),idx);
+rtm_data=read_snap(fname2,'stencil',dims2);   %rtm
+[M,I] = max(rtm_data,[],1);
+[mxv,idx] = max(abs(rtm_data(:)));
+[r,c,p] = ind2sub(size(rtm_data),idx);
 data2_max_loc=[r,c,p,mxv];
 %%
 % z1=25;
 % data=data(:,:,z1:end);
-% data2=data2(:,:,z1:end);
+% rtm_data=rtm_data(:,:,z1:end);
 %% delete over-amplified top of rtm image
 % data=data(:,:,20:end);
-% data2=data2(:,:,20:end);
+% rtm_data=rtm_data(:,:,20:end);
 % dims=size(data);
-% dims2=size(data2);
+% dims2=size(rtm_data);
 %% coordinates
 dx=25;dy=25;dz=25;
 x=(0:(dims2(1)-1))*dx/1000;
@@ -75,28 +75,41 @@ iy1=30;iy2=230;
 ix=303;
 %
 figure
-% imagesc( squeeze(data2(128,:,:)).');
-% imagesc( squeeze(data2(303,:,:)).');
-imagesc( squeeze(data2(303,:,:)).',[val1,val2]);
-% imagesc( squeeze(data2(:,128,:)).',[-val,val] );
-% imagesc( squeeze(data2(:,133,:)).');
+% imagesc( squeeze(rtm_data(128,:,:)).');
+% imagesc( squeeze(rtm_data(303,:,:)).');
+imagesc( squeeze(rtm_data(303,:,:)).',[val1,val2]);
+% imagesc( squeeze(rtm_data(:,128,:)).',[-val,val] );
+% imagesc( squeeze(rtm_data(:,133,:)).');
 colormap('gray');
 % clim([val1,val2])
 colorbar
 %%
+% Clip amplitudes above a threshold (e.g., 95th percentile)
+% threshold = prctile(rtm_data(:), 94); % 
+threshold = prctile(rtm_data(:), 96); % my final choice for paper
+% threshold=300
+clipped_rtm = min(rtm_data, threshold); % Cap high values
+
+% data2=clipped_rtm;
+data2=rtm_data;
+% % Optional: Apply a small Gaussian filter to smooth transitions
+% data2 = imgaussfilt3(clipped_rtm, 1);
+
 ix=413;
 iy=300;
-val1=-9.5*1e-2; % img_only.raw scaling
-
+val1=-9.5*1e-0; % img_only.raw scaling
+val1=-5.5*1e+2; % img_only.raw scaling
+val1=-threshold
 val2=-val1;
+
 figure
 subplot(1,2,1);
 imagesc(y,z,squeeze(data(ix,:,:)).');
 ax1=gca();
-title(strcat('Velocity (m/sec), x=',num2str(ix)));
+title(strcat('Velocity (m/sec), x=',num2str(ix)), 'Interpreter', 'latex' );
 xlabel('Y, m');ylabel('Z, m');
 colormap(ax1,'parula');
-colorbar
+c = colorbar;
 
 subplot(1,2,2);
 imagesc(y,z,squeeze(data2(ix,:,:)).' ,[val1,val2] );
@@ -105,17 +118,17 @@ title(strcat('RTM image, x=',num2str(ix)));
 xlabel('Y, m');ylabel('Z, m');
 colormap(ax2,'gray');
 colorbar
-%%
+%
 % val1=-1.0*1e-3; 
 % val2=-val1;
 figure
 subplot(1,2,1);
 imagesc(x,z, squeeze(data(:,iy,:)).');
 ax1=gca();
-title(strcat('Velocity (m/sec), y=',num2str(iy)));
+title(strcat('$\mathbf{V_p}$ (m/sec), y=',num2str(iy)), 'Interpreter', 'latex','FontWeight', 'bold' );
 xlabel('X, m');ylabel('Z, m');
 colormap(ax1,'parula');
-colorbar
+c = colorbar;
 
 subplot(1,2,2);
 imagesc(x,z, squeeze(data2(:,iy,:)).' ,[val1,val2] );
@@ -125,7 +138,6 @@ xlabel('X, m');ylabel('Z, m');
 colormap(ax2,'gray');
 colorbar
 %%
-
 xslice = [1.000,8.000];    % location of y-z planes
 yslice = [6.000,8.000,12.000,15.000];              % location of x-z plane
 % zslice = [4500];         % location of x-y planes
@@ -145,14 +157,21 @@ grid off  % Remove grid lines
 zlim([300 4000])
 
 
-set(ax, 'FontSize', 14)
-set(ax, 'XTickLabel', get(ax, 'XTickLabel'), 'FontSize', 12)
-set(ax, 'YTickLabel', get(ax, 'YTickLabel'), 'FontSize', 12)
-set(ax, 'ZTickLabel', get(ax, 'ZTickLabel'), 'FontSize', 12)
+% set(ax, 'FontSize', 14)
+% set(ax, 'XTickLabel', get(ax, 'XTickLabel'), 'FontSize', 12)
+% set(ax, 'YTickLabel', get(ax, 'YTickLabel'), 'FontSize', 12)
+% set(ax, 'ZTickLabel', get(ax, 'ZTickLabel'), 'FontSize', 12)
 title('3D RTM image')
 
+title(strcat('$\textbf{3D RTM image}$'),'Interpreter','latex','FontWeight','bold','FontSize', 19);
+xlabel('$\textbf{X, km}$','Interpreter','latex','FontWeight','bold');
+ylabel('$\textbf{Y, km}$','Interpreter','latex','FontWeight','bold');
+zlabel('$\textbf{Z, m}$','Interpreter','latex','FontWeight','bold');
+set(ax, 'FontSize', 19)
+
 caxis([val1 val2])
-colorbar()
+c = colorbar;
+c.Ticks = [];
 colormap('gray')  % Use a colormap to highlight data variations
 
 xlim([0 16.875])
@@ -161,29 +180,45 @@ ylim([0 16.875])
 set(h,'edgecolor','none')
 view(70.930049261083752,29.243382352941175)
 % % Save the figure with specified DPI using print
-% print(f1, fullfile(picture_dir, 'salt_3d_rtm3_'), '-dpng', '-r400');
+print(f1, fullfile(picture_dir, 'rtm_vol'), '-dpng', '-r400');
 %%
-
 f1=figure('units','pixels','position',[2003 303 1200 600]);
 imagesc(x,z, squeeze(data(:,iy,:)).');
 ax1=gca();
-title(strcat('Velocity (m/sec), y=',num2str((iy-1)*dy/1000,'%.1f'),' km' ));
-xlabel('X, km');ylabel('Z, m');
+title(strcat('$\mathbf{V_p (m/sec)},$','\textbf{ y=}',num2str((iy-1)*dy/1000,'%.1f'),'\textbf{ km}' ),'Interpreter','latex','FontWeight','bold','FontSize', 19);
+xlabel('$\textbf{X, km}$','Interpreter','latex','FontWeight','bold');
+ylabel('$\textbf{Z, m}$','Interpreter','latex','FontWeight','bold');
 colormap(ax1,'parula');
-set(ax1,'FontSize', 14);
-colorbar
+set(ax1,'FontSize',19);
+c = colorbar;
+c.Ticks = [];
 print(f1, fullfile(picture_dir, 'vel_slice_'), '-dpng', '-r400');
 %%
-
-f1=figure('units','pixels','position',[2003 303 1200 600]);
-imagesc(x,z, squeeze(data2(:,iy,:)).' ,[val1,val2] );
-ax1=gca();
-title(strcat('RTM image, y=',num2str((iy-1)*dy/1000,'%.1f'),' km' ) );
-xlabel('X, km');ylabel('Z, m');
-colormap(ax1,'gray');
-set(ax1,'FontSize', 14);
-colorbar
-print(f1, fullfile(picture_dir, 'rtm_slice_'), '-dpng', '-r400');
+% Create the figure
+f1 = figure('units', 'pixels', 'position', [2003 303 1200 600]);
+% Plot the data
+imagesc(x, z, squeeze(data2(:, iy, :)).', [val1, val2]);
+ax1 = gca();
+% Set title and labels with LaTeX interpreter
+title(strcat('\textbf{RTM image, y=}', num2str((iy-1)*dy/1000, '%.1f'), '\textbf{ km}'), ...
+      'Interpreter', 'latex', 'FontWeight', 'bold', 'FontSize', 19);
+xlabel('$\textbf{X, km}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
+ylabel('$\textbf{Z, m}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
+% Set colormap and font size
+colormap(ax1, 'gray');
+set(ax1, 'FontSize', 19);
+% Add colorbar and remove ticks
+c = colorbar;
+c.Ticks = [];
+% Minimize white space around the axes
+% Option 1: Tighten the axes margins using 'TightInset'
+set(ax1, 'LooseInset', get(ax1, 'TightInset') + [0.02 0.02 0.02 0.02]); % Add small padding
+% Adjust figure for saving
+set(f1, 'PaperPositionMode', 'auto'); % Ensure the saved figure matches the screen
+set(f1, 'InvertHardcopy', 'off'); % Preserve background color when saving
+% Save the figure
+% print(f1, fullfile(picture_dir, 'rtm_slice_'), '-dpng', '-r400');
+exportgraphics(f1, fullfile(picture_dir, 'rtm_slice_.png'), 'Resolution', 400, 'BackgroundColor', 'white');
 %%
 ss=1
 
