@@ -1,6 +1,6 @@
 #!/bin/bash
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=48
+export OMP_NUM_THREADS=44
 #export OMP_NUM_THREADS=16
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads

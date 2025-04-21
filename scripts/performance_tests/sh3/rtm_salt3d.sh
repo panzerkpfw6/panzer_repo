@@ -104,19 +104,19 @@ cbx=64;cby=22;cbz=9999;
 #echo "Do Python filtering of real data." 
 
 
-#echo "Model data for RTM. salt3d."
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#--dx $dh --dy $dh --dz $dh --dt $dt  \
-#--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_model_salt3d.log;
-#
-#echo "Perform RTM"
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#--dx $dh --dy $dh --dz $dh --dt $dt \
-#--cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log_rtm_salt3d.log;
+echo "Model data for RTM. salt3d."
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+--dx $dh --dy $dh --dz $dh --dt $dt  \
+--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_model_salt3d.log;
+
+echo "Perform RTM"
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+--dx $dh --dy $dh --dz $dh --dt $dt \
+--cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log_rtm_salt3d.log;
 
 
 echo "Gather images"
