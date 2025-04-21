@@ -5,14 +5,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --mem=50GB
-#SBATCH --time=48:00:00
-#SBATCH --nodelist=gbt07
-#SBATCH --partition=7773X  # Milan-X 128
-#SBATCH --job-name=test3
-#SBATCH --output=logs/test3_.%J.out
-#SBATCH --error=logs/test3_.%J.err
-#SBATCH --cpus-per-task=128
+#SBATCH --time=92:00:00
+#SBATCH --partition=workq  #
+#SBATCH --job-name=test_default_pars
+#SBATCH --output=logs/test2_.%J.out
+#SBATCH --error=logs/test2_.%J.err
+#SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** COMMENT *********###

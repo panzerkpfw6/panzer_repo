@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
 #SBATCH --time=86:00:00
-#SBATCH --partition=workq  # Milan-X 128
+#SBATCH --partition=workq  #
 #SBATCH --job-name=test_default_pars
 #SBATCH --output=logs/test1_.%J.out
 #SBATCH --error=logs/test1_.%J.err
