@@ -46,13 +46,19 @@ fname2=fullfile(root,'img.raw');
 % fname2=fullfile(root,'ilm_only.raw');
 
 s2=dir(fname2);filesize2=s2.bytes;disp(strcat('true size2=',int2str(filesize2)))
-ccnt=dims2(1)*dims2(2)*dims2(3);
+ccnt=dims2(1)*dims2(2)*dims2(3)*4;
 
 rtm_data=read_snap(fname2,'stencil',dims2);   %rtm
 [M,I] = max(rtm_data,[],1);
 [mxv,idx] = max(abs(rtm_data(:)));
 [r,c,p] = ind2sub(size(rtm_data),idx);
 data2_max_loc=[r,c,p,mxv];
+%% check
+s=dir(fname);         
+filesize1=s.bytes
+s=dir(fname2);         
+filesize2=s.bytes
+dd=1
 %%
 % z1=25;
 % data=data(:,:,z1:end);
@@ -192,31 +198,32 @@ colormap(ax1,'parula');
 set(ax1,'FontSize',19);
 c = colorbar;
 c.Ticks = [];
-print(f1, fullfile(picture_dir, 'vel_slice_'), '-dpng', '-r400');
-%%
-% Create the figure
-f1 = figure('units', 'pixels', 'position', [2003 303 1200 600]);
-% Plot the data
-imagesc(x, z, squeeze(data2(:, iy, :)).', [val1, val2]);
-ax1 = gca();
-% Set title and labels with LaTeX interpreter
-title(strcat('\textbf{RTM image, y=}', num2str((iy-1)*dy/1000, '%.1f'), '\textbf{ km}'), ...
-      'Interpreter', 'latex', 'FontWeight', 'bold', 'FontSize', 19);
-xlabel('$\textbf{X, km}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
-ylabel('$\textbf{Z, m}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
-% Set colormap and font size
-colormap(ax1, 'gray');
-set(ax1, 'FontSize', 19);
-% Add colorbar and remove ticks
-c = colorbar;
-c.Ticks = [];
 % Minimize white space around the axes
 % Option 1: Tighten the axes margins using 'TightInset'
 set(ax1, 'LooseInset', get(ax1, 'TightInset') + [0.02 0.02 0.02 0.02]); % Add small padding
 % Adjust figure for saving
 set(f1, 'PaperPositionMode', 'auto'); % Ensure the saved figure matches the screen
 set(f1, 'InvertHardcopy', 'off'); % Preserve background color when saving
-% Save the figure
+% print(f1, fullfile(picture_dir, 'vel_slice_'), '-dpng', '-r400');
+exportgraphics(f1, fullfile(picture_dir,'vel_slice_.png'), 'Resolution', 400, 'BackgroundColor', 'white');
+%%
+f1 = figure('units', 'pixels', 'position', [2003 303 1200 600]);
+imagesc(x, z, squeeze(data2(:, iy, :)).', [val1, val2]);
+ax1 = gca();
+title(strcat('\textbf{RTM image, y=}', num2str((iy-1)*dy/1000, '%.1f'), '\textbf{ km}'), ...
+      'Interpreter', 'latex', 'FontWeight', 'bold', 'FontSize', 19);
+xlabel('$\textbf{X, km}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
+ylabel('$\textbf{Z, m}$', 'Interpreter', 'latex', 'FontWeight', 'bold');
+colormap(ax1,'gray');
+set(ax1, 'FontSize', 19);
+c = colorbar;
+c.Ticks=[];
+% Minimize white space around the axes
+% Option 1: Tighten the axes margins using 'TightInset'
+set(ax1, 'LooseInset', get(ax1, 'TightInset') + [0.02 0.02 0.02 0.02]); % Add small padding
+% Adjust figure for saving
+set(f1, 'PaperPositionMode', 'auto'); % Ensure the saved figure matches the screen
+set(f1, 'InvertHardcopy', 'off'); % Preserve background color when saving
 % print(f1, fullfile(picture_dir, 'rtm_slice_'), '-dpng', '-r400');
 exportgraphics(f1, fullfile(picture_dir, 'rtm_slice_.png'), 'Resolution', 400, 'BackgroundColor', 'white');
 %%
