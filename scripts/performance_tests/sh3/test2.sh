@@ -5,9 +5,9 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --time=92:00:00
+#SBATCH --time=48:00:00
 #SBATCH --partition=workq  #
-#SBATCH --job-name=test_default_pars
+#SBATCH --job-name=find_pars_SB
 #SBATCH --output=logs/test2_.%J.out
 #SBATCH --error=logs/test2_.%J.err
 #SBATCH --cpus-per-task=192
@@ -47,12 +47,6 @@ make clean
 make VERBOSE=1
 make install
 
-##### Shot information #####
-export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
-export src_depth=256;
-export fmax=8;
-export dh=10;
-
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
@@ -64,10 +58,16 @@ export NT_SB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/test2.log"
+export logs_file="./logs/test2_modeling.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
+
+##### Shot information #####
+export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
+export src_depth=256;
+export fmax=8;
+export dh=10;
 
 ##### Run tests #####
 len=${#nx_arr[@]}

@@ -7,9 +7,9 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=92:00:00
 #SBATCH --partition=workq  #
-#SBATCH --job-name=test_default_pars
-#SBATCH --output=logs/test2_.%J.out
-#SBATCH --error=logs/test2_.%J.err
+#SBATCH --job-name=find_pars_TB
+#SBATCH --output=logs/test3_.%J.out
+#SBATCH --error=logs/test3_.%J.err
 #SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
@@ -24,42 +24,43 @@
 #we need to load cmake,icpc modules from somewhere
 
 ###******** HORODATED LOG WRITING *********###
-exec > >(while read line; do echo "$(date): $line"; done | tee test3.log) 2>&1
 echo $hostname
-#lscpu
+lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=48
-export OMP_NUM_THREADS=128
-export OMP_PROC_BIND=true
-export OMP_PLACES=threads
-export OMP_NESTED='True'
-export granularity=fine
-export KMP_AFFINITY=compact
-export KMP_HW_SUBSET=1t
+export OMP_PLACES=cores;
+export OMP_PROC_BIND=close;
+export OMP_STACKSIZE=64M;
+export OMP_NUM_THREADS=192;
+export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
 ###********** MODULES *********###
-#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-module load icc/2020.2.254
+module load intel-oneapi/2023.1.0
 module load cmake
 
+##### COMPILATION #####
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
+
 ###********** TB parameters diapason *********###
-num_th_arr=(128)
-#th_x_arr=(1 2 4 8 16 32)
-th_x_arr=(8 16 32)
+num_th_arr=(192)
+th_x_arr=(1 2 4 8 16 32)
 th_y_arr=(1 2 4 8 16 32)
 th_z_arr=(1 2 4 8 16 32)
-num_wf_arr=(2 4 8 12 16 20 24 32 64)
+num_wf_arr=(2 4 8 12 16 20 24 32 64 128 192)
 tdim_arr=(3 5 7 15) # suits for 512 domain size
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
-export NT_TB_1st=505
-export NT_SB_1st=504
-export NT_TB_2nd=502
-export NT_SB_2nd=501
+export NT_TB_1st=200
+export NT_TB_2nd=200
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -70,15 +71,18 @@ make install
 
 ##### Logs directory #####
 mkdir ./logs
-#####rm -rf ./logs/test3 #delete if existing
-mkdir ./logs/test3
-export logs_path=./logs/test3
+
+######### create log
+export logs_file="./logs/test3_modeling.log"
+rm $logs_file
+lscpu >> logs_file
+echo $hostname
 
 ##### Shot information #####
 export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
 export src_depth=256;
 export fmax=8;
-export dx=10;
+export dh=10;
 
 ##### Run tests #####
 # iterate on parameters values
