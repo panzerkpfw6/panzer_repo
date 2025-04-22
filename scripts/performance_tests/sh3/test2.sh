@@ -83,12 +83,6 @@ for i in $(seq 0 $len); do
         for cby in 1 `seq 2 2 64 `;do
             grid_str="${nx}_${ny}_${nz}_${cbx}_${cby}"
             echo $grid_str;
-            ##### COMPILATION #####
-            mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-            CC=icc CXX=icpc cmake .
-            make clean
-            make VERBOSE=1
-            make install
             #####################
             echo "Running SB"
             echo "Running 1st order"

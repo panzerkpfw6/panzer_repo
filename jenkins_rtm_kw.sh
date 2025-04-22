@@ -15,11 +15,15 @@ module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 module load cmake
 ##### COMPILATION #####
 pwd
-#rm *snapshot*
-#exit 0
+
+
 rm ./bin/modeling
 rm ./bin/rtm
 rm ./bin/gather
+#rm ./data/*ilm*
+#rm ./data/*img*
+#rm ./data/*sismos*
+#rm ./data/*snap*
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 
 ##### build the project with debugging symbols
@@ -35,118 +39,54 @@ make clean
 make VERBOSE=1
 make install
 
-###############################
-#echo "test_SB"
-#nx=128;ny=256;nz=512;
-#nt=10;  dt=0.001;
-#export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=256;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode 2  --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
-
-###############################
-#echo "test_TB"
-#nx=128;ny=256;nz=512;
-#nt=57; dt=0.001;
-#x=2; y=2; z=1; t=7; w=20; tgs=4;
-#export OMP_NUM_THREADS=4
-#export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=256;
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
-# --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-# --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth $src_depth --order 1 --fmax 8;
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $nt --tb_thread_group_size $tgs \
-# --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-# --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c --src_depth $src_depth --order 2 --fmax 8;
-
 ################################
-#echo "compare_wavefields_for_SB_TB"
-#export OMP_NUM_THREADS=4 #4
-#export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-#export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
-#### grid size 256*256*256
-#nx=256;ny=256;nz=256;
-#x=2; y=2; z=1; t=7; w=20; tgs=4;
-#export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=128;
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
-# --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-# --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-# --src_depth $src_depth --order 1 --fmax 8;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-#  --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
-#./scripts_useful/diff_to ./snapshot_TB1st_505 ./snapshot_SB1st_505
-
-################################
-echo "Test 2. compare_wavefields_and_sismos_for_SB_TB"
+echo "Test 1. compare_rtm_result_for_SB_TB"
 export OMP_NUM_THREADS=4 #4
 export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
+dt=0.001;fmax=11;
 ### grid size 256*256*256
-nx=256;ny=256;nz=256;
-nx=200;ny=256;nz=160;
+nx=256;ny=256;nz=256;dh=25;
+nx=200;ny=256;nz=160;dh=25;
 
 x=2; y=2; z=1; t=7; w=20; tgs=4;
-export shot=41100;  # position of the source:isx=160,isy=140
-export src_depth=20;
-export rcv_depth=4;
+cbx=64;cby=22;cbz=9999;
 
-mkdir ./data/sismos_sb
-rm ./data/sismos_sb/*
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
-mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
-  
-mkdir ./data/sismos_tb
-rm ./data/sismos_tb/*
-./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
- --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
- --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
- --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax 8;
-mv ./data/sismos_${shot}.raw ./data/sismos_tb/sismos_${shot}.raw
+first=1626; # position of the source:isx=160,isy=140
+last=1627; # position of the source:isx=160,isy=140
+export src_depth=5;
+export rcv_depth=8;
+##################### SB RTM workflow	#####################
+#mkdir ./data/rtm_sb
+#rm ./data/rtm_sb/*
 
-./scripts_useful/diff_to ./snapshot_TB1st_505 ./snapshot_SB1st_505
-./scripts_useful/diff_to ./data/sismos_sb/sismos_${shot}.raw ./data/sismos_tb/sismos_${shot}.raw
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+
+#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
 #
-################################
-#echo "compare_wavefields_for_SB_TB_2nd_order"
-#export OMP_NUM_THREADS=4
-#export TIME_TB_2nd=514 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-#export TIME_SB_2nd=514 #@pavel in SB the nt should one time less than in correponding TB.
-#### grid size 256*256*256
-#nx=256;ny=256;nz=256;
-#x=2; y=2; z=1; t=7; w=20; tgs=4;
-#export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=128;
-#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_2nd --tb_thread_group_size $tgs \
+#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+
+#mv ./data/sismos_${shot}.raw ./data/rtm_sb/sismos_${shot}.raw 
+#########################################################
+
+  
+#mkdir ./data/rtm_tb
+#rm ./data/rtm_tb/*
+#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 # --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
 # --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-# --src_depth $src_depth --order 2 --fmax 8;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_2nd --mode 2 --dshot 1 \
-#  --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
-#./scripts_useful/diff_to ./snapshot_TB2nd_514 ./snapshot_SB2nd_514
+# --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax 8;
+#mv ./data/sismos_${shot}.raw ./data/rtm_tb/sismos_${shot}.raw
 
-###############################
-#echo "compare_wavefields_for_SB_1st_2nd_order"
-#export OMP_NUM_THREADS=4
-#export TIME_SB_1st=520 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-#export TIME_SB_2nd=520 #@pavel in SB the nt should one time less than in correponding TB.
-#### grid size 256*256*256
-#nx=256;ny=256;nz=256;
-#export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=128;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-#  --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_2nd --mode 2 --dshot 1 \
-#  --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
-#./scripts_useful/diff_to ./snapshot_SB1st_520 ./snapshot_SB2nd_520
-
-################################
-#echo "test_sismos_options_for_SB"
-################################
-#echo "test_sismos_options_for_TB"
-################################
-#echo "compare_sismos_for_SBabc_TBabc"
-################################
-#echo "test_sismos_options_for_SB"
-##############################
+#./scripts_useful/diff_to ./snapshot_TB1st_505 ./snapshot_SB1st_505
+#./scripts_useful/diff_to ./data/rtm_sb/sismos_${shot}.raw ./data/rtm_tb/sismos_${shot}.raw
+#

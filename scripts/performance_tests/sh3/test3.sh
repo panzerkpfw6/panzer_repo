@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --time=72:00:00
+#SBATCH --time=24:00:00
 #SBATCH --partition=workq  #
 #SBATCH --job-name=find_pars_TB
 #SBATCH --output=logs/test3_.%J.out

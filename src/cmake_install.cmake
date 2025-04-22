@@ -1,8 +1,8 @@
-# Install script for directory: /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-par-search/src
+# Install script for directory: /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-par-search")
+  set(CMAKE_INSTALL_PREFIX "/media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -43,6 +43,6 @@ if(NOT DEFINED CMAKE_OBJDUMP)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil-rtm-par-search/src/libstencil.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/src/libstencil.a")
 endif()
 

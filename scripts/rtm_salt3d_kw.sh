@@ -94,14 +94,15 @@ echo "Model data for RTM. salt3d."
 --dx $dh --dy $dh --dz $dh --dt $dt  \
 --cbx $cbx --cby $cby --cbz $cbz;
 
-#echo "Perform RTM"
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#--dx $dh --dy $dh --dz $dh \
-#--cbx $cbx --cby $cby --cbz $cbz;
-#
-#
-#echo "Gather images"
-#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-# --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
-#--cbx $cbx --cby $cby --cbz $cbz;
+echo "Perform RTM"
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+--dx $dh --dy $dh --dz $dh \
+--cbx $cbx --cby $cby --cbz $cbz;
+
+
+echo "Gather images"
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+ --first $first --last $last -c --fwd_steps 3 --order 1 --src_depth 5 --rcv_depth 8 --drcv 1 --dir "./data" \
+--cbx $cbx --cby $cby --cbz $cbz;
 
