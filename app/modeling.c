@@ -370,7 +370,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
     wave_tb_info(ctx);
     wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
     printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
-    exit(1);
+//    exit(1);
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
 
     MSG("loop over the shots");
