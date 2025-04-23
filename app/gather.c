@@ -162,9 +162,9 @@ int main(int argc, char* argv[]) {
   closedir(dr);
   /// save the final image on disk.
 	if (s->cpu) {
-		sprintf(img_dilm_file, "%s/img.raw", "data");
-		sprintf(img_only_file, "%s/img_only.raw", "data");
-		sprintf(ilm_only_file, "%s/ilm_only.raw", "data");
+		sprintf(img_dilm_file, "%s/img.raw", dir);
+		sprintf(img_only_file, "%s/img_only.raw",dir);
+		sprintf(ilm_only_file, "%s/ilm_only.raw",dir);
   } else {
 		sprintf(img_dilm_file, "%s/gpu_img.raw", "data");
 		sprintf(img_only_file, "%s/gpu_img_only.raw", "data");

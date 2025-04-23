@@ -409,10 +409,12 @@ void wave_init_acquisition_orig(sismap_t *s) {
     if (s->first == -1) s->first = 0;
     if (s->last == -1) s->last = s->nb_shots - 1;
     s->shots = (shot_t **) malloc(sizeof(shot_t * ) * s->nb_shots);
+    if (s->verbose) wave_print(s);
 
     for (unsigned int idx = 0; idx < s->nb_shots; idx++)
         s->shots[idx] = (shot_t *) malloc(sizeof(shot_t));
 
+    if (s->verbose) wave_print(s);
     unsigned int idx = 0;
     for (unsigned int ir = 0; ir < s->rcv_len; ir = ir + s->dshot) {
 //        s->shots[idx]->srcidx = s->rcv[ir]+s->drcv/2;   // should I really use "s->drcv/2"?

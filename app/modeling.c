@@ -543,6 +543,7 @@ int main(int argc, char* argv[]) {
 
     /// initialize the geometry.
     wave_init_acquisition(s);
+//    exit(1);
 
     /// initialize the simulation buffers.
     if (s->cpu) {
