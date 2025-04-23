@@ -44,7 +44,7 @@ make install
 
 ################################
 echo "Test 1. compare_rtm_result_for_SB_TB"
-export OMP_NUM_THREADS=44 #4
+export OMP_NUM_THREADS=32 #4
 export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
 dt=0.001;fmax=11;
@@ -52,7 +52,7 @@ dt=0.001;fmax=11;
 nx=256;ny=256;nz=256;dh=25;
 nx=200;ny=256;nz=160;dh=25;
 
-x=2; y=2; z=1; t=7; w=20; tgs=4;
+x=4; y=4; z=1; t=7; w=20; tgs=16;
 cbx=64;cby=22;cbz=9999;
 
 first=513; # position of the source:isx=160,isy=140
@@ -89,27 +89,19 @@ export rcv_depth=8;
 #mkdir ./data/rtm_tb
 #rm ./data/rtm_tb/*
 # gdb --args 
-
-./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
---tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
---tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
---dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax;
-
-######################################
+#
 #./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
-# --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-# --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $shot --last $shot -c \
-# --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax; 
-###################################### 
- 
- 
-
- 
-#./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 #--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
 #--tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-#--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth \ 
-#--order 1 --fmax $fmax; 
+#--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax;
+
+#gdb --batch --ex "run" --ex "bt" --args ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
+#gdb --args ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
+#./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
+./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
+--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+--tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax; 
  
 ### move data to TB folder
 #mv ./data/img* ./data/rtm_tb/

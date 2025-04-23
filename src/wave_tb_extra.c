@@ -648,6 +648,16 @@ num_threads(stencil_ctx.thread_group_size)
                                 ///////  save sismos
                                 //////////////////////////////////////////
 //                                MSG("ix=%d,iy=%d,t0_real+(t_real-tb_real))=%d,iz_=%d",ix,iy,t0_real+(t_real-tb_real),iz_);
+
+//                                MSG("sismos ind=%d,v3_v[iz_]=%f",data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4),v3_v[iz_]);
+
+//                                double time_term = t0_real + (t_real - tb_real);
+//                                int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
+//                                int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
+//                                int64_t sismos_ind = term1 + term2 + (iy - 4);
+//                                printf("term1=%lld, term2=%lld, iy-4=%d, sismos_ind=%lld\n", term1, term2, iy-4, sismos_ind);
+
+//                                MSG( "v3_v[iz_]=%f, sismos ind=%d",v3_v[iz_],data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4) );
 								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
                                 //////////////////////////////////////////
                             }

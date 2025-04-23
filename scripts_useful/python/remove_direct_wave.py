@@ -645,35 +645,35 @@ def main():
         data1=data[isx,:,:]
         data2=filtered_data[isx,:,:]
 
-val=5*1e-3;val2=val
-val2=1e-5
+        val=5*1e-3;val2=val
+        val2=1e-5
 
-fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
-# First subplot (like imagesc)
-im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
-# im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
-ax1.set_title('orig data')
-ax1.set_xlabel('Y, m')
-ax1.set_ylabel('time,msec')
-fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
-# Second subplot (like imagesc)
-im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
-# im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
-ax2.set_title('filtered data')
-ax2.set_xlabel('Y, m')
-ax2.set_ylabel('time,msec')
-fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
-# Third subplot (like imagesc)
-im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val2,vmax=val2,extent=[0,y[-1],t[-1],0])
-# im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
-ax3.set_title('filtered residual')
-ax3.set_xlabel('Y, m')
-ax3.set_ylabel('time,msec')
-fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
-# Adjust layout to prevent overlap
-plt.tight_layout()
-# Show the plot
-plt.show()
+        fig, (ax1, ax2,ax3) = plt.subplots(1, 3, figsize=(10, 4))  # 1 row, 2 columns, figure size (width, height)
+        # First subplot (like imagesc)
+        im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
+        # im1 = ax1.imshow(data1.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+        ax1.set_title('orig data')
+        ax1.set_xlabel('Y, m')
+        ax1.set_ylabel('time,msec')
+        fig.colorbar(im1, ax=ax1)  # Add colorbar for first subplot
+        # Second subplot (like imagesc)
+        im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',vmin=-val,vmax=val,extent=[0,y[-1],t[-1],0])
+        # im2 = ax2.imshow(data2.T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+        ax2.set_title('filtered data')
+        ax2.set_xlabel('Y, m')
+        ax2.set_ylabel('time,msec')
+        fig.colorbar(im2, ax=ax2)  # Add colorbar for second subplot
+        # Third subplot (like imagesc)
+        im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',vmin=-val2,vmax=val2,extent=[0,y[-1],t[-1],0])
+        # im3 = ax3.imshow((data1-data2).T, cmap='viridis', aspect='auto',extent=[0,y[-1],t[-1],0])
+        ax3.set_title('filtered residual')
+        ax3.set_xlabel('Y, m')
+        ax3.set_ylabel('time,msec')
+        fig.colorbar(im3, ax=ax3)  # Add colorbar for second subplot
+        # Adjust layout to prevent overlap
+        plt.tight_layout()
+        # Show the plot
+        plt.show()
 
         aa=1
 
