@@ -2921,8 +2921,8 @@ void wave_tb_data_init(tb_data_t * data,
     data->ix = calloc(s->rcv_len, sizeof(int));
     data->iy = calloc(s->rcv_len, sizeof(int));
 
-    data->src_depth = -1;
-    data->rcv_depth = -1;
+    data->src_depth = s->src_depth;
+    data->rcv_depth = s->rcv_depth;
     data->wave = NULL;
 
     data->gfwd_y0 = calloc(nb_thread_groups,sizeof(int));

@@ -31,9 +31,12 @@ mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 #CC=icc CXX=icpc -O0 -g3 -DCMAKE_BUILD_TYPE=Debug cmake .
 
 ##### build the project
-CC=icc CXX=icpc cmake .
+#CC=icc CXX=icpc cmake .
 #CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg" -DCMAKE_CXX_FLAGS="-pg" .
 #CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg -O2" -DCMAKE_CXX_FLAGS="-pg -O2" .
+
+# debug!
+CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
 
 make clean
 make VERBOSE=1
@@ -93,10 +96,10 @@ export rcv_depth=8;
 # --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax;
  
 ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
- --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
- --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
- --dx $dh --dy $dh --dz $dh --dt $dt \ 
- --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax; 
+--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+--tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth \ 
+--order 1 --fmax $fmax; 
  
 ### move data to TB folder
 #mv ./data/img* ./data/rtm_tb/

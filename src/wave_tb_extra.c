@@ -643,11 +643,11 @@ num_threads(stencil_ctx.thread_group_size)
 //                                    v3_v[iz] = dampy[iy+lstencil] * v3_v[iz];
 //                                    v3_v[iz] = dampz[iz+lstencil] * v3_v[iz];
 //                                    v3_v[iz]*=dampx[ix+lstencil] * dampy[iy+lstencil] * dampz[iz+lstencil];
-
                                     v3_v[iz]*=dampx[ix] * dampy[iy] * dampz[iz];
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////
+                                MSG("ix=%d,iy=%d,t0_real+(t_real-tb_real))=%d,iz_=%d",ix,iy,t0_real+(t_real-tb_real),iz_);
 								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
                                 //////////////////////////////////////////
                             }
