@@ -472,12 +472,28 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 int main(int argc, char* argv[]) {
     time_t rawtime;
     struct tm *timeinfo;
-    char buffer[80];
+    char buffer[180];
     // Start of program
     time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
-    printf("Program started at: %s\n", buffer);
+    localtime_r(&rawtime, &timeinfo);  // Reentrant version of localtime()
+	#pragma omp critical
+	{
+		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+		printf("Program started at: %s [Thread %d]\n", buffer, omp_get_thread_num());
+	}
+
+
+
+//    timeinfo = localtime(&rawtime);
+//    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
+//    printf("Program started at: %s\n", buffer);
+
+    // Log the start time
+//	time_t rawtime;
+//	#pragma omp critical
+//	{
+//		printf("Program started at (epoch time): %ld [Thread %d]\n",(long)rawtime, omp_get_thread_num());
+//	}
 
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));

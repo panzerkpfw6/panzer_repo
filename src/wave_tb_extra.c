@@ -647,7 +647,7 @@ num_threads(stencil_ctx.thread_group_size)
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////
-                                MSG("ix=%d,iy=%d,t0_real+(t_real-tb_real))=%d,iz_=%d",ix,iy,t0_real+(t_real-tb_real),iz_);
+//                                MSG("ix=%d,iy=%d,t0_real+(t_real-tb_real))=%d,iz_=%d",ix,iy,t0_real+(t_real-tb_real),iz_);
 								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
                                 //////////////////////////////////////////
                             }
