@@ -369,8 +369,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 
     wave_tb_info(ctx);
     wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
-    printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
-//    exit(1);
+
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
 
     MSG("loop over the shots");
@@ -603,11 +602,6 @@ int main(int argc, char* argv[]) {
     /// dump coefficient matrix.
     dump_coef(s,vel);
 
-    /// compute PML parameters.
-//    pml_compute_coefs(s,pml_tab);
-
-//    exit(1);
-
     /// generate the ricker source.
     if (s->order==1) {
         MSG("source 1st order");
@@ -618,7 +612,6 @@ int main(int argc, char* argv[]) {
         MSG("source 2nd order");
         source_ricker_wavelet_2nd(s, source);
     }
-//    source_ricker_wavelet(s, source);
     source[s->time_steps]=0.0f; // an extra time step for girih.
 
     /// run RTM on CPU or GPU.

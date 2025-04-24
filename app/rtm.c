@@ -719,11 +719,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     CREATE_BUFFER(ilm_shot, s->size_img);
     CREATE_BUFFER(pml_tmp, s->size_eff);
     shot_t *shot;
+    wtime_init();
     printf("all\n");
+
     tb_t *ctx = (tb_t *) malloc(sizeof(tb_t));
     tb_data_t *data = (tb_data_t *) malloc(sizeof(tb_data_t));
     tb_timer_t *timer = (tb_timer_t *) malloc(sizeof(tb_timer_t));
-    wtime_init();
 
     // setup tb_data
     printf("tb_init\n");
@@ -739,6 +740,8 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     if (ctx->mode == 1 || ctx->mode == 2) {
         CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
+//        MSG("(ctx->t_len + ctx->fwd_steps - 1)=%d",(ctx->t_len + ctx->fwd_steps - 1) );
+//        exit(1);
     } else {
         printf("nnx %d, nnz %d, diam_width %d ntg %d\n", ctx->nnx, ctx->nnz, ctx->diam_width, ctx->num_thread_groups);
         CREATE_BUFFER(fwd, 1ULL * ctx->nnx * ctx->nnz * ctx->diam_width * ctx->num_thread_groups);
@@ -746,6 +749,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     printf("rcv_len %d, time_steps %d\n", s->rcv_len, s->time_steps);
     CREATE_BUFFER(sismos, s->rcv_len * (s->time_steps + 1));
+//    printf("s->rcv_len*(s->time_steps+1)=%d",s->rcv_len*(s->time_steps+1));
+//    exit(1);
+
 
     MSG("loop over the shots between %d and %d", s->first, s->last);
 
@@ -960,8 +966,8 @@ int main(int argc, char *argv[]) {
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
 
     /// load/generate the velocity model.
-    velocity_const_model2(s,vel);
-//    velocity_2layer_model(s,vel);
+//    velocity_const_model2(s,vel);
+    velocity_2layer_model(s,vel);
 //    velocity_load_salt3d(s,vel);
 
     /// load/generate the density model.
@@ -973,10 +979,7 @@ int main(int argc, char *argv[]) {
 	/// generate coefficient matrix.
 	fill_coef_matrix(s,vel,rho);
 	/// dump coefficient matrix.
-	dump_coef(s,vel,rho);
-
-    /// compute PML parameters.
-//    pml_compute_coefs(s,pml_tab);
+	dump_coef(s,vel);
 
     /// generate the Ricker source.
     if (s->order==1) {
