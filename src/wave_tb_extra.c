@@ -699,8 +699,7 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, \\
-			int e_inc, int tb, int te, int tid,int t0,int ifwd){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -944,9 +943,10 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                     {
                                         int tb = 0;
                                         int te = p->t_dim*2+1;
+                                        int t0,ifwd;
 
 //                                        MSG("t0=%d\n",t0);
-                                        int ifwd = -1;
+                                        ifwd = -1;
 										if (p->data->flag_fwd == 1) {
 											ifwd = t_coord;
 											int t0 = 1 + t_coord*(p->t_dim+1);
@@ -957,7 +957,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 										}
                                         //@2
                                         if(p->stencil.type == REGULAR){
-                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,t_ifwd);
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                                         }
                                     }
 
