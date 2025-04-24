@@ -91,11 +91,11 @@ export shot=41100;  # position of the source:isx=160,isy=140
 export src_depth=20;
 export rcv_depth=4;
 
-mkdir ./data/sismos_sb
-rm ./data/sismos_sb/*
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
-mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
+#mkdir ./data/sismos_sb
+#rm ./data/sismos_sb/*
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
+#  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
+#mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
   
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*
