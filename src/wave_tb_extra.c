@@ -719,18 +719,19 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
 
     int ifwd, iifwd;
     iifwd = -1;
+    int fwd_steps=p->stencil_ctx.fwd_steps;
 
-//    if (p->data->flag_fwd == 1) {
-//		ifwd = ctx->t_pos[y_coord];
-//		if (ifwd % ctx->fwd_steps == 0) iifwd = ifwd / ctx->fwd_steps;
-//		t0 = 1 + ctx->t_pos[y_coord]*(ctx->t_dim+1);
-//    }
-//    if (p->data->flag_bwd == 1) {
-//		ifwd = ctx->t_len - 1 - ctx->t_pos[y_coord];
-//		if (ifwd % ctx->fwd_steps == 0) iifwd = ifwd / ctx->fwd_steps;
-//		t0 = ctx->time_steps - 2 - ctx->t_pos[y_coord]*(ctx->t_dim+1);
-//    }
-
+    if (p->data->flag_fwd == 1) {
+		ifwd = ctx->t_pos[y_coord];
+		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+		t0 = 1 + ctx->t_pos[y_coord]*(ctx->t_dim+1);
+    }
+    if (p->data->flag_bwd == 1) {
+		ifwd = ctx->t_len - 1 - ctx->t_pos[y_coord];
+		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+		t0 = ctx->time_steps - 2 - ctx->t_pos[y_coord]*(ctx->t_dim+1);
+    }
+//    exit(1);
 
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
