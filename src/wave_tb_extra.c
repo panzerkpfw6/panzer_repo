@@ -699,7 +699,8 @@ num_threads(stencil_ctx.thread_group_size)
     } // parallel region
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, \\
+			int e_inc, int tb, int te, int tid,int t0,int ifwd){
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -717,19 +718,20 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     xb0 = p->stencil.r;
     xe0 = p->ldomain_shape[2]-p->stencil.r;
 
-    int ifwd, iifwd;
+    int iifwd;
     iifwd = -1;
     int fwd_steps=p->stencil_ctx.fwd_steps;
 
     if (p->data->flag_fwd == 1) {
-		ifwd = ctx->t_pos[y_coord];
+//		ifwd = t_coord;
 		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
-		t0 = 1 + ctx->t_pos[y_coord]*(ctx->t_dim+1);
+//		t0 = 1 + t_coord*(p->t_dim+1);
     }
     if (p->data->flag_bwd == 1) {
-		ifwd = ctx->t_len - 1 - ctx->t_pos[y_coord];
+//		ifwd = ctx->t_len - 1 - t_coord;
 		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
-		t0 = ctx->time_steps - 2 - ctx->t_pos[y_coord]*(ctx->t_dim+1);
+//		t0 = ctx->time_steps - 2 - t_coord*(p->t_dim+1);original
+//		t0 = p->nt - 2 - t_coord*(p->t_dim+1);
     }
 //    exit(1);
 
@@ -768,6 +770,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     double t1,t2,t3,t4;
     int yb,ye;
     double db_t;
+    int fwd_steps=p->stencil_ctx.fwd_steps;
 
     // allocate scheduling variables
     st.t_pos = (int*) malloc(y_len_r*sizeof(int));
@@ -815,9 +818,19 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     {
                         int tb = p->t_dim;
                         int te = p->t_dim*2+1;
+                        int t_coord=0;
+                        int ifwd = -1;
+                        if (p->data->flag_fwd == 1) {
+                    		ifwd = t_coord;
+                    		int t0 = 1 + t_coord*(p->t_dim+1);
+                        }
+                        if (p->data->flag_bwd == 1) {
+                    		ifwd = t_len - 1 - t_coord;
+                    		int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+                        }
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
-                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,1);
+                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,1,ifwd);
                         }
                     }
                 }
@@ -931,11 +944,20 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                     {
                                         int tb = 0;
                                         int te = p->t_dim*2+1;
-                                        int t0=1+t_coord*(p->t_dim+1);
+
 //                                        MSG("t0=%d\n",t0);
+                                        int ifwd = -1;
+										if (p->data->flag_fwd == 1) {
+											ifwd = t_coord;
+											int t0 = 1 + t_coord*(p->t_dim+1);
+										}
+										if (p->data->flag_bwd == 1) {
+											ifwd = t_len - 1 - t_coord;
+											int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+										}
                                         //@2
                                         if(p->stencil.type == REGULAR){
-                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0);
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,t_ifwd);
                                         }
                                     }
 
@@ -983,8 +1005,19 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     int tb = 0;
                     int te = p->t_dim+1;
                     int t0 = t_len*(p->t_dim+1) + 1;
+                    int t_coord=t_len;
+
+                    int ifwd = -1;
+					if (p->data->flag_fwd == 1) {
+						ifwd = t_coord;
+						int t0 = 1 + t_coord*(p->t_dim+1);
+					}
+					if (p->data->flag_bwd == 1) {
+						ifwd = t_len - 1 - t_coord;
+						int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+					}
                     //@2
-                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0);
+                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                 }
             }
         }
