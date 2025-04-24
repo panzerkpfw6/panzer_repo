@@ -83,6 +83,7 @@ typedef struct {
     int bs_y; // for spatial blocking in Y at the standard methods
     int thread_group_size;
     int th_z, th_y, th_x, th_c; // number of threads per dimension
+    int fwd_steps;// snapshotting step
     float dz, dy, dx; // spacing per dimension
     int nz, ny, nx; // grid size without halo area
 

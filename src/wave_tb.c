@@ -4299,6 +4299,8 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.ny = ctx->stencily;
     p->stencil_ctx.nz = ctx->stencilz;
 
+//    p->stencil_ctx.fwd_steps = ctx->fwd_steps;
+
     p->target_ts = 2;
     p->stencil.r = 4; // Stencil Kernel semi-bandwidth
     p->n_tests = 1;
@@ -4366,6 +4368,7 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.th_y = ctx->th_y;//2;
     p->stencil_ctx.th_z = ctx->th_z;//1;
     p->stencil_ctx.th_c = 1;
+    p->stencil_ctx.fwd_steps = ctx->fwd_steps;
 
     p->th_block = 1;
     p->th_stride = 1;

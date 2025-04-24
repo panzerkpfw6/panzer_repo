@@ -128,6 +128,7 @@ typedef struct{
     int bs_y; // for spatial blocking in Y at the standard methods
     int thread_group_size;
     int th_z, th_y, th_x, th_c; // number of threads per dimension in z, y, and x, and per component
+    int fwd_steps;// snapshotting step
     float dz, dy, dx; // spacing per dimension in z, y, and x
     int nz, ny, nx; // grid size without halo area
 
@@ -647,28 +648,13 @@ num_threads(stencil_ctx.thread_group_size)
                                 }
                                 ///////  save sismos
                                 //////////////////////////////////////////
-//                                MSG("ix=%d,iy=%d,t0_real+(t_real-tb_real))=%d,iz_=%d",ix,iy,t0_real+(t_real-tb_real),iz_);
-
-//                                MSG("sismos ind=%d,v3_v[iz_]=%f",data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4),v3_v[iz_]);
-
-//                                double time_term = t0_real + (t_real - tb_real);
-//                                int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
-//                                int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-//                                int64_t sismos_ind = term1 + term2 + (iy - 4);
-//                                printf("term1=%lld, term2=%lld, iy-4=%d, sismos_ind=%lld\n", term1, term2, iy-4, sismos_ind);
-
-//                                MSG( "v3_v[iz_]=%f, sismos ind=%d",v3_v[iz_],data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4) );
-
-
 //								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
-
-//								data->sismos[1]=(v3_v[iz_]);
                                 //////////////////////////////////////////
 								double time_term = t0_real + (t_real - tb_real);
 								int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
 								int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
 								int64_t sismos_ind = term1 + term2 + (iy - 4);
-								MSG("sismos ind=%lld,v3_v[iz_]=%f \n", sismos_ind, v3_v[iz_]);
+//								MSG("sismos ind=%lld,v3_v[iz_]=%f \n", sismos_ind, v3_v[iz_]);
 								data->sismos[sismos_ind] = v3_v[iz_];
 								//////////////////////////////////////////
 
@@ -730,7 +716,22 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
     //xb0 = (te-tb)*p->stencil.r;
     xb0 = p->stencil.r;
     xe0 = p->ldomain_shape[2]-p->stencil.r;
-//    lstencil=(p->ldomain_shape[2]-p->lstencil_shape[2])/2; //pavel edition
+
+    int ifwd, iifwd;
+    iifwd = -1;
+
+//    if (p->data->flag_fwd == 1) {
+//		ifwd = ctx->t_pos[y_coord];
+//		if (ifwd % ctx->fwd_steps == 0) iifwd = ifwd / ctx->fwd_steps;
+//		t0 = 1 + ctx->t_pos[y_coord]*(ctx->t_dim+1);
+//    }
+//    if (p->data->flag_bwd == 1) {
+//		ifwd = ctx->t_len - 1 - ctx->t_pos[y_coord];
+//		if (ifwd % ctx->fwd_steps == 0) iifwd = ifwd / ctx->fwd_steps;
+//		t0 = ctx->time_steps - 2 - ctx->t_pos[y_coord]*(ctx->t_dim+1);
+//    }
+
+
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
                         p->coef,p->U1,p->U1,p->U1,
@@ -739,12 +740,6 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, in
                         p->dampx,p->dampy,p->dampz,
                         p->t_dim, b_inc, e_inc, p->stencil.r,
                         tb,te,t0,p->stencil_ctx,tid,p->data);
-//    p->stencil.mwd_func(p->ldomain_shape, p->stencil.r, yb,
-//                        xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
-//                        p->coef, p->U1,p->U1, p->U1, p->U2, p->U3,p->U4, p->U5,
-//                        p->dampx,p->dampy,p->dampz,
-//                        p->t_dim, b_inc, e_inc, p->stencil.r,
-//                        tb, te,t0,p->stencil_ctx,tid,p->data);
 
     t3 = get_wall_time();
     p->stencil_ctx.t_wf_prologue[tid] += t2-t1;
