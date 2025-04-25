@@ -901,8 +901,8 @@ int main(int argc, char *argv[]) {
     s->dy = parser_get_float(p, "dy");
     s->dz = parser_get_float(p, "dz");
     s->dcdp = parser_get_int(p, "dcdp");
-    s->dline = parser_get_int(p, "dline");
-    s->drcv = parser_get_int(p, "drcv");
+    s->dline = parser_get_int(p,"dline");
+    s->drcv = parser_get_int(p,"drcv"); // code works only with drcv=1. due to sismos recording specifique.
     s->dshot = parser_get_int(p, "dshot");
     s->ddepth = parser_get_int(p, "ddepth");
     s->device = parser_get_int(p, "device");

@@ -519,7 +519,7 @@ int main(int argc, char* argv[]) {
     s->dcdp = parser_get_int(p, "dcdp");
     s->dline = parser_get_int(p,"dline");
     s->ddepth = parser_get_int(p,"ddepth");
-    s->drcv = parser_get_int(p, "drcv");
+    s->drcv = parser_get_int(p, "drcv"); // code works only with drcv=1. due to sismos recording specifique.
     s->dshot = parser_get_int(p, "dshot");
     s->device = parser_get_int(p,"device");
     s->first = parser_get_int(p, "first");
