@@ -690,8 +690,7 @@ void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
     DELETE_BUFFER(pml_tmp);
 }
 
-void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, float *pml_tab,
-                    parser *p) {
+void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, float *pml_tab,parser *p) {
     /// contains the fields pressure value at time step t.
     float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.

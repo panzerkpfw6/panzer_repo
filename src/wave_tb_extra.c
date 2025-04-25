@@ -650,49 +650,50 @@ num_threads(stencil_ctx.thread_group_size)
                                     v3_v[iz] += coef0_v[iz] * (d_vx_x + d_vy_y + d_vz_z);
                                     v3_v[iz]*=dampx[ix] * dampy[iy] * dampz[iz];
                                 }
-//                                if (data->flag_bwd == 1) {
-//									///////  add sismos
-//									//////////////////////////////////////////
-//									double time_term = t0_real - (t_real - tb_real);
-//									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
-//									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-//									int64_t sismos_ind = term1 + term2 + (iy - 4);
-//									v3_v[iz_]+=data->sismos[sismos_ind];
-//								}
+                                if (data->flag_bwd == 1) {
+									///////  add sismos
+									//////////////////////////////////////////
+									double time_term = t0_real - (t_real - tb_real);
+									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
+									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
+									int64_t sismos_ind = term1 + term2 + (iy - 4);
+									v3_v[iz_]+=data->sismos[sismos_ind];
+								}
 ////                                MSG("data->flag_fwd=%d \n",data->flag_fwd);
-//                                if (data->flag_fwd == 1) {
-////                                	MSG("recording sismos\n");
+                                if (data->flag_fwd == 1) {
+//                                	MSG("recording sismos\n");
 									///////  save sismos
-									//////////////////////////////////////////
-	//								data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
-									//////////////////////////////////////////
-//								MSG("ix=%d,iy=%d,iz=%d \n",ix,iy,iz_);
-								double time_term = t0_real + (t_real - tb_real);
-								int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
-								int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-								int64_t sismos_ind = term1 + term2 + (iy - 4);
-								MSG("s_ind=%lld,term1=%lld,time_term=%lld,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_]);
-								data->sismos[sismos_ind] = v3_v[iz_];
-//                                }
+									////////////////////////////////////////
+									data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
+									////////////////////////////////////////
+//									MSG("ix=%d,iy=%d,iz=%d \n",ix,iy,iz_);
+	//                                MSG("t0_real=%d,t_real=%d,tb_real=%d",t0_real,t_real,tb_real);
+									double time_term = t0_real + (t_real - tb_real);
+									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
+									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
+									int64_t sismos_ind = term1 + term2 + (iy - 4);
+	//								MSG("s_ind=%lld,term1=%lld,time_term=%f,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_]);
+									data->sismos[sismos_ind] = v3_v[iz_];
+                                }
                             }
                             ///
-//                            if (data->flag_fwd == 1) {
-							///////  add source
-//							if( (gp->source_point_enabled==1)
-//								&& (gp->lsource_pt[2] >= ib ) //@KADIR
-//								&& (gp->lsource_pt[2] <  ie ) //@KADIR
-//								&& (gp->lsource_pt[1] >= yb ) //@KADIR
-//								&& (gp->lsource_pt[1] <  ye ) //@KADIR
-//								&& (gp->lsource_pt[0] == ix ) )
-//							{
-////								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]) +gp->src_exc_coef[isrc_exc]);//@KADIR
-//								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-//
-//								if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
-//											  ib, ie, omp_get_thread_num(), omp_get_num_threads());
-//								isrc_exc++;
-//							}
-//                            }
+                            if (data->flag_fwd == 1) {
+								///////  add source
+								if( (gp->source_point_enabled==1)
+									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+									&& (gp->lsource_pt[0] == ix ) )
+								{
+	//								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]) +gp->src_exc_coef[isrc_exc]);//@KADIR
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+
+									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
+												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
+									isrc_exc++;
+								}
+                            }
                         }
                     }
                 }
@@ -718,6 +719,7 @@ num_threads(stencil_ctx.thread_group_size)
 }
 
 void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
+//	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
     int xb0,xe0;
@@ -806,7 +808,11 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
     isrc_exc++;
 
+	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
+//	exit(1);
+
     // Prologue
+    MSG("ENTERING TB Prologue");
     t1 = get_wall_time();
     if(p->in_auto_tuning == 0){
         //dynamic_intra_diamond_prologue(p);
@@ -833,21 +839,22 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
                     //@2
                     {
+                    	int t0;
                         int tb = p->t_dim;
                         int te = p->t_dim*2+1;
                         int t_coord=0;
                         int ifwd = -1;
                         if (p->data->flag_fwd == 1) {
                     		ifwd = t_coord;
-                    		int t0 = 1 + t_coord*(p->t_dim+1);
+                    		t0 = 1 + t_coord*(p->t_dim+1);
                         }
                         if (p->data->flag_bwd == 1) {
                     		ifwd = t_len - 1 - t_coord;
-                    		int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+                    		t0 = p->nt - 2 - t_coord*(p->t_dim+1);
                         }
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
-                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,1,ifwd);
+                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                         }
                     }
                 }
@@ -858,6 +865,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 
     // main loop
     //dynamic_intra_diamond_main_loop(p);
+    MSG("ENTERING TB main loop");
     {
         //@4.3.2
         int not_complete, th_y_coord, i;
@@ -967,14 +975,17 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                         ifwd = -1;
 										if (p->data->flag_fwd == 1) {
 											ifwd = t_coord;
-											int t0 = 1 + t_coord*(p->t_dim+1);
+											t0 = 1 + t_coord*(p->t_dim+1);
+//											MSG("t0=%d,ifwd=%d",t0,ifwd);
 										}
 										if (p->data->flag_bwd == 1) {
 											ifwd = t_len - 1 - t_coord;
-											int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+											t0 = p->nt - 2 - t_coord*(p->t_dim+1);
 										}
                                         //@2
                                         if(p->stencil.type == REGULAR){
+//                                        	MSG("t0=%d",t0);
+//                                        	printf("p->stencil.type= %s\n",p->stencil.type);
                                             intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                                         }
                                     }
@@ -996,6 +1007,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     }
     t3 = get_wall_time();
     // Epilogue
+    MSG("ENTERING TB Epilogue");
     if(p->in_auto_tuning == 0){
         //dynamic_intra_diamond_epilogue(p);
         //@4
@@ -1022,17 +1034,18 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                 {
                     int tb = 0;
                     int te = p->t_dim+1;
-                    int t0 = t_len*(p->t_dim+1) + 1;
+//                    int t0 = t_len*(p->t_dim+1) + 1;
+                    int t0;
                     int t_coord=t_len;
 
                     int ifwd = -1;
 					if (p->data->flag_fwd == 1) {
 						ifwd = t_coord;
-						int t0 = 1 + t_coord*(p->t_dim+1);
+						t0 = 1 + t_coord*(p->t_dim+1);
 					}
 					if (p->data->flag_bwd == 1) {
 						ifwd = t_len - 1 - t_coord;
-						int t0 = p->nt - 2 - t_coord*(p->t_dim+1);
+						t0 = p->nt - 2 - t_coord*(p->t_dim+1);
 					}
                     //@2
                     intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
