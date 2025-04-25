@@ -678,20 +678,20 @@ num_threads(stencil_ctx.thread_group_size)
                             ///
 //                            if (data->flag_fwd == 1) {
 							///////  add source
-							if( (gp->source_point_enabled==1)
-								&& (gp->lsource_pt[2] >= ib ) //@KADIR
-								&& (gp->lsource_pt[2] <  ie ) //@KADIR
-								&& (gp->lsource_pt[1] >= yb ) //@KADIR
-								&& (gp->lsource_pt[1] <  ye ) //@KADIR
-								&& (gp->lsource_pt[0] == ix ) )
-							{
-//								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]) +gp->src_exc_coef[isrc_exc]);//@KADIR
-								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-
-								if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
-											  ib, ie, omp_get_thread_num(), omp_get_num_threads());
-								isrc_exc++;
-							}
+//							if( (gp->source_point_enabled==1)
+//								&& (gp->lsource_pt[2] >= ib ) //@KADIR
+//								&& (gp->lsource_pt[2] <  ie ) //@KADIR
+//								&& (gp->lsource_pt[1] >= yb ) //@KADIR
+//								&& (gp->lsource_pt[1] <  ye ) //@KADIR
+//								&& (gp->lsource_pt[0] == ix ) )
+//							{
+////								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]) +gp->src_exc_coef[isrc_exc]);//@KADIR
+//								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+//
+//								if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
+//											  ib, ie, omp_get_thread_num(), omp_get_num_threads());
+//								isrc_exc++;
+//							}
 //                            }
                         }
                     }
