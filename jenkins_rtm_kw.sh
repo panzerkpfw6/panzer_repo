@@ -98,7 +98,7 @@ export rcv_depth=8;
 #gdb --batch --ex "run" --ex "bt" --args ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 #gdb --args ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 #./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
-./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
+gdb --args ./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
 --tb_t_dim $t --tb_num_wf $w --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 --dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax; 

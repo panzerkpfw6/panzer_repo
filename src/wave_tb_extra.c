@@ -494,6 +494,14 @@ num_threads(stencil_ctx.thread_group_size)
             float * __restrict u3_v;
             const float * __restrict coef0_v;
             const float * __restrict inv_rho_v;
+
+            // RTM variables
+            const float *restrict vx;
+            float *restrict wx;
+            float *restrict imgx;
+            float *restrict ilmx;
+            //
+
             int t_real=0;
             int tb_real=(tb)/2+1;
             int t0_real=(t0)/2+1;
