@@ -3654,40 +3654,6 @@ static inline void dynamic_intra_diamond_prologue_full(tb_t * ctx,
     }
 }
 
-static inline void dynamic_intra_diamond_prologue_full_1st(tb_t * ctx,
-                                                           tb_data_t *data,
-                                                           tb_timer_t* timer,
-                                                           float * restrict u0,
-                                                           float * restrict vx,
-                                                           float * restrict vy,
-                                                           float * restrict vz,
-                                                           const float * restrict roc2) {
-    int i, yb, ye;
-    int ifwd;
-
-    ifwd = -1;
-
-#pragma omp parallel num_threads(ctx->num_thread_groups)
-    {
-        int b_inc = ctx->r;
-        int e_inc = ctx->r;
-
-        int groupid = 0;
-#if defined(_OPENMP)
-        groupid = omp_get_thread_num();
-#endif
-
-#pragma omp for schedule(dynamic) private(i,yb,ye)
-        for(i = 0; i < ctx->y_len_l; i++){
-            yb = ctx->r + i * ctx->diam_width;
-            ye = yb + ctx->diam_width;
-            intra_diamond_mwd_comp_1st(ctx, data, timer, u0, vx,vy,vz, roc2, yb, ye, b_inc, e_inc,
-                                       ctx->t_dim, ctx->t_dim * 2 + 1, ctx->time_steps-1,
-                                       ifwd, groupid);
-        }
-    }
-}
-
 static inline void dynamic_intra_diamond_epilogue(tb_t* ctx,
                                                   tb_data_t *data,
                                                   tb_timer_t* timer,
@@ -4514,6 +4480,57 @@ void wave_tb_forward_1st(tb_t* ctx,
     free(p);
 }
 
+void wave_tb_backward_1st(tb_t* ctx,
+                          tb_data_t * data,
+                          tb_timer_t* timer,
+                          float * restrict u0,
+                          float * restrict vx,
+                          float * restrict vy,
+                          float * restrict vz,
+                          const float * restrict roc2,
+						  const float *restrict inv_rho,
+						  Parameters *p) {
+	MSG('inside wave_tb_backward_1st');
+    data->order=1;
+    double t1,t2,t3,t4;
+    ////////////////////////////////////////////////////
+    p->U1 = u0;
+    p->U2 = vx;
+    p->U3 = vy;
+    p->U4 = vz;
+    p->U5 = roc2;
+    p->U6 = inv_rho;
+    gp = p;
+    ////////////////////////////////////////////////////
+    double elapse_time = 0.0;
+    double *p_elapse_time;
+    p_elapse_time = &elapse_time;
+
+    //////////////////////////////////////////////////////////////////////
+    p->data=data;
+    //////////////////////
+
+    reset_timers(&(p->prof));
+    reset_wf_timers(p);
+    p->stencil_ctx.use_manual_cpu_bind=1;
+    cpu_bind_init(p);
+
+    //@KADIR gcall
+    double wall0 = get_wall_time();
+    t1 = wtime();
+    t2 = wtime();
+    dynamic_intra_diamond_ts_combined(p);
+    t3 = wtime();
+    t4 = wtime();
+    //////////////////////
+    double wall1 = get_wall_time();
+    *p_elapse_time = wall1 - wall0;
+    //////////////////////
+    timer->ts_main   += (t3-t2);
+    timer->ts_others += (t2-t1) + (t4-t3);
+    timer->total     += timer->ts_main + timer->ts_others;
+    //////////////////////
+}
 /////////////////////////////////////////////////////////////
 
 void wave_tb_forward_1st_grok(tb_t* ctx,
@@ -4781,30 +4798,6 @@ void wave_tb_backward(tb_t* ctx,
     dynamic_intra_diamond_prologue_full(ctx, data, timer, u0, v0, roc2);
     t2 = wtime();
     dynamic_intra_diamond_mainloop(ctx, data, timer, u0, v0, roc2);
-    t3 = wtime();
-//  dynamic_intra_diamond_epilogue(ctx, data, u0, v0, roc2);
-    t4 = wtime();
-
-    timer->ts_main   += (t3-t2);
-    timer->ts_others += (t2-t1) + (t4-t3);
-    timer->total     += timer->ts_main + timer->ts_others;
-}
-
-void wave_tb_backward_1st(tb_t* ctx,
-                          tb_data_t * data,
-                          tb_timer_t* timer,
-                          float * restrict u0,
-                          float * restrict vx,
-                          float * restrict vy,
-                          float * restrict vz,
-                          const float * restrict roc2) {
-
-    double t1,t2,t3,t4;
-
-    t1 = wtime();
-    dynamic_intra_diamond_prologue_full_1st(ctx, data, timer, u0, vx,vy,vz, roc2);
-    t2 = wtime();
-    dynamic_intra_diamond_mainloop_1st(ctx, data, timer, u0,vx,vy,vz,roc2);
     t3 = wtime();
 //  dynamic_intra_diamond_epilogue(ctx, data, u0, v0, roc2);
     t4 = wtime();

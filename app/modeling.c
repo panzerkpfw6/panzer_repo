@@ -409,6 +409,8 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 
 
         wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel,inv_rho);
+        free(p->coef);
+        free(p);
 //        wave_tb_forward_1st_grok(ctx,data,timer,u0,vx,vy,vz,vel);
         wave_tb_save_lastshot_1st(s,shot,u0);
 

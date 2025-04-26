@@ -796,10 +796,10 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
-
-        wave_tb_forward_1st(ctx, data, timer, u0, vx,vy,vz,vel,inv_rho);
-
+        wave_tb_data_set_rcv(data,s,sismos);
+        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel,inv_rho);
         wave_tb_data_unset_src(data);
+
         MSG("before wave_tb_timer_info");
         MSG("hallo!");
         MSG("ctx->nb_stencils_total_fwd=%f ",ctx->nb_stencils_total_fwd);
@@ -829,7 +829,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
         wave_inject_sismos(s, u0, s->time_steps, sismos);
 //        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
-        wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
+//        wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
         wave_tb_backward_1st(ctx, data, timer, u0,vx,vy,vz, vel);
 
         wave_tb_data_unset_rcv(data);

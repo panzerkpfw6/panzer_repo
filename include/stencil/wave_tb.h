@@ -352,6 +352,8 @@ void wave_tb_backward_1st(tb_t* ctx,
                      float * restrict vx,
                      float * restrict vy,
                      float * restrict vz,
-                     const float * restrict roc2);
+                     const float * restrict roc2,
+					 const float *restrict inv_rho,
+					 Parameters *p);
 
 #endif

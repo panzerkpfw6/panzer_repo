@@ -475,6 +475,11 @@ num_threads(stencil_ctx.thread_group_size)
         const Myfloat inv_dy = 1. / (stencil_ctx.dy);
         const Myfloat inv_dz = 1. / (stencil_ctx.dz);
 
+        //////////////////////////////////////
+
+        //////////////////////////////////////
+
+        // calculate wavefield update
         for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
             if(xe-xi <= nwf){
                 nwf = xe-xi;
@@ -660,20 +665,20 @@ num_threads(stencil_ctx.thread_group_size)
 									v3_v[iz_]+=data->sismos[sismos_ind];
 								}
 ////                                MSG("data->flag_fwd=%d \n",data->flag_fwd);
-                                if (data->flag_fwd == 1) {
+                                if (data->flag_fwd == 1 && data->src_depth != -1) {
 //                                	MSG("recording sismos\n");
 									///////  save sismos
 									////////////////////////////////////////
-									data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
+//////////									data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
 									////////////////////////////////////////
 //									MSG("ix=%d,iy=%d,iz=%d \n",ix,iy,iz_);
 	//                                MSG("t0_real=%d,t_real=%d,tb_real=%d",t0_real,t_real,tb_real);
 									double time_term = t0_real + (t_real - tb_real);
 									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
 									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-									int64_t sismos_ind = term1 + term2 + (iy - 4);
+									int64_t sismos_ind=term1 + term2 + (iy - 4);
 	//								MSG("s_ind=%lld,term1=%lld,time_term=%f,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_]);
-									data->sismos[sismos_ind] = v3_v[iz_];
+									data->sismos[sismos_ind]=v3_v[iz_];
                                 }
                             }
                             ///
@@ -1062,7 +1067,6 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     free(st.state);
     free((void *) avail_list);
 }
-
 
 void reset_timers(Profile * p){
     p->compute = 0.;
