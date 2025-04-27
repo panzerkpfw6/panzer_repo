@@ -534,161 +534,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
 ///
 
 /// Reverse Time Migration on CPU.///
-void run_rtm_tb_cpu(sismap_t *s, float *vel, float *source, float *pml_tab,
-                    parser *p) {
-    /// contains the fields pressure value at time step t.
-    float *u0;
-    /// contains the fields pressure value at time step t+1.
-    float *u1;
-    /// forward wave-field for RTM.
-    float *fwd, *fwd_io;
-    /// seismic traces for a given shot.
-    float *sismos;
-    /// image and illumination of each shot.
-    float *ilm_shot, *img_shot;
-    /// PML tmp tab.
-    float *pml_tmp;
-    /// wave-field arrays.
-    printf("allocation\n");
-    CREATE_BUFFER(u0, s->size);
-    CREATE_BUFFER(u1, s->size);
-    CREATE_BUFFER(img_shot, s->size_img);
-    CREATE_BUFFER(ilm_shot, s->size_img);
-    CREATE_BUFFER(pml_tmp, s->size_eff);
-    shot_t *shot;
-    printf("all\n");
-    tb_t *ctx = (tb_t *) malloc(sizeof(tb_t));
-    tb_data_t *data = (tb_data_t *) malloc(sizeof(tb_data_t));
-    tb_timer_t *timer = (tb_timer_t *) malloc(sizeof(tb_timer_t));
-    wtime_init();
-
-    // setup tb_data
-    printf("tb_init\n");
-    wave_tb_init(ctx, s, p);
-//    source = realloc(source,sizeof(float)*(s->time_steps+1));
-
-    printf("tb_info\n");
-    wave_tb_info(ctx);
-    printf("tb_timer\n");
-    wave_tb_timer_init(timer, ctx->thread_group_size, ctx->num_thread_groups);
-
-    printf("Nb of snapshots in FWD: %d\n", ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
-
-    if (ctx->mode == 1 || ctx->mode == 2) {
-        CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
-    } else {
-        printf("nnx %d, nnz %d, diam_width %d ntg %d\n", ctx->nnx, ctx->nnz, ctx->diam_width, ctx->num_thread_groups);
-        CREATE_BUFFER(fwd, 1ULL * ctx->nnx * ctx->nnz * ctx->diam_width * ctx->num_thread_groups);
-    }
-
-    printf("rcv_len %d, time_steps %d\n", s->rcv_len, s->time_steps);
-    CREATE_BUFFER(sismos, s->rcv_len * (s->time_steps + 1));
-
-    MSG("loop over the shots between %d and %d", s->first, s->last);
-
-    /// loop over the shots.
-    for (int sidx = s->first; sidx <= s->last; sidx++) {
-        MSG("Processing shot %d (BEGIN)", sidx);
-        /// retrieve the shot descriptor.
-        shot = s->shots[sidx];
-        /// initialize the current shot.
-        shot_init(shot, true, s->modeling);
-        /// load the seismic traces for the shot.
-        wave_read_sismos(s, shot, sismos);
-
-        wave_min_max("sismos", sismos, s->rcv_len * (s->time_steps + 1));
-
-        /// reset buffers for the shot (forward).
-        NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
-        if (ctx->mode == 1 || ctx->mode == 2) {
-            NULIFY_BUFFER(fwd, s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
-            fwd_io = NULL;
-        } else {
-            NULIFY_BUFFER(fwd, 1ULL * ctx->nnx * ctx->nnz * ctx->diam_width * ctx->num_thread_groups);
-        }
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
-
-        wave_tb_data_init(data, ctx, s, ctx->num_thread_groups, shot->id,
-                          1ULL * ctx->nnx * ctx->nnz * ctx->diam_width);
-
-        data->fwd = fwd;
-        data->img = img_shot;
-        data->ilm = ilm_shot;
-
-        /////////
-        // FWD //
-        /////////
-        MSG("FWD STEP %d", sidx);
-        wave_tb_timer_clear(timer);
-        data->flag_fwd = 1;
-        data->flag_bwd = 0;
-
-        /// forward modeling.
-        wave_tb_data_set_src(data, s, shot->srcidx, source);
-
-        wave_tb_forward(ctx, data, timer, u0, u1, vel);
-
-        wave_tb_data_unset_src(data);
-
-        wave_tb_timer_info(timer, ctx->nb_stencils_total_fwd, ctx->nb_stencils_main);
-
-//wave_tb_data_close_open(data,ctx->num_thread_groups,shot->id);
-
-        /////////
-        // BWD //
-        /////////
-        MSG("BWD STEP %d", sidx);
-        wave_tb_timer_clear(timer);
-        data->flag_fwd = 0;
-        data->flag_bwd = 1;
-
-        /// reset buffers for the shot (backward).
-        NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
-        NULIFY_BUFFER(ilm_shot, s->size_img);
-        NULIFY_BUFFER(img_shot, s->size_img);
-
-        wave_tb_data_set_rcv(data, s, sismos);
-
-        wave_inject_sismos(s, u0, s->time_steps, sismos);
-        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
-        wave_inject_sismos(s, u1, s->time_steps - 1, sismos);
-        wave_tb_backward(ctx, data, timer, u0, u1, vel);
-
-        wave_tb_data_unset_rcv(data);
-
-        wave_tb_timer_info(timer, ctx->nb_stencils_total_bwd, ctx->nb_stencils_main);
-
-        /// save the img/ilm of the shot:
-        wave_save_img(s, shot, img_shot, ilm_shot);
-        /// release/close the resources related to the current shot.
-        shot_release(shot);
-
-        wave_tb_data_free(data, ctx->num_thread_groups);
-
-        MSG("Processing shot %d (END)", sidx);
-    }
-
-    wave_tb_free(ctx);
-    wave_tb_timer_free(timer);
-
-    free(ctx);
-    ctx = NULL;
-    free(data);
-    data = NULL;
-    free(timer);
-    timer = NULL;
-    /// free the simulation buffers.
-    DELETE_BUFFER(fwd);
-    DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
-    DELETE_BUFFER(img_shot);
-    DELETE_BUFFER(ilm_shot);
-    DELETE_BUFFER(sismos);
-    DELETE_BUFFER(pml_tmp);
-}
 
 void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, float *pml_tab,parser *p) {
     /// contains the fields pressure value at time step t.
@@ -794,10 +639,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         data->flag_fwd = 1;
         data->flag_bwd = 0;
 
+        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
         wave_tb_data_set_rcv(data,s,sismos);
-        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel,inv_rho);
+        wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
         wave_tb_data_unset_src(data);
 
         MSG("before wave_tb_timer_info");
@@ -830,7 +677,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         wave_inject_sismos(s, u0, s->time_steps, sismos);
 //        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
 //        wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
-        wave_tb_backward_1st(ctx, data, timer, u0,vx,vy,vz, vel);
+        wave_tb_backward_1st(ctx, data,P, timer, u0,vx,vy,vz,vel,inv_rho);
 
         wave_tb_data_unset_rcv(data);
 
@@ -842,6 +689,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         shot_release(shot);
 
         wave_tb_data_free(data, ctx->num_thread_groups);
+        free(P);
 
         MSG("Processing shot %d (END)", sidx);
     }
@@ -1000,17 +848,11 @@ int main(int argc, char *argv[]) {
         if (s->order==1) {
             MSG("run RTM 1st order TB");
             run_rtm_1st_tb_cpu(s,vel,inv_rho,source, pml_tab, p);
-        } else {
-            MSG("run RTM 2nd order TB, deprecated.");
-            run_rtm_tb_cpu(s, vel, source, pml_tab, p);
         }
     } else {
         if (s->order==1) {
             MSG("run RTM 1st order SB");
             run_rtm_1st_cpu(s,vel,inv_rho,source, pml_tab);
-        } else {
-            MSG("run RTM 2nd order SB");
-            run_rtm_cpu(s, vel, source, pml_tab);
         }
 //    run_rtm_gpu(s, vel, source, pml_tab);
     }

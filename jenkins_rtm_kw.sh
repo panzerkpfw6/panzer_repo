@@ -47,6 +47,7 @@ echo "Test 1. compare_rtm_result_for_SB_TB"
 export OMP_NUM_THREADS=32 #4
 export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
+export TIME_TB_1st=105
 dt=0.001;fmax=11;
 ### grid size 256*256*256
 nx=256;ny=256;nz=256;dh=25;

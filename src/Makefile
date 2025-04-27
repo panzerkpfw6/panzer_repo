@@ -415,30 +415,6 @@ wave_tb.c.s:
 	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb.c.s
 .PHONY : wave_tb.c.s
 
-wave_tb_extra.o: wave_tb_extra.c.o
-.PHONY : wave_tb_extra.o
-
-# target to build an object file
-wave_tb_extra.c.o:
-	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb_extra.c.o
-.PHONY : wave_tb_extra.c.o
-
-wave_tb_extra.i: wave_tb_extra.c.i
-.PHONY : wave_tb_extra.i
-
-# target to preprocess a source file
-wave_tb_extra.c.i:
-	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb_extra.c.i
-.PHONY : wave_tb_extra.c.i
-
-wave_tb_extra.s: wave_tb_extra.c.s
-.PHONY : wave_tb_extra.s
-
-# target to generate assembly for a file
-wave_tb_extra.c.s:
-	cd /media/plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/wave_tb_extra.c.s
-.PHONY : wave_tb_extra.c.s
-
 wtime.o: wtime.c.o
 .PHONY : wtime.o
 
@@ -506,9 +482,6 @@ help:
 	@echo "... wave_tb.o"
 	@echo "... wave_tb.i"
 	@echo "... wave_tb.s"
-	@echo "... wave_tb_extra.o"
-	@echo "... wave_tb_extra.i"
-	@echo "... wave_tb_extra.s"
 	@echo "... wtime.o"
 	@echo "... wtime.i"
 	@echo "... wtime.s"

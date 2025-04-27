@@ -134,97 +134,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
   DELETE_BUFFER(pml_tmp);
 }
 
-void run_modeling_tb_cpu(sismap_t *s, float* vel,  float *source, parser *p) {
-    /// contains the fields pressure value at time step t.
-    float* u0;
-    /// contains the fields pressure value at time step t+1.
-    float* u1;
-    /// seismic traces for a given shot.
-    float *sismos;
-    /// PML temporary tab.
-    float *pml_tmp;
-    CREATE_BUFFER(u0, s->size);
-    CREATE_BUFFER(u1, s->size);
-    CREATE_BUFFER(pml_tmp, s->size_eff);
-    shot_t *shot;
 
-    wtime_init();
-
-    tb_t * ctx         = (tb_t*)       malloc(sizeof(tb_t));
-    tb_data_t * data   = (tb_data_t*)  malloc(sizeof(tb_data_t));
-    tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
-
-    wave_tb_init(ctx,s,p);
-//  source = realloc(source,sizeof(float)*(s->time_steps+1));
-
-    wave_tb_info(ctx);
-    wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
-    CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
-
-    MSG("loop over the shots");
-    printf("rcv_len %d, time_steps %d\n",s->rcv_len,s->time_steps);
-
-    /// loop over the shots.
-    for (int sidx = s->first; sidx <= s->last; sidx++) {
-        MSG("Processing shot %d",sidx);
-        /// retrieve the shot descriptor.
-        shot = s->shots[sidx];
-        /// initialize the current shot.
-        shot_init(shot, true, s->modeling);
-        /// reset some buffers for the shot.
-        NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(u1, s->size);
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
-        NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1)); // add one time step
-
-        // setup tb_data
-        wave_tb_data_init(data,ctx,s,ctx->num_thread_groups,shot->id,
-                          1ULL*ctx->nnx * ctx->nny * ctx->diam_width);
-        data->flag_fwd = 1;
-        data->flag_bwd = 0;
-        data->fwd = NULL;
-        data->ilm = NULL;
-        data->img = NULL;
-
-        //  Pavel's modification
-//    data->fwd = 1.0;
-
-        /// forward modeling.
-        wave_tb_timer_clear(timer);
-
-        wave_tb_data_set_src(data,s,shot->srcidx,source);
-        wave_tb_data_set_rcv(data,s,sismos);
-        wave_tb_data_info(data);
-
-        wave_tb_forward(ctx,data,timer,u0,u1,vel);
-        wave_tb_save_lastshot(s,shot,u0,u1);
-        wave_tb_data_unset_src(data);
-        wave_tb_data_unset_rcv(data);
-
-        wave_tb_timer_info(timer,ctx->nb_stencils_total_fwd,ctx->nb_stencils_main);
-
-        /// save the seismic traces for the shot.
-        wave_save_sismos(s, shot, sismos);
-
-        /// release/close the resources related to the current shot.
-        MSG("shot_release(shot);");
-        shot_release(shot);
-        MSG("wave_tb_data_free(data,ctx->num_thread_groups);");
-        wave_tb_data_free(data,ctx->num_thread_groups);
-    }
-    wave_tb_free(ctx);
-    wave_tb_timer_free(timer);
-    /// free the simulation buffers.
-
-    free(ctx);   ctx = NULL;
-    free(data);  data = NULL;
-    free(timer); timer = NULL;
-
-    DELETE_BUFFER(u0);
-    DELETE_BUFFER(u1);
-    DELETE_BUFFER(sismos);
-    DELETE_BUFFER(pml_tmp);
-}
 ///
 void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, float *pml_tab)  {
     /// contains the fields pressure value at time step t.
@@ -407,10 +317,10 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         wave_tb_data_info(data);
 
 
+        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+        wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
+        free(P);
 
-        wave_tb_forward_1st(ctx,data,timer,u0,vx,vy,vz,vel,inv_rho);
-        free(p->coef);
-        free(p);
 //        wave_tb_forward_1st_grok(ctx,data,timer,u0,vx,vy,vz,vel);
         wave_tb_save_lastshot_1st(s,shot,u0);
 
