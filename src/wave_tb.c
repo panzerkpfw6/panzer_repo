@@ -458,59 +458,55 @@ num_threads(stencil_ctx.thread_group_size)
 		float *restrict wx;
 		float *restrict imgx;
 		float *restrict ilmx;
+		float * __restrict v3_v;
         if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
-//        	MSG("ifwd=%d",ifwd);
+        	MSG("ifwd=%d",ifwd);
         	yb = yb_r;
-//        	ye = ye_r;
-//        	kt = xb;
-//        	for(int t=tb; t< te; t++){ // Diamond blocking in time
-//				hFloat* output_buffer = NULL;  //@KADIR
-//				int mod = (t)%2;
-////                MSG("t=%d",t);
-//				if(mod){ // compute v from p
-//					u1 = p11 ; //p
-//					const Myfloat coef=stencil_ctx.dt;
-//					for(int ix=kt; ix<kte; ix++){    // X
-//						if( ((ix)/th_nwf)%th_x == tid_x ) {
-//							for(int iy=yb; iy<ye; iy++) {
-//								{
-//									v3_v = &(v3[ix*nnyz+iy*nnz]);
-//#pragma ivdep
-//									for(int iz=ib; iz<ie; iz++) {
-//										v3_v[iz] = 1;
-//									}
-//								}
-//							}
-//
-//						}
-//					}
-//				} else{// compute p from v
-//					u1=	p21 ;
-//					for(int ix=kt; ix<kte; ix++){
-//						if( ((ix)/th_nwf)%th_x == tid_x ) {
-//							for(int iy=yb; iy<ye; iy++) {
-//								coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-//#pragma ivdep
-//								for(int iz=ib; iz<ie; iz++) {
-//									const Myfloat xum4 = u1_v[-4*nnyz + iz];
-//									v3_v[iz]=1;
-//								}
-//							}
-//						}
-//					}
-//				}
-//				// Update block size in Y
-//				if(t< t_dim){ // lower half of the diamond
-//					yb += -b_inc;
-//					ye += e_inc;
-//				}else{ // upper half of the diamond
-//					yb += b_inc;
-//					ye += -e_inc;
-//				}
-//				kte=max(kte-NHALO,xb);
-//				if (end==1) kte =xe;
-//				kt=max(kt-NHALO,xb);
-//			} // diamond blocking in time (time loop)
+        	ye = ye_r;
+        	kt = xb;
+        	hFloat *  v3=p13;
+        	v3=	p13;
+        	for(int t=tb; t< te; t++){ // Diamond blocking in time
+				hFloat* output_buffer = NULL;  //@KADIR
+				int mod = (t)%2;
+//                MSG("t=%d",t);
+				if(mod==0){// compute p from v
+					u1=	p21 ;
+					for(int ix=kt; ix<kte; ix++){
+						if( ((ix)/th_nwf)%th_x == tid_x ) {
+							for(int iy=yb; iy<ye; iy++) {
+								coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+//								v3_v = &(v3[ix*nnyz+iy*nnz]);
+								vx=&(v3[ix*nnyz+iy*nnz]);
+
+								vx   = &(        v[1ULL*k*nnxy + j*nnx]);
+								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
+								imgx = &(data->img[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+								ilmx = &(data->ilm[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+#pragma ivdep
+								for(int iz=ib; iz<ie; iz++) {
+									const Myfloat xum4 = u1_v[-4*nnyz + iz];
+									v3_v[iz]=1;
+
+									imgx[i] += vx[i]*wx[i];
+									ilmx[i] += wx[i]*wx[i];
+								}
+							}
+						}
+					}
+				}
+				// Update block size in Y
+				if(t< t_dim){ // lower half of the diamond
+					yb += -b_inc;
+					ye += e_inc;
+				}else{ // upper half of the diamond
+					yb += b_inc;
+					ye += -e_inc;
+				}
+				kte=max(kte-NHALO,xb);
+				if (end==1) kte =xe;
+				kt=max(kt-NHALO,xb);
+			} // diamond blocking in time (time loop)
         }
         //////////////////////////////////////
 
