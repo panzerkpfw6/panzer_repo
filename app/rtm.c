@@ -584,7 +584,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     if (ctx->mode == 1 || ctx->mode == 2) {
         CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
-//        MSG("(ctx->t_len + ctx->fwd_steps - 1)=%d",(ctx->t_len + ctx->fwd_steps - 1) );
+        MSG("s->size=%d",s->size);
+        MSG("(((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps)=%d",((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
+		MSG("fwd_size=%llu",1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
 //        exit(1);
     } else {
         printf("nnx %d, nnz %d, diam_width %d ntg %d\n", ctx->nnx, ctx->nnz, ctx->diam_width, ctx->num_thread_groups);

@@ -382,7 +382,7 @@ num_threads(stencil_ctx.thread_group_size)
         MSG("nnx=%d,nny=%d,nnz=%d",nnx,nny,nnz);
         MSG("stencil. nnx=%d,nny=%d,nnz=%d",stencil_ctx.nx,stencil_ctx.ny,stencil_ctx.nz);
         MSG("nnxy=%d",nnxy);
-        exit(1);
+//        exit(1);
 
         tgs = stencil_ctx.thread_group_size;
         nwf = stencil_ctx.num_wf;
@@ -723,8 +723,9 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
+									MSG("isrc_exc=%d",isrc_exc);
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc]);
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
 									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
 												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
 									isrc_exc++;
@@ -770,31 +771,34 @@ num_threads(stencil_ctx.thread_group_size)
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
 								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
+
+								MSG("ifwd=%d",ifwd);
+								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
 								wx = &(   data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
 #pragma ivdep
 								for (int iz=ib; iz<ie; iz++) {
+									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
 									wx[iz] = ux[iz];
-									}
+								}
+								exit(1);
 								// delete source from the forward wavefield
-								aa=1;
-								if( (gp->source_point_enabled==1)
-									&& (gp->lsource_pt[2] >= ib ) //@KADIR
-									&& (gp->lsource_pt[2] <  ie ) //@KADIR
-									&& (gp->lsource_pt[1] >= yb ) //@KADIR
-									&& (gp->lsource_pt[1] <  ye ) //@KADIR
-									&& (gp->lsource_pt[0] == ix ) )
-									{
-									gp->src_exc_coef[isrc_exc];
-
-									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-									gp->src_exc_coef[isrc_exc]
-									isrc_exc++;
-									}
+								int aa=1;
+//								if( (gp->source_point_enabled==1)
+//									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+//									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+//									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+//									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+//									&& (gp->lsource_pt[0] == ix ))	{
+//									gp->src_exc_coef[isrc_exc];
+//
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+//									gp->src_exc_coef[isrc_exc];
+//									isrc_exc++;
+//									}
 								}
 							}
 						}
 					}
-				}
 				// Update block size in Y
 				if(t< t_dim){ // lower half of the diamond
 					yb += -b_inc;
@@ -807,9 +811,11 @@ num_threads(stencil_ctx.thread_group_size)
 				if (end==1) kte =xe;
 				kt=max(kt-NHALO,xb);
 			} // diamond blocking in time (time loop)
-		}
+        }
+//////////////////////////////////////////////////////////
 
-    } // parallel region
+//////////////////////////////////////////////////////////
+    }
 }
 
 void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
