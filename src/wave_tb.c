@@ -368,11 +368,21 @@ num_threads(stencil_ctx.thread_group_size)
         const int nnx =shape[2];
         const int nny =shape[1];
         const int nnz =shape[0];
+
         const unsigned long nnzy = 1UL * nnz * nny;
         const unsigned long nnyz = nnzy;
+        const int64_t nnxyz=1ULL*nnx * nny * nnz;
+        const int64_t nnxy=1ULL*nnx * nny;
+        const int64_t nnyz_grid=1ULL*nnx * nny;
+
         // index notation for velocity array
         const int nnz_v=stencil_ctx.nz;
         const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
+
+        MSG("nnx=%d,nny=%d,nnz=%d",nnx,nny,nnz);
+        MSG("stencil. nnx=%d,nny=%d,nnz=%d",stencil_ctx.nx,stencil_ctx.ny,stencil_ctx.nz);
+        MSG("nnxy=%d",nnxy);
+        exit(1);
 
         tgs = stencil_ctx.thread_group_size;
         nwf = stencil_ctx.num_wf;
@@ -454,16 +464,21 @@ num_threads(stencil_ctx.thread_group_size)
 
         // Load wavefield and imaging condition /////////////////////
         // RTM variables
-		const float *restrict vx;
+
+        float *restrict ux;
+        float *restrict vx;
 		float *restrict wx;
 		float *restrict imgx;
 		float *restrict ilmx;
 		float * __restrict v3_v;
+		int kte;
+		//////////////////////////////////////Backward//////////////////////////////////////
         if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
-        	MSG("ifwd=%d",ifwd);
+        	MSG("bwd phase, ifwd=%d",ifwd);
         	yb = yb_r;
         	ye = ye_r;
         	kt = xb;
+        	kte=kt+nwf;
         	hFloat *  v3=p13;
         	v3=	p13;
         	for(int t=tb; t< te; t++){ // Diamond blocking in time
@@ -475,21 +490,14 @@ num_threads(stencil_ctx.thread_group_size)
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
-								coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-//								v3_v = &(v3[ix*nnyz+iy*nnz]);
 								vx=&(v3[ix*nnyz+iy*nnz]);
-
-								vx   = &(        v[1ULL*k*nnxy + j*nnx]);
-								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*k*nnxy + j*nnx]);
-								imgx = &(data->img[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
-								ilmx = &(data->ilm[1ULL*(k-4)*(nnx-8)*(nny-8) + (j-4)*(nnx-8) - 4]);
+								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+								imgx = &(data->img[1ULL*(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz_v ]);
+								ilmx = &(data->ilm[1ULL*(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz_v ]);
 #pragma ivdep
 								for(int iz=ib; iz<ie; iz++) {
-									const Myfloat xum4 = u1_v[-4*nnyz + iz];
-									v3_v[iz]=1;
-
-									imgx[i] += vx[i]*wx[i];
-									ilmx[i] += wx[i]*wx[i];
+									imgx[iz] += vx[iz]*wx[iz];
+									ilmx[iz] += wx[iz]*wx[iz];
 								}
 							}
 						}
@@ -509,7 +517,6 @@ num_threads(stencil_ctx.thread_group_size)
 			} // diamond blocking in time (time loop)
         }
         //////////////////////////////////////
-
         // calculate wavefield update
         for(xi=xb; xi<xe; xi+=nwf) { // wavefront loop (x direction)
             if(xe-xi <= nwf){
@@ -520,7 +527,7 @@ num_threads(stencil_ctx.thread_group_size)
             ye = ye_r;
 //            MSG("xb=%d,xe=%d,yb=%d,ye=%d",xb,xe,yb,ye);
             kt = xi;
-            int kte=kt+nwf;
+            kte=kt+nwf;
 
             float * __restrict v1_v;
             float * __restrict v2_v;
@@ -716,9 +723,8 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
-	//								gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]) +gp->src_exc_coef[isrc_exc]);//@KADIR
-									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc]);
 									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
 												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
 									isrc_exc++;
@@ -745,6 +751,64 @@ num_threads(stencil_ctx.thread_group_size)
                 stencil_ctx.t_wait[gtid] += get_wall_time() - t_start;
             } // diamond blocking in time (time loop)
         } // wavefront loop
+        //////////////////////////////////////Forward//////////////////////////////////////
+        if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
+        	MSG("fwd phase, ifwd=%d",ifwd);
+			yb = yb_r;
+			ye = ye_r;
+			kt = xb;
+			kte=kt+nwf;
+			hFloat *v3=p13;
+			v3=p13;
+			for(int t=tb; t< te; t++){ // Diamond blocking in time
+				hFloat* output_buffer = NULL;  //@KADIR
+				int mod = (t)%2;
+//                MSG("t=%d",t);
+				if(mod==0){// compute p from v
+					u1=	p21 ;
+					for(int ix=kt; ix<kte; ix++){
+						if( ((ix)/th_nwf)%th_x == tid_x ) {
+							for(int iy=yb; iy<ye; iy++) {
+								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
+								wx = &(   data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+#pragma ivdep
+								for (int iz=ib; iz<ie; iz++) {
+									wx[iz] = ux[iz];
+									}
+								// delete source from the forward wavefield
+								aa=1;
+								if( (gp->source_point_enabled==1)
+									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+									&& (gp->lsource_pt[0] == ix ) )
+									{
+									gp->src_exc_coef[isrc_exc];
+
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+									gp->src_exc_coef[isrc_exc]
+									isrc_exc++;
+									}
+								}
+							}
+						}
+					}
+				}
+				// Update block size in Y
+				if(t< t_dim){ // lower half of the diamond
+					yb += -b_inc;
+					ye += e_inc;
+				}else{ // upper half of the diamond
+					yb += b_inc;
+					ye += -e_inc;
+				}
+				kte=max(kte-NHALO,xb);
+				if (end==1) kte =xe;
+				kt=max(kt-NHALO,xb);
+			} // diamond blocking in time (time loop)
+		}
+
     } // parallel region
 }
 
