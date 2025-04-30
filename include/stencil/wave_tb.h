@@ -227,7 +227,7 @@ typedef struct{
     int halo_concat;
 
     // Specific data for the diamond method
-    int t_dim,larger_t_dim,is_last,mwd_type;
+    int t_dim,larger_t_dim,is_last,mwd_type,t_len;
     Halo hu[3],hv[3];
 
     int wavefront;
@@ -272,7 +272,7 @@ void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0, const
                         int t_dim, int b_inc, int e_inc,int NHALO,
                         int tb, int te,int t0,int ifwd,
 						stencil_ctx stencil_ctx, int mtid,tb_data_t * data);
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0,int ifwd);
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int y_coord);
 void dynamic_intra_diamond_ts_combined(Parameters *p);
 void reset_timers(Profile * p);
 void reset_wf_timers(Parameters * p);
