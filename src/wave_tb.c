@@ -297,7 +297,7 @@ static inline void update_state(int y_coord, Parameters *p){
                     //the reset have the same circular dependence (ezcept the right-half diamond) if:
                     // 1) the current tile did not reach the end of the temporal dimension
                     // 2) the right neighbor is at least at the same time step
-                    avail_list[head%y_len_r] = y_coord;
+                    avail_list[head%y_len_r]=y_coord;
                     head++;
                 }
             } // check validity in range of temporal dimension
@@ -815,6 +815,57 @@ num_threads(stencil_ctx.thread_group_size)
     }
 }
 
+void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
+//	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
+    //@KADIR1 EXECUTED IN DIAMOND
+    int t, x, xb[32], xe[32];
+    int xb0,xe0;
+    int yb, ye;
+    int time_len = te-tb;
+    double t1, t2, t3;
+
+    // wavefront prologue
+    t1 = get_wall_time();
+    t2 = get_wall_time();
+    // main wavefront loop
+    yb = yb_r;
+    ye = ye_r;
+    //xb0 = (te-tb)*p->stencil.r;
+    xb0 = p->stencil.r;
+    xe0 = p->ldomain_shape[2]-p->stencil.r;
+
+    int iifwd;
+    int fwd_steps=p->stencil_ctx.fwd_steps;
+
+//    MSG("p->stencil_ctx.t_len=%d\n",p->stencil_ctx.t_len);
+//    exit(1);
+
+
+    if (p->data->flag_fwd == 1) {
+		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+    }
+    if (p->data->flag_bwd == 1) {
+		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+    }
+//    exit(1);
+
+    MSG("iifwd=%d\n",iifwd);
+
+    p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
+                        xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
+                        p->coef,p->U1,p->U1,p->U1,
+                        p->U2, p->U3,p->U4,
+						p->U5,p->U6,
+                        p->dampx,p->dampy,p->dampz,
+                        p->t_dim, b_inc, e_inc, p->stencil.r,
+                        tb,te,t0,iifwd,p->stencil_ctx,tid,p->data);
+
+    t3 = get_wall_time();
+    p->stencil_ctx.t_wf_prologue[tid] += t2-t1;
+    p->stencil_ctx.t_wf_main[tid]     += t3-t2;
+    p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
+}
+
 void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int y_coord){
 //	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
     //@KADIR1 EXECUTED IN DIAMOND
@@ -844,7 +895,7 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int
 
 
     if (p->data->flag_fwd == 1) {
-    	ifwd = st->t_pos[y_coord];
+    	ifwd = t_coord;
 		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
 		t0 = 1 + t_coord*(p->t_dim+1);
     }
@@ -917,6 +968,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 
 	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
 
+	int ifwd,t0;
     // Prologue
     MSG("ENTERING TB Prologue");
     t1 = get_wall_time();
@@ -945,12 +997,13 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
                     //@2
                     {
-                    	int t0;
                         int tb = p->t_dim;
                         int te = p->t_dim*2+1;
+                        ifwd=-1;
+                    	t0=1;
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
-                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,y_coord);
+                        	intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                         }
                     }
                 }
@@ -1121,9 +1174,15 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     int tb = 0;
                     int te = p->t_dim+1;
 //                    int t0 = t_len*(p->t_dim+1) + 1;
+
+                    ifwd = -1;
+                    if (p->data->flag_fwd == 1) {
+                        t0 = p->t_len*(p->t_dim+1) + 1;}
+                    if (p->data->flag_bwd == 1) {
+						t0 = p->t_dim - 1;}
                     //@2
 					MSG("Epilogue. ifwd=%d",ifwd);
-                    intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,y_coord);
+                    intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                 }
             }
         }
@@ -2353,7 +2412,7 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.th_z = ctx->th_z;//1;
     p->stencil_ctx.th_c = 1;
     p->stencil_ctx.fwd_steps = ctx->fwd_steps;
-    p->stencil_ctx.t_len = ctx->t_len;
+    p->t_len = ctx->t_len;
 
     p->th_block = 1;
     p->th_stride = 1;
