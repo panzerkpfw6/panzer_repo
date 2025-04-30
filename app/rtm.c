@@ -577,6 +577,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     printf("tb_info\n");
     wave_tb_info(ctx);
+
     printf("tb_timer\n");
     wave_tb_timer_init(timer, ctx->thread_group_size, ctx->num_thread_groups);
 
@@ -585,7 +586,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     if (ctx->mode == 1 || ctx->mode == 2) {
         CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
         MSG("s->size=%d",s->size);
-        MSG("(((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps)=%d",((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
+        MSG("( ( (ctx->t_len + ctx->fwd_steps - 1)/ctx->fwd_steps)=%d",((ctx->t_len + ctx->fwd_steps-1)/ctx->fwd_steps) );
 		MSG("fwd_size=%llu",1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
 //        exit(1);
     } else {

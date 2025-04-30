@@ -344,7 +344,6 @@ static inline void update_state(int y_coord, Parameters *p){
 }
 
 // Function definitions below
-
 void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
                         const int xb, const int ze, const int ye_r0, const int xe,
                     const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
@@ -360,7 +359,6 @@ firstprivate(b_inc, e_inc) \
 num_threads(stencil_ctx.thread_group_size)
     {
 //    	MSG("xb=%d,xe=%d",xb,xe);
-
         int lstencil=NHALO;// @pavel  allocate variable lstencil
         int tgs, nwf, th_nwf, tid, gtid, xi, yb, ye, ib, ie, kt, t,  q, r, err;
         double t_start;
@@ -379,9 +377,9 @@ num_threads(stencil_ctx.thread_group_size)
         const int nnz_v=stencil_ctx.nz;
         const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
 
-        MSG("nnx=%d,nny=%d,nnz=%d",nnx,nny,nnz);
-        MSG("stencil. nnx=%d,nny=%d,nnz=%d",stencil_ctx.nx,stencil_ctx.ny,stencil_ctx.nz);
-        MSG("nnxy=%d",nnxy);
+//        MSG("nnx=%d,nny=%d,nnz=%d",nnx,nny,nnz);
+//        MSG("stencil. nnx=%d,nny=%d,nnz=%d",stencil_ctx.nx,stencil_ctx.ny,stencil_ctx.nz);
+//        MSG("nnxy=%d",nnxy);
 //        exit(1);
 
         tgs = stencil_ctx.thread_group_size;
@@ -474,7 +472,7 @@ num_threads(stencil_ctx.thread_group_size)
 		int kte;
 		//////////////////////////////////////Backward//////////////////////////////////////
         if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
-        	MSG("bwd phase, ifwd=%d",ifwd);
+//        	MSG("bwd phase, ifwd=%d",ifwd);
         	yb = yb_r;
         	ye = ye_r;
         	kt = xb;
@@ -723,7 +721,7 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
-									MSG("isrc_exc=%d",isrc_exc);
+//									MSG("isrc_exc=%d",isrc_exc);
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
 									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
 									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
@@ -734,8 +732,6 @@ num_threads(stencil_ctx.thread_group_size)
                         }
                     }
                 }
-
-
                 // Update block size in Y
                 if(t< t_dim){ // lower half of the diamond
                     yb += -b_inc;
@@ -754,7 +750,7 @@ num_threads(stencil_ctx.thread_group_size)
         } // wavefront loop
         //////////////////////////////////////Forward//////////////////////////////////////
         if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) { // load fwd wavefield and compute IC
-        	MSG("fwd phase, ifwd=%d",ifwd);
+//        	MSG("fwd phase, ifwd=%d",ifwd);
 			yb = yb_r;
 			ye = ye_r;
 			kt = xb;
@@ -767,37 +763,38 @@ num_threads(stencil_ctx.thread_group_size)
 //                MSG("t=%d",t);
 				if(mod==0){// compute p from v
 					u1=	p21 ;
-					for(int ix=kt; ix<kte; ix++){
-						if( ((ix)/th_nwf)%th_x == tid_x ) {
-							for(int iy=yb; iy<ye; iy++) {
-								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
 
-								MSG("ifwd=%d",ifwd);
-								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
-								wx = &(   data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
-#pragma ivdep
-								for (int iz=ib; iz<ie; iz++) {
-									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
-									wx[iz] = ux[iz];
-								}
-								exit(1);
-								// delete source from the forward wavefield
-								int aa=1;
-//								if( (gp->source_point_enabled==1)
-//									&& (gp->lsource_pt[2] >= ib ) //@KADIR
-//									&& (gp->lsource_pt[2] <  ie ) //@KADIR
-//									&& (gp->lsource_pt[1] >= yb ) //@KADIR
-//									&& (gp->lsource_pt[1] <  ye ) //@KADIR
-//									&& (gp->lsource_pt[0] == ix ))	{
-//									gp->src_exc_coef[isrc_exc];
-//
-//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-//									gp->src_exc_coef[isrc_exc];
-//									isrc_exc++;
-//									}
-								}
-							}
-						}
+//					for(int ix=kt; ix<kte; ix++){
+//						if( ((ix)/th_nwf)%th_x == tid_x ) {
+//							for(int iy=yb; iy<ye; iy++) {
+//								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
+////								MSG("ifwd=%d",ifwd);
+////								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+//								wx=&(data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+//#pragma ivdep
+//								for (int iz=ib; iz<ie; iz++) {
+////									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+//									wx[iz]=ux[iz];
+//								}
+////								exit(1);
+//								// delete source from the forward wavefield
+//								int aa=1;
+////								if( (gp->source_point_enabled==1)
+////									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+////									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+////									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+////									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+////									&& (gp->lsource_pt[0] == ix ))	{
+////									gp->src_exc_coef[isrc_exc];
+////
+////									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+////									gp->src_exc_coef[isrc_exc];
+////									isrc_exc++;
+////									}
+//								}
+//							}
+//						}
+
 					}
 				// Update block size in Y
 				if(t< t_dim){ // lower half of the diamond
@@ -854,6 +851,8 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int
     }
 //    exit(1);
 
+    MSG("iifwd=%d\n",iifwd);
+
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
                         p->coef,p->U1,p->U1,p->U1,
@@ -905,11 +904,12 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 #if defined(_OPENMP)
     omp_set_nested(1);
 #endif
+	MSG("isrc_exc=%d",isrc_exc);
+
     gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
     isrc_exc++;
 
 	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
-//	exit(1);
 
     // Prologue
     MSG("ENTERING TB Prologue");
@@ -954,6 +954,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                         }
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
+                        	MSG("Prologue ifwd=%d",ifwd);
                             intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                         }
                     }
@@ -962,6 +963,8 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
         }
     }
     t2 = get_wall_time();
+
+//	exit(1);
 
     // main loop
     //dynamic_intra_diamond_main_loop(p);
@@ -1086,6 +1089,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                         if(p->stencil.type == REGULAR){
 //                                        	MSG("t0=%d",t0);
 //                                        	printf("p->stencil.type= %s\n",p->stencil.type);
+                                        	MSG("Main loop. ifwd=%d",ifwd);
                                             intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                                         }
                                     }
@@ -1148,6 +1152,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 						t0 = p->nt - 2 - t_coord*(p->t_dim+1);
 					}
                     //@2
+					MSG("Epilogue. ifwd=%d",ifwd);
                     intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                 }
             }
@@ -1767,6 +1772,8 @@ void wave_tb_info(tb_t * ctx) {
     MSG("stride       : (%d,%d,%d)",ctx->nnx, ctx->nny, ctx->nnz);
     MSG("stencil grid : (%d,%d,%d)",ctx->stencilx, ctx->stencily, ctx->stencilz);
     MSG("halo : %d",ctx->r);
+    MSG("rtm info");
+    MSG("fwd_steps : %d",ctx->fwd_steps);
     MSG("-------------------------------------------");
     MSG("mode info");
     switch (ctx->mode) {
