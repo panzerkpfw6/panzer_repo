@@ -99,6 +99,9 @@ export rcv_depth=4;
   
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*
+
+
+#gdb --args ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
  --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \

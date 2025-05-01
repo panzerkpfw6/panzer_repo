@@ -291,9 +291,9 @@ static inline void update_state(int y_coord, Parameters *p){
             if(st.t_pos[y_coord] < t_len){
                 // if left-half diamond, no dependencies. Add to the list
                 if(y_coord == y_len_l-1){
-                    avail_list[head%y_len_r] = y_coord;
+                    avail_list[head%y_len_r]=y_coord;
                     head++;
-                } else if(T_POS_R(y_coord+1) >= st.t_pos[y_coord]) {
+                } else if(T_POS_R(y_coord+1)>=st.t_pos[y_coord]) {
                     //the reset have the same circular dependence (ezcept the right-half diamond) if:
                     // 1) the current tile did not reach the end of the temporal dimension
                     // 2) the right neighbor is at least at the same time step
@@ -342,7 +342,25 @@ static inline void update_state(int y_coord, Parameters *p){
 
     } //end is_last process case
 }
-
+static inline int get_t_coord(int y_coord) {
+    // Ensure st.t_pos is allocated
+    if (!st.t_pos) {
+        fprintf(stderr, "st.t_pos is NULL\n");
+        exit(1);
+    }
+    // Validate y_coord
+    if (y_coord < 0 || y_coord >= y_len_r) {
+        fprintf(stderr, "Invalid y_coord=%d, y_len_r=%d\n", y_coord, y_len_r);
+        exit(1);
+    }
+    // Read t_pos[y_coord] thread-safely
+    int t_coord;
+    #pragma omp critical
+    {
+        t_coord = st.t_pos[y_coord];
+    }
+    return t_coord;
+}
 // Function definitions below
 void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
                         const int xb, const int ze, const int ye_r0, const int xe,
@@ -848,8 +866,7 @@ void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_i
 		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
     }
 //    exit(1);
-
-    MSG("iifwd=%d\n",iifwd);
+//    MSG("iifwd=%d\n",iifwd);
 
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
@@ -866,7 +883,7 @@ void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_i
     p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int y_coord){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t_coord){
 //	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
@@ -888,7 +905,8 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int
     int ifwd,iifwd,t0;
     iifwd = -1;
     int fwd_steps=p->stencil_ctx.fwd_steps;
-    int t_coord=st->t_pos[y_coord];
+//    int t_coord=st->t_pos[y_coord];
+//    int t_coord=1;
 
 //    MSG("p->stencil_ctx.t_len=%d\n",p->stencil_ctx.t_len);
 //    exit(1);
@@ -906,8 +924,7 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int
 		t0 = p->nt - 2 - t_coord*(p->t_dim+1);
     }
 //    exit(1);
-
-    MSG("iifwd=%d\n",iifwd);
+//    MSG("ifwd=%d,iifwd=%d\n",ifwd,iifwd);
 
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
@@ -968,7 +985,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 
 	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
 
-	int ifwd,t0;
+	int ifwd,t0,t_coord;
     // Prologue
     MSG("ENTERING TB Prologue");
     t1 = get_wall_time();
@@ -1073,7 +1090,8 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                         {
                             int y_coord = th_y_coord;
                             //@4.3.1
-                            int t_coord = st.t_pos[y_coord];
+//                            int t_coord = st.t_pos[y_coord];
+//                            MSG("t_coord=%d\n",t_coord);
                             double t1, t2;
                             //intra_diamond_comp_using_location(p, y_coord, tid, t_coord);
                             //(Parameters *p, int y_coord, int tid, int t_coord)
@@ -1122,10 +1140,14 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                         int te = p->t_dim*2+1;
                                         //@2
                                         if(p->stencil.type == REGULAR){
-//                                        	MSG("t0=%d",t0);
+//                                        	MSG("t0=%d,t_coord=%d",t0,t_coord);
 //                                        	printf("p->stencil.type= %s\n",p->stencil.type);
 //                                        	MSG("Main loop. ifwd=%d",ifwd);
-                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,y_coord);
+//                                        	t_coord=st->t_pos[y_coord];
+                                        	t_coord = get_t_coord(y_coord);
+//                                        	MSG("t_coord=%d\n",t_coord);
+                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t_coord);
                                         }
                                     }
 
@@ -2301,9 +2323,6 @@ static void fwd_save(tb_t * ctx,
                        sizeof(float),fwdsize, fp);
     assert(size_done != fwdsize);
 }
-
-#define T_POS_L(y) (ctx->t_pos[(((y)+(ctx->y_len_l)) % (ctx->y_len_l))])
-#define T_POS_R(y) (ctx->t_pos[(((y)+(ctx->y_len_r)) % (ctx->y_len_r))])
 
 void wave_tb_forward_1st(tb_t* ctx,
                          tb_data_t * data,

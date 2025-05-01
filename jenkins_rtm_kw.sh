@@ -1,7 +1,5 @@
 #!/bin/bash
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=44
-#export OMP_NUM_THREADS=16
 export OMP_PROC_BIND=true
 export OMP_PLACES=threads
 export OMP_NESTED='True'
@@ -57,7 +55,8 @@ x=4; y=4; z=1; t=7; w=20; tgs=16;
 cbx=64;cby=22;cbz=9999;
 
 first=513; # position of the source:isx=160,isy=140
-last=517; # position of the source:isx=160,isy=140
+last=513; # position of the source:isx=160,isy=140
+#last=517; # position of the source:isx=160,isy=140
 dshot=50;
 export src_depth=5;
 export rcv_depth=8;

@@ -648,6 +648,8 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         wave_tb_data_set_src(data, s, shot->srcidx, source);
         wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
+		exit(1);
+
         wave_tb_data_unset_src(data);
 
         MSG("before wave_tb_timer_info");
