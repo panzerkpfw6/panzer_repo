@@ -883,7 +883,7 @@ void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_i
     p->stencil_ctx.t_wf_epilogue[tid] += get_wall_time() - t3;
 }
 
-void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t_coord){
+void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int y_coord){
 //	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
     //@KADIR1 EXECUTED IN DIAMOND
     int t, x, xb[32], xe[32];
@@ -905,7 +905,7 @@ void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc,int
     int ifwd,iifwd,t0;
     iifwd = -1;
     int fwd_steps=p->stencil_ctx.fwd_steps;
-//    int t_coord=st->t_pos[y_coord];
+    int t_coord=st->t_pos[y_coord];
 //    int t_coord=1;
 
 //    MSG("p->stencil_ctx.t_len=%d\n",p->stencil_ctx.t_len);
@@ -1144,10 +1144,10 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 //                                        	printf("p->stencil.type= %s\n",p->stencil.type);
 //                                        	MSG("Main loop. ifwd=%d",ifwd);
 //                                        	t_coord=st->t_pos[y_coord];
-                                        	t_coord = get_t_coord(y_coord);
+//                                        	t_coord = get_t_coord(y_coord);
 //                                        	MSG("t_coord=%d\n",t_coord);
-                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
-                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,t_coord);
+//                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
+                                            intra_diamond_mwd_comp_std(p, yb, ye, b_inc, e_inc, tb, te, tid,y_coord);
                                         }
                                     }
 
