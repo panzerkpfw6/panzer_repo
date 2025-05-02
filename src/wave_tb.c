@@ -1805,6 +1805,27 @@ void wave_tb_init(tb_t *ctx,
     }
 }
 
+void wave_tb_init_p(tb_t *ctx,
+                  sismap_t *s,
+				  Parameters *p) {
+	int enable_all_sizes = 0;
+	if(enable_all_sizes == 0){
+		p->nt=ctx->time_steps*2;
+		// round the number of time steps to the nearest valid number
+		int remain = (p->nt-2)%((p->t_dim+1)*2);
+		if(remain != 0){
+			int nt2 = p->nt + (p->t_dim+1)*2 - remain;
+			if(nt2 != p->nt){
+				if( (p->verbose ==1) ){
+					printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
+					fflush(stdout);
+				}
+				p->nt=nt2;
+			}
+		}
+	}
+}
+
 void wave_tb_info(tb_t * ctx) {
     MSG(" ");
     MSG("-------------------------------------------");
@@ -2368,25 +2389,28 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->n_tests = 1;
     p->verbose = 1;
     p->t_dim=ctx->t_dim;
-    p->nt=ctx->time_steps*2; // Rached
 //    printf("data.dt:%f\n",data->dt);
 //    exit(0);
     p->stencil_ctx.dt=data->dt;
-    int enable_all_sizes = 0;
-    if(enable_all_sizes == 0){
-        // round the number of time steps to the nearest valid number
-        int remain = (p->nt-2)%((p->t_dim+1)*2);
-        if(remain != 0){
-            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
-            if(nt2 != p->nt){
-                if( (p->verbose ==1) ){
-                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
-                    fflush(stdout);
-                }
-                p->nt=nt2;
-            }
-        }
-    }
+    ///////////////////////////////////////////////////
+//    p->nt=ctx->time_steps*2;
+//    int enable_all_sizes = 0;
+//    if(enable_all_sizes == 0){
+//        // round the number of time steps to the nearest valid number
+//        int remain = (p->nt-2)%((p->t_dim+1)*2);
+//        if(remain != 0){
+//            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
+//            if(nt2 != p->nt){
+//                if( (p->verbose ==1) ){
+//                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
+//                    fflush(stdout);
+//                }
+//                p->nt=nt2;
+//            }
+//        }
+//    }
+    ///////////////////////////////////////////////////
+
     uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
     //    printf("nelm:%llu\n",nelm);
 	uint64_t n_sample=0; n_sample=(uint64_t) p->nt * nelm;

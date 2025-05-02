@@ -572,7 +572,9 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     // setup tb_data
     printf("tb_init\n");
-    wave_tb_init(ctx, s, p);
+    wave_tb_init(ctx,s,p);
+	Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+	wave_tb_init_p(ctx,s,P);
 //    source = realloc(source,sizeof(float)*(s->time_steps+1));
 
     printf("tb_info\n");
@@ -642,7 +644,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         data->flag_fwd = 1;
         data->flag_bwd = 0;
 
-        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+//        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
 
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
