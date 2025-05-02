@@ -88,7 +88,7 @@ nx=200;ny=256;nz=160;
 
 x=2; y=2; z=1; t=7; w=20; tgs=4;
 export first=41100;
-#export first=41099;
+export first=41099;
 export last=41100;
 export src_depth=20;
 export rcv_depth=4;

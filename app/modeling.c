@@ -318,7 +318,8 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_data_info(data);
 
-
+        isrc_exc=0;
+        MSG("isrc_exc=%d",isrc_exc);
         Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
 //        wave_tb_init_p(ctx,s,P);
         wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
@@ -399,8 +400,6 @@ int main(int argc, char* argv[]) {
 		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
 		printf("Program started at: %s [Thread %d]\n", buffer, omp_get_thread_num());
 	}
-
-
 
 //    timeinfo = localtime(&rawtime);
 //    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
