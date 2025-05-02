@@ -79,7 +79,7 @@ make install
 
 ################################
 echo "Test 2. compare_wavefields_and_sismos_for_SB_TB"
-export OMP_NUM_THREADS=4 #4
+export OMP_NUM_THREADS=12 #4
 export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
 ### grid size 256*256*256
@@ -87,7 +87,9 @@ nx=256;ny=256;nz=256;
 nx=200;ny=256;nz=160;
 
 x=2; y=2; z=1; t=7; w=20; tgs=4;
-export shot=41100;  # position of the source:isx=160,isy=140
+export first=41100;
+#export first=41099;
+export last=41100;
 export src_depth=20;
 export rcv_depth=4;
 
@@ -100,11 +102,10 @@ export rcv_depth=4;
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*
 
-
 #gdb --args ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
- --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
+ --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $first --last $last -c \
  --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax 8;
 mv ./data/sismos_${shot}.raw ./data/sismos_tb/sismos_${shot}.raw
 

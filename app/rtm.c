@@ -586,10 +586,19 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     printf("Nb of snapshots in FWD: %d\n", ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
 
     if (ctx->mode == 1 || ctx->mode == 2) {
-        CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
-        MSG("s->size=%d",s->size);
-        MSG("( ( (ctx->t_len + ctx->fwd_steps - 1)/ctx->fwd_steps)=%d",((ctx->t_len + ctx->fwd_steps-1)/ctx->fwd_steps) );
-		MSG("fwd_size=%llu",1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
+		///////////////////////
+//		int max_ifwd = (2 * P->nt + ctx->fwd_steps - 1) / ctx->fwd_steps;
+		int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps;
+		size_t fwd_size = s->size * max_ifwd;
+		ctx->fwd_size=fwd_size;
+		CREATE_BUFFER(fwd,fwd_size);
+		MSG("Nb of snapshots max_ifwd=%d,fwd_size=%llu",max_ifwd,fwd_size);
+		exit(1);
+		///////////////////////
+//        CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
+//        MSG("s->size=%d",s->size);
+//        MSG("( ( (ctx->t_len + ctx->fwd_steps - 1)/ctx->fwd_steps)=%d",((ctx->t_len + ctx->fwd_steps-1)/ctx->fwd_steps) );
+//		MSG("fwd_size=%llu",1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps) );
 //        exit(1);
     } else {
         printf("nnx %d, nnz %d, diam_width %d ntg %d\n", ctx->nnx, ctx->nnz, ctx->diam_width, ctx->num_thread_groups);
@@ -622,7 +631,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         NULIFY_BUFFER(vy, s->size);
         NULIFY_BUFFER(vz, s->size);
         if (ctx->mode == 1 || ctx->mode == 2) {
-            NULIFY_BUFFER(fwd, s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
+			NULIFY_BUFFER(fwd, s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
             fwd_io = NULL;
         } else {
             NULIFY_BUFFER(fwd, 1ULL * ctx->nnx * ctx->nnz * ctx->diam_width * ctx->num_thread_groups);

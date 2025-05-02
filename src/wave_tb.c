@@ -739,7 +739,7 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
-//									MSG("isrc_exc=%d",isrc_exc);
+									MSG("isrc_exc=%d",isrc_exc);
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
 									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
 									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
@@ -781,10 +781,17 @@ num_threads(stencil_ctx.thread_group_size)
 //                MSG("t=%d",t);
 				if(mod==0){// compute p from v
 					u1=	p21 ;
-
+////////////////////////
 //					for(int ix=kt; ix<kte; ix++){
 //						if( ((ix)/th_nwf)%th_x == tid_x ) {
 //							for(int iy=yb; iy<ye; iy++) {
+//								size_t index = 1ULL * ifwd * nnxyz + 1ULL * ix * nnyz + iy * nnz;
+//								if (index + ie >= stencil_ctx.fwd_size) {
+//								    fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
+//								            omp_get_thread_num(),index,stencil_ctx.fwd_size);
+//								    exit(1);
+//								}
+//
 //								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
 ////								MSG("ifwd=%d",ifwd);
 ////								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
@@ -809,11 +816,12 @@ num_threads(stencil_ctx.thread_group_size)
 ////									gp->src_exc_coef[isrc_exc];
 ////									isrc_exc++;
 ////									}
-//								}
 //							}
 //						}
+//					}
 
-					}
+////////////////////////
+				}
 				// Update block size in Y
 				if(t< t_dim){ // lower half of the diamond
 					yb += -b_inc;
@@ -1146,7 +1154,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 //                                        	t_coord=st->t_pos[y_coord];
 //                                        	t_coord = get_t_coord(y_coord);
 //                                        	MSG("t_coord=%d\n",t_coord);
-                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
+//                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
                                             intra_diamond_mwd_comp_std(p,yb,ye,b_inc,e_inc,tb,te,tid,t_coord);
                                         }
                                     }
@@ -2381,6 +2389,7 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.nx = ctx->stencilx;
     p->stencil_ctx.ny = ctx->stencily;
     p->stencil_ctx.nz = ctx->stencilz;
+    p->stencil_ctx.bs_y = ctx->stencily;
 
 //    p->stencil_ctx.fwd_steps = ctx->fwd_steps;
 
@@ -2391,26 +2400,26 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->t_dim=ctx->t_dim;
 //    printf("data.dt:%f\n",data->dt);
 //    exit(0);
+    p->stencil_ctx.fwd_size=ctx->fwd_size;
     p->stencil_ctx.dt=data->dt;
     ///////////////////////////////////////////////////
-//    p->nt=ctx->time_steps*2;
-//    int enable_all_sizes = 0;
-//    if(enable_all_sizes == 0){
-//        // round the number of time steps to the nearest valid number
-//        int remain = (p->nt-2)%((p->t_dim+1)*2);
-//        if(remain != 0){
-//            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
-//            if(nt2 != p->nt){
-//                if( (p->verbose ==1) ){
-//                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
-//                    fflush(stdout);
-//                }
-//                p->nt=nt2;
-//            }
-//        }
-//    }
+    p->nt=ctx->time_steps*2;
+    int enable_all_sizes = 0;
+    if(enable_all_sizes == 0){
+        // round the number of time steps to the nearest valid number
+        int remain = (p->nt-2)%((p->t_dim+1)*2);
+        if(remain != 0){
+            int nt2 = p->nt + (p->t_dim+1)*2 - remain;
+            if(nt2 != p->nt){
+                if( (p->verbose ==1) ){
+                    printf("###INFO: Modified nt from %03d to %03d for the intra-diamond method to work properly\n",ctx->time_steps,nt2/2);
+                    fflush(stdout);
+                }
+                p->nt=nt2;
+            }
+        }
+    }
     ///////////////////////////////////////////////////
-
     uint64_t nelm = (uint64_t) p->lstencil_shape[0] * p->lstencil_shape[1] * p->lstencil_shape[2];
     //    printf("nelm:%llu\n",nelm);
 	uint64_t n_sample=0; n_sample=(uint64_t) p->nt * nelm;

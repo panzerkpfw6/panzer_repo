@@ -118,6 +118,7 @@ typedef struct {
     int fwd_steps;// snapshotting step
     float dz, dy, dx; // spacing per dimension
     int nz, ny, nx; // grid size without halo area
+    unsigned long fwd_size;
 
     // cpu binding masks
     cpu_set_t **bind_masks;
@@ -333,6 +334,7 @@ struct tb_s {
 
   // imaging step
   int fwd_steps;
+  unsigned long fwd_size;
 
   // estimation
   unsigned long long nb_stencils_main;

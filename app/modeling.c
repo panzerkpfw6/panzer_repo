@@ -276,6 +276,8 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
     tb_timer_t * timer = (tb_timer_t*) malloc(sizeof(tb_timer_t));
 
     wave_tb_init(ctx,s,p);
+//    Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+//    wave_tb_init_p(ctx,s,P);
 
     wave_tb_info(ctx);
     wave_tb_timer_init(timer,ctx->thread_group_size,ctx->num_thread_groups);
@@ -318,6 +320,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 
 
         Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+//        wave_tb_init_p(ctx,s,P);
         wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
         free(P);
 
@@ -335,6 +338,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         /// release/close the resources related to the current shot.
         shot_release(shot);
         wave_tb_data_free(data,ctx->num_thread_groups);
+//        free(P);
     }
 
     wave_tb_free(ctx);
@@ -344,6 +348,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
     free(ctx);   ctx = NULL;
     free(data);  data = NULL;
     free(timer); timer = NULL;
+//    free(P);
 
     DELETE_BUFFER(u0);
     DELETE_BUFFER(vx);
