@@ -62,8 +62,8 @@ mkdir $logs_path
 echo "Test 1. compare_rtm_result_for_SB_TB"
 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_TB_1st=4000 
-export TIME_SB_1st=2000
-dt=0.001;fmax=11;
+export TIME_SB_1st=5500
+dt=0.001;fmax=7;
 ### grid size 256*256*256
 nx=256;ny=256;nz=256;dh=25;
 nx=200;ny=256;nz=160;dh=25;

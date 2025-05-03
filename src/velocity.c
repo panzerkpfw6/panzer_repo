@@ -556,7 +556,7 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
 	const long int nnyz=(long int)dimy*dimz;
     unsigned int x, y, z, i,val;
     for (z=0; z < s->dimz; z++) {
-        if (z<25){
+        if (z<120){
             val=1500;
         }else
         {

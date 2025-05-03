@@ -42,8 +42,8 @@ make install
 echo "Test 1. compare_rtm_result_for_SB_TB"
 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_TB_1st=4000 
-export TIME_SB_1st=2000
-dt=0.001;fmax=11;
+export TIME_SB_1st=5000
+dt=0.001;fmax=7;
 ### grid size 256*256*256
 nx=256;ny=256;nz=256;dh=25;
 nx=200;ny=256;nz=160;dh=25;
@@ -75,7 +75,7 @@ export OMP_NUM_THREADS=44 #4
 --first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
 --dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
 --order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
-exit 0
+#exit 0
 
 ### move data to SB folder
 #mv ./data/img* ./data/rtm_sb/
@@ -88,6 +88,12 @@ exit 0
 #--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data/rtm_sb"  \
 #--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
 
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data"  \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
+
+exit 0
 ##################### TB RTM workflow	##################### 
 export OMP_NUM_THREADS=4 #4
 #mkdir ./data/rtm_tb
