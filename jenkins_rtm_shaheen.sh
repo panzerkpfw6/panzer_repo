@@ -25,10 +25,12 @@ export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 ###********** MODULES *********###
 module load intel-oneapi/2023.1.0
 module load cmake
+
+##### CREATE FOLDERS #####
+mkdir data
+
 ##### COMPILATION #####
 pwd
-
-
 rm ./bin/modeling
 rm ./bin/rtm
 rm ./bin/gather
@@ -55,6 +57,7 @@ make VERBOSE=1
 make install
 export logs_path=./logs/rtm
 mkdir $logs_path
+
 ################################
 echo "Test 1. compare_rtm_result_for_SB_TB"
 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.

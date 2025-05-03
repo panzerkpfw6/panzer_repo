@@ -27,19 +27,17 @@ mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 ##### build the project with debugging symbols
 #CC=icc CXX=icpc -DCMAKE_BUILD_TYPE=Debug cmake .
 #CC=icc CXX=icpc -O0 -g3 -DCMAKE_BUILD_TYPE=Debug cmake .
-
 ##### build the project
 #CC=icc CXX=icpc cmake .
 #CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg" -DCMAKE_CXX_FLAGS="-pg" .
 #CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg -O2" -DCMAKE_CXX_FLAGS="-pg -O2" .
-
 # debug!
-CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
+#CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
 
+CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
 make install
-
 ################################
 echo "Test 1. compare_rtm_result_for_SB_TB"
 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
