@@ -78,7 +78,7 @@ dshot=50;
 export src_depth=5;
 export rcv_depth=8;
 ##################### SB RTM workflow	#####################
-export OMP_NUM_THREADS=44 #4
+export OMP_NUM_THREADS=192 #4
 mkdir ./data/rtm_sb
 rm ./data/rtm_sb/*
 
