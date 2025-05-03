@@ -588,12 +588,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     if (ctx->mode == 1 || ctx->mode == 2) {
 		///////////////////////
 //		int max_ifwd = (2 * P->nt + ctx->fwd_steps - 1) / ctx->fwd_steps;
-		int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps;
+		int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1;
 		size_t fwd_size = s->size * max_ifwd;
 		ctx->fwd_size=fwd_size;
 		CREATE_BUFFER(fwd,fwd_size);
 		MSG("Nb of snapshots max_ifwd=%d,fwd_size=%llu",max_ifwd,fwd_size);
-		exit(1);
+////		exit(1);
 		///////////////////////
 //        CREATE_BUFFER(fwd, 1ULL * s->size * ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
 //        MSG("s->size=%d",s->size);
@@ -653,13 +653,13 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
         data->flag_fwd = 1;
         data->flag_bwd = 0;
 
-//        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
+        Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
 
         /// forward modeling.
         wave_tb_data_set_src(data, s, shot->srcidx, source);
         wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_forward_1st(ctx,data,P,timer,u0,vx,vy,vz,vel,inv_rho);
-		exit(1);
+//		exit(1);
 
         wave_tb_data_unset_src(data);
 
@@ -719,6 +719,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     data = NULL;
     free(timer);
     timer = NULL;
+
     /// free the simulation buffers.
     DELETE_BUFFER(fwd);
     DELETE_BUFFER(u0);

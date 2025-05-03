@@ -79,7 +79,7 @@ make install
 
 ################################
 echo "Test 2. compare_wavefields_and_sismos_for_SB_TB"
-export OMP_NUM_THREADS=12 #4
+export OMP_NUM_THREADS=4 #4
 export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
 export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
 ### grid size 256*256*256

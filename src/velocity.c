@@ -142,8 +142,7 @@ void fill_coef_matrix(sismap_t *s,float *vtab,float *dens) {
 				for (z = 0; z < dimz; z++) {
 					unsigned long long idx = 1ULL * x * nnyz + 1ULL * y * dimz + z;
 					if (idx >= s->size_eff) {
-						fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",
-								idx, s->size_eff);
+						fprintf(stderr, "Index out of bounds: idx=%llu, size_eff=%llu\n",idx,s->size_eff);
 						exit(EXIT_FAILURE);
 					}
 					vtab[idx]=s->dt*dens[idx]*pow(vtab[idx],2);
@@ -557,7 +556,7 @@ void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers) {
 	const long int nnyz=(long int)dimy*dimz;
     unsigned int x, y, z, i,val;
     for (z=0; z < s->dimz; z++) {
-        if (z<80){
+        if (z<25){
             val=1500;
         }else
         {

@@ -42,37 +42,42 @@ make install
 
 ################################
 echo "Test 1. compare_rtm_result_for_SB_TB"
-export OMP_NUM_THREADS=32 #4
-export TIME_TB_1st=505 #@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
-export TIME_SB_1st=505 #@pavel in SB the nt should one time less than in correponding TB.
-export TIME_TB_1st=105
+#@pavel in TB source injection starts from second time sample (Nothing happens for one dt).This is code feature.
+export TIME_TB_1st=4000 
+export TIME_SB_1st=2000
 dt=0.001;fmax=11;
 ### grid size 256*256*256
 nx=256;ny=256;nz=256;dh=25;
 nx=200;ny=256;nz=160;dh=25;
 
-x=4; y=4; z=1; t=7; w=20; tgs=16;
+x=2; y=2; z=1; t=7; w=20; tgs=4;
+
+#x=1; y=1; z=1; t=7; w=20; tgs=4;
+
 cbx=64;cby=22;cbz=9999;
 
-first=513; # position of the source:isx=160,isy=140
-last=513; # position of the source:isx=160,isy=140
-#last=517; # position of the source:isx=160,isy=140
+first=513; # position of the source:isx=100,isy=50
+#last=513; # position of the source:isx=160,isy=140
+last=517; # position of the source:isx=100,isy=250
+#first=513; last=514;
 dshot=50;
 export src_depth=5;
 export rcv_depth=8;
 ##################### SB RTM workflow	#####################
+export OMP_NUM_THREADS=44 #4
 #mkdir ./data/rtm_sb
 #rm ./data/rtm_sb/*
 
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
 #
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+exit 0
 
 ### move data to SB folder
 #mv ./data/img* ./data/rtm_sb/
@@ -86,6 +91,7 @@ export rcv_depth=8;
 #--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
 
 ##################### TB RTM workflow	##################### 
+export OMP_NUM_THREADS=4 #4
 #mkdir ./data/rtm_tb
 #rm ./data/rtm_tb/*
 # gdb --args 

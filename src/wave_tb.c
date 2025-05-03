@@ -239,7 +239,8 @@ const Myfloat FDM_O2_8_2_A4       = -1/560. ;
 
 real_t* recv_rec; //@KADIR array for receiver recording
 size_t* irecv_rec; //@KADIR indez into the recv_rec
-size_t isrc_exc; //@KADIR number of source ezcitations performed so far
+size_t isrc_exc; // number of source ezcitations performed so far
+size_t isrc_exc2; // number of source ezcitations performed so far, 2nd counter for rtm
 
 //from diamond_ts.c
 #define ST_BUSY (0)
@@ -739,11 +740,16 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
-//									MSG("isrc_exc=%d",isrc_exc);
-//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+////									MSG("isrc_exc=%d",isrc_exc);
+/////									ux[data->src_x] += data->source[t0+(t-tb)];// original
+////									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
+//									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
+//												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
+
+//									int src_index=(t0+(t-tb))/2;
+//									MSG( "t0=%d,t=%d,tb=%d,src_index=%d,gp->src_exc_coef=%f",t0,t,tb,src_index,gp->src_exc_coef[ src_index ] );
 									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
-									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
-												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
 									isrc_exc++;
 								}
                             }
@@ -782,43 +788,45 @@ num_threads(stencil_ctx.thread_group_size)
 				if(mod==0){// compute p from v
 					u1=	p21 ;
 ////////////////////////
-//					for(int ix=kt; ix<kte; ix++){
-//						if( ((ix)/th_nwf)%th_x == tid_x ) {
-//							for(int iy=yb; iy<ye; iy++) {
-//								size_t index = 1ULL * ifwd * nnxyz + 1ULL * ix * nnyz + iy * nnz;
-//								if (index + ie >= stencil_ctx.fwd_size) {
-//								    fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
-//								            omp_get_thread_num(),index,stencil_ctx.fwd_size);
-//								    exit(1);
-//								}
-//
-//								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
-////								MSG("ifwd=%d",ifwd);
-////								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
-//								wx=&(data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
-//#pragma ivdep
-//								for (int iz=ib; iz<ie; iz++) {
-////									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
-//									wx[iz]=ux[iz];
-//								}
-////								exit(1);
-//								// delete source from the forward wavefield
-//								int aa=1;
-////								if( (gp->source_point_enabled==1)
-////									&& (gp->lsource_pt[2] >= ib ) //@KADIR
-////									&& (gp->lsource_pt[2] <  ie ) //@KADIR
-////									&& (gp->lsource_pt[1] >= yb ) //@KADIR
-////									&& (gp->lsource_pt[1] <  ye ) //@KADIR
-////									&& (gp->lsource_pt[0] == ix ))	{
-////									gp->src_exc_coef[isrc_exc];
-////
-////									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
-////									gp->src_exc_coef[isrc_exc];
-////									isrc_exc++;
-////									}
-//							}
-//						}
-//					}
+
+					for(int ix=kt; ix<kte; ix++){
+						if( ((ix)/th_nwf)%th_x == tid_x ) {
+							for(int iy=yb; iy<ye; iy++) {
+								size_t index = 1ULL * ifwd * nnxyz + 1ULL * ix * nnyz + iy * nnz;
+								if (index + ie >= stencil_ctx.fwd_size) {
+								    fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
+								            omp_get_thread_num(),index,stencil_ctx.fwd_size);
+								    exit(1);
+								}
+
+								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
+//								MSG("ifwd=%d",ifwd);
+//								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+								wx=&(data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+#pragma ivdep
+								for (int iz=ib; iz<ie; iz++) {
+//									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+									wx[iz]=ux[iz];
+								}
+//								exit(1);
+								// delete source from the forward wavefield
+								int aa=1;
+								if( (gp->source_point_enabled==1)
+									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+									&& (gp->lsource_pt[0] == ix ) )	{
+////									wx[data->src_x]-=data->source[t0+(t-tb)];	// delete source
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[t0+(t-tb)];
+
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
+//									gp->src_exc_coef[isrc_exc];
+									isrc_exc2++;
+								}
+							}
+						}
+					}
 
 ////////////////////////
 				}
@@ -844,6 +852,7 @@ num_threads(stencil_ctx.thread_group_size)
 void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
 //	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
     //@KADIR1 EXECUTED IN DIAMOND
+
     int t, x, xb[32], xe[32];
     int xb0,xe0;
     int yb, ye;
@@ -860,22 +869,21 @@ void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_i
     xb0 = p->stencil.r;
     xe0 = p->ldomain_shape[2]-p->stencil.r;
 
-    int iifwd;
+    int iifwd=ifwd;
     int fwd_steps=p->stencil_ctx.fwd_steps;
 
 //    MSG("p->stencil_ctx.t_len=%d\n",p->stencil_ctx.t_len);
 //    exit(1);
 
-
-    if (p->data->flag_fwd == 1) {
-		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
-    }
-    if (p->data->flag_bwd == 1) {
-		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
-    }
+//    if (p->data->flag_fwd == 1) {
+//		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+//    }
+//    if (p->data->flag_bwd == 1) {
+//		if (ifwd % fwd_steps == 0) iifwd = ifwd / fwd_steps;
+//    }
 //    exit(1);
-//    MSG("iifwd=%d\n",iifwd);
 
+//	MSG("intra_diamond_mwd_comp, ifwd=%d\n",iifwd);
     p->stencil.mwd_func(p->ldomain_shape,p->stencil.r,yb,
                         xb0,p->lstencil_shape[0]+p->stencil.r, ye, xe0,
                         p->coef,p->U1,p->U1,p->U1,
@@ -986,10 +994,13 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
 #if defined(_OPENMP)
     omp_set_nested(1);
 #endif
-	MSG("isrc_exc=%d",isrc_exc);
 
+    isrc_exc=0;
+    isrc_exc2=0;
+    MSG("isrc_exc=%d",isrc_exc);
     gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
     isrc_exc++;
+    isrc_exc2++;
 
 	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
 
@@ -1211,7 +1222,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                     if (p->data->flag_bwd == 1) {
 						t0 = p->t_dim - 1;}
                     //@2
-					MSG("Epilogue. ifwd=%d",ifwd);
+//					MSG("Epilogue. ifwd=%d",ifwd);
                     intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
                 }
             }

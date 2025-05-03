@@ -318,7 +318,6 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         wave_tb_data_set_rcv(data,s,sismos);
         wave_tb_data_info(data);
 
-        isrc_exc=0;
         MSG("isrc_exc=%d",isrc_exc);
         Parameters *P = (Parameters*) calloc(1, sizeof(Parameters));
 //        wave_tb_init_p(ctx,s,P);
