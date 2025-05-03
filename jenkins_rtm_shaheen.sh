@@ -14,16 +14,16 @@
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###********** OPENMP PARAMETERS ***********###
-export OMP_PROC_BIND=true
-export OMP_PLACES=threads
-export OMP_NESTED='True'
-export granularity=fine
-export KMP_AFFINITY=compact
-#export KMP_HW_SUBSET=1t
+export OMP_PLACES=cores;
+export OMP_PROC_BIND=close;
+export OMP_STACKSIZE=64M;
+export OMP_NUM_THREADS=192;
+export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+
 ###********** MODULES *********###
-#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
-module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
-#module load icc/2020.2.254
+module load intel-oneapi/2023.1.0
 module load cmake
 ##### COMPILATION #####
 pwd
@@ -48,8 +48,8 @@ mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 #CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg -O2" -DCMAKE_CXX_FLAGS="-pg -O2" .
 
 # debug!
-CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
-
+##########CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
+CC=icc CXX=icpc cmake .
 make clean
 make VERBOSE=1
 make install
