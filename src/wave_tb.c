@@ -576,67 +576,64 @@ num_threads(stencil_ctx.thread_group_size)
                     for(int ix=kt; ix<kte; ix++){    // X
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
                             for(int iy=yb; iy<ye; iy++) {
-                                {
-                                    v1_v = &(v1[ix*nnyz+iy*nnz]);
-                                    v2_v = &(v2[ix*nnyz+iy*nnz]);
-                                    v3_v = &(v3[ix*nnyz+iy*nnz]);
-                                    u1_v = &(u1[ix*nnyz+iy*nnz]);
-                                    u2_v = &(u2[ix*nnyz+iy*nnz]);
-                                    u3_v = &(u3[ix*nnyz+iy*nnz]);
-                                    inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+								v1_v = &(v1[ix*nnyz+iy*nnz]);
+								v2_v = &(v2[ix*nnyz+iy*nnz]);
+								v3_v = &(v3[ix*nnyz+iy*nnz]);
+								u1_v = &(u1[ix*nnyz+iy*nnz]);
+								u2_v = &(u2[ix*nnyz+iy*nnz]);
+								u3_v = &(u3[ix*nnyz+iy*nnz]);
+								inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
 #pragma ivdep
-                                    for(int iz=ib; iz<ie; iz++) {
-                                        const Myfloat xum4 = u1_v[-3*nnyz + iz];
-                                        const Myfloat xum3 = u1_v[-2*nnyz + iz];
-                                        const Myfloat xum2 = u1_v[-1*nnyz + iz];
-                                        const Myfloat xum1 = u1_v[ 0*nnyz + iz];
-                                        const Myfloat xu0  = u1_v[ 1*nnyz + iz];
-                                        const Myfloat xup1 = u1_v[ 2*nnyz + iz];
-                                        const Myfloat xup2 = u1_v[ 3*nnyz + iz];
-                                        const Myfloat xup3 = u1_v[ 4*nnyz + iz];
+								for(int iz=ib; iz<ie; iz++) {
+									const Myfloat xum4 = u1_v[-3*nnyz + iz];
+									const Myfloat xum3 = u1_v[-2*nnyz + iz];
+									const Myfloat xum2 = u1_v[-1*nnyz + iz];
+									const Myfloat xum1 = u1_v[ 0*nnyz + iz];
+									const Myfloat xu0  = u1_v[ 1*nnyz + iz];
+									const Myfloat xup1 = u1_v[ 2*nnyz + iz];
+									const Myfloat xup2 = u1_v[ 3*nnyz + iz];
+									const Myfloat xup3 = u1_v[ 4*nnyz + iz];
 
-                                        Myfloat d_pr_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
-                                                              + FDM_O1_8_2_A2 * (xup1 - xum2)
-                                                              + FDM_O1_8_2_A3 * (xup2 - xum3)
-                                                              + FDM_O1_8_2_A4 * (xup3 - xum4)) ) ;
+									Myfloat d_pr_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
+														  + FDM_O1_8_2_A2 * (xup1 - xum2)
+														  + FDM_O1_8_2_A3 * (xup2 - xum3)
+														  + FDM_O1_8_2_A4 * (xup3 - xum4)) ) ;
 
-                                        v1_v[iz] += inv_rho_v[iz]*dt_inv_dx* d_pr_x;
+									v1_v[iz] += inv_rho_v[iz]*dt_inv_dx* d_pr_x;
 
-                                        const Myfloat yum4 = u1_v[-3*nnz + iz];
-                                        const Myfloat yum3 = u1_v[-2*nnz + iz];
-                                        const Myfloat yum2 = u1_v[-1*nnz + iz];
-                                        const Myfloat yum1 = u1_v[ 0*nnz + iz];
-                                        const Myfloat yu0  = u1_v[ 1*nnz + iz];
-                                        const Myfloat yup1 = u1_v[ 2*nnz + iz];
-                                        const Myfloat yup2 = u1_v[ 3*nnz + iz];
-                                        const Myfloat yup3 = u1_v[ 4*nnz + iz];
+									const Myfloat yum4 = u1_v[-3*nnz + iz];
+									const Myfloat yum3 = u1_v[-2*nnz + iz];
+									const Myfloat yum2 = u1_v[-1*nnz + iz];
+									const Myfloat yum1 = u1_v[ 0*nnz + iz];
+									const Myfloat yu0  = u1_v[ 1*nnz + iz];
+									const Myfloat yup1 = u1_v[ 2*nnz + iz];
+									const Myfloat yup2 = u1_v[ 3*nnz + iz];
+									const Myfloat yup3 = u1_v[ 4*nnz + iz];
 
-                                        Myfloat d_pr_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
-                                                              + FDM_O1_8_2_A2 * (yup1 - yum2)
-                                                              + FDM_O1_8_2_A3 * (yup2 - yum3)
-                                                              + FDM_O1_8_2_A4 * (yup3 - yum4)) ) ;
+									Myfloat d_pr_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
+														  + FDM_O1_8_2_A2 * (yup1 - yum2)
+														  + FDM_O1_8_2_A3 * (yup2 - yum3)
+														  + FDM_O1_8_2_A4 * (yup3 - yum4)) ) ;
 
-                                        v2_v[iz] += inv_rho_v[iz]*dt_inv_dy* d_pr_y;
+									v2_v[iz] += inv_rho_v[iz]*dt_inv_dy* d_pr_y;
 
-                                        const Myfloat zum4 = u1_v[-3 + iz];
-                                        const Myfloat zum3 = u1_v[-2 + iz];
-                                        const Myfloat zum2 = u1_v[-1 + iz];
-                                        const Myfloat zum1 = u1_v[ 0 + iz];
-                                        const Myfloat zu0  = u1_v[ 1 + iz];
-                                        const Myfloat zup1 = u1_v[ 2 + iz];
-                                        const Myfloat zup2 = u1_v[ 3 + iz];
-                                        const Myfloat zup3 = u1_v[ 4 + iz];
+									const Myfloat zum4 = u1_v[-3 + iz];
+									const Myfloat zum3 = u1_v[-2 + iz];
+									const Myfloat zum2 = u1_v[-1 + iz];
+									const Myfloat zum1 = u1_v[ 0 + iz];
+									const Myfloat zu0  = u1_v[ 1 + iz];
+									const Myfloat zup1 = u1_v[ 2 + iz];
+									const Myfloat zup2 = u1_v[ 3 + iz];
+									const Myfloat zup3 = u1_v[ 4 + iz];
 
-                                        Myfloat d_pr_z  = ( ( FDM_O1_8_2_A1 * (zu0  - zum1)
-                                                              + FDM_O1_8_2_A2 * (zup1 - zum2)
-                                                              + FDM_O1_8_2_A3 * (zup2 - zum3)
-                                                              + FDM_O1_8_2_A4 * (zup3 - zum4)) ) ;
+									Myfloat d_pr_z  = ( ( FDM_O1_8_2_A1 * (zu0  - zum1)
+														  + FDM_O1_8_2_A2 * (zup1 - zum2)
+														  + FDM_O1_8_2_A3 * (zup2 - zum3)
+														  + FDM_O1_8_2_A4 * (zup3 - zum4)) ) ;
 
-                                        v3_v[iz] += inv_rho_v[iz]*dt_inv_dz * d_pr_z;
-                                    }
-                                }
-                            }
-
+									v3_v[iz] += inv_rho_v[iz]*dt_inv_dz * d_pr_z;
+								}
+							}
                         }
                     }
                 } else{// compute p from v
@@ -740,7 +737,6 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )
 								{
-////									MSG("isrc_exc=%d",isrc_exc);
 /////									ux[data->src_x] += data->source[t0+(t-tb)];// original
 ////									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
@@ -749,6 +745,7 @@ num_threads(stencil_ctx.thread_group_size)
 
 //									int src_index=(t0+(t-tb))/2;
 //									MSG( "t0=%d,t=%d,tb=%d,src_index=%d,gp->src_exc_coef=%f",t0,t,tb,src_index,gp->src_exc_coef[ src_index ] );
+									MSG("isrc_exc=%d",isrc_exc);
 									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
 									isrc_exc++;
 								}
@@ -810,7 +807,6 @@ num_threads(stencil_ctx.thread_group_size)
 								}
 //								exit(1);
 								// delete source from the forward wavefield
-								int aa=1;
 								if( (gp->source_point_enabled==1)
 									&& (gp->lsource_pt[2] >= ib ) //@KADIR
 									&& (gp->lsource_pt[2] <  ie ) //@KADIR
@@ -818,11 +814,13 @@ num_threads(stencil_ctx.thread_group_size)
 									&& (gp->lsource_pt[1] <  ye ) //@KADIR
 									&& (gp->lsource_pt[0] == ix ) )	{
 ////									wx[data->src_x]-=data->source[t0+(t-tb)];	// delete source
-//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[t0+(t-tb)];
 
-									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
-//									gp->src_exc_coef[isrc_exc];
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
+//									wx[  gp->lsource_pt[2] ] -= gp->src_exc_coef[isrc_exc2];
+									MSG("isrc_exc2=%d",isrc_exc2);
+									data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + gp->lsource_pt[1]*nnz+gp->lsource_pt[2]]-=gp->src_exc_coef[isrc_exc2];
 									isrc_exc2++;
+									//									gp->src_exc_coef[isrc_exc];
 								}
 							}
 						}

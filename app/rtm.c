@@ -531,7 +531,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
     DELETE_BUFFER(sismos);
     DELETE_BUFFER(pml_tmp);
 }
-///
 
 /// Reverse Time Migration on CPU.///
 
