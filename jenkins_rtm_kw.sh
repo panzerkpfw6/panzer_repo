@@ -119,10 +119,10 @@ export OMP_NUM_THREADS=24 #4
 #mv ./data/sismos* ./data/rtm_tb/
 ###
 
-#./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data/rtm_tb"  \
-#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data"  \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
 
 ######################################################### compare data
 #./scripts_useful/diff_to ./snapshot_TB1st_505 ./snapshot_SB1st_505

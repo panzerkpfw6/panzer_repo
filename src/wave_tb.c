@@ -502,8 +502,9 @@ num_threads(stencil_ctx.thread_group_size)
 				hFloat* output_buffer = NULL;  //@KADIR
 				int mod = (t)%2;
 //                MSG("t=%d",t);
+				MSG("bwd, ifwd=%d",ifwd);
 				if(mod==0){// compute p from v
-					u1=	p21 ;
+//					u1=	p21 ;
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
@@ -745,7 +746,7 @@ num_threads(stencil_ctx.thread_group_size)
 
 //									int src_index=(t0+(t-tb))/2;
 //									MSG( "t0=%d,t=%d,tb=%d,src_index=%d,gp->src_exc_coef=%f",t0,t,tb,src_index,gp->src_exc_coef[ src_index ] );
-									MSG("isrc_exc=%d",isrc_exc);
+//									MSG("isrc_exc=%d",isrc_exc);
 									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
 									isrc_exc++;
 								}
@@ -778,6 +779,7 @@ num_threads(stencil_ctx.thread_group_size)
 			kte=kt+nwf;
 			hFloat *v3=p13;
 			v3=p13;
+			MSG("fwd, ifwd=%d",ifwd);
 			for(int t=tb; t< te; t++){ // Diamond blocking in time
 				hFloat* output_buffer = NULL;  //@KADIR
 				int mod = (t)%2;
@@ -815,7 +817,7 @@ num_threads(stencil_ctx.thread_group_size)
 
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
 //									wx[  gp->lsource_pt[2] ] -= gp->src_exc_coef[isrc_exc2];
-								MSG("isrc_exc2=%d",isrc_exc2);
+//								MSG("isrc_exc2=%d",isrc_exc2);
 								data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + gp->lsource_pt[1]*nnz+gp->lsource_pt[2]]-=gp->src_exc_coef[isrc_exc2];
 								isrc_exc2++;
 								//									gp->src_exc_coef[isrc_exc];
