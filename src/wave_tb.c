@@ -1035,7 +1035,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                         	t0=1;
                         }
                         else{
-                        	t0=1;
+                        	t0=p->nt-2;
                         }
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
@@ -1155,6 +1155,7 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                                     //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, 0, p->t_dim*2+1, tid);
                                     //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
                                     {
+
                                         int tb = 0;
                                         int te = p->t_dim*2+1;
                                         //@2
