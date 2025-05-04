@@ -344,7 +344,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
 
     CREATE_BUFFER_ONLY(ilm_shot, s->size_img);
     array_openmp_inner_init(ilm_shot,s);
-    CREATE_BUFFER(pml_tmp, s->size_eff);
+//    CREATE_BUFFER(pml_tmp, s->size_eff);
     shot_t *shot;
 
     double t0,t1,t2,t_snap,t_prop,t_sismos,t_image;
@@ -413,7 +413,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
         wave_update_source(s, shot, u0, source[0]);
         for(int t = 0; t < s->time_steps; ++t) {
             t0 = wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp,pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
             t_prop += wtime() - t0;
 
             t0 = wtime();
@@ -451,7 +451,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
         NULIFY_BUFFER(vx,s->size);
         NULIFY_BUFFER(vy,s->size);
         NULIFY_BUFFER(vz,s->size);
-        NULIFY_BUFFER(pml_tmp,  s->size_eff);
+//        NULIFY_BUFFER(pml_tmp,  s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
 
@@ -486,7 +486,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
             t_image += wtime() - t0;
 
             t0 = wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp,pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
             t_prop += wtime()-t0;
 
             t0 = wtime();
@@ -529,7 +529,7 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
     DELETE_BUFFER(img_shot);
     DELETE_BUFFER(ilm_shot);
     DELETE_BUFFER(sismos);
-    DELETE_BUFFER(pml_tmp);
+//    DELETE_BUFFER(pml_tmp);
 }
 
 /// Reverse Time Migration on CPU.///
@@ -689,10 +689,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
         wave_tb_data_set_rcv(data, s, sismos);
 
-        wave_inject_sismos(s, u0, s->time_steps, sismos);
+		MSG("ctx->nb_stencils_main=%f",ctx->nb_stencils_main);
+        wave_inject_sismos(s, u0, P->nt, sismos);
 //        wave_update_fields(s, u0, u1, vel, pml_tmp, pml_tab);
-//        wave_update_fields_1st(s, u0, vx,vy,vz, vel, pml_tmp, pml_tab);
-        wave_tb_backward_1st(ctx, data,P, timer, u0,vx,vy,vz,vel,inv_rho);
+//        wave_update_fields_1st(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
+		wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
+        wave_tb_backward_1st(ctx,data,P,timer, u0,vx,vy,vz,vel,inv_rho);
 
         wave_tb_data_unset_rcv(data);
 

@@ -785,7 +785,6 @@ num_threads(stencil_ctx.thread_group_size)
 				if(mod==0){// compute p from v
 					u1=	p21 ;
 ////////////////////////
-
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
@@ -1032,7 +1031,12 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
                         int tb = p->t_dim;
                         int te = p->t_dim*2+1;
                         ifwd=-1;
-                    	t0=1;
+                        if (p->data->flag_fwd==1){
+                        	t0=1;
+                        }
+                        else{
+                        	t0=1;
+                        }
                         if(p->stencil.type == REGULAR){
                             // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
                         	intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
@@ -1184,6 +1188,287 @@ void dynamic_intra_diamond_ts_combined(Parameters *p) {
     t3 = get_wall_time();
     // Epilogue
     MSG("ENTERING TB Epilogue");
+    if(p->in_auto_tuning == 0){
+        //dynamic_intra_diamond_epilogue(p);
+        //@4
+        //dynamic_intra_diamond_epilogue_std(p);
+        //@3
+        int yb, ye, i;
+        int ntg = get_ntg(*p);
+#pragma omp parallel num_threads(ntg)
+        {
+            int b_inc = p->stencil.r;
+            int e_inc = p->stencil.r;
+            int yb_r = p->stencil.r + diam_width/2 - p->stencil.r;
+            int ye_r = yb_r + 2*p->stencil.r;
+            int tid = 0;
+#if defined(_OPENMP)
+            tid = omp_get_thread_num();
+#endif
+
+#pragma omp for schedule(dynamic) private(i,yb,ye)
+            for(i=0; i<y_len_l; i++){
+                yb = yb_r + i*diam_width;
+                ye = ye_r + i*diam_width;
+                //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, 0, p->t_dim+1, tid);
+                {
+                    int tb = 0;
+                    int te = p->t_dim+1;
+//                    int t0 = t_len*(p->t_dim+1) + 1;
+
+                    ifwd = -1;
+                    if (p->data->flag_fwd == 1) {
+                        t0 = p->t_len*(p->t_dim+1) + 1;}
+                    if (p->data->flag_bwd == 1) {
+						t0 = p->t_dim - 1;}
+                    //@2
+//					MSG("Epilogue. ifwd=%d",ifwd);
+                    intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
+                }
+            }
+        }
+    }
+    t4 = get_wall_time();
+
+    p->prof.ts_main += (t3-t2);
+    p->prof.ts_others += (t2-t1) + (t4-t3);
+    // cleanup the state variables
+    free((void *) st.t_pos);
+    free(st.state);
+    free((void *) avail_list);
+}
+
+void dynamic_intra_diamond_ts_combined_backward(Parameters *p) {
+    //@5
+    MSG("inside dynamic_intra_diamond_ts_combined, backward phase.");
+    int t_dim = p->t_dim;
+    diam_width = (t_dim+1) * 2 *p->stencil.r;
+    if(p->stencil.type == REGULAR){
+        t_len = 2*( (p->nt-2)/((t_dim+1)*2) ) - 1;
+    } else if(p->stencil.type == SOLAR){
+        t_len = 2*( (p->nt)/((t_dim+1)*2) ) - 1;
+    }
+    p->t_len=t_len;
+    int num_thread_groups = get_ntg(*p);
+
+    y_len_l = p->lstencil_shape[1] / (diam_width);
+    y_len_r = y_len_l;
+    if(p->is_last == 1) y_len_r++;
+
+    int i, y, t;
+    double t1,t2,t3,t4;
+    int yb,ye;
+    double db_t;
+    int fwd_steps=p->stencil_ctx.fwd_steps;
+
+    // allocate scheduling variables
+    st.t_pos = (int*) malloc(y_len_r*sizeof(int));
+    st.state = (int*) malloc(y_len_r*sizeof(int));
+    avail_list = (int*) malloc(y_len_r*sizeof(int));
+    head=y_len_r;
+    tail=0;
+    // initialixe scheduling variables
+    for(i=0; i<y_len_r; i++){
+        st.t_pos[i] = 0;
+        st.state[i] = ST_NOT_BUSY;
+    }
+#if defined(_OPENMP)
+    omp_set_nested(1);
+#endif
+
+    isrc_exc=0;
+    isrc_exc2=0;
+    MSG("isrc_exc=%d",isrc_exc);
+    gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]=F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+    isrc_exc++;
+    isrc_exc2++;
+
+	MSG("p->data->flag_fwd=%d",p->data->flag_fwd);
+
+	int ifwd,t0,t_coord;
+    // Prologue
+    MSG("ENTERING TB Prologue, backward phase");
+    t1 = get_wall_time();
+    if(p->in_auto_tuning == 0){
+        //dynamic_intra_diamond_prologue(p);
+        //@4.1
+        if(p->stencil.type == REGULAR){
+            //dynamic_intra_diamond_prologue_std(p);
+            //@3.1
+            // compute all the trapexoids
+            int i, yb, ye;
+            int ntg = get_ntg(*p);
+#pragma omp parallel num_threads(ntg)
+            {
+                int b_inc = p->stencil.r;
+                int e_inc = p->stencil.r;
+                int tid = 0;
+#if defined(_OPENMP)
+                tid = omp_get_thread_num();
+#endif
+#pragma omp for schedule(dynamic) private(i,yb,ye)
+                for(i=0; i<y_len_l; i++){
+                    yb = p->stencil.r + i*diam_width;
+                    ye = yb + diam_width;
+                    //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, p->t_dim, p->t_dim*2+1, tid);
+                    //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
+                    //@2
+                    {
+                        int tb = p->t_dim;
+                        int te = p->t_dim*2+1;
+                        ifwd=-1;
+                    	t0=1;
+                        if(p->stencil.type == REGULAR){
+                            // we set t0=1, because it is the prologue. and we process diamonds with t0 equal to 1 there.
+                        	intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, tb, te, tid,t0,ifwd);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    t2 = get_wall_time();
+
+//	exit(1);
+
+    // main loop
+    //dynamic_intra_diamond_main_loop(p);
+    MSG("ENTERING TB main loop, backward phase");
+    {
+        //@4.3.2
+        int not_complete, th_y_coord, i;
+        uint64_t il;
+        int num_thread_groups = get_ntg(*p);
+        uint64_t diam_size = y_len_l*(t_len-1)/2 + y_len_r*((t_len-1)/2 +1);
+        int tid;
+        double t1;
+
+        int idz=0;
+
+        if(p->in_auto_tuning == 0) {
+            for(i=0; i<y_len_r; i++){
+                avail_list[i] = i;
+            }
+        } else { // diversify the startup for shorter autotuning
+            for(i=0; i<y_len_r; i++){
+                if(i%2==0){
+                    avail_list[i] = idz++;
+                }
+            }
+            for(i=0; i<y_len_r; i++){
+                if(i%2==1){
+                    avail_list[i] = idz++;
+                }
+            }
+        }
+
+#pragma omp parallel num_threads(num_thread_groups) shared(head, tail) private(tid)
+        {
+            tid = 0;
+#if defined(_OPENMP)
+            tid = omp_get_thread_num();
+#endif
+#pragma omp for schedule(dynamic) private(il, th_y_coord, not_complete)//shared(head,tail)
+            for (il=0; il<diam_size; il++){
+                not_complete = 1;
+                th_y_coord = -1;
+                while(not_complete) {
+                    t1 = get_wall_time();
+                    while(head-tail<1); // spin-wait for available tasks
+                    p->stencil_ctx.t_group_wait[tid] += (get_wall_time() - t1);
+#pragma omp critical// (consumer)
+                    {
+#pragma omp flush (head, tail)
+                        if(head-tail>0){ // make sure there is still available work
+                            th_y_coord = avail_list[tail%y_len_r]; //acquire task
+                            tail++;
+                        }
+                    }
+                    if(th_y_coord>=0){
+                        //intra_diamond_resolve(p, th_y_coord, tid);
+                        //(Parameters *p, int y_coord, int tid)
+                        {
+                            int y_coord = th_y_coord;
+                            //@4.3.1
+                            t_coord = st.t_pos[y_coord];
+//                            MSG("t_coord=%d\n",t_coord);
+                            double t1, t2;
+                            //intra_diamond_comp_using_location(p, y_coord, tid, t_coord);
+                            //(Parameters *p, int y_coord, int tid, int t_coord)
+                            {
+                                //@3.3
+                                int yb, ye, b_inc, e_inc;
+                                if(p->stencil.type == REGULAR){
+                                    //intra_diamond_get_info_std(p, y_coord, tid, t_coord, &yb, &ye, &b_inc, &e_inc);
+                                    //(Parameters *p, int y_coord, int tid, int t_coord, int *yb, int *ye, int *b_inc, int *e_inc)
+                                    {
+                                        double diam_size;
+                                        if( (p->is_last == 1) && (y_coord == y_len_l-1) && (t_coord%2 == 0) ){ // right most process & left-half diamond
+                                            // left half computations
+                                            yb = p->stencil.r + p->lstencil_shape[1] - p->stencil.r;
+                                            ye = yb + p->stencil.r;
+                                            b_inc = p->stencil.r;
+                                            e_inc = 0;
+                                            diam_size = 0.5;
+                                        } else if( (p->is_last == 1) && (y_coord == y_len_r-1) && (t_coord%2 == 0) ){ // right most process & right-half diamond
+                                            // right half computations
+                                            b_inc = 0;
+                                            e_inc = p->stencil.r;
+                                            if(p->t.shape[1] > 1)
+                                                yb = p->stencil.r + p->lstencil_shape[1] + 2*p->stencil.r;
+                                            else // serial code case
+                                                yb = p->stencil.r;
+                                            ye = yb + p->stencil.r;
+                                            diam_size = 0.5;
+                                        } else{ // full diamond computation
+                                            if(t_coord%2 == 0)// row shifted to the right
+                                                yb = p->stencil.r + diam_width - p->stencil.r + y_coord*diam_width;
+                                            else // row shifted to the left
+                                                yb = p->stencil.r + diam_width/2 - p->stencil.r+ y_coord*diam_width;
+                                            ye = yb + 2*p->stencil.r;
+                                            b_inc = p->stencil.r;
+                                            e_inc = p->stencil.r;
+                                            diam_size = 1.0;
+                                        }
+                                        p->stencil_ctx.wf_num_resolved_diamonds[tid] += diam_size;
+                                    }
+
+                                    //intra_diamond_mwd_comp(p, yb, ye, b_inc, e_inc, 0, p->t_dim*2+1, tid);
+                                    //(Parameters *p, int yb, int ye, int b_inc, int e_inc, int tb, int te, int tid)
+                                    {
+                                        int tb = 0;
+                                        int te = p->t_dim*2+1;
+                                        //@2
+                                        if(p->stencil.type == REGULAR){
+//                                        	MSG("t0=%d,t_coord=%d",t0,t_coord);
+//                                        	printf("p->stencil.type= %s\n",p->stencil.type);
+//                                        	MSG("Main loop. ifwd=%d",ifwd);
+//                                        	t_coord=st->t_pos[y_coord];
+//                                        	t_coord = get_t_coord(y_coord);
+//                                        	MSG("t_coord=%d\n",t_coord);
+//                                        	MSG("y_coord=%d,t_coord=%d\n",y_coord,t_coord);
+                                            intra_diamond_mwd_comp_std(p,yb,ye,b_inc,e_inc,tb,te,tid,t_coord);
+                                        }
+                                    }
+
+                                }
+                            }
+                            p->stencil_ctx.t_wf_comm[tid] += t2-t1;
+                        }
+#pragma omp critical// (producer)
+                        {
+#pragma omp flush (head)
+                            update_state(th_y_coord, p);
+                        }
+                        not_complete = 0;
+                    }
+                }
+            }
+        }
+    }
+    t3 = get_wall_time();
+    // Epilogue
+    MSG("ENTERING TB Epilogue, backward phase");
     if(p->in_auto_tuning == 0){
         //dynamic_intra_diamond_epilogue(p);
         //@4
@@ -2657,6 +2942,7 @@ void wave_tb_backward_1st(tb_t* ctx,
     t1 = wtime();
     t2 = wtime();
     dynamic_intra_diamond_ts_combined(p);
+//    dynamic_intra_diamond_ts_combined_backward(p);
     t3 = wtime();
     t4 = wtime();
     //////////////////////

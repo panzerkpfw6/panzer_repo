@@ -162,7 +162,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
 //    exit(0);
 
     CREATE_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
-    CREATE_BUFFER(pml_tmp, s->size_eff);
     shot_t *shot;
 
     double t0,t1,t2,t_prop,t_sismos;
@@ -215,7 +214,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
 //            MSG("t=%d",t);
 //            MSG("t=%d",t);
             t0=wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho,pml_tmp,pml_tab);
+            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
 //            wave_update_fields_block_1st_orig(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 
@@ -246,7 +245,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
     DELETE_BUFFER(vy);
     DELETE_BUFFER(vz);
     DELETE_BUFFER(sismos);
-    DELETE_BUFFER(pml_tmp);
 }
 
 void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source, parser *p) {

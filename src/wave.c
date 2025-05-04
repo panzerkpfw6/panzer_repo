@@ -1349,9 +1349,7 @@ void wave_update_fields_block_1st(sismap_t *s,
 								 float *restrict vy,
 								 float *restrict vz,
 								 float *restrict roc2,
-								 float *restrict inv_rho,
-								 float *restrict phi,
-								 float *restrict eta) {
+								 float *restrict inv_rho) {
 	const int BLOCKX=s->blockx;
 	const int BLOCKY=s->blocky;
 	const int BLOCKZ=s->blockz;

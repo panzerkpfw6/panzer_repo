@@ -81,9 +81,7 @@ void wave_update_fields_block_1st(sismap_t *s,
                                   float *restrict vy,
                                   float *restrict vz,
                                   const float *restrict roc2,
-								  const float *restrict inv_rho,
-                                  float *restrict phi,
-                                  float *restrict eta);
+								  const float *restrict inv_rho);
 
 /// @brief Adds an impulse to the grid point situated at the
 /// source location
