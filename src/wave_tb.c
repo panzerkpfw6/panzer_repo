@@ -805,23 +805,21 @@ num_threads(stencil_ctx.thread_group_size)
 //									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
 									wx[iz]=ux[iz];
 								}
-//								exit(1);
-								// delete source from the forward wavefield
-								if( (gp->source_point_enabled==1)
-									&& (gp->lsource_pt[2] >= ib ) //@KADIR
-									&& (gp->lsource_pt[2] <  ie ) //@KADIR
-									&& (gp->lsource_pt[1] >= yb ) //@KADIR
-									&& (gp->lsource_pt[1] <  ye ) //@KADIR
-									&& (gp->lsource_pt[0] == ix ) )	{
+							}
+							if( (gp->source_point_enabled==1)
+								&& (gp->lsource_pt[2] >= ib ) //@KADIR
+								&& (gp->lsource_pt[2] <  ie ) //@KADIR
+								&& (gp->lsource_pt[1] >= yb ) //@KADIR
+								&& (gp->lsource_pt[1] <  ye ) //@KADIR
+								&& (gp->lsource_pt[0] == ix ) )	{
 ////									wx[data->src_x]-=data->source[t0+(t-tb)];	// delete source
 
 //									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
 //									wx[  gp->lsource_pt[2] ] -= gp->src_exc_coef[isrc_exc2];
-									MSG("isrc_exc2=%d",isrc_exc2);
-									data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + gp->lsource_pt[1]*nnz+gp->lsource_pt[2]]-=gp->src_exc_coef[isrc_exc2];
-									isrc_exc2++;
-									//									gp->src_exc_coef[isrc_exc];
-								}
+								MSG("isrc_exc2=%d",isrc_exc2);
+								data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + gp->lsource_pt[1]*nnz+gp->lsource_pt[2]]-=gp->src_exc_coef[isrc_exc2];
+								isrc_exc2++;
+								//									gp->src_exc_coef[isrc_exc];
 							}
 						}
 					}
