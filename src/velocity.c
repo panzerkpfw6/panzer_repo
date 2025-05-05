@@ -591,10 +591,18 @@ void velocity_load_model(sismap_t *s, float *vtab) {
 
 void velocity_load_salt3d(sismap_t *s, float *vtab) {
     /////////////////////////////////////////////////////
+	// this salt3d model distribution is recorded in 676x676x201 grid.
+	// this grid will be cropped according to specified (s->dimx ...)sizes
+	/////////////////////////////////////////////////////
+	// Load original model
+	/////////////////////////////////////////////////////
     const char *file_namev = "./velocity_models/salt3d_676x676x201_xyz.raw";
     FILE *fd;
     MSG("velocity_load_salt3d");
-    size_t vel_size = 1LL * s->dimx * s->dimy * s->dimz;
+    const int dimx_orig = 676;
+	const int dimy_orig = 676;
+	const int dimz_orig = 201;
+    size_t vel_size = 1LL * dimx_orig * dimy_orig * dimz_orig;
     float *tmp=(float *) malloc(vel_size * sizeof(float));
     fd = fopen(file_namev, "rb");
     if (fd == NULL){
@@ -603,19 +611,12 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
         system(DOWNLOADSALT3D);
         fd = fopen(file_namev,"rb");
     }
-    CHK(fd == NULL, "failed to open the velocity file");
-    CHK(fread(tmp, vel_size * sizeof(float), 1, fd) != 1,"failed to read from the velocity file");
+    CHK(fd == NULL,"failed to open the velocity file");
+    CHK(fread(tmp,vel_size * sizeof(float), 1, fd) != 1,"failed to read from the velocity file");
     fclose(fd);
-
-    /////////////////////////////////
-    float val = 0;
-    unsigned int x, y, z;
-    for (z = 0; z < s->dimz; z++)
-        for (y = 0; y < s->dimy; y++)
-            for (x = 0; x < s->dimx; x++)
-//                MSG("V=%f",tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)]);
-                vtab[s->dimx*(s->dimy*z+y)+x]=tmp[1ULL*s->dimx*(s->dimy*(z)+(y))+(x)];
-    /////////////////////////////////
+    /////////////////////////////////////////////////////
+	// Crop it
+	/////////////////////////////////////////////////////
 	const int BLOCKX=s->blockx;
 	const int BLOCKY=s->blocky;
 	const int BLOCKZ=s->blockz;
@@ -638,7 +639,7 @@ void velocity_load_salt3d(sismap_t *s, float *vtab) {
 #pragma omp simd
 						for (int z = zmin; z < zmax; z++) {
 							// if velocity file is recorded in ZYX order
-							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=tmp[1ULL*dimx*(dimy*(z)+(y))+(x) ];
+							vtab[ 1ULL*(x)*nnyz+(y)*dimz+z ]=tmp[ 1ULL*dimx_orig*(dimy_orig*(z)+(y))+(x) ];
 							/////// if velocity file is recorded in XYZ order
 //							vtab[1ULL*(x)*nnyz+(y)*dimz+z]=tmp[1ULL*(x)*nnyz+(y)*dimz+z];
 						}
