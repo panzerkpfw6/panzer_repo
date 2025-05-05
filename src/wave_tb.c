@@ -502,20 +502,32 @@ num_threads(stencil_ctx.thread_group_size)
 				hFloat* output_buffer = NULL;  //@KADIR
 				int mod = (t)%2;
 //                MSG("t=%d",t);
-				MSG("bwd, ifwd=%d",ifwd);
+//				MSG("bwd, ifwd=%d",ifwd);
 				if(mod==0){// compute p from v
 //					u1=	p21 ;
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
-								vx=&(v3[ix*nnyz+iy*nnz]);
+								unsigned long int index=1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v;
+								MSG("IMG rec: ix=%d, iy=%d",ix,iy);
+								vx=&(v3[1ULL*ix*nnyz+iy*nnz]);
+
 								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
-								imgx = &(data->img[1ULL*(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz_v ]);
-								ilmx = &(data->ilm[1ULL*(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz_v ]);
+								imgx = &(data->img[ index ]);
+								ilmx = &(data->ilm[ index ]);
+
+//								coef0_v = &(roc2[1ULL*ix*nnyz+iy*nnz]); //// original
+//								coef0_v = &(roc2[1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+//								unsigned long int index=1ULL*ix*nnyz+iy*nnz;
+//								imgx = &(data->img[ index ]);
+//								ilmx = &(data->ilm[ index ]);
+
 #pragma ivdep
 								for(int iz=ib; iz<ie; iz++) {
-									imgx[iz] += vx[iz]*wx[iz];
-									ilmx[iz] += wx[iz]*wx[iz];
+//									imgx[iz] += vx[iz]*wx[iz];
+//									ilmx[iz] += wx[iz]*wx[iz];
+									imgx[iz] += 1;
+									ilmx[iz] += 2;
 								}
 							}
 						}
@@ -779,7 +791,7 @@ num_threads(stencil_ctx.thread_group_size)
 			kte=kt+nwf;
 			hFloat *v3=p13;
 			v3=p13;
-			MSG("fwd, ifwd=%d",ifwd);
+//			MSG("fwd, ifwd=%d",ifwd);
 			for(int t=tb; t< te; t++){ // Diamond blocking in time
 				hFloat* output_buffer = NULL;  //@KADIR
 				int mod = (t)%2;
@@ -2932,7 +2944,7 @@ void wave_tb_backward_1st(tb_t* ctx,
     p_elapse_time = &elapse_time;
 
     //////////////////////////////////////////////////////////////////////
-    p->data=data;
+//    p->data=data;
     //////////////////////
 
     reset_timers(&(p->prof));
