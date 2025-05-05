@@ -495,7 +495,8 @@ num_threads(stencil_ctx.thread_group_size)
         	yb = yb_r;
         	ye = ye_r;
         	kt = xb;
-        	kte=kt+nwf;
+//        	kte=kt+nwf;
+        	kte=xe;
         	hFloat *  v3=p13;
         	v3=	p13;
         	for(int t=tb; t< te; t++){ // Diamond blocking in time
@@ -509,9 +510,8 @@ num_threads(stencil_ctx.thread_group_size)
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
 								unsigned long int index=1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v;
-								MSG("IMG rec: ix=%d, iy=%d",ix,iy);
+//								MSG("IMG rec: ix=%d, iy=%d",ix,iy);
 								vx=&(v3[1ULL*ix*nnyz+iy*nnz]);
-
 								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
 								imgx = &(data->img[ index ]);
 								ilmx = &(data->ilm[ index ]);
@@ -524,10 +524,10 @@ num_threads(stencil_ctx.thread_group_size)
 
 #pragma ivdep
 								for(int iz=ib; iz<ie; iz++) {
-//									imgx[iz] += vx[iz]*wx[iz];
-//									ilmx[iz] += wx[iz]*wx[iz];
-									imgx[iz] += 1;
-									ilmx[iz] += 2;
+									imgx[iz] += vx[iz]*wx[iz];
+									ilmx[iz] += wx[iz]*wx[iz];
+//									imgx[iz] += 1;
+//									ilmx[iz] += 2;
 								}
 							}
 						}
@@ -788,7 +788,8 @@ num_threads(stencil_ctx.thread_group_size)
 			yb = yb_r;
 			ye = ye_r;
 			kt = xb;
-			kte=kt+nwf;
+//			kte=kt+nwf;
+			kte=xe;
 			hFloat *v3=p13;
 			v3=p13;
 //			MSG("fwd, ifwd=%d",ifwd);
@@ -804,9 +805,9 @@ num_threads(stencil_ctx.thread_group_size)
 							for(int iy=yb; iy<ye; iy++) {
 								size_t index = 1ULL * ifwd * nnxyz + 1ULL * ix * nnyz + iy * nnz;
 								if (index + ie >= stencil_ctx.fwd_size) {
-								    fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
-								            omp_get_thread_num(),index,stencil_ctx.fwd_size);
-								    exit(1);
+									fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
+											omp_get_thread_num(),index,stencil_ctx.fwd_size);
+									exit(1);
 								}
 
 								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
@@ -851,6 +852,7 @@ num_threads(stencil_ctx.thread_group_size)
 				if (end==1) kte =xe;
 				kt=max(kt-NHALO,xb);
 			} // diamond blocking in time (time loop)
+
         }
 //////////////////////////////////////////////////////////
 
