@@ -54,9 +54,8 @@ x=4; y=2; z=1; t=7; w=20; tgs=8;
 
 cbx=64;cby=22;cbz=9999;
 
-first=514; # position of the source:isx=100,isy=50
-#last=513; # position of the source:isx=160,isy=140
-last=517; # position of the source:isx=100,isy=250
+#last=513; # position of the source:isx=100,isy=50
+#last=517; # position of the source:isx=100,isy=250
 first=513; last=517;
 dshot=50;
 export src_depth=5;
