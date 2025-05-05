@@ -90,8 +90,8 @@ dshot=4568;
 fmax=11;
 cbx=64;cby=22;cbz=9999;
 ##################  TB parameters  ###################
-x=3; y=2; z=2; t=3; w=24; 
-tgs=x*y*z; echo $tgs;
+x=3; y=2; z=2; t=3; w=24;
+tgs=$(expr $x \* $y \* $z); echo $tgs
 ######################################################
 
 #./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
