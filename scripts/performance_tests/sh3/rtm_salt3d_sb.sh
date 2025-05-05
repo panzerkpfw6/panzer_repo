@@ -8,8 +8,8 @@
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq
 #SBATCH --job-name=test_default_pars
-#SBATCH --output=logs/test1_.%J.out
-#SBATCH --error=logs/test1_.%J.err
+#SBATCH --output=logs/rtm_salt3d_sb.%J.out
+#SBATCH --error=logs/rtm_salt3d_sb.%J.err
 #SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
@@ -74,9 +74,9 @@ make install
 
 ##### Logs directory #####
 mkdir ./logs
-rm -rf ./logs/test1 #delete if existing
-mkdir ./logs/test1
-export logs_path=./logs/test1
+rm -rf ./logs/rtm_salt_sb #delete if existing
+mkdir ./logs/rtm_salt_sb
+export logs_path=./logs/rtm_salt_sb
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###

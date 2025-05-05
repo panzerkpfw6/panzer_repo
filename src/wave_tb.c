@@ -813,7 +813,7 @@ num_threads(stencil_ctx.thread_group_size)
 								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
 //								MSG("ifwd=%d",ifwd);
 //								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
-								wx=&(data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+								wx=&(data->fwd[1ULL*ifwd*nnxyz+1ULL*ix*nnyz+iy*nnz]);
 #pragma ivdep
 								for (int iz=ib; iz<ie; iz++) {
 //									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
