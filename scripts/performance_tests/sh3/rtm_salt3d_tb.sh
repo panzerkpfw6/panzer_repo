@@ -86,7 +86,7 @@ nx=672;ny=672;nz=201;dh=25;
 #first=20957;last=21023;
 #### Profile x=?. Salt3D. no mistake
 first=1;last=98;
-first=2;last=3;
+#first=1;last=3;
 dshot=4568;
 fmax=11;
 cbx=64;cby=22;cbz=9999;
