@@ -585,7 +585,8 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     printf("Nb of snapshots in FWD: %d\n", ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
 
 //		int max_ifwd = (2 * P->nt + ctx->fwd_steps - 1) / ctx->fwd_steps;
-	int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1;
+//	int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1;
+	int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1+1;
 	size_t fwd_size = s->size * max_ifwd;
 
     if (ctx->mode == 1 || ctx->mode == 2) {
