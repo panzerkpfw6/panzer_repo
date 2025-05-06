@@ -85,7 +85,7 @@ nx=672;ny=672;nz=201;dh=25;
 ##### Profile x=310. Salt3D. no mistake
 #first=20957;last=21023;
 #### Profile x=?. Salt3D. no mistake
-first=1;last=100;
+first=1;last=1;
 dshot=4568;
 fmax=11;
 cbx=64;cby=22;cbz=9999;
@@ -94,26 +94,12 @@ x=3; y=2; z=2; t=3; w=24;
 tgs=$(expr $x \* $y \* $z); echo $tgs
 ######################################################
 
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#   >> $logs_path/log_model_water.log;
-#exit 1;
-
-#echo "Model data for RTM. water halfspace."
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-# --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#   >> $logs_path/log_model_water.log;
- 
-#echo "Do Python filtering of real data." 
-
-
-#echo "Model data for RTM. salt3d."
-#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
-#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
-#--tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
-#--tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_model_salt3d.log;
+echo "Model data for RTM. salt3d."
+srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+--tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+--tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_model_salt3d.log;
 
 echo "Perform RTM"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
