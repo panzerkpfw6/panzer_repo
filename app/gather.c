@@ -155,8 +155,8 @@ int main(int argc, char* argv[]) {
           "failed to read ilm file");
 			fclose(fd);
 			// do the shot gather:
-			gather_img_div_ilm_smart(s->size_img, img_shot, ilm_shot, img);
-			gather_img_ilm(s->size_img, 	img_shot, ilm_shot, img_only, ilm_only);
+			gather_img_div_ilm_smart(s->size_img,img_shot,ilm_shot,img);
+			gather_img_ilm(s->size_img,img_shot,ilm_shot,img_only,ilm_only);
 		}
   }
   closedir(dr);

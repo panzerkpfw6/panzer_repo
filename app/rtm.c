@@ -614,7 +614,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
     /// loop over the shots.
     for (int sidx = s->first; sidx <= s->last; sidx++) {
-        MSG("Processing shot %d (BEGIN)", sidx);
+        MSG("Processing shot %d (BEGIN)",sidx);
         /// retrieve the shot descriptor.
         shot = s->shots[sidx];
         /// initialize the current shot.
