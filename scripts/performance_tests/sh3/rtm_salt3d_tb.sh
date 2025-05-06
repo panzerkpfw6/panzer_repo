@@ -80,7 +80,7 @@ export logs_path=./logs/rtm_salt_tb
 
 ####*********** RUNNING RTM ************###
 ###********** mode, grid, time steps ***********###
-timesteps=4000; dt=0.001;
+timesteps=4001; dt=0.001;
 nx=672;ny=672;nz=201;dh=25;
 ##### Profile x=310. Salt3D. no mistake
 #first=20957;last=21023;

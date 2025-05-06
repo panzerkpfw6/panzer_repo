@@ -7,9 +7,9 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq  #
-#SBATCH --job-name=test_default_pars
-#SBATCH --output=logs/test1_.%J.out
-#SBATCH --error=logs/test1_.%J.err
+#SBATCH --job-name=test1_rtm
+#SBATCH --output=logs/test1_rtm.%J.out
+#SBATCH --error=logs/test1_rtm.%J.err
 #SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
@@ -70,11 +70,6 @@ th_z_arr_1st=(2 1 1)
 tdim_arr_1st=(3 3 7)
 num_wf_arr_1st=(24 20 4)
 
-th_x_arr_2nd=(3 4 2)
-th_y_arr_2nd=(2 2 2)
-th_z_arr_2nd=(2 1 1)
-tdim_arr_2nd=(3 3 3)
-num_wf_arr_2nd=(24 32 32)
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
@@ -92,10 +87,10 @@ make VERBOSE=1
 make install
 
 ##### Logs directory #####
+export logs_path=./logs/test1_rtm
 mkdir ./logs
-rm -rf ./logs/test1 #delete if existing
-mkdir ./logs/test1
-export logs_path=./logs/test1
+rm -rf $logs_path
+mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}

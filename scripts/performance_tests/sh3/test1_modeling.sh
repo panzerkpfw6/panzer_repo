@@ -7,9 +7,9 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq  #
-#SBATCH --job-name=test_default_pars
-#SBATCH --output=logs/test1_.%J.out
-#SBATCH --error=logs/test1_.%J.err
+#SBATCH --job-name=test1_modeling
+#SBATCH --output=logs/test1_modeling.%J.out
+#SBATCH --error=logs/test1_modeling.%J.err
 #SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
@@ -58,7 +58,7 @@ module load intel-oneapi/2023.1.0
 module load cmake
 
 ##### Shot information #####
-export shot=32896;# position of the source in x,y coordinates.check ./data/acquisition.txt
+export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
 export src_depth=256;
 export fmax=8;
 export dx=10;
@@ -70,11 +70,6 @@ th_z_arr_1st=(2 1 1)
 tdim_arr_1st=(3 3 7)
 num_wf_arr_1st=(24 20 4)
 
-th_x_arr_2nd=(3 4 2)
-th_y_arr_2nd=(2 2 2)
-th_z_arr_2nd=(2 1 1)
-tdim_arr_2nd=(3 3 3)
-num_wf_arr_2nd=(24 32 32)
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
@@ -93,9 +88,9 @@ make install
 
 ##### Logs directory #####
 mkdir ./logs
-rm -rf ./logs/test1 #delete if existing
-mkdir ./logs/test1
-export logs_path=./logs/test1
+export logs_path=./logs/test1_modeling
+rm -rf $logs_path
+mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
@@ -107,6 +102,7 @@ for i in $(seq 0 $len); do
   nz=${nz_arr[$i]}
   echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
   grid_str="${nx}_${ny}_${nz}"
+
   ###*********** SB ************###
   echo "Running SB"
   echo "Running 1st order"
@@ -116,12 +112,6 @@ for i in $(seq 0 $len); do
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
   --dx $dx --cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log-SB_1st-abc_$grid_str.log
 
-#  echo "Running 2nd order"
-##  cbx=16; cby=4; cbz=9999;
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_2nd \
-#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 2 --fmax $fmax \
-#  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log-SB_2nd-abc_$grid_str.log
   ###*********** TB ************##
   echo "Running TB"
   echo "Running 1st order"
@@ -138,17 +128,4 @@ for i in $(seq 0 $len); do
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
   --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/log-TB_1st-abc_$grid_str.log;
-#
-#  echo "Running 2nd order"
-#  th_x=${th_x_arr_2nd[$i]}
-#  th_y=${th_y_arr_2nd[$i]}
-#  th_z=${th_z_arr_2nd[$i]}
-#  t_dim=${tdim_arr_2nd[$i]}
-#  num_wf=${num_wf_arr_2nd[$i]}
-#  tgs=$((th_x*th_y*th_z))
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-#  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_2nd --tb_thread_group_size $tgs \
-#  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-#  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-#  --src_depth $src_depth --order 2 --fmax $fmax --dx $dx >> $logs_path/log-TB_2nd-abc_$grid_str.log;
 done

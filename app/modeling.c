@@ -134,7 +134,6 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
   DELETE_BUFFER(pml_tmp);
 }
 
-
 ///
 void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, float *pml_tab)  {
     /// contains the fields pressure value at time step t.
@@ -500,9 +499,9 @@ int main(int argc, char* argv[]) {
     if (s->verbose) wave_print(s);
 
     /// load/generate the velocity model.
-//    velocity_const_model2(s,vel);
+    velocity_const_model2(s,vel);
 //    velocity_2layer_model(s,vel);
-    velocity_load_salt3d(s,vel);
+//    velocity_load_salt3d(s,vel);
 
     /// load/generate the density model.
     density_const_model(s,rho,inv_rho);
