@@ -865,12 +865,12 @@ int main(int argc, char *argv[]) {
     /// run RTM on CPU or GPU.
     if (s->cpu) {
         if (s->order==1) {
-            MSG("run RTM 1st order TB");
+            MSG("run 1st order TB RTM");
             run_rtm_1st_tb_cpu(s,vel,inv_rho,source, pml_tab, p);
         }
     } else {
         if (s->order==1) {
-            MSG("run RTM 1st order SB");
+            MSG("run 1st order SB RTM");
             run_rtm_1st_cpu(s,vel,inv_rho,source, pml_tab);
         }
 //    run_rtm_gpu(s, vel, source, pml_tab);

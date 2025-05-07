@@ -168,6 +168,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
 
     /// loop over the shots.
     for (int sidx = s->first; sidx <= s->last; sidx++) {
+    	MSG("Start of Shot (%d)",sidx);
         /// retrieve the shot descriptor.
         shot = s->shots[sidx];
         /// initialize the current shot.
@@ -235,6 +236,7 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
         wave_save_sismos(s,shot,sismos);
         /// release/close the resources related to the current shot.
         shot_release(shot);
+        MSG("End of Shot (%d)",sidx);
     }
     /// free the simulation buffers.
 //    MSG("before DELETE_BUFFER(u0)");
@@ -286,7 +288,8 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 
     /// loop over the shots.
     for (int sidx = s->first; sidx <= s->last; sidx++) {
-        MSG("Processing shot %d",sidx);
+    	MSG("Start of Shot (%d)",sidx);
+//        MSG("Processing shot %d",sidx);
         /// retrieve the shot descriptor.
         shot = s->shots[sidx];
         /// initialize the current shot.
@@ -336,6 +339,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         shot_release(shot);
         wave_tb_data_free(data,ctx->num_thread_groups);
 //        free(P);
+        MSG("End of Shot (%d)",sidx);
     }
 
     wave_tb_free(ctx);
@@ -530,10 +534,10 @@ int main(int argc, char* argv[]) {
     if (s->cpu) {
 //        run_modeling_tb_cpu(s, vel, source, p);
         if (s->order==1) {
-            MSG("run 1st order TB");
+            MSG("run 1st order TB modeling");
             run_modeling_1st_tb_cpu(s,vel,inv_rho,source,p);
         } else {
-            MSG("run 2nd order TB, deprecated.");
+            MSG("run 2nd order TB modeling, deprecated.");
 //            run_modeling_tb_cpu(s, vel, source, p);
         }
     } else {
@@ -541,10 +545,10 @@ int main(int argc, char* argv[]) {
 ////      run_modeling_cpu(s, vel, source, pml_tab);
 
         if (s->order==1) {
-            MSG("run 1st order SB");
+            MSG("run 1st order SB modeling");
             run_modeling_1st_cpu(s,vel,inv_rho,source,pml_tab);
         } else {
-            MSG("run 2nd order SB");
+            MSG("run 2nd order SB modeling");
             run_modeling_cpu(s, vel, source, pml_tab);
         }
 ////        run_modeling_gpu(s, vel, source, pml_tab);
