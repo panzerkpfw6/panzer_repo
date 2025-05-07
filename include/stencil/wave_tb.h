@@ -472,6 +472,8 @@ struct tb_data_s {
   int flag_fwd; // 1 if save fwd snap
   int flag_bwd; // 1 if load fwd snap and build image
   int flag_img;
+  int rec_sismos; // 1 if record sismos, 0 if not
+
   float * img;
   float * ilm;
 

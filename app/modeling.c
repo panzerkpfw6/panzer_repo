@@ -309,6 +309,7 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
         data->fwd = NULL;
         data->ilm = NULL;
         data->img = NULL;
+        data->rec_sismos=s->rec_sismos;
 
         /// forward modeling.
         wave_tb_timer_clear(timer);
@@ -446,6 +447,7 @@ int main(int argc, char* argv[]) {
     s->nb_snap = parser_get_int(p, "nbsnap");
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
+    s->rec_sismos= parser_get_int(p, "rec_sismos");
 
     // Read cache blocking parameters for SB method //
 	s->blockx=parser_get_int(p,"cbx");

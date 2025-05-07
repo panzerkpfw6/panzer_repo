@@ -97,6 +97,7 @@ typedef struct __sismap_t {
     bool modeling, verbose, cpu, check, dim2;
     int mode;
     int order;
+    int rec_sismos;
 } sismap_t;
 
 #endif // __STENCIL_WAVE_H_

@@ -724,7 +724,7 @@ num_threads(stencil_ctx.thread_group_size)
 									v3_v[iz_]+=data->sismos[sismos_ind];
 								}
 ////                                MSG("data->flag_fwd=%d \n",data->flag_fwd);
-                                if (data->flag_fwd == 1 && data->src_depth != -1) {
+                                if (data->flag_fwd == 1 && data->src_depth!=-1 && data->rec_sismos==1 ) {
 //                                	MSG("recording sismos\n");
 									///////  save sismos
 									////////////////////////////////////////
