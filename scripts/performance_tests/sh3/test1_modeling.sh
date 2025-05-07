@@ -64,9 +64,9 @@ export fmax=8;
 export dx=10;
 
 ###********** Default SB, TB parameters *********###
-cbx_arr=(  8  16  22  )
-cby_arr=(  6  6  46  )
-cbz_arr=(  9999  9999  9999   )
+cbx_arr=(8  16 22)
+cby_arr=(6  6  46)
+cbz_arr=(9999  9999  9999)
 
 ## My recent parameter search
 th_x_arr_1st=(16 16 16)
@@ -117,6 +117,7 @@ for i in $(seq 0 $len); do
   cbz=${cbz_arr[$i]}
   echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
   grid_str="${nx}_${ny}_${nz}"
+  echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
 
   ###*********** SB ************###
   echo "Running SB"
