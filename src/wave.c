@@ -493,7 +493,7 @@ void wave_print(sismap_t *s) {
         s->img_dimx, s->img_dimy, s->img_dimz,
         s->size_img / 1024. / 1024.);
     MSG("... cdp,line,depth      = %u x %u x %u", s->dcdp, s->dline, s->ddepth);
-    MSG("... dS                  = %f x %f x %f", s->dx, s->dy, s->dz);
+    MSG("... dx*dy*dz            = %f x %f x %f", s->dx, s->dy, s->dz);
     MSG("... dtrp                = %u x %u x %u", s->dtrpx, s->dtrpy, s->dtrpz);
     MSG("... dt                  = %g", s->dt);
     MSG("... stencil size        = %u x %u x %u", 2 * s->sx + 1, 2 * s->sy + 1, 2 * s->sz + 1);

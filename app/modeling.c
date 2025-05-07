@@ -147,8 +147,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
     /// seismic traces for a given shot.
     float *sismos;
     /// PML temporary tab.
-    float *pml_tmp;
     MSG("... !SB MODE! ...");
+    MSG("s->size=%d",s->size);
     CREATE_BUFFER_ONLY(u0, s->size);
     array_openmp_init(u0,s);
     CREATE_BUFFER_ONLY(vx, s->size);
@@ -175,7 +175,6 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
         shot_init(shot, true, s->modeling);
         /// reset some buffers for the shot.
         NULIFY_BUFFER(u0, s->size);
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
         NULIFY_BUFFER(sismos, s->rcv_len*(s->time_steps+1));
         NULIFY_BUFFER(vx, s->size);
         NULIFY_BUFFER(vy, s->size);

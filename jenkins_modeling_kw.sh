@@ -8,6 +8,8 @@ export OMP_NESTED='True'
 export granularity=fine
 export KMP_AFFINITY=compact
 #export KMP_HW_SUBSET=1t
+
+
 ###********** MODULES *********###
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
@@ -93,16 +95,16 @@ export last=41100;
 export src_depth=20;
 export rcv_depth=4;
 
-#mkdir ./data/sismos_sb
-#rm ./data/sismos_sb/*
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
-#  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
-#mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
+mkdir ./data/sismos_sb
+rm ./data/sismos_sb/*
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2 --dshot 1 \
+  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8;
+  
+mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
   
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*
 
-#gdb --args ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $TIME_TB_1st --tb_thread_group_size $tgs \
  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
  --tb_t_dim $t --tb_num_wf $w --mode 2 --drcv 1 --dshot 1 --first $first --last $last -c \
