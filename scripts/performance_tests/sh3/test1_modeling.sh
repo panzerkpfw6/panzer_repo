@@ -123,22 +123,22 @@ for i in $(seq 0 2); do
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/test1_fwd2.log;
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/test1_fwdSB.log;
 
   ###*********** TB ************##
-  echo "Running TB"
-  echo "Running 1st order"
-  th_x=${th_x_arr_1st[$i]}
-  th_y=${th_y_arr_1st[$i]}
-  th_z=${th_z_arr_1st[$i]}
-  t_dim=${tdim_arr_1st[$i]}
-  num_wf=${num_wf_arr_1st[$i]}
-  tgs=$((th_x * th_y*th_z))
-  echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
-
-  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
-  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/test1_fwd2.log;
+#  echo "Running TB"
+#  echo "Running 1st order"
+#  th_x=${th_x_arr_1st[$i]}
+#  th_y=${th_y_arr_1st[$i]}
+#  th_z=${th_z_arr_1st[$i]}
+#  t_dim=${tdim_arr_1st[$i]}
+#  num_wf=${num_wf_arr_1st[$i]}
+#  tgs=$((th_x * th_y*th_z))
+#  echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
+#
+#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+#  ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+#  --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+#  --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
+#  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/test1_fwd2.log;
 done
