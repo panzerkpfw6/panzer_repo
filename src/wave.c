@@ -32,8 +32,18 @@
 #include <stencil/pml.h>
 #include <omp.h>
 #include <immintrin.h> // For AVX2 intrinsics
-#define ALIGNMENT 32 // For AVX2 (256-bit = 8 floats)
+#include <stdio.h>
+#include <errno.h>
 
+
+#ifdef _WIN32
+#include <direct.h> // For Windows _mkdir
+#else
+#include <sys/stat.h> // For POSIX mkdir
+#endif
+
+
+#define ALIGNMENT 32 // For AVX2 (256-bit = 8 floats)
 #define U0(z,y,x)   (u0[(x+s->sx) + (2*s->sx + s->dimx) * \
                     ((2*s->sy + s->dimy) * (z+s->sz) + (y+s->sy))])
 #define DAMPX(z, y, x)   (s->dampx[(x)])
@@ -84,6 +94,34 @@ t[0] /= pow(delta,1);                  \
 t[1] /= pow(delta,1);                  \
 t[2] /= pow(delta,1);                  \
 t[3] /= pow(delta,1);
+
+int create_folder(const char *path) {
+#ifdef _WIN32
+    int result = _mkdir(path); // Windows
+#else
+    int result = mkdir(path, 0755); // POSIX, permissions 0755
+#endif
+    if (result == 0) {
+        printf("Folder '%s' created successfully.\n", path);
+        return 0;
+    } else {
+        // Handle errors
+        switch (errno) {
+            case EEXIST:
+                printf("Folder '%s' already exists.\n", path);
+                return 0; // Not an error if folder already exists
+            case EACCES:
+                fprintf(stderr, "Error: Permission denied to create '%s'.\n", path);
+                break;
+            case ENOENT:
+                fprintf(stderr, "Error: Path component in '%s' does not exist.\n", path);
+                break;
+            default:
+                fprintf(stderr, "Error: Failed to create '%s' (errno: %d).\n", path, errno);
+        }
+        return -1;
+    }
+}
 
 void array_openmp_init(float* u, sismap_t *s) {
     const int nnx = s->dimx + 2 * s->sx;  // Total x-size with halo
@@ -279,6 +317,8 @@ void wave_init_damp(sismap_t *s) {
 }
 
 void wave_init_acquisition(sismap_t *s) {
+	const char *folder_path = "data"; // Folder to create
+	create_folder(folder_path);
     /// initialize shots geometry:
     int a = 0;
     s->rcv_len = 0;

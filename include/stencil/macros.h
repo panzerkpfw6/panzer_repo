@@ -22,6 +22,9 @@
 /// @brief Contains the major settings of project.
 ///
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
+
 
 /// @brief print a formatted message.
 #define MSG(fmt,...)                    \
