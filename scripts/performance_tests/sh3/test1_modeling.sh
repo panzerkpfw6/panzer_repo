@@ -29,28 +29,26 @@ echo $hostname
 lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=192
-##export OMP_NUM_THREADS=64
-#export OMP_PROC_BIND=true
-#export OMP_PLACES=threads
-#export OMP_NESTED='True'
-#export granularity=fine
-#export KMP_AFFINITY=compact
-#export KMP_HW_SUBSET=1t
-
-###********** Set compiler flags *********###
-#export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export OMP_NUM_THREADS=192
+export OMP_PROC_BIND=true
+export OMP_PLACES=threads
+export OMP_NESTED='True'
+export granularity=fine
+export KMP_AFFINITY=compact
+export KMP_HW_SUBSET=1t
+##********** Set compiler flags *********###
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ######################################################
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
-export OMP_NUM_THREADS=192;
-export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export OMP_NUM_THREADS=192;
+#export OMP_PLACES=cores;
+#export OMP_PROC_BIND=close;
+#export OMP_STACKSIZE=64M;
+#export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
 ###********** MODULES *********###
 ########module load intel/2024.2.1
@@ -101,7 +99,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-rm -rf $logs_path
+######rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
@@ -125,7 +123,7 @@ for i in $(seq 0 2); do
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
   ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/test1_fwd.log;
+  --dx $dx --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/test1_fwd2.log;
 
   ###*********** TB ************##
   echo "Running TB"
@@ -142,5 +140,5 @@ for i in $(seq 0 2); do
   ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/test1_fwd.log;
+  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx >> $logs_path/test1_fwd2.log;
 done
