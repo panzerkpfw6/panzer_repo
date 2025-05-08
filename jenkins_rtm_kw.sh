@@ -61,36 +61,36 @@ dshot=50;
 export src_depth=5;
 export rcv_depth=8;
 ##################### SB RTM workflow	#####################
-#export OMP_NUM_THREADS=44 #4
-#mkdir ./data/rtm_sb
-#rm ./data/rtm_sb/*
+export OMP_NUM_THREADS=8 #4
+mkdir ./data/rtm_sb
+rm ./data/rtm_sb/*
+
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
 #
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
-##
-#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-#--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-#--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
-#
-#
-#### move data to SB folder
-#mv ./data/img* ./data/rtm_sb/
-#mv ./data/ilm* ./data/rtm_sb/
-#mv ./data/sismos* ./data/rtm_sb/
-####
-#
+./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz;
+
+
+### move data to SB folder
+mv ./data/img* ./data/rtm_sb/
+mv ./data/ilm* ./data/rtm_sb/
+mv ./data/sismos* ./data/rtm_sb/
+###
+
+./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
+--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data/rtm_sb"  \
+--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
+
 #./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
 #--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data/rtm_sb"  \
+#--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data"  \
 #--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
-#
-##./bin/gather --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_1st --mode 2  \
-##--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-##--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot --dir "./data"  \
-##--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz -c;
 
 ##################### TB RTM workflow	##################### 
 export OMP_NUM_THREADS=24 #4
