@@ -325,7 +325,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
     /// image and illumination of each shot.
     float *ilm_shot, *img_shot;
     /// PML tmp tab.
-    float *pml_tmp;
     /// wave-field arrays.
     CREATE_BUFFER_ONLY(u0, s->size);
     array_openmp_init(u0,s);
@@ -344,7 +343,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
 
     CREATE_BUFFER_ONLY(ilm_shot, s->size_img);
     array_openmp_inner_init(ilm_shot,s);
-//    CREATE_BUFFER(pml_tmp, s->size_eff);
     shot_t *shot;
 
     double t0,t1,t2,t_snap,t_prop,t_sismos,t_image;
@@ -387,7 +385,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
         NULIFY_BUFFER(vx,s->size);
         NULIFY_BUFFER(vy,s->size);
         NULIFY_BUFFER(vz,s->size);
-        NULIFY_BUFFER(pml_tmp, s->size_eff);
 
         /// forward modeling.
         t1 = wtime();
@@ -451,7 +448,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
         NULIFY_BUFFER(vx,s->size);
         NULIFY_BUFFER(vy,s->size);
         NULIFY_BUFFER(vz,s->size);
-//        NULIFY_BUFFER(pml_tmp,  s->size_eff);
         NULIFY_BUFFER(ilm_shot, s->size_img);
         NULIFY_BUFFER(img_shot, s->size_img);
 
@@ -529,7 +525,6 @@ void run_rtm_1st_cpu(sismap_t *s, float* vel,float *inv_rho,float *source, float
     DELETE_BUFFER(img_shot);
     DELETE_BUFFER(ilm_shot);
     DELETE_BUFFER(sismos);
-//    DELETE_BUFFER(pml_tmp);
 }
 
 /// Reverse Time Migration on CPU.///

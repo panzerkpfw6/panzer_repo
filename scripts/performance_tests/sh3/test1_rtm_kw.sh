@@ -1,61 +1,43 @@
 #!/bin/bash
-###********* SLURM CONFIGURATION **********###
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=pavel.plotnitskii@kaust.edu.sa
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --threads-per-core=1
-#SBATCH --time=24:00:00
-#SBATCH --partition=workq  #
-#SBATCH --job-name=test1_rtm
-#SBATCH --output=logs/test1_rtm.%J.out
-#SBATCH --error=logs/test1_rtm.%J.err
-#SBATCH --cpus-per-task=192
-#SBATCH --hint=nomultithread    # don't use hyperthreading
-
-###******** COMMENT *********###
-# In this test we check performance with best SB,TB parameters for AMD MilanX.
-# be aware that cache blocking should be different for 1st order and second order
-# 1)please change SLURM CONFIGURATION accordingly
-#  partition,
-# number of cpus-per-task should be equal to number of available cores.
-# 2)please change OPENMP PARAMETERS accordingly
-#OMP_NUM_THREADS should be equal to number of cpus
-# 3)please change MODULES accordingly
-#we need to load cmake,icpc modules from somewhere
-
-###******** HORODATED LOG WRITING *********###
-echo $hostname
-lscpu
-
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=192
-##export OMP_NUM_THREADS=64
-#export OMP_PROC_BIND=true
-#export OMP_PLACES=threads
-#export OMP_NESTED='True'
-#export granularity=fine
-#export KMP_AFFINITY=compact
+export OMP_PROC_BIND=true
+export OMP_PLACES=threads
+export OMP_NESTED='True'
+export granularity=fine
+export KMP_AFFINITY=compact
 #export KMP_HW_SUBSET=1t
-
-###********** Set compiler flags *********###
-#export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-
-######################################################
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
-export OMP_NUM_THREADS=192;
-export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-
 ###********** MODULES *********###
-########module load intel/2024.2.1
-module load intel-oneapi/2023.1.0
+#module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
+module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+#module load icc/2020.2.254
 module load cmake
+##### COMPILATION #####
+pwd
+
+
+rm ./bin/modeling
+rm ./bin/rtm
+rm ./bin/gather
+#rm ./data/*ilm*
+#rm ./data/*img*
+#rm ./data/*sismos*
+#rm ./data/*snap*
+mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
+
+##### build the project with debugging symbols
+#CC=icc CXX=icpc -DCMAKE_BUILD_TYPE=Debug cmake .
+#CC=icc CXX=icpc -O0 -g3 -DCMAKE_BUILD_TYPE=Debug cmake .
+##### build the project
+#CC=icc CXX=icpc cmake .
+#CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg" -DCMAKE_CXX_FLAGS="-pg" .
+#CC=icc CXX=icpc cmake -DCMAKE_C_FLAGS="-pg -O2" -DCMAKE_CXX_FLAGS="-pg -O2" .
+
+# debug!
+#CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_FLAGS="-g -O0" -DCMAKE_CXX_FLAGS="-g -O0" .
+CC=icc CXX=icpc cmake .
+make clean
+make VERBOSE=1
+make install
 
 ##### Shot information #####
 first=2625; # position of the source:isx=256,isy=178
@@ -69,9 +51,9 @@ export dh=25;
 dt=0.001;
 
 ###********** Default SB, TB parameters *********###
-cbx_arr=(8  16 22)
-cby_arr=(6  6  46)
-cbz_arr=(9999  9999  9999)
+cbx_arr=(8 16 22)
+cby_arr=(6 6 46)
+cbz_arr=(9999 9999 9999)
 
 # PASC paper results
 th_x_arr_1st=(16 4 4)
@@ -80,6 +62,12 @@ th_z_arr_1st=(1 1 1)
 tdim_arr_1st=(7 3 7)
 num_wf_arr_1st=(192 20 4)
 
+th_x_arr_1st=(2 4 4)
+th_y_arr_1st=(2 2 2)
+th_z_arr_1st=(1 1 1)
+tdim_arr_1st=(7 3 7)
+num_wf_arr_1st=(20 20 4)
+export OMP_NUM_THREADS=28 #4
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -96,14 +84,16 @@ make VERBOSE=1
 make install
 
 ##### Logs directory #####
-export logs_path=./logs/test1_rtm
 mkdir ./logs
+export logs_path=./logs/test1_rtm
+export logs_filename="test1_rtm_pasc.log"
 rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
+#for i in $(seq 0 $len); do
+for i in $(seq 0 1); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
@@ -125,8 +115,7 @@ for i in $(seq 0 $len); do
 	echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 	
 	###*********** Prepare seismograms for RTM ************###
-	echo "Prepare seismograms for RTM"
-	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+##	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
 	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
@@ -137,7 +126,7 @@ for i in $(seq 0 $len); do
 	echo "Running RTM SB"
 	echo "Running 1st order"
 	
-	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
 	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
 	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
 	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
@@ -151,7 +140,7 @@ for i in $(seq 0 $len); do
 	echo "Running RTM TB"
 	echo "Running 1st order"
 	
-	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+	#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
 	./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
