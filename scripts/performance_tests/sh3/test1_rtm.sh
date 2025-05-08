@@ -7,6 +7,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq  #
+#SBATCH --mem=100G
 #SBATCH --job-name=test1_rtm
 #SBATCH --output=logs/test1_rtm.%J.out
 #SBATCH --error=logs/test1_rtm.%J.err
@@ -27,6 +28,7 @@
 ###******** HORODATED LOG WRITING *********###
 echo $hostname
 lscpu
+exit 1
 
 ###********** OPENMP PARAMETERS ***********###
 #export OMP_NUM_THREADS=192
@@ -103,7 +105,7 @@ mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 1 $len); do
+for i in $(seq 0 $len); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
