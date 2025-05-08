@@ -71,7 +71,7 @@ dt=0.001;
 ###********** Default SB, TB parameters *********###
 cbx_arr=(8  16 22)
 cby_arr=(6  6  46)
-cbz_arr=(9999  9999  9999)
+cbz_arr=(9999 9999 9999)
 
 # PASC paper results
 th_x_arr_1st=(16 4 4)
@@ -98,13 +98,13 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_rtm
-export logs_filename="test1_rtm_pasc.log"
+export logs_filename="test1_rtm_pasc_0.log"
 rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
+for i in $(seq 2 $len); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
@@ -112,6 +112,7 @@ for i in $(seq 0 $len); do
 	cbx=${cbx_arr[$i]}
 	cby=${cby_arr[$i]}
 	cbz=${cbz_arr[$i]}
+	cbz=9999
 	
 	echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
 	grid_str="${nx}_${ny}_${nz}"
@@ -126,12 +127,12 @@ for i in $(seq 0 $len); do
 	echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 	
 	###*********** Prepare seismograms for RTM ************###
-	echo "Prepare seismograms for RTM"
-	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
-	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
+#	echo "Prepare seismograms for RTM"
+#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+#	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+#	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+#	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+#	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
 
   
 	###*********** Run RTM SB ************###

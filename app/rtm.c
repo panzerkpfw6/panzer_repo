@@ -661,8 +661,8 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 
         MSG("before wave_tb_timer_info");
         MSG("hallo!");
-        MSG("ctx->nb_stencils_total_fwd=%f ",ctx->nb_stencils_total_fwd);
-        MSG("ctx->nb_stencils_main=%f",ctx->nb_stencils_main);
+        MSG("ctx->nb_stencils_total_fwd=%llu ",ctx->nb_stencils_total_fwd);
+        MSG("ctx->nb_stencils_main=%llu",ctx->nb_stencils_main);
         wave_tb_timer_info(timer, ctx->nb_stencils_total_fwd, ctx->nb_stencils_main);
 
         wave_tb_data_close_open(data,ctx->num_thread_groups,shot->id);
