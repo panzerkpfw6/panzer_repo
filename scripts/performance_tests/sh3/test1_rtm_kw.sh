@@ -93,7 +93,7 @@ mkdir $logs_path
 ##### Run tests #####
 len=${#nx_arr[@]}
 #for i in $(seq 0 $len); do
-for i in $(seq 0 1); do
+for i in $(seq 1 2); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
@@ -102,48 +102,51 @@ for i in $(seq 0 1); do
 	cby=${cby_arr[$i]}
 	cbz=${cbz_arr[$i]}
 	
-	echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
-	grid_str="${nx}_${ny}_${nz}"
-	echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
+	export logs_filename="test1_rtm_$nx.log"
+	echo $logs_filename
 	
-	th_x=${th_x_arr_1st[$i]}
-	th_y=${th_y_arr_1st[$i]}
-	th_z=${th_z_arr_1st[$i]}
-	t_dim=${tdim_arr_1st[$i]}
-	num_wf=${num_wf_arr_1st[$i]}
-	tgs=$((th_x * th_y*th_z))
-	echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
-	
-	###*********** Prepare seismograms for RTM ************###
-##	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
-	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
-
-  
-	###*********** Run RTM SB ************###
-	echo "Running RTM SB"
-	echo "Running 1st order"
-	
-#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
-	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
-	
-	###*********** Delete RTM-related img,ilm files ************###
-	rm ./data/*img*
-	rm ./data/*ilm*
-
-	###*********** Run RTM TB ************##
-	echo "Running RTM TB"
-	echo "Running 1st order"
-	
-	#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-	./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
-	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-	--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax >> $logs_path/$logs_filename;
+#	echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
+#	grid_str="${nx}_${ny}_${nz}"
+#	echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
+#	
+#	th_x=${th_x_arr_1st[$i]}
+#	th_y=${th_y_arr_1st[$i]}
+#	th_z=${th_z_arr_1st[$i]}
+#	t_dim=${tdim_arr_1st[$i]}
+#	num_wf=${num_wf_arr_1st[$i]}
+#	tgs=$((th_x * th_y*th_z))
+#	echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
+#	
+#	###*********** Prepare seismograms for RTM ************###
+###	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+#	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+#	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+#	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+#	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
+#
+#  
+#	###*********** Run RTM SB ************###
+#	echo "Running RTM SB"
+#	echo "Running 1st order"
+#	
+##	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
+#	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+#	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+#	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+#	
+#	###*********** Delete RTM-related img,ilm files ************###
+#	rm ./data/*img*
+#	rm ./data/*ilm*
+#
+#	###*********** Run RTM TB ************##
+#	echo "Running RTM TB"
+#	echo "Running 1st order"
+#	
+#	#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+#	./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+#	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+#	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+#	--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax >> $logs_path/$logs_filename;
 
 done

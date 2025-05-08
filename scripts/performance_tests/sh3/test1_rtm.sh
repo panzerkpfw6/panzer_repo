@@ -28,7 +28,6 @@
 ###******** HORODATED LOG WRITING *********###
 echo $hostname
 lscpu
-exit 1
 
 ###********** OPENMP PARAMETERS ***********###
 #export OMP_NUM_THREADS=192
@@ -100,7 +99,8 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_rtm
-export logs_filename="test1_rtm_pasc_0.log"
+#export logs_filename="test1_rtm_pasc_0.log"
+export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
 
 ##### Run tests #####
@@ -114,6 +114,9 @@ for i in $(seq 0 $len); do
 	cby=${cby_arr[$i]}
 	cbz=${cbz_arr[$i]}
 	cbz=9999
+	
+	export logs_filename="test1_rtm_$nx.log"
+	echo $logs_filename
 	
 	echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
 	grid_str="${nx}_${ny}_${nz}"
@@ -136,7 +139,7 @@ for i in $(seq 0 $len); do
 	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
+	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1 >> $logs_path/$logs_filename;
 
   
 	###*********** Run RTM SB ************###
@@ -148,7 +151,6 @@ for i in $(seq 0 $len); do
 	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
 	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
 	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
-	
 	###*********** Delete RTM-related img,ilm files ************###
 	rm ./data/*img*
 	rm ./data/*ilm*
@@ -162,5 +164,8 @@ for i in $(seq 0 $len); do
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 	--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax >> $logs_path/$logs_filename;
+	###*********** Delete RTM-related img,ilm files ************###
+	rm ./data/*img*
+	rm ./data/*ilm*
 
 done
