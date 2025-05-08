@@ -64,11 +64,17 @@ export fmax=8;
 export dx=10;
 
 ###********** Default SB, TB parameters *********###
-th_x_arr_1st=(3 4 4)
+cbx_arr=(8  16 22)
+cby_arr=(6  6  46)
+cbz_arr=(9999  9999  9999)
+
+# PASC paper results
+th_x_arr_1st=(16 4 4)
 th_y_arr_1st=(2 2 2)
-th_z_arr_1st=(2 1 1)
-tdim_arr_1st=(3 3 7)
-num_wf_arr_1st=(24 20 4)
+th_z_arr_1st=(1 1 1)
+tdim_arr_1st=(7 3 7)
+num_wf_arr_1st=(192 20 4)
+
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )

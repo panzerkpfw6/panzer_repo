@@ -29,26 +29,26 @@ echo $hostname
 lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=192
-#export OMP_PROC_BIND=true
-#export OMP_PLACES=threads
-#export OMP_NESTED='True'
-#export granularity=fine
-#export KMP_AFFINITY=compact
-#export KMP_HW_SUBSET=1t
-###********** Set compiler flags *********###
-#export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-#export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export OMP_NUM_THREADS=192
+export OMP_PROC_BIND=true
+export OMP_PLACES=threads
+export OMP_NESTED='True'
+export granularity=fine
+export KMP_AFFINITY=compact
+export KMP_HW_SUBSET=1t
+##********** Set compiler flags *********###
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ######################################################
-export OMP_NUM_THREADS=192;
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
-export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export OMP_NUM_THREADS=192;
+#export OMP_PLACES=cores;
+#export OMP_PROC_BIND=close;
+#export OMP_STACKSIZE=64M;
+#export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+#export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
 ###********** MODULES *********###
 ########module load intel/2024.2.1
@@ -107,7 +107,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_orig.log"
+export logs_filename="test1_forward_pasc_avx2.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
