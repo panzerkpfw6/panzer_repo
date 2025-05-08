@@ -74,19 +74,19 @@ cbz_arr=(9999  9999  9999)
 #tdim_arr_1st=(7 7 7)
 #num_wf_arr_1st=(192 192 192)
 
-## PASC paper results
-#th_x_arr_1st=(16 4 4)
-#th_y_arr_1st=(2 2 2)
-#th_z_arr_1st=(1 1 1)
-#tdim_arr_1st=(7 3 7)
-#num_wf_arr_1st=(192 20 4)
-
-# PASC-based results, my guess
-th_x_arr_1st=(16 2 2)
+# PASC paper results
+th_x_arr_1st=(16 4 4)
 th_y_arr_1st=(2 2 2)
 th_z_arr_1st=(1 1 1)
-tdim_arr_1st=(7 7 7)
-num_wf_arr_1st=(192 20 20)
+tdim_arr_1st=(7 3 7)
+num_wf_arr_1st=(192 20 4)
+
+## PASC-based results, my guess
+#th_x_arr_1st=(16 2 2)
+#th_y_arr_1st=(2 2 2)
+#th_z_arr_1st=(1 1 1)
+#tdim_arr_1st=(7 7 7)
+#num_wf_arr_1st=(192 20 20)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
