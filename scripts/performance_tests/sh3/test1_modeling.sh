@@ -107,7 +107,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc2.log"
+export logs_filename="test1_forward_pasc_orig.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
