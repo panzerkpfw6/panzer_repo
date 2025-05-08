@@ -96,8 +96,9 @@ make VERBOSE=1
 make install
 
 ##### Logs directory #####
-export logs_path=./logs/test1_rtm
 mkdir ./logs
+export logs_path=./logs/test1_rtm
+export logs_filename="test1_rtm_pasc.log"
 rm -rf $logs_path
 mkdir $logs_path
 
