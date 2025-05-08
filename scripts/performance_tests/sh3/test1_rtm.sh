@@ -99,12 +99,11 @@ make install
 mkdir ./logs
 export logs_path=./logs/test1_rtm
 export logs_filename="test1_rtm_pasc_0.log"
-rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 2 $len); do
+for i in $(seq 1 $len); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
@@ -126,13 +125,16 @@ for i in $(seq 2 $len); do
 	tgs=$((th_x * th_y*th_z))
 	echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 	
+	###*********** Delete previously recorded seismograms. Clean folder. ************###
+	rm -rf ./data/*sismos*
+	
 	###*********** Prepare seismograms for RTM ************###
-#	echo "Prepare seismograms for RTM"
-#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-#	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
-#	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-#	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
-#	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
+	echo "Prepare seismograms for RTM"
+	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+	./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1;
 
   
 	###*********** Run RTM SB ************###
