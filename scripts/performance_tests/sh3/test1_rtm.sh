@@ -110,14 +110,14 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_rtm
-export logs_filename="test1_rtm_pasc_all_grids.log"
+export logs_filename="test1_rtm_pasc_all_grids2.log"
 #export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
 rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
+for i in $(seq 2 $len); do
 #for i in $(seq 1 2); do
 	echo $i
 	nx=${nx_arr[$i]}
