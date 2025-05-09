@@ -81,11 +81,11 @@ th_z_arr_1st=(1 1 1)
 tdim_arr_1st=(7 3 7) # orig PASC
 num_wf_arr_1st=(192 20 4)
 
-th_x_arr_1st=(16 4 4)
-th_y_arr_1st=(2 2 4)
-th_z_arr_1st=(1 1 1)
-tdim_arr_1st=(7 3 15) # orig PASC
-num_wf_arr_1st=(192 20 4)
+#th_x_arr_1st=(16 4 4)
+#th_y_arr_1st=(2 2 4)
+#th_z_arr_1st=(1 1 1)
+#tdim_arr_1st=(7 3 15) # orig PASC
+#num_wf_arr_1st=(192 20 4)
 
 
 ###*********** Experiment setup ************###
@@ -161,7 +161,7 @@ for i in $(seq 2 $len); do
 	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
 	./bin/rtm --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 3 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
+	--tb_t_dim $t_dim --tb_num_wf $num_wf --fwd_steps 9 --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 	--dx $dh --dy $dh --dz $dh --dt $dt --src_depth $src_depth --rcv_depth $rcv_depth --order 1 --fmax $fmax >> $logs_path/$logs_filename;
 	###*********** Delete RTM-related img,ilm files ************###
 	rm ./data/*img*
