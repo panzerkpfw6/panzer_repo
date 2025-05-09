@@ -119,8 +119,9 @@ rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 2 $len); do
+#for i in $(seq 2 $len); do
 #for i in $(seq 1 2); do
+for ((i=$len; i>=0; i--)); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
