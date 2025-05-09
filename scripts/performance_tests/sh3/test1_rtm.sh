@@ -110,14 +110,14 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_rtm
-#export logs_filename="test1_rtm_pasc_0.log"
-export logs_filename="test1_rtm_$nx.log"
+export logs_filename="test1_rtm_pasc_all_grids.log"
+#export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
 rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 2 $len); do
+for i in $(seq 0 $len); do
 #for i in $(seq 1 2); do
 	echo $i
 	nx=${nx_arr[$i]}
@@ -128,7 +128,7 @@ for i in $(seq 2 $len); do
 	cbz=${cbz_arr[$i]}
 	cbz=9999
 	
-	export logs_filename="test1_rtm_$nx.log"
+#	export logs_filename="test1_rtm_$nx.log"	
 	echo $logs_filename
 	
 	echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
@@ -155,6 +155,7 @@ for i in $(seq 2 $len); do
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1 >> $logs_path/$logs_filename;
+	exit 1
 
 
 	###*********** Run RTM TB ************##
