@@ -92,7 +92,7 @@ num_wf_arr_1st=(192 20 4)
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
-export NT_TB_1st=2010
+export NT_TB_1st=1001
 export NT_SB_1st=1001
 #export NT_TB_1st=505
 #export NT_SB_1st=505
@@ -158,7 +158,7 @@ for ((i=($len-1); i>=0; i--)); do
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1 >> $logs_path/$logs_filename;
-	exit 1
+#	exit 1
 
 
 	###*********** Run RTM TB ************##
