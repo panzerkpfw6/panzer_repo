@@ -2323,8 +2323,8 @@ void wave_tb_init(tb_t *ctx,
 
     // nb stencils main and total
     ctx->nb_stencils_main = ctx->t_len * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
-    ctx->nb_stencils_total_fwd =  ctx->time_steps * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
-    ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
+//    ctx->nb_stencils_total_fwd =  ctx->time_steps * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+//    ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
 
 //    MSG("ctx->nb_stencils_main=%d",ctx->nb_stencils_main);
 //    MSG("ctx->nb_stencils_total_fwd=%d",ctx->nb_stencils_total_fwd);
@@ -2339,10 +2339,10 @@ void wave_tb_init(tb_t *ctx,
 //    MSG("ctx->nb_stencils_total_fwd=%llu\n", (unsigned long long)ctx->nb_stencils_total_fwd);
 //    MSG("ctx->nb_stencils_total_bwd=%llu\n", (unsigned long long)ctx->nb_stencils_total_bwd);
 
-    MSG("ctx->nb_stencils_main=%llu\n", ctx->nb_stencils_main);
-    MSG("ctx->nb_stencils_total_fwd=%llu\n",ctx->nb_stencils_total_fwd);
-    MSG("ctx->nb_stencils_total_bwd=%llu\n",ctx->nb_stencils_total_bwd);
-//    exit(1);
+//    MSG("ctx->time_steps=%llu\n",ctx->time_steps);
+//    MSG("ctx->nb_stencils_main=%llu\n", ctx->nb_stencils_main);
+//    MSG("ctx->nb_stencils_total_fwd=%llu\n",ctx->nb_stencils_total_fwd);
+//    MSG("ctx->nb_stencils_total_bwd=%llu\n",ctx->nb_stencils_total_bwd);
 
     // damping
     ctx->dampx = calloc(ctx->nnx, sizeof(float));
@@ -2990,14 +2990,27 @@ void wave_tb_forward_1st(tb_t* ctx,
 	uint64_t n_sample=0; n_sample=(uint64_t) p->nt * nelm;
 //    printf("n_sample:%llu\n",n_sample);
 
-	ctx->nb_stencils_main = ctx->t_len * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
+
+
+
+	int t_len_tmp = 2*( (p->nt-2)/((ctx->t_dim+1)*2) ) - 1;
+
+	ctx->nb_stencils_main =(uint64_t) t_len_tmp * (ctx->t_dim + 1)*ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
 //    ctx->nb_stencils_total_fwd =  p->nt * ctx->stencilx * ctx->stencily * ctx->stencilz; //1LL *
 	ctx->nb_stencils_total_fwd =  n_sample; //1LL *
-	ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
 
+//	ctx->nb_stencils_total_bwd = (ctx->nb_stencils_total_fwd + ctx->nb_stencils_main) / 2;
+	ctx->nb_stencils_total_bwd=n_sample;
+
+	MSG("p->nt=%llu",p->nt);
+	MSG("nelm=%llu", nelm);
+//	MSG("stencil_nelm=%llu",ctx->stencilx * ctx->stencily * ctx->stencilz);
+//	MSG("t_len_tmp=%llu", t_len_tmp);
+//	MSG("(ctx->t_dim + 1)=%llu",  (ctx->t_dim + 1) );
 	MSG("ctx->nb_stencils_main=%llu", ctx->nb_stencils_main);
 	MSG("ctx->nb_stencils_total_fwd=%llu",ctx->nb_stencils_total_fwd);
 	MSG("ctx->nb_stencils_total_bwd=%llu",ctx->nb_stencils_total_bwd);
+//	exit(1);
 
     // same as SB
 //  n_flop= p->nt * nelm * ((3 * 14) + 7+12) ;//pavel's proposed formula.

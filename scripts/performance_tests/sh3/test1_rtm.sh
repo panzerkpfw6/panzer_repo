@@ -81,6 +81,7 @@ th_z_arr_1st=(1 1 1)
 tdim_arr_1st=(7 3 7) # orig PASC
 num_wf_arr_1st=(192 20 4)
 fwd_steps=21
+#fwd_steps=9
 
 #th_x_arr_1st=(16 4 4)
 #th_y_arr_1st=(2 2 4)
