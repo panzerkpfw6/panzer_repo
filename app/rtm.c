@@ -577,11 +577,12 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
     printf("tb_timer\n");
     wave_tb_timer_init(timer, ctx->thread_group_size, ctx->num_thread_groups);
 
-    printf("Nb of snapshots in FWD: %d\n", ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
+//    printf("Nb of snapshots in FWD: %d\n", ((ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps));
 
 //		int max_ifwd = (2 * P->nt + ctx->fwd_steps - 1) / ctx->fwd_steps;
 //	int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1;
 	int max_ifwd = (2 * ctx->t_len + ctx->fwd_steps - 1) / ctx->fwd_steps  +1+1;
+	printf("Nb of snapshots in FWD: %d\n", max_ifwd );
 	size_t fwd_size = s->size * max_ifwd;
 
     if (ctx->mode == 1 || ctx->mode == 2) {
