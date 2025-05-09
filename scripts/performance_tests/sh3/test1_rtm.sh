@@ -70,8 +70,8 @@ export dh=25;
 dt=0.001;
 
 ###********** Default SB, TB parameters *********###
-cbx_arr=(8  16 22)
-cby_arr=(6  6  46)
+cbx_arr=(8 16 22)
+cby_arr=(6 6 46)
 cbz_arr=(9999 9999 9999)
 
 # PASC paper results
@@ -107,7 +107,7 @@ mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
+for i in $(seq 2 $len); do
 #for i in $(seq 1 2); do
 	echo $i
 	nx=${nx_arr[$i]}
@@ -135,6 +135,8 @@ for i in $(seq 0 $len); do
 	
 	###*********** Delete previously recorded seismograms. Clean folder. ************###
 	rm -rf ./data/*sismos*
+	rm ./data/*img*
+	rm ./data/*ilm*
 	
 	###*********** Prepare seismograms for RTM ************###
 	echo "Prepare seismograms for RTM"
