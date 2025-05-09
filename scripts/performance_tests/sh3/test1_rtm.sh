@@ -92,8 +92,8 @@ num_wf_arr_1st=(192 20 4)
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
-export NT_TB_1st=2001
-export NT_SB_1st=2001
+export NT_TB_1st=1001
+export NT_SB_1st=1001
 #export NT_TB_1st=505
 #export NT_SB_1st=505
 
@@ -114,8 +114,8 @@ export logs_filename="test1_rtm_pasc_all_grids.log"
 #export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
 
+rm $logs_path/*
 rm $logs_path/$logs_filename;
-rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
 len=${#nx_arr[@]}
