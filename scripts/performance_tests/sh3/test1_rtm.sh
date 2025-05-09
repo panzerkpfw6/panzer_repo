@@ -94,8 +94,8 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=2001
 export NT_SB_1st=2001
-export NT_TB_1st=505
-export NT_SB_1st=505
+#export NT_TB_1st=505
+#export NT_SB_1st=505
 
 #export NT_TB_1st=201
 #export NT_SB_1st=201
