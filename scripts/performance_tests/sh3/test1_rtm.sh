@@ -97,6 +97,9 @@ export NT_SB_1st=2001
 export NT_TB_1st=505
 export NT_SB_1st=505
 
+export NT_TB_1st=201
+export NT_SB_1st=201
+
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 CC=icc CXX=icpc cmake .
@@ -110,6 +113,7 @@ export logs_path=./logs/test1_rtm
 #export logs_filename="test1_rtm_pasc_0.log"
 export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
+rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
 len=${#nx_arr[@]}
@@ -171,14 +175,14 @@ for i in $(seq 2 $len); do
 	
 	
 	###*********** Run RTM SB ************###
-	echo "Running RTM SB"
-	echo "Running 1st order"
-	
-	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
-	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+#	echo "Running RTM SB"
+#	echo "Running 1st order"
+#	
+#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
+#	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+#	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+#	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
 	###*********** Delete RTM-related img,ilm files ************###
 	rm ./data/*img*
 	rm ./data/*ilm*
