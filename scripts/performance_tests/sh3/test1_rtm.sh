@@ -97,8 +97,8 @@ export NT_SB_1st=2001
 export NT_TB_1st=505
 export NT_SB_1st=505
 
-export NT_TB_1st=201
-export NT_SB_1st=201
+#export NT_TB_1st=201
+#export NT_SB_1st=201
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -155,7 +155,6 @@ for i in $(seq 2 $len); do
 	--tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
 	--tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot $dshot --first $first --last $last -c \
 	--src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 1 >> $logs_path/$logs_filename;
-	exit 1
 
 
 	###*********** Run RTM TB ************##
@@ -175,14 +174,14 @@ for i in $(seq 2 $len); do
 	
 	
 	###*********** Run RTM SB ************###
-#	echo "Running RTM SB"
-#	echo "Running 1st order"
-#	
-#	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
-#	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
-#	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
-#	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+	echo "Running RTM SB"
+	echo "Running 1st order"
+	
+	srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+	./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st --mode 2  \
+	--first $first --last $last --src_depth $src_depth --rcv_depth $rcv_depth \
+	--dx $dh --dy $dh --dz $dh --dt $dt --drcv 1 --dshot $dshot \
+	--order 1 --fmax $fmax --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
 	###*********** Delete RTM-related img,ilm files ************###
 	rm ./data/*img*
 	rm ./data/*ilm*
