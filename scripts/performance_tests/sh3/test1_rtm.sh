@@ -92,8 +92,8 @@ num_wf_arr_1st=(192 20 4)
 nx_arr=(  512  1024  2048  )
 ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
-export NT_TB_1st=1001
-export NT_SB_1st=1001
+export NT_TB_1st=2001
+export NT_SB_1st=2001
 #export NT_TB_1st=505
 #export NT_SB_1st=505
 
@@ -121,7 +121,7 @@ rm logs/test1_rtm/test1_rtm_2048.log
 len=${#nx_arr[@]}
 #for i in $(seq 2 $len); do
 #for i in $(seq 1 2); do
-for ((i=$len; i>=0; i--)); do
+for ((i=($len-1); i>=0; i--)); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}
