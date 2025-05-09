@@ -113,6 +113,8 @@ export logs_path=./logs/test1_rtm
 export logs_filename="test1_rtm_pasc_all_grids2.log"
 #export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
+
+rm $logs_path/$logs_filename;
 rm logs/test1_rtm/test1_rtm_2048.log
 
 ##### Run tests #####
