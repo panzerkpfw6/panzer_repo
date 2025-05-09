@@ -7,7 +7,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq  #
-#SBATCH --mem=200G
+###SBATCH --mem=200G
 #SBATCH --job-name=test1_rtm
 #SBATCH --output=logs/test1_rtm.%J.out
 #SBATCH --error=logs/test1_rtm.%J.err
