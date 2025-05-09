@@ -112,7 +112,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_rtm
-export logs_filename="test1_rtm_pasc_all_grids.log"
+export logs_filename="test1_rtm_pasc_all_grids2.log"
 #export logs_filename="test1_rtm_$nx.log"
 mkdir $logs_path
 
