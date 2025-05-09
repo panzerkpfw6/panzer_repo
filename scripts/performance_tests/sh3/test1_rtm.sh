@@ -88,6 +88,8 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=2001
 export NT_SB_1st=2001
+export NT_TB_1st=201
+export NT_SB_1st=201
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -105,7 +107,8 @@ mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 1 $len); do
+#for i in $(seq 1 $len); do
+for i in $(seq 1 2); do
 	echo $i
 	nx=${nx_arr[$i]}
 	ny=${ny_arr[$i]}

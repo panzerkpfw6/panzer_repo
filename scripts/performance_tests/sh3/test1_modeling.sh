@@ -113,8 +113,8 @@ mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-#for i in $(seq 0 $len); do
-for i in $(seq 0 2); do
+for i in $(seq 0 $len); do
+#for i in $(seq 1 2); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
