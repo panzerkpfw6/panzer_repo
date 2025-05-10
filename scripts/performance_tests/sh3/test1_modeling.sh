@@ -82,11 +82,11 @@ tdim_arr_1st=(7 3 7)
 num_wf_arr_1st=(192 20 4)
 
 ## PASC-based results, my guess
-#th_x_arr_1st=(16 2 2)
-#th_y_arr_1st=(2 2 2)
-#th_z_arr_1st=(1 1 1)
-#tdim_arr_1st=(7 7 7)
-#num_wf_arr_1st=(192 20 20)
+th_x_arr_1st=(8 2 2)
+th_y_arr_1st=(1 2 2)
+th_z_arr_1st=(1 1 1)
+tdim_arr_1st=(3 7 7)
+num_wf_arr_1st=(24 20 20)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -94,8 +94,8 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=505
 export NT_SB_1st=505
-export NT_TB_1st=4001
-export NT_SB_1st=4001
+#export NT_TB_1st=4001
+#export NT_SB_1st=4001
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -107,7 +107,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_better2.log"
+export logs_filename="test1_forward_pasc_better_guess.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
