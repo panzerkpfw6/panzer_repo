@@ -415,7 +415,7 @@ int main(int argc, char* argv[]) {
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
     /// create a parser.
-    parser *p = parser_create("Seismic Modelling using stencil");
+    parser *p = parser_create("Seismic Modeling using stencil");
     /// parse command line arguments.
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);

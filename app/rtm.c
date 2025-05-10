@@ -734,6 +734,7 @@ void run_rtm_1st_tb_cpu(sismap_t *s,float *vel,float *inv_rho, float *source, fl
 int main(int argc, char *argv[]) {
 //	MSG("Hi");
 	printf("Hi\n");
+	MSG("Before running RTM");
 //	time_t rawtime;
 //	struct tm *timeinfo;
 //	char buffer[80];
@@ -859,7 +860,6 @@ int main(int argc, char *argv[]) {
     /// print info if needed.
     if (s->verbose) wave_print(s);
 
-    MSG("Before running RTM");
     /// run RTM on CPU or GPU.
     if (s->cpu) {
         if (s->order==1) {
