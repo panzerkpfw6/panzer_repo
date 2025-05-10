@@ -28,27 +28,27 @@
 echo $hostname
 lscpu
 
-###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=192
-export OMP_PROC_BIND=true
-export OMP_PLACES=threads
-export OMP_NESTED='True'
-export granularity=fine
-export KMP_AFFINITY=compact
-export KMP_HW_SUBSET=1t
-##********** Set compiler flags *********###
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+####********** OPENMP PARAMETERS ***********###
+#export OMP_NUM_THREADS=192
+#export OMP_PROC_BIND=true
+#export OMP_PLACES=threads
+#export OMP_NESTED='True'
+#export granularity=fine
+#export KMP_AFFINITY=compact
+#export KMP_HW_SUBSET=1t
+###********** Set compiler flags *********###
+#export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+#export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ######################################################
-#export OMP_NUM_THREADS=192;
-#export OMP_PLACES=cores;
-#export OMP_PROC_BIND=close;
-#export OMP_STACKSIZE=64M;
-#export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-#export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-#export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export OMP_NUM_THREADS=192;
+export OMP_PLACES=cores;
+export OMP_PROC_BIND=close;
+export OMP_STACKSIZE=64M;
+export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
 ###********** MODULES *********###
 ########module load intel/2024.2.1
@@ -94,8 +94,8 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=505
 export NT_SB_1st=505
-export NT_TB_2nd=502
-export NT_SB_2nd=505
+export NT_TB_1st=1001
+export NT_SB_1st=1001
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -107,7 +107,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_avx2.log"
+export logs_filename="test1_forward_pasc_better.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
