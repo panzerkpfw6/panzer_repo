@@ -58,7 +58,7 @@ export NT_SB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/test2_modeling.log"
+export logs_file="./logs/test2_modeling_3rd_run.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
@@ -72,7 +72,7 @@ export dh=10;
 ##### Run tests #####
 len=${#nx_arr[@]}
 export cbz=9999;
-for i in $(seq 0 $len); do
+for i in $(seq 2 $len); do
     echo $i
     nx=${nx_arr[$i]}
     ny=${ny_arr[$i]}
