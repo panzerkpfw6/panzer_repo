@@ -94,8 +94,8 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=505
 export NT_SB_1st=505
-export NT_TB_1st=1001
-export NT_SB_1st=1001
+export NT_TB_1st=4001
+export NT_SB_1st=4001
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
@@ -107,7 +107,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_better.log"
+export logs_filename="test1_forward_pasc_better2.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
