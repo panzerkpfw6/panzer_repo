@@ -162,15 +162,15 @@ def read_data_stencil_rtm(filename):
                 match = re.search(pattern, line)
                 if match:   number = match.group(1)
                 tmp_bwd_giga_points=float(number)
-            elif ('[STENCIL MSG]:PropSpeed:' in line) and ('[STENCIL MSG]:Speed:' in previous_line)  and (tmp_rtm_phase=='fwd'):
+            elif ('[STENCIL MSG]:Speed:' in line) and ('[STENCIL MSG]:SISMOS:' in previous_line)  and (tmp_rtm_phase=='fwd'):
                 ### account for performance in SB method
-                pattern = r'\[STENCIL MSG\]:PropSpeed:\s*([\d.]+)\s*GStencils/s'
+                pattern = r'\[STENCIL MSG\]:Speed:\s*([\d.]+)\s*GStencils/s'
                 match = re.search(pattern, line)
                 if match:   number = match.group(1)
                 tmp_fwd_giga_points=float(number)
-            elif ('[STENCIL MSG]:PropSpeed:' in line) and ('[STENCIL MSG]:Speed:' in previous_line)  and (tmp_rtm_phase=='bwd'):
+            elif ('[STENCIL MSG]:Speed:' in line) and ('[STENCIL MSG]:IMAGE COND:' in previous_line)  and (tmp_rtm_phase=='bwd'):
                 ### account for performance in SB method
-                pattern = r'\[STENCIL MSG\]:PropSpeed:\s*([\d.]+)\s*GStencils/s'
+                pattern = r'\[STENCIL MSG\]:Speed:\s*([\d.]+)\s*GStencils/s'
                 match = re.search(pattern, line)
                 if match:   number = match.group(1)
                 tmp_bwd_giga_points=float(number)
@@ -225,7 +225,6 @@ def read_data_stencil_rtm(filename):
         'tdim': tdim,
         'numwf': numwf
         })
-    print(data.columns)
     return data
 
 #####################################################################
@@ -234,21 +233,23 @@ plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['axes.titleweight'] = 'bold'
 tick_label_size=11
 def plot_perf_rtm(data,save_paths,title='',metric='gstencils',gflops_limit=3300,gstencils_limit=100):
-    barWidth = 0.25
+    barWidth = 0.3
     font = {'size': 17}
     plt.rc('font', **font)
     plt.rcParams["font.weight"]="bold"
     n_axis=3
     # fig, ax = plt.subplots(1,len(data_list),figsize=(7.5*len(data_list),5))
     # fig, ax = plt.subplots(1,len(data_list),figsize=(22*len(data_list),2.0))  # first variant
-    fig, ax = plt.subplots(1,n_axis,figsize=(7.5*n_axis,2.0))  # second variant
+    fig, ax = plt.subplots(1,n_axis,figsize=(7.5*n_axis,3.5))  # second variant
     # plt.subplots_adjust(left=0.1, right=0.97,wspace=0.39, hspace=0.4)
     # plt.subplots_adjust(left=0.1, right=0.97,wspace=0.2, hspace=0.5)
     # Set position of bar on X axis 
     br1 = np.arange(3)
     br2 = [x + barWidth for x in br1]
     
-    grids=data['grids'].unique()
+    
+    # grids=data['grids'].unique()
+    grids=['512 x 512 x 512','1024 x 1024 x 512','2048 x 2048 x 512']
     ##### for (counter,data) in enumerate(data):
     for i_axis in range(n_axis):
         # Make the plot
@@ -256,7 +257,6 @@ def plot_perf_rtm(data,save_paths,title='',metric='gstencils',gflops_limit=3300,
             AX=ax
         else:
             AX=ax[i_axis]
-        print('data=',data)
         
         grid_name=grids[i_axis];
         data_grid=data[data['grids']==grid_name]
@@ -274,6 +274,7 @@ def plot_perf_rtm(data,save_paths,title='',metric='gstencils',gflops_limit=3300,
         TB.append(TB_data.iloc[0]['fwd_giga_points'])
         TB.append(TB_data.iloc[0]['bwd_giga_points'])
         TB.append( (TB_data.iloc[0]['fwd_giga_points']+TB_data.iloc[0]['bwd_giga_points'])/2 )
+        print(grid_name,SB,TB)
         
         bars=AX.bar(br1, SB, color ='b', width = barWidth,edgecolor ='grey', label ='SB')
         for bar in bars:
@@ -284,39 +285,35 @@ def plot_perf_rtm(data,save_paths,title='',metric='gstencils',gflops_limit=3300,
                 plot_val=round(yval,1)
             ### AX.text(bar.get_x()-0.04,yval+yval*0.02,plot_val,fontsize=14,fontweight='bold')   # bold, normal
             if np.isfinite(yval):
-                AX.text(bar.get_x() - 0.04, yval + yval * 0.02, plot_val, fontsize=14, fontweight='bold')
+                AX.text(bar.get_x() - 0.04, yval + yval * 0.03, plot_val, fontsize=18, fontweight='bold')
             else:
                 print(f"Warning: Invalid yval at bar {bar.get_x()}: {yval}")
 
-        bars=AX.bar(br2, TB, color ='r', width = barWidth,edgecolor ='grey', label ='MWD')
+        bars=AX.bar(br2, TB, color ='r', width = barWidth,edgecolor ='grey', label ='MWD-TB')
         for bar in bars:
             yval = bar.get_height()
             if metric=='gflops':
                 plot_val=int(yval)
             else:
                 plot_val=round(yval,1)
-            #### AX.text(bar.get_x()+0.04,yval+yval*0.02,plot_val,fontsize=14,fontweight='bold')
             if np.isfinite(yval):
-                AX.text(bar.get_x() - 0.04, yval + yval * 0.02, plot_val, fontsize=14, fontweight='bold')
+                AX.text(bar.get_x() - 0.04, yval + yval * 0.03, plot_val, fontsize=18, fontweight='bold')
             else:
                 print(f"Warning: Invalid yval at bar {bar.get_x()}: {yval}")
 
-        # AX.set_xticks([r + barWidth for r in range(len(SB))],['Stencil', 'Stencil+ABCs'])
-        AX.set_xticks([0.125,1.125],['FWD,\n phase','BWD,\n phase','Total'], fontweight ='bold', fontsize = 15)
-        # AX.set_yticks(fontsize=15)
-        # plt.yticks(fontsize=13)
-        AX.tick_params(axis='y', labelsize=13)
+        x_labels=['FWD\n phase','BWD\n phase','Total']
+        AX.set_xticks([r + barWidth for r in range(3)],x_labels, fontweight ='bold', fontsize = 17)
+        # AX.set_xticks([0.125,1.125,2.125],x_labels, fontweight ='bold', fontsize = 18)
+        AX.tick_params(axis='y', labelsize=16)
 
         if metric=='gflops':
             AX.set_ylabel('GFlop/s', fontweight ='bold', fontsize = 15)
             AX.set_ylim(bottom=0,top=gflops_limit)
         else:
-            # AX.set_ylabel('GStencils/s', fontweight ='bold', fontsize = 18)
-            AX.set_ylabel('GStencils/s',fontweight ='bold', fontsize = 15)
+            AX.set_ylabel('GStencils/s',fontweight ='bold', fontsize = 18)
             AX.set_ylim(bottom=0,top=gstencils_limit)
-        AX.legend(loc='upper right',fontweight ='bold', fontsize = 15)
-        # AX.set_title('Grid size:\n'+grid_name,fontweight='bold',fontsize=14)
-        AX.set_title(title+', grid size:'+grid_name,fontweight='bold',fontsize=17)
+        AX.legend(loc='upper right', fontsize = 16)
+        AX.set_title(title+', grid size: '+grid_name,fontweight='bold',fontsize=17)
     my_suptitle=fig.suptitle('',fontsize=18,y=0,weight='bold')
     # my_suptitle=fig.suptitle(title,fontsize=18,y=0,weight='bold')
     plt.show()
@@ -329,7 +326,7 @@ def plot_perf_rtm(data,save_paths,title='',metric='gstencils',gflops_limit=3300,
 save_path='/media/plotnips/sdd1/Dropbox/Apps/Overleaf/pavel_phd_thesis/fig/rtm/figures/performances/'
 
 perf_data=read_data_stencil_rtm(os.path.join(folder_genoa,'test1_rtm_pasc_all_grids2.log'))
-save_paths=[os.path.join(save_path,'perf_rtm_genoa')]
+save_paths=[os.path.join(save_path,'perf_rtm_genoa_TEST')]
 plot_perf_rtm(perf_data,save_paths,title='Genoa',metric='gstencils',gstencils_limit=100)
 ss=1
 #####################################################################

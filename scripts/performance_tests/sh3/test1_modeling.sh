@@ -81,12 +81,12 @@ th_z_arr_1st=(1 1 1)
 tdim_arr_1st=(7 3 7)
 num_wf_arr_1st=(192 20 4)
 
-## PASC-based results, my guess
-th_x_arr_1st=(8 2 2)
-th_y_arr_1st=(1 2 2)
-th_z_arr_1st=(1 1 1)
-tdim_arr_1st=(3 7 7)
-num_wf_arr_1st=(24 20 20)
+### PASC-based results, my guess
+#th_x_arr_1st=(8 2 2)
+#th_y_arr_1st=(1 2 2)
+#th_z_arr_1st=(1 1 1)
+#tdim_arr_1st=(3 7 7)
+#num_wf_arr_1st=(24 20 20)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -107,13 +107,13 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_better_guess.log"
+export logs_filename="test1_forward_pasc_new_attempt.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
+for i in $(seq 2 $len); do
 #for i in $(seq 1 2); do
   echo $i
   nx=${nx_arr[$i]}
@@ -127,13 +127,13 @@ for i in $(seq 0 $len); do
   echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
 
   ###*********** SB ************###
-  echo "Running SB"
-  echo "Running 1st order"
-  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
-  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-  --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
-  --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+#  echo "Running SB"
+#  echo "Running 1st order"
+#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#  --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+#  --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
 
   ###*********** TB ************##
   echo "Running TB"
@@ -146,7 +146,8 @@ for i in $(seq 0 $len); do
   tgs=$((th_x * th_y*th_z))
   echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 
-  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
   ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
