@@ -112,7 +112,7 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_new_attempt3.log"
+export logs_filename="test1_forward_pasc_new_attempt3_aocc.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
