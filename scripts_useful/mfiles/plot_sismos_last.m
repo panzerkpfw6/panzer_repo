@@ -6,6 +6,7 @@ fname=['../stencil-rtm/data/sismos_91.raw'];
 fname=['../../data/sismos_sb/sismos_1.raw'];
 fname=['../../data/sismos_sb/sismos_41100.raw'];
 fname=['../../data/sismos_61.raw'];
+
 % fname=['../../data/filtered_real_data/sismos_61.raw'];
 nt=1200;nx=128;ny=256;
 nt=200;nx=676;ny=676;
