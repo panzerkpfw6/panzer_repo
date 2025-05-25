@@ -7,7 +7,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --time=24:00:00
 #SBATCH --partition=workq
-#SBATCH --job-name=test_default_pars
+#SBATCH --job-name=rtm_salt3d_sb
 #SBATCH --output=logs/rtm_salt3d_sb.%J.out
 #SBATCH --error=logs/rtm_salt3d_sb.%J.err
 #SBATCH --cpus-per-task=192
@@ -25,6 +25,11 @@
 #we need to load cmake,icpc modules from somewhere
 
 ###******** HORODATED LOG WRITING *********###
+mkdir velocity_models
+cd velocity_models
+#wget -q --content-disposition 'https://www.dropbox.com/scl/fi/05bc42ctyyhx1d7d10k51/salt3d_676x676x201_xyz.raw?rlkey=04646f0r2vil9ph5m9yjsiras&dl=0'
+cd ..
+
 echo $hostname
 lscpu
 
@@ -85,10 +90,11 @@ nx=676;ny=676;nz=201;dh=25;
 ##### Profile x=310. Salt3D. no mistake
 #first=20957;last=21023;
 #### Profile x=?. Salt3D. no mistake
-first=1;last=100;
-dshot=4568;
+first=1;last=100; dshot=4568;	
+#first=50;last=50; dshot=4568;	# isx=412, isy=136,
+#first=1;last=10; dshot=45680;
 fmax=11;
-cbx=64;cby=22;cbz=9999;
+cbx=8;cby=6;cbz=9999;
 
 #./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
 # --first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
@@ -104,19 +110,19 @@ cbx=64;cby=22;cbz=9999;
 #echo "Do Python filtering of real data." 
 
 
-echo "Model data for RTM. salt3d."
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
---first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
---dx $dh --dy $dh --dz $dh --dt $dt  \
---cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_model_salt3d.log;
-
-echo "Perform RTM"
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
---first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
---dx $dh --dy $dh --dz $dh --dt $dt \
---cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log_rtm_salt3d.log;
+#echo "Model data for RTM. salt3d."
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#--dx $dh --dy $dh --dz $dh --dt $dt  \
+#--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/log_model_salt3d.log;
+#
+#echo "Perform RTM"
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#--dx $dh --dy $dh --dz $dh --dt $dt \
+#--cbx $cbx --cby $cby --cbz $cbz >> $logs_path/log_rtm_salt3d.log;
 
 
 echo "Gather images"
