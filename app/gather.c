@@ -168,6 +168,31 @@ void apply_laplacian_filter2(sismap_t *s, float *restrict img) {
     free(temp);
 }
 
+void apply_laplacian_xy_filter(sismap_t *s, float *restrict img) {
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    float *temp = malloc(dimx * dimy * dimz * sizeof(float));
+    for (int iter = 0; iter < 3; iter++) { // Apply filter 3 times for better suppression
+        memcpy(temp, img, dimx * dimy * dimz * sizeof(float));
+        #pragma omp parallel for collapse(3)
+        for (int x = 1; x < dimx - 1; x++) {
+            for (int y = 1; y < dimy - 1; y++) {
+                for (int z = 0; z < dimz; z++) { // No boundary checks in z-direction
+                    long int idx = x * dimy * dimz + y * dimz + z;
+                    float laplacian = 0.0f;
+                    // 2D Laplacian in XY plane (5-point stencil)
+                    laplacian += temp[idx + dimy * dimz] + temp[idx - dimy * dimz] + // x-direction
+                                 temp[idx + dimz] + temp[idx - dimz];                 // y-direction
+                    laplacian -= 4.0f * temp[idx]; // Center weight
+                    img[idx] = 0.5f * laplacian; // Scale by 1/2 as per paper
+                }
+            }
+        }
+    }
+    free(temp);
+}
+
 void smooth_illumination(sismap_t *s, float *restrict ilm) {
     const int dimx = s->dimx;
     const int dimy = s->dimy;
@@ -491,7 +516,7 @@ int main(int argc, char* argv[]) {
 //			apply_laplacian_filter2   smooth_illumination
 //			apply_laplacian_filter2_small(s, ilm_shot);
 //			apply_laplacian_filter2_small(s, img_shot);
-
+			apply_laplacian_xy_filter(s,img_shot);
 
 			// Normalize img_shot into img_norm
 //			normalize_image(s, img_shot, ilm_shot, img_norm);
