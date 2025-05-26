@@ -132,7 +132,7 @@ void normalize_image(sismap_t *s, float *restrict img_shot, float *restrict ilm_
 }
 
 
-int main(int argc, char* argv[]) {
+int main_option1(int argc, char* argv[]) {
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
     parser *p = parser_create("Reverse Time Migration using STENCIL");
     PARSER_BOOTSTRAP(p);
@@ -478,7 +478,7 @@ int main_filtered_each_shot_individually(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 
-int main_original(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
