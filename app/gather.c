@@ -419,7 +419,7 @@ int main(int argc, char* argv[]) {
 			//////////////////////////////////////////////
 			// Smooth ilm_shot to reduce low-frequency artifacts
 //			apply_laplacian_filter2   smooth_illumination
-			apply_laplacian_filter2(s, ilm_shot);
+//			apply_laplacian_filter2(s, ilm_shot);
 			apply_laplacian_filter2(s, img_shot);
 
 
