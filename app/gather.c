@@ -294,7 +294,8 @@ int main_option1(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
-int main_filtered_each_shot_individually(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
+  /// filtered_each_shot_individually
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
@@ -418,29 +419,30 @@ int main_filtered_each_shot_individually(int argc, char* argv[]) {
 			//////////////////////////////////////////////
 			// Smooth ilm_shot to reduce low-frequency artifacts
 			smooth_illumination(s, ilm_shot);
+			smooth_illumination(s, img_shot);
 
 			// Normalize img_shot into img_norm
 			normalize_image(s, img_shot, ilm_shot, img_norm);
 
-            // Apply Laplacian filter to the normalized image
-            apply_laplacian_filter(s, img_norm);
-
-            // Stack the filtered image into the final img
-            #pragma omp parallel for
-            for (unsigned int i = 0; i < s->size_img; i++) {
-                img[i] += img_norm[i];
-            }
+//            // Apply Laplacian filter to the normalized image
+//            apply_laplacian_filter(s, img_norm);
+//
+//            // Stack the filtered image into the final img
+//            #pragma omp parallel for
+//            for (unsigned int i = 0; i < s->size_img; i++) {
+//                img[i] += img_norm[i];
+//            }
             //////////////////////////////////////////////
 
             // Also gather unnormalized images for img_only and ilm_only
-//////			gather_img_div_ilm_smart(s->size_img,img_shot,ilm_shot,img);
+			gather_img_div_ilm_smart(s->size_img,img_shot,ilm_shot,img);
 			gather_img_ilm(s->size_img,img_shot,ilm_shot,img_only,ilm_only);
 		}
   }
   closedir(dr);
   /// save the final image on disk.
 	if (s->cpu) {
-		sprintf(img_dilm_file, "%s/img_filtered.raw", dir);
+		sprintf(img_dilm_file, "%s/img_filtered_last.raw", dir);
 		sprintf(img_only_file, "%s/img_only.raw",dir);
 		sprintf(ilm_only_file, "%s/ilm_only.raw",dir);
   } else {
@@ -478,7 +480,8 @@ int main_filtered_each_shot_individually(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 
-int main(int argc, char* argv[]) {
+int main_original(int argc, char* argv[]) {
+  /// original variant
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
