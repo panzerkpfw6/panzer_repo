@@ -50,7 +50,7 @@ void apply_laplacian_filter(sismap_t *s, float *restrict img) {
         #pragma omp parallel for collapse(3)
         for (int x = 1; x < dimx - 1; x++) {
             for (int y = 1; y < dimy - 1; y++) {
-                for (int z = 1; z < dimz - 1; z++) {
+                for (int z = 4; z < dimz - 1; z++) {
                     long int idx = x * dimy * dimz + y * dimz + z;
                     img[idx] = 0.5f * (temp[idx + dimy * dimz] + temp[idx - dimy * dimz] +
                                        temp[idx + dimz] + temp[idx - dimz] +
