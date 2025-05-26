@@ -25,6 +25,11 @@
 #we need to load cmake,icpc modules from somewhere
 
 ###******** HORODATED LOG WRITING *********###
+mkdir velocity_models
+cd velocity_models
+#wget -q --content-disposition 'https://www.dropbox.com/scl/fi/05bc42ctyyhx1d7d10k51/salt3d_676x676x201_xyz.raw?rlkey=04646f0r2vil9ph5m9yjsiras&dl=0'
+cd ..
+
 echo $hostname
 lscpu
 
@@ -89,25 +94,25 @@ first=1;last=98;
 #first=1;last=3;
 dshot=4568;
 fmax=11;
-cbx=64;cby=22;cbz=9999;
+cbx=8;cby=6;cbz=9999;
 ##################  TB parameters  ###################
 x=3; y=2; z=2; t=3; w=24;
 tgs=$(expr $x \* $y \* $z); echo $tgs
 ######################################################
 
-echo "Model data for RTM. salt3d."
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
---first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
---tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
---tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_model_salt3d.log;
-
-echo "Perform RTM"
-srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
---first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
---tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
---tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_rtm_salt3d.log;
+#echo "Model data for RTM. salt3d."
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#--tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+#--tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_model_salt3d.log;
+#
+#echo "Perform RTM"
+#srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+#./bin/rtm --verbose --n1 $nx --n2 $ny --n3 $nz --iter $timesteps --dshot $dshot --mode 2 \
+#--first $first --last $last --fwd_steps 3 --order 1 --fmax $fmax --src_depth 5 --rcv_depth 8 --drcv 1 \
+#--tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $x --tb_th_y $y --tb_th_z $z \
+#--tb_t_dim $t --tb_num_wf $w --dx $dh --dy $dh --dz $dh --dt $dt -c >> $logs_path/log_rtm_salt3d.log;
 
 echo "Gather images"
 srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
