@@ -260,7 +260,7 @@ int main(int argc, char* argv[]) {
 
     // Save the final images
     if (s->cpu) {
-        sprintf(img_dilm_file, "%s/img_filtered.raw", dir);
+        sprintf(img_dilm_file, "%s/img_filtered_opt1.raw", dir);
         sprintf(img_only_file, "%s/img_only.raw", dir);
         sprintf(ilm_only_file, "%s/ilm_only.raw", dir);
     } else {
