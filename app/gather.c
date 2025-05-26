@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
     closedir(dr);
 
     // Apply Laplacian filter to the final img
-    apply_laplacian_filter(s, img);
+    apply_laplacian_filter2(s, img);
 
     // Save the final images
     if (s->cpu) {
