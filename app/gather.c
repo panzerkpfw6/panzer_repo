@@ -418,8 +418,10 @@ int main(int argc, char* argv[]) {
 
 			//////////////////////////////////////////////
 			// Smooth ilm_shot to reduce low-frequency artifacts
-			smooth_illumination(s, ilm_shot);
-			smooth_illumination(s, img_shot);
+//			apply_laplacian_filter2   smooth_illumination
+			apply_laplacian_filter2(s, ilm_shot);
+			apply_laplacian_filter2(s, img_shot);
+
 
 			// Normalize img_shot into img_norm
 			normalize_image(s, img_shot, ilm_shot, img_norm);
