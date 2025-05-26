@@ -63,7 +63,7 @@ void apply_laplacian_filter(sismap_t *s, float *restrict img) {
     free(temp);
 }
 
-void apply_laplacian_filter2(sismap_t *s, float *restrict img) {
+void apply_laplacian_filter2_small(sismap_t *s, float *restrict img) {
     const int dimx = s->dimx;
     const int dimy = s->dimy;
     const int dimz = s->dimz;
@@ -90,6 +90,76 @@ void apply_laplacian_filter2(sismap_t *s, float *restrict img) {
                         temp[idx - dimz + 1] + temp[idx - dimz - 1]
                     );
                     laplacian -= (6.0f + 0.25f * 12.0f) * temp[idx]; // Adjust center weight
+                    img[idx] = 0.5f * laplacian; // Scale by 1/2 as per paper
+                }
+            }
+        }
+    }
+    free(temp);
+}
+
+void apply_laplacian_filter2(sismap_t *s, float *restrict img) {
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    float *temp = malloc(dimx * dimy * dimz * sizeof(float));
+
+    for (int iter = 0; iter < 3; iter++) { // Increased iterations for better suppression
+        memcpy(temp, img, dimx * dimy * dimz * sizeof(float));
+        #pragma omp parallel for collapse(3)
+        for (int x = 2; x < dimx - 2; x++) { // Adjust bounds for 5x5x3 kernel
+            for (int y = 2; y < dimy - 2; y++) {
+                for (int z = 1; z < dimz - 1; z++) {
+                    long int idx = x * dimy * dimz + y * dimz + z;
+                    float laplacian = 0.0f;
+
+                    // Nearest neighbors (X, Y at ±1, Z at ±1)
+                    laplacian += 1.0f * (temp[idx + dimy * dimz] + temp[idx - dimy * dimz] +  // X±1
+                                        temp[idx + dimz] + temp[idx - dimz] +                // Y±1
+                                        temp[idx + 1] + temp[idx - 1]);                     // Z±1
+
+                    // Farther neighbors in X, Y (at ±2)
+                    laplacian += 0.5f * (temp[idx + 2 * dimy * dimz] + temp[idx - 2 * dimy * dimz] +  // X±2
+                                        temp[idx + 2 * dimz] + temp[idx - 2 * dimz]);          // Y±2
+
+                    // Diagonal neighbors in X, Y plane (at ±1, ±1; ±2, ±1; ±1, ±2; ±2, ±2)
+                    laplacian += 0.25f * (
+                        // X±1, Y±1, Z
+                        temp[idx + dimy * dimz + dimz] + temp[idx + dimy * dimz - dimz] +
+                        temp[idx - dimy * dimz + dimz] + temp[idx - dimy * dimz - dimz] +
+                        // X±2, Y±1, Z
+                        temp[idx + 2 * dimy * dimz + dimz] + temp[idx + 2 * dimy * dimz - dimz] +
+                        temp[idx - 2 * dimy * dimz + dimz] + temp[idx - 2 * dimy * dimz - dimz] +
+                        // X±1, Y±2, Z
+                        temp[idx + dimy * dimz + 2 * dimz] + temp[idx + dimy * dimz - 2 * dimz] +
+                        temp[idx - dimy * dimz + 2 * dimz] + temp[idx - dimy * dimz - 2 * dimz] +
+                        // X±2, Y±2, Z
+                        temp[idx + 2 * dimy * dimz + 2 * dimz] + temp[idx + 2 * dimy * dimz - 2 * dimz] +
+                        temp[idx - 2 * dimy * dimz + 2 * dimz] + temp[idx - 2 * dimy * dimz - 2 * dimz]
+                    );
+
+                    // Diagonal neighbors involving Z (X±1, Y±1, Z±1; etc.)
+                    laplacian += 0.1f * (
+                        // X±1, Y, Z±1
+                        temp[idx + dimy * dimz + 1] + temp[idx + dimy * dimz - 1] +
+                        temp[idx - dimy * dimz + 1] + temp[idx - dimy * dimz - 1] +
+                        // X, Y±1, Z±1
+                        temp[idx + dimz + 1] + temp[idx + dimz - 1] +
+                        temp[idx - dimz + 1] + temp[idx - dimz - 1] +
+                        // X±1, Y±1, Z±1
+                        temp[idx + dimy * dimz + dimz + 1] + temp[idx + dimy * dimz + dimz - 1] +
+                        temp[idx + dimy * dimz - dimz + 1] + temp[idx + dimy * dimz - dimz - 1] +
+                        temp[idx - dimy * dimz + dimz + 1] + temp[idx - dimy * dimz + dimz - 1] +
+                        temp[idx - dimy * dimz - dimz + 1] + temp[idx - dimy * dimz - dimz - 1]
+                    );
+
+                    // Center weight: sum of all weights (excluding center) with negative sign
+                    float center_weight = -(6.0f * 1.0f +        // Nearest neighbors
+                                           4.0f * 0.5f +        // X, Y at ±2
+                                           12.0f * 0.25f +      // Diagonals in X, Y
+                                           12.0f * 0.1f);       // Diagonals involving Z
+                    laplacian += center_weight * temp[idx];
+
                     img[idx] = 0.5f * laplacian; // Scale by 1/2 as per paper
                 }
             }
