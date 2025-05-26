@@ -63,6 +63,41 @@ void apply_laplacian_filter(sismap_t *s, float *restrict img) {
     free(temp);
 }
 
+void apply_laplacian_filter2(sismap_t *s, float *restrict img) {
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    float *temp = malloc(dimx * dimy * dimz * sizeof(float));
+    for (int iter = 0; iter < 3; iter++) { // Increased iterations for better suppression
+        memcpy(temp, img, dimx * dimy * dimz * sizeof(float));
+        #pragma omp parallel for collapse(3)
+        for (int x = 1; x < dimx - 1; x++) {
+            for (int y = 1; y < dimy - 1; y++) {
+                for (int z = 1; z < dimz - 1; z++) {
+                    long int idx = x * dimy * dimz + y * dimz + z;
+                    float laplacian = 0.0f;
+                    // Nearest neighbors (6-point)
+                    laplacian += temp[idx + dimy * dimz] + temp[idx - dimy * dimz] +
+                                 temp[idx + dimz] + temp[idx - dimz] +
+                                 temp[idx + 1] + temp[idx - 1];
+                    // Diagonal neighbors (additional 20 points, weighted less)
+                    laplacian += 0.25f * (
+                        temp[idx + dimy * dimz + dimz] + temp[idx + dimy * dimz - dimz] +
+                        temp[idx - dimy * dimz + dimz] + temp[idx - dimy * dimz - dimz] +
+                        temp[idx + dimy * dimz + 1] + temp[idx + dimy * dimz - 1] +
+                        temp[idx - dimy * dimz + 1] + temp[idx - dimy * dimz - 1] +
+                        temp[idx + dimz + 1] + temp[idx + dimz - 1] +
+                        temp[idx - dimz + 1] + temp[idx - dimz - 1]
+                    );
+                    laplacian -= (6.0f + 0.25f * 12.0f) * temp[idx]; // Adjust center weight
+                    img[idx] = 0.5f * laplacian; // Scale by 1/2 as per paper
+                }
+            }
+        }
+    }
+    free(temp);
+}
+
 void smooth_illumination(sismap_t *s, float *restrict ilm) {
     const int dimx = s->dimx;
     const int dimy = s->dimy;
@@ -96,7 +131,170 @@ void normalize_image(sismap_t *s, float *restrict img_shot, float *restrict ilm_
     }
 }
 
+
 int main(int argc, char* argv[]) {
+    sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
+    parser *p = parser_create("Reverse Time Migration using STENCIL");
+    PARSER_BOOTSTRAP(p);
+    parser_parse(p, argc, argv);
+    s->verbose    = parser_get_bool(p, "verbose");
+    s->cpu        = parser_get_bool(p, "cpu");
+    s->time_steps = parser_get_int(p, "iter");
+    s->cfl        = parser_get_float(p, "cfl");
+    s->fmax       = parser_get_float(p, "fmax");
+    s->vel_file   = parser_get_string(p, "in");
+    s->vel_dimx   = parser_get_int(p, "n1");
+    s->vel_dimy   = parser_get_int(p, "n2");
+    s->vel_dimz   = parser_get_int(p, "n3");
+    s->dx         = parser_get_int(p, "dx");
+    s->dy         = parser_get_int(p, "dy");
+    s->dz         = parser_get_int(p, "dz");
+    s->dcdp       = parser_get_int(p, "dcdp");
+    s->dline      = parser_get_int(p, "dline");
+    s->drcv       = parser_get_int(p, "drcv");
+    s->dshot      = parser_get_int(p, "dshot");
+    s->ddepth     = parser_get_int(p, "ddepth");
+    s->device     = parser_get_int(p, "device");
+    s->first      = parser_get_int(p, "first");
+    s->last       = parser_get_int(p, "last");
+    s->src_depth  = parser_get_int(p, "src_depth");
+    s->rcv_depth  = parser_get_int(p, "rcv_depth");
+    s->modeling   = false;
+    s->nb_snap    = parser_get_int(p, "nbsnap");
+    char *dir     = parser_get_string(p, "dir");
+
+    float* img;
+    float* img_only;
+    float* ilm_only;
+    float *ilm_shot, *img_shot;
+
+    wave_init_numerics(s);
+    wave_init_dimensions(s);
+
+    CREATE_BUFFER(img, s->size_img);
+    NULIFY_BUFFER(img, s->size_img);
+    CREATE_BUFFER(img_only, s->size_img);
+    NULIFY_BUFFER(img_only, s->size_img);
+    CREATE_BUFFER(ilm_only, s->size_img);
+    NULIFY_BUFFER(ilm_only, s->size_img);
+    CREATE_BUFFER(img_shot, s->size_img);
+    CREATE_BUFFER(ilm_shot, s->size_img);
+
+    if (s->verbose) {
+        MSG(" ");
+        MSG("... stencil information:");
+        MSG("... compute domain size = %u x %u x %u (%f MB)",
+            s->dimx, s->dimy, s->dimz, s->size/1024./1024.);
+        MSG("... imaging domain size = %u x %u x %u (%f MB)",
+            s->img_dimx, s->img_dimy, s->img_dimz,
+            s->size_img/1024./1024.);
+    }
+
+    char cwd[1024];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working directory: %s\n", cwd);
+    } else {
+        perror("getcwd");
+        return EXIT_FAILURE;
+    }
+
+    struct dirent *de;
+    DIR *dr = opendir(dir);
+    CHK(dr == NULL, "failed to open img directory");
+
+    char ilm_only_file[128];
+    char img_only_file[128];
+    char img_dilm_file[128];
+    char img_file[128];
+    char ilm_file[128];
+    char img_pref[64];
+    int idx;
+    if (s->cpu) {
+        sprintf(img_pref, "%s", "img_");
+    } else {
+        sprintf(img_pref, "%s", "gpu_img_");
+    }
+
+    while ((de = readdir(dr)) != NULL) {
+        if (strstr(de->d_name, img_pref) != NULL) {
+            if (s->cpu) {
+                sscanf(de->d_name, "img_%d.raw", &idx);
+                sprintf(img_file, "%s/img_%d.raw", dir, idx);
+                sprintf(ilm_file, "%s/ilm_%d.raw", dir, idx);
+            } else {
+                sscanf(de->d_name, "gpu_img_%d.raw", &idx);
+                sprintf(img_file, "%s/gpu_img_%d.raw", dir, idx);
+                sprintf(ilm_file, "%s/gpu_ilm_%d.raw", dir, idx);
+            }
+
+            MSG("... stacking %s and %s", img_file, ilm_file);
+
+            // Read img_shot
+            FILE *fd = fopen(img_file, "rb");
+            CHK(fd == NULL, "failed to open img file");
+            CHK(fread(img_shot, sizeof(float), s->size_img, fd) != s->size_img,
+                "failed to read img file");
+            fclose(fd);
+
+            // Read ilm_shot
+            fd = fopen(ilm_file, "rb");
+            CHK(fd == NULL, "failed to open ilm file");
+            CHK(fread(ilm_shot, sizeof(float), s->size_img, fd) != s->size_img,
+                "failed to read ilm file");
+            fclose(fd);
+
+            // Smooth ilm_shot to reduce low-frequency artifacts
+            smooth_illumination(s, ilm_shot);
+
+            // Normalize and stack into img
+            gather_img_div_ilm_smart(s->size_img, img_shot, ilm_shot, img);
+
+            // Also gather unnormalized images for img_only and ilm_only
+            gather_img_ilm(s->size_img, img_shot, ilm_shot, img_only, ilm_only);
+        }
+    }
+    closedir(dr);
+
+    // Apply Laplacian filter to the final img
+    apply_laplacian_filter(s, img);
+
+    // Save the final images
+    if (s->cpu) {
+        sprintf(img_dilm_file, "%s/img_filtered.raw", dir);
+        sprintf(img_only_file, "%s/img_only.raw", dir);
+        sprintf(ilm_only_file, "%s/ilm_only.raw", dir);
+    } else {
+        sprintf(img_dilm_file, "%s/gpu_img_filtered.raw", dir);
+        sprintf(img_only_file, "%s/gpu_img_only.raw", dir);
+        sprintf(ilm_only_file, "%s/gpu_ilm_only.raw", dir);
+    }
+
+    // Apply thresholding to ilm_only
+    for (unsigned int i = 0; i < s->size_img; i++) {
+        if (ilm_only[i] > 10) {
+            ilm_only[i] = 0.15;
+        }
+    }
+
+    wave_save_image(s, img, img_dilm_file);
+    wave_save_image(s, img_only, img_only_file);
+    wave_save_image(s, ilm_only, ilm_only_file);
+
+    DELETE_BUFFER(img);
+    DELETE_BUFFER(ilm_only);
+    DELETE_BUFFER(img_only);
+    DELETE_BUFFER(img_shot);
+    DELETE_BUFFER(ilm_shot);
+
+    printf("before free(s)\n");
+    free(s);
+
+    printf("before parser_delete(p)\n");
+    parser_delete(p);
+    return EXIT_SUCCESS;
+}
+
+int main_filtered_each_shot_individually(int argc, char* argv[]) {
   /// structure to maintain the user choices.
   sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));
   /// create a parser.
@@ -279,8 +477,6 @@ int main(int argc, char* argv[]) {
   parser_delete(p);
   return EXIT_SUCCESS;
 }
-
-
 
 int main_original(int argc, char* argv[]) {
   /// structure to maintain the user choices.
