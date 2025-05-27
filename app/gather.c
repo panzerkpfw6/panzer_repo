@@ -518,7 +518,7 @@ int main(int argc, char* argv[]) {
 //			apply_laplacian_filter2_small(s, img_shot);
 //			apply_laplacian_xy_filter(s,img_shot);
 			apply_laplacian_filter(s,img_shot);
-			apply_laplacian_filter(s,ilm_shot);
+//			apply_laplacian_filter(s,ilm_shot);
 
 			// Normalize img_shot into img_norm
 //			normalize_image(s, img_shot, ilm_shot, img_norm);
