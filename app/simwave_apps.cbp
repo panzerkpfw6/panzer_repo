@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="simwave_apps"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="icc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\app\;CMake Files\cmake\;CMake Files\cmake\modules\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="simwave_apps">
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 simwave_apps"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gather">
+				<Option output="/shared/simwave/simwave/app/gather" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 gather"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gather/fast">
+				<Option output="/shared/simwave/simwave/app/gather" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 gather/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="modeling">
+				<Option output="/shared/simwave/simwave/app/modeling" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 modeling"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="modeling/fast">
+				<Option output="/shared/simwave/simwave/app/modeling" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 modeling/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rtm">
+				<Option output="/shared/simwave/simwave/app/rtm" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 rtm"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rtm/fast">
+				<Option output="/shared/simwave/simwave/app/rtm" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/shared/simwave/simwave/app"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="icc"/>
+				<Compiler>
+					<Add directory="/shared/simwave/simwave/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 rtm/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/shared/simwave/simwave/app/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/shared/simwave/simwave/app/gather.c">
+			<Option target="gather"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/app/modeling.c">
+			<Option target="modeling"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/app/rtm.c">
+			<Option target="rtm"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/app/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\app\"/>
+		</Unit>
+		<Unit filename="/shared/simwave/simwave/cmake/modules/intel_c.cmake">
+			<Option virtualFolder="CMake Files\cmake\modules\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

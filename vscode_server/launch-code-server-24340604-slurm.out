@@ -1,0 +1,40 @@
+[2023-03-20T12:46:10.304Z] info  code-server 4.4.0 b088ec7adf9e17bc75215f79e21498eb40da03ed
+[2023-03-20T12:46:10.304Z] info  Using user-data-dir ~/.local/share/code-server
+[2023-03-20T12:46:10.354Z] info  Using config file ~/.config/code-server/config.yaml
+[2023-03-20T12:46:10.354Z] info  HTTP server listening on http://10.109.15.50:12198/ 
+[2023-03-20T12:46:10.354Z] info    - Authentication is disabled 
+[2023-03-20T12:46:10.354Z] info    - Not serving HTTPS 
+[15:47:30] Extension host agent started.
+[15:47:31] [10.109.66.127][d9b3d645][ManagementConnection] New connection established.
+[15:47:32] [10.109.66.127][8ac09e3f][ExtensionHostConnection] New connection established.
+[15:47:32] [10.109.66.127][8ac09e3f][ExtensionHostConnection] <11737> Launched Extension Host Process.
+[IPC Library: Pty Host]  WARN Shell integration cannot be enabled for executable "/usr/bin/bash" and args undefined
+[IPC Library: Pty Host]  WARN Shell integration cannot be enabled for executable "/usr/bin/bash" and args undefined
+[16:57:21] [10.109.66.127][8ac09e3f][ExtensionHostConnection] The client has reconnected.
+[16:57:21] [10.109.66.127][d9b3d645][ManagementConnection] The client has reconnected.
+[17:03:00] [10.109.66.127][d9b3d645][ManagementConnection] The client has reconnected.
+[17:03:00] [10.109.66.127][8ac09e3f][ExtensionHostConnection] The client has reconnected.
+[17:35:20] [10.109.66.127][d9b3d645][ManagementConnection] The client has disconnected gracefully, so the connection will be disposed.
+[17:35:20] [10.109.66.127][8ac09e3f][ExtensionHostConnection] <11737> Extension Host Process exited with code: 0, signal: null.
+[17:35:21] [10.109.66.127][f810d6b2][ManagementConnection] New connection established.
+[17:35:22] [10.109.66.127][261240c3][ExtensionHostConnection] New connection established.
+[17:35:22] [10.109.66.127][261240c3][ExtensionHostConnection] <33773> Launched Extension Host Process.
+[IPC Library: Pty Host]  WARN Shell integration cannot be enabled for executable "/usr/bin/bash" and args undefined
+[18:25:35] [10.109.66.127][12451da2][ManagementConnection] New connection established.
+[18:25:35] [10.109.66.127][0826e1fa][ExtensionHostConnection] New connection established.
+[18:25:35] [10.109.66.127][0826e1fa][ExtensionHostConnection] <45015> Launched Extension Host Process.
+[18:27:30] [10.109.66.127][12451da2][ManagementConnection] The client has disconnected gracefully, so the connection will be disposed.
+[18:27:30] [10.109.66.127][0826e1fa][ExtensionHostConnection] <45015> Extension Host Process exited with code: 0, signal: null.
+[19:11:20] [10.109.66.127][f810d6b2][ManagementConnection] The client has disconnected gracefully, so the connection will be disposed.
+[19:11:20] [10.109.66.127][261240c3][ExtensionHostConnection] <33773> Extension Host Process exited with code: 0, signal: null.
+[19:11:21] [10.109.66.127][c8b9223d][ManagementConnection] New connection established.
+[19:11:21] [10.109.66.127][944dbe51][ExtensionHostConnection] New connection established.
+[19:11:21] [10.109.66.127][944dbe51][ExtensionHostConnection] <54089> Launched Extension Host Process.
+[IPC Library: Pty Host]  WARN Shell integration cannot be enabled for executable "/usr/bin/bash" and args undefined
+[21:32:26] [10.109.66.127][944dbe51][ExtensionHostConnection] The client has reconnected.
+[21:32:26] [10.109.66.127][c8b9223d][ManagementConnection] The client has reconnected.
+[21:32:30] [10.109.66.127][c8b9223d][ManagementConnection] The client has reconnected.
+[21:32:30] [10.109.66.127][944dbe51][ExtensionHostConnection] The client has reconnected.
+[21:48:16] [10.109.66.127][c8b9223d][ManagementConnection] The client has disconnected, will wait for reconnection 3h before disposing...
+[00:48:18] [10.109.66.127][944dbe51][ExtensionHostConnection] <54089> Extension Host Process exited with code: 0, signal: null.
+[00:48:24] [10.109.66.127][c8b9223d][ManagementConnection] The reconnection grace time of 3h has expired, so the connection will be disposed.

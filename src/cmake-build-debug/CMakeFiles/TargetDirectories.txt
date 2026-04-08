@@ -1,0 +1,7 @@
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/simwave.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/list_install_components.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/install.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/install/local.dir
+/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/cmake-build-debug/CMakeFiles/install/strip.dir

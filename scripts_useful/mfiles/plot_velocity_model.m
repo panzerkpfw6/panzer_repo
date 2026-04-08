@@ -1,0 +1,110 @@
+clear all
+close all
+
+dims=[2301,512,751];
+% add 8 points to each dimension
+dims=[2309,520,759];
+fname=['snapshot_2000'];
+
+dims=[520,520,520];
+fname=['/Volumes/ssd1/SIMWAVE/simwave/models/salt3d_512x512x512_zyx_pad.raw'];
+
+dims=[520,520,520];
+% fname=['/Volumes/ssd1/SIMWAVE/simwave/models/salt3d_512x512x512_zyx_pad.raw'];
+fname=['/Volumes/ssd1/SIMWAVE/simwave/models/salt3d_512x512x512_zyx_pad.raw'];
+
+dims=[684,684,209];
+dims=[676,676,201];
+fname=['/Volumes/ssd1/SIMWAVE/simwave/models/salt3d_676x676x201_xyz.raw'];
+
+% dims=[520,520,520];
+% fname=['/Volumes/ssd1/SIMWAVE/simwave/models/two_layer_1500_4500_zyx_pad.raw'];
+
+% dims=[759,520,2309];
+% dims=[751,512,2301];
+% fname=['/Volumes/ssd1/SIMWAVE/marmousi_751x512x2301_zyx.raw'];
+
+
+dims=[128,256,512];
+dims=[128+8,256+8,512+8];
+fname=['/Volumes/ssd1/SIMWAVE/simwave/models/benchmark_512_3d.raw'];
+fname=['/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/data/augmented_vel.raw'];
+fname=['../rtm_munich/data/augmented_vel.raw'];
+fname=['../../stencil-main/data/used_vel_model.raw'];
+
+% some file size calculations
+s = dir(fname);         
+filesize = s.bytes ;
+domain_size=2301*512*751*4;
+domain_size=dims(1)*dims(2)*dims(3)*4;
+format longG
+disp(strcat('true size=',int2str(filesize)))
+disp(strcat('calculated domain size=',int2str(domain_size)))
+
+ccnt=dims(1)*dims(2)*dims(3);
+% read file according to dimensions
+fileID = fopen(fname,'r');
+A=fread(fileID,ccnt,'float');
+% A2=fread(fileID,[],'float32');
+fclose(fileID);
+%% simwave indexing
+% dims2=[128+8,256+8,512+8];
+dims2=[128,256,512];
+fname2=['../rtm_munich/data/augmented_vel.raw'];
+ccnt=dims2(1)*dims2(2)*dims2(3);
+% read file according to dimensions
+fileID = fopen(fname2,'r');
+A2=fread(fileID,ccnt,'float');
+% A2=fread(fileID,[],'float32');
+fclose(fileID);
+nx=dims2(1);
+data2=nan(dims2);
+tmp=1;
+for k=1:dims2(3)    %z
+    for j=1:dims2(2)    %y
+        data2(:,j,k)=A2(tmp:(tmp+nx-1));    %x
+        tmp=tmp+nx;
+    end
+end
+%% stencil indexing
+dims1=dims;
+nz=dims1(3);
+data=nan(dims1);
+tmp=1;
+for i=1:dims1(1)    %x
+    for j=1:dims1(2)    %y
+        data(i,j,:)=A(tmp:(tmp+nz-1));    %z
+        tmp=tmp+nz;
+    end
+end
+% data = reshape(A,dims);
+%%
+% data = reshape(A,[520,520,520]);
+
+min(data,[],'all')
+max(data,[],'all')
+
+% plotting
+figure
+imagesc( squeeze(data(:,100,:)).' );
+val=1e-12;
+% clim([-val,val])
+colorbar
+
+figure
+imagesc( squeeze(data(:,:,170)).' );
+colorbar
+
+% plotting
+figure
+imagesc( squeeze(data2(:,100,:)).' );
+val=1e-12;
+% clim([-val,val])
+colorbar
+
+figure
+imagesc( squeeze(data2(:,:,170)).' );
+colorbar
+ss=1
+
+

@@ -1,0 +1,32 @@
+Wed Dec 18 20:30:32 +03 2024: 
+Wed Dec 18 20:30:32 +03 2024: ERROR: Unable to locate a modulefile for 'intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5'
+Wed Dec 18 20:30:32 +03 2024: Autoloading ncurses/6.2/intel-20.0.4-utqf7mb
+Wed Dec 18 20:30:32 +03 2024: Autoloading openssl/1.1.1l/intel-20.0.4-bqezj56
+Wed Dec 18 20:30:32 +03 2024: Autoloading zlib/1.2.11/intel-20.0.4-y7c2i3c
+Wed Dec 18 20:30:33 +03 2024: mv: cannot stat './CMakeCache.txt': No such file or directory
+Wed Dec 18 20:30:33 +03 2024: CMake Error: The source directory "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/stencil_rtm_ordering/scripts/performance_tests" does not appear to contain CMakeLists.txt.
+Wed Dec 18 20:30:33 +03 2024: Specify --help for usage, or press the help button on the CMake GUI.
+Wed Dec 18 20:30:33 +03 2024: make: *** No rule to make target 'clean'.  Stop.
+Wed Dec 18 20:30:33 +03 2024: make: *** No targets specified and no makefile found.  Stop.
+Wed Dec 18 20:30:33 +03 2024: make: *** No rule to make target 'install'.  Stop.
+Wed Dec 18 20:30:33 +03 2024: mkdir: cannot create directory ‘./logs’: File exists
+Wed Dec 18 20:30:33 +03 2024: 0
+Wed Dec 18 20:30:33 +03 2024: grid nx=512, ny=512, nz=512, th_z=128
+Wed Dec 18 20:30:33 +03 2024: Running SB
+Wed Dec 18 20:30:33 +03 2024: Running 1st order
+Wed Dec 18 20:30:33 +03 2024: test1kanary.sh: line 88: ./bin/modeling: No such file or directory
+Wed Dec 18 20:30:33 +03 2024: Running TB
+Wed Dec 18 20:30:33 +03 2024: Running 1st order
+Wed Dec 18 20:30:33 +03 2024: num_th=128, th_x=8, th_y=2, th_z=1, num_wf=64, t_dim=7
+Wed Dec 18 20:30:33 +03 2024: expr: syntax error
+Wed Dec 18 20:30:33 +03 2024: numactl: execution of `./bin/modeling': No such file or directory
+Wed Dec 18 20:30:33 +03 2024: 1
+Wed Dec 18 20:30:33 +03 2024: grid nx=1024, ny=1024, nz=512, th_z=128
+Wed Dec 18 20:30:33 +03 2024: Running SB
+Wed Dec 18 20:30:33 +03 2024: Running 1st order
+Wed Dec 18 20:30:33 +03 2024: test1kanary.sh: line 88: ./bin/modeling: No such file or directory
+Wed Dec 18 20:30:33 +03 2024: Running TB
+Wed Dec 18 20:30:33 +03 2024: Running 1st order
+Wed Dec 18 20:30:33 +03 2024: num_th=128, th_x=4, th_y=2, th_z=1, num_wf=20, t_dim=7
+Wed Dec 18 20:30:33 +03 2024: expr: syntax error
+Wed Dec 18 20:30:33 +03 2024: numactl: execution of `./bin/modeling': No such file or directory

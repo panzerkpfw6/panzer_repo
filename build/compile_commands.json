@@ -1,0 +1,87 @@
+[
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/bwriter.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/bwriter.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/bwriter.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/interp.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/interp.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/interp.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/mlbs.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/mlbs.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/mlbs.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/parser.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/parser.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/parser.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/pml.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/pml.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/pml.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/shot.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/shot.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/shot.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/source.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/source.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/source.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/velocity.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/velocity.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/velocity.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/wave.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/wave_tb.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave_tb.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wave_tb.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/src",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/simwave.dir/wtime.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wtime.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/src/wtime.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/gather.dir/gather.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/gather.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/gather.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/modeling.dir/modeling.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/modeling-snap_end.dir/modeling-snap_end.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling-snap_end.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling-snap_end.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/modeling-snap_tb.dir/modeling-snap_tb.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling-snap_tb.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling-snap_tb.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/rtm.dir/rtm.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/rtm.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/rtm.c"
+},
+{
+  "directory": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/build/app",
+  "command": "/usr/bin/gcc  -I/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/include   -fopenmp -g   -o CMakeFiles/modeling_original.dir/modeling_original.c.o   -c /home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling_original.c",
+  "file": "/home/plotnips/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/simwave_export_to_ecrc_servers_/app/modeling_original.c"
+}
+]
