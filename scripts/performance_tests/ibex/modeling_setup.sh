@@ -9,25 +9,39 @@ export KMP_AFFINITY=compact
 export KMP_HW_SUBSET=1t
 
 # Set compiler flags
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
-export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+# export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+# export CXXFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+# export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 #export CFLAGS="-xHost -march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 #export CXXFLAGS="-xHost -march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 #export FFLAGS="-xHost -march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
+
+export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+
 lscpu
 
 ###********** MODULES *********###
+module purge
 # Load required modules
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 #module load icc/2020.2.254
-module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+# module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+module load intel/2025.3
 #source ~/.bashrc
 module load cmake
 
-exit 0
+# Source Intel oneAPI environment (this is REQUIRED for icx/icpx)
+source /sw/rl9c/intel/oneapi/2025.3/setvars.sh --force
+echo "Using compiler:"
+which icx
+which icpx
+icx --version
+
+# exit 0
 
 ###***********************###
 # Make sure the Intel environment is sourced properly
@@ -52,6 +66,7 @@ export NT_SB_1st=100
 pwd
 
 ##### Logs directory #####
+mkdir logs
 export logs_path="./logs/reproduce_sb"
 mkdir "$logs_path"
 
@@ -72,7 +87,7 @@ sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt  # Save the last CMakeCache.txt
 #cmake .
-CC=icc CXX=icpc cmake .
+CC=icx CXX=icpx cmake .
 make clean
 make VERBOSE=1
 make install
