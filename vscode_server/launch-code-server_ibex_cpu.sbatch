@@ -10,4 +10,4 @@
 #SBATCH --error=./%x-%j-slurm.err
 
 # use srun to launch code server in order to reserve a port
-srun --resv-ports=1 ./launch-code-server_ibex_cpu.srun
+srun --resv-ports=1 ./vscode_server/launch-code-server_ibex_cpu.srun
