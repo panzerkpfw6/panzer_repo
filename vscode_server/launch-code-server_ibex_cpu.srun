@@ -8,9 +8,9 @@ PROJECT_DIR="$PWD"
 # module purge
 # conda activate "$ENV_PREFIX"
 
-source ~/.bashrc_ibex
+source ~/.bashrc
 # conda activate torch
-module load cuda
+#module load cuda
 # conda activate a3
 
 # setup ssh tunneling 
@@ -22,7 +22,7 @@ To connect to the compute node ${COMPUTE_NODE} on Ibex running your Code Server,
 you need to create an ssh tunnel from your local machine to login node on Ibex 
 using the following command.
 
-ssh -L ${CODE_SERVER_PORT}:${COMPUTE_NODE}:${CODE_SERVER_PORT} ${USER}@glogin.ibex.kaust.edu.sa 
+ssh -L ${CODE_SERVER_PORT}:${COMPUTE_NODE}:${CODE_SERVER_PORT} ${USER}@ilogin.ibex.kaust.edu.sa
 
 Next, you need to copy the url provided below and paste it into the browser 
 on your local machine.
