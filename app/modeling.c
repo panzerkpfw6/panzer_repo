@@ -9,6 +9,9 @@
 #include <stencil/wave.h>
 #include <stencil/wtime.h>
 #include <stencil/macros.h>
+#include <stencil/velocity.h>
+// #include <stencil/dump.h>
+#include <time.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
 
@@ -394,23 +397,12 @@ int main(int argc, char* argv[]) {
     char buffer[180];
     // Start of program
     time(&rawtime);
-    localtime_r(&rawtime, &timeinfo);  // Reentrant version of localtime()
+    localtime_r(&rawtime, timeinfo);  // Reentrant version of localtime()
 	#pragma omp critical
 	{
-		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timeinfo);
+		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S",timeinfo);
 		printf("Program started at: %s [Thread %d]\n", buffer, omp_get_thread_num());
 	}
-
-//    timeinfo = localtime(&rawtime);
-//    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeinfo);
-//    printf("Program started at: %s\n", buffer);
-
-    // Log the start time
-//	time_t rawtime;
-//	#pragma omp critical
-//	{
-//		printf("Program started at (epoch time): %ld [Thread %d]\n",(long)rawtime, omp_get_thread_num());
-//	}
 
     /// structure to maintain the user choices.
     sismap_t *s = (sismap_t*)malloc(sizeof(sismap_t));

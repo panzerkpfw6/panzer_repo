@@ -38,10 +38,26 @@ void velocity_generate_model(sismap_t *s, float* vtab, unsigned int layers);
 
 void velocity_query_model(sismap_t *s);
 
+void fill_coef_matrix(sismap_t *s,float *vtab,float *dens);
+
+void dump_vel(sismap_t *s,float *vtab,float *dens);
+
+void dump_coef(sismap_t *s, float *vtab);
+
 void velocity_load_model(sismap_t *s, float *vtab);
+
+void velocity_load_model_2d(sismap_t *s, float *vtab);
+
+void velocity_load_model_3d(sismap_t *s, float *vtab);
 
 void velocity_const_model2(sismap_t *s, float *vtab);
 
+void velocity_2layer_model(sismap_t *s, float *vtab, unsigned int layers);
+
+void velocity_load_model(sismap_t *s, float *vtab);
+
 void velocity_load_salt3d(sismap_t *s, float *vtab);
+
+void density_const_model(sismap_t *s,float *dens,float *inv_rho);
 
 #endif // __STENCIL_VELOCITY_H_

@@ -9,6 +9,7 @@
 #include <stencil/wave_tb.h>
 #include <stencil/wave.h>
 #include <stencil/wtime.h>
+#include <time.h>
 #include <stencil/macros.h>
 
 
