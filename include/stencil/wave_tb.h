@@ -533,6 +533,10 @@ void wave_tb_init(tb_t* ctx,
                   sismap_t* s,
                   parser *p);
 
+void wave_tb_init_p(tb_t *ctx,
+                  sismap_t *s,
+                  Parameters *p);
+
 void wave_tb_free(tb_t* ctx);
 
 void wave_tb_save_lastshot(sismap_t* s,

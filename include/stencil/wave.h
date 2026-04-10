@@ -123,7 +123,10 @@ void wave_image_condition(sismap_t *s,
 
 void wave_image_condition_block(sismap_t *s,
                                 float*, float *, float *, float*, unsigned int t);
-
+void wave_image_condition_block_xyz(sismap_t *s, float *u1,
+								float *fwd,
+								float *img_shot, float *ilm_shot,
+								unsigned int t);
 
 /// @brief Saves sismos of the wave fields
 /// @param w is a pointer to the wave descriptor to be saved
