@@ -393,14 +393,14 @@ void run_modeling_1st_tb_cpu(sismap_t *s,float* vel,float* inv_rho,float *source
 
 int main(int argc, char* argv[]) {
     time_t rawtime;
-    struct tm *timeinfo;
+    struct tm timeinfo;
     char buffer[180];
     // Start of program
     time(&rawtime);
-    localtime_r(&rawtime, timeinfo);  // Reentrant version of localtime()
+    localtime_r(&rawtime, &timeinfo);  // Reentrant version of localtime()
 	#pragma omp critical
 	{
-		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S",timeinfo);
+		strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S",&timeinfo);
 		printf("Program started at: %s [Thread %d]\n", buffer, omp_get_thread_num());
 	}
 

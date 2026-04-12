@@ -54,7 +54,8 @@ icx --version
 export shot=32896;  # position of the source in x,y coordinates. Check ./data/acquisition.txt
 export src_depth=256;
 export fmax=8;
-export dx=10;
+export dh=10;
+export dt=0.001;
 
 ###*********** Experiment setup ************###
 nx=512; ny=512; nz=512;
@@ -74,15 +75,7 @@ mkdir "$logs_path"
 export file="./include/stencil/wave.h"
 
 ##### Cache blocking to try #####
-x=10; y=22;
-
-##### Run tests #####
-grid_str="${nx}_${ny}_${nz}_${x}_${y}"
-echo $grid_str;
-
-##### Change cache blocking values #####
-sed -i "s/#define BLOCKX [0-9]\+/#define BLOCKX $x/" "$file"
-sed -i "s/#define BLOCKY [0-9]\+/#define BLOCKY $y/" "$file"
+cbx=8; cby=6; cbz=9999;
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt  # Save the last CMakeCache.txt
@@ -92,9 +85,25 @@ make clean
 make VERBOSE=1
 make install
 
+##### Run tests #####
+grid_str="${nx}_${ny}_${nz}_${cbx}_${cby}"
+echo $grid_str;
+
 #####################
 echo "Running SB"
 echo "Running 1st order"
-# ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_SB_1st \
+--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+--dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+--cbx $cbx --cby $cby --cbz $cbz;
+
+
+# ###*********** SB ************###
+# echo "Running SB"
+# echo "Running 1st order"
+# srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+# ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
 # --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-# --dx $dx
+# --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+# --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+
