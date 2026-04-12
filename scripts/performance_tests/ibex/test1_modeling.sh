@@ -5,8 +5,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --time=24:00:00
-#SBATCH --partition=workq  #
+#SBATCH --time=3:00:00
+#SBATCH --partition=amd  #
 #SBATCH --job-name=test1_modeling
 #SBATCH --output=logs/test1_modeling.%J.out
 #SBATCH --error=logs/test1_modeling.%J.err
@@ -42,7 +42,7 @@ lscpu
 #export FFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
 
 ######################################################
-export OMP_NUM_THREADS=192;
+export OMP_NUM_THREADS=128;
 export OMP_PLACES=cores;
 export OMP_PROC_BIND=close;
 export OMP_STACKSIZE=64M;
@@ -50,15 +50,24 @@ export OMP_STACKSIZE=64M;
 #export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 #export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 
-export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
-export CXXFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
-export FFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+# export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+# export CXXFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+# export FFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+
+export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 
 ###********** MODULES *********###
-########module load intel/2024.2.1
-#module load intel-oneapi/2023.1.0
-module load aocc
+module purge
+module load intel/2025.3
 module load cmake
+# Source Intel oneAPI environment (this is REQUIRED for icx/icpx)
+source /sw/rl9c/intel/oneapi/2025.3/setvars.sh --force
+echo "Using compiler:"
+which icx
+which icpx
+icx --version
 
 ##### Shot information #####
 export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
@@ -68,8 +77,8 @@ export dh=10;
 export dt=0.001;
 
 ###********** Default SB, TB parameters *********###
-cbx_arr=(8  16 22)
-cby_arr=(6  6  46)
+cbx_arr=(16  16 16)
+cby_arr=(4  4  4)
 cbz_arr=(9999  9999  9999)
 
 ### My recent parameter search
@@ -80,11 +89,11 @@ cbz_arr=(9999  9999  9999)
 #num_wf_arr_1st=(192 192 192)
 
 # PASC paper results
-th_x_arr_1st=(16 4 4)
+th_x_arr_1st=(8 4 4)
 th_y_arr_1st=(2 2 2)
 th_z_arr_1st=(1 1 1)
-tdim_arr_1st=(7 3 7)
-num_wf_arr_1st=(192 20 4)
+tdim_arr_1st=(7 7 7)
+num_wf_arr_1st=(64 20 20)
 
 ### PASC-based results, my guess
 #th_x_arr_1st=(8 2 2)
@@ -112,14 +121,15 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_forward_pasc_new_attempt3_aocc.log"
+export logs_filename="test1_fm.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 2 $len); do
-#for i in $(seq 1 2); do
+# for i in $(seq 1 $len); do
+# for i in $(seq 2 $len); do
+for i in $(seq 1 2); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
@@ -132,13 +142,13 @@ for i in $(seq 2 $len); do
   echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
 
   ###*********** SB ************###
-#  echo "Running SB"
-#  echo "Running 1st order"
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
-#  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
-#  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
-#  --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
-#  --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+ echo "Running SB"
+ echo "Running 1st order"
+ srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
+ ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+ --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+ --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+ --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
 
   ###*********** TB ************##
   echo "Running TB"

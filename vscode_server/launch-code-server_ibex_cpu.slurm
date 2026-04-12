@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --time=04:30:00
 #SBATCH --nodes=1
-#SBATCH --mem=16G
-#SBATCH --partition=rome
+#####SBATCH --mem=16G
+#####SBATCH --partition=rome
 #SBATCH --job-name=code-server
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out

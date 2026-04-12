@@ -25,15 +25,15 @@ export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 lscpu
 
 ###********** MODULES *********###
-module purge
 # Load required modules
 #module load intel-oneapi-compilers/2021.4.0/gcc-7.5.0-sqbobre
 #module load icc/2020.2.254
 # module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
-module load intel/2025.3
 #source ~/.bashrc
-module load cmake
 
+module purge
+module load intel/2025.3
+module load cmake
 # Source Intel oneAPI environment (this is REQUIRED for icx/icpx)
 source /sw/rl9c/intel/oneapi/2025.3/setvars.sh --force
 echo "Using compiler:"
