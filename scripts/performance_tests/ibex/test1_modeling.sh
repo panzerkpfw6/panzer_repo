@@ -5,7 +5,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --time=3:00:00
+#SBATCH --time=4:00:00
 #SBATCH --partition=amd  #
 #SBATCH --job-name=test1_modeling
 #SBATCH --output=logs/test1_modeling.%J.out
@@ -113,7 +113,7 @@ export NT_SB_1st=505
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-CC=icc CXX=icpc cmake .
+CC=icx CXX=icpx cmake .
 make clean
 make VERBOSE=1
 make install
