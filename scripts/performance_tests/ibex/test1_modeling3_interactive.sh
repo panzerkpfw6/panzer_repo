@@ -5,12 +5,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
+###SBATCH --cpus-per-task=128
 #SBATCH --time=3:00:00
 ####SBATCH --partition=amd  #
 #SBATCH --job-name=test1_modeling
 #SBATCH --output=logs/test1_modeling.%J.out
 #SBATCH --error=logs/test1_modeling.%J.err
-###SBATCH --cpus-per-task=128
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** COMMENT *********###

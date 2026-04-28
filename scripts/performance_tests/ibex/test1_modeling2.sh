@@ -5,12 +5,13 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
+#SBATCH --cpus-per-task=128
 #SBATCH --time=3:00:00
-####SBATCH --partition=amd  #
+#SBATCH --partition=amd  #
+#SBATCH --mem=200G
 #SBATCH --job-name=test1_modeling
 #SBATCH --output=logs/test1_modeling.%J.out
 #SBATCH --error=logs/test1_modeling.%J.err
-###SBATCH --cpus-per-task=128
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** COMMENT *********###
@@ -125,15 +126,15 @@ make install
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
-export logs_filename="test1_fm.log"
+export logs_filename="test1_fm_sbatch.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-# for i in $(seq 1 $len); do
+for i in $(seq 0 $len); do
 # for i in $(seq 2 $len); do
-for i in $(seq 1 2); do
+# for i in $(seq 1 2); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
