@@ -1,8 +1,11 @@
 #!/bin/bash
 #SBATCH --time=04:30:00
 #SBATCH --nodes=1
-#####SBATCH --mem=16G
-#####SBATCH --partition=intel
+#SBATCH --ntasks=1
+#SBATCH --threads-per-core=1
+#SBATCH --cpus-per-task=128
+#SBATCH --mem=200G
+#SBATCH --partition=amd
 #SBATCH --job-name=code-server
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out

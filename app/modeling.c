@@ -481,13 +481,17 @@ int main(int argc, char* argv[]) {
         MSG("BLOCKX=%d, BLOCKY=%d, BLOCKZ=%d\n",s->blockx,s->blocky,s->blockz);
 //        exit(1);
         //////////////
+        MSG("... !before vel! ...");
         CREATE_BUFFER_ONLY(vel, s->size_eff);
         array_openmp_inner_init(vel, s);
+        MSG("... !before rho! ...");
         CREATE_BUFFER_ONLY(rho,s->size_eff);
         array_openmp_inner_init(rho,s);
+        MSG("... !before inv_rho! ...");
         CREATE_BUFFER_ONLY(inv_rho,s->size_eff);
         array_openmp_inner_init(inv_rho,s);
     }
+    MSG("... !before source! ...");
     CREATE_BUFFER(source, s->time_steps + 1);
     CREATE_BUFFER(pml_tab, (s->dimx + 2) * (s->dimy + 2) * (s->dimz + 2));
 
