@@ -24,6 +24,10 @@
 # 3)please change MODULES accordingly
 #we need to load cmake,icpc modules from somewhere
 
+###******** srun command for job step execution of the script *********###
+# srun --hint=nomultithread --nodes=1 --ntasks=1 --threads-per-core=1 --cpus-per-task=128 ./hello_world
+###******** COMMENT *********###
+
 ###******** HORODATED LOG WRITING *********###
 echo $hostname
 lscpu
