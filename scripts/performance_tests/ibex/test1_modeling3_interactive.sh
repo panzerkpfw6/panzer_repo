@@ -24,7 +24,7 @@
 # 3)please change MODULES accordingly
 #we need to load cmake,icpc modules from somewhere
 
-###******** srun command for job step execution of the script *********###
+###******** srun command for job step execution of the script. mistake here. *********###
 # srun --hint=nomultithread --nodes=1 --ntasks=1 --threads-per-core=1 --cpus-per-task=128 ./hello_world
 ###******** COMMENT *********###
 
@@ -126,14 +126,14 @@ make install
 mkdir ./logs
 export logs_path=./logs/test1_modeling
 export logs_filename="test1_fm.log"
-######rm -rf $logs_path
+rm -rf $logs_path/$logs_filename;
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-# for i in $(seq 1 $len); do
+for i in $(seq 0 $len); do
 # for i in $(seq 2 $len); do
-for i in $(seq 1 2); do
+# for i in $(seq 0 1); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
@@ -144,15 +144,15 @@ for i in $(seq 1 2); do
   echo "grid nx=${nx}, ny=${ny}, nz=${nz}, OMP_NUM_THREADS=${OMP_NUM_THREADS}"
   grid_str="${nx}_${ny}_${nz}"
   echo "cbx=${cbx}, cby=${cby}, cbz=${cbz}"
+  echo "shot=${shot}, src_depth=${src_depth}, dh=${dh}, dt=${dt}"
 
   ###*********** SB ************###
  echo "Running SB"
  echo "Running 1st order"
- srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 \
  ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
  --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
- --cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
+ --cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/$logs_filename;
 
   ###*********** TB ************##
   echo "Running TB"
@@ -166,9 +166,9 @@ for i in $(seq 1 2); do
   echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 
 #  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
-  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
+  numactl --interleave=all \
   ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx --rec_sismos 0 >> $logs_path/$logs_filename;
+  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx --rec_sismos 0  >> $logs_path/$logs_filename;
 done
