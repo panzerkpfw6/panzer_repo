@@ -5,12 +5,13 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
+#SBATCH --cpus-per-task=128
 #SBATCH --time=24:00:00
-#SBATCH --partition=workq  #
+#SBATCH --partition=amd  #
+#SBATCH --mem=200G
 #SBATCH --job-name=find_pars_TB
 #SBATCH --output=logs/test3_.%J.out
 #SBATCH --error=logs/test3_.%J.err
-#SBATCH --cpus-per-task=192
 #SBATCH --hint=nomultithread    # don't use hyperthreading
 
 ###******** COMMENT *********###
@@ -32,23 +33,31 @@ export OMP_PLACES=cores;
 export OMP_PROC_BIND=close;
 export OMP_STACKSIZE=64M;
 export OMP_NUM_THREADS=192;
-export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+
 
 ###********** MODULES *********###
-module load intel-oneapi/2023.1.0
+module purge
+module load intel/2025.3
 module load cmake
+# Source Intel oneAPI environment (this is REQUIRED for icx/icpx)
+source /sw/rl9c/intel/oneapi/2025.3/setvars.sh --force
+echo "Using compiler:"
+which icx
+which icpx
+icx --version
 
 ##### COMPILATION #####
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-CC=icc CXX=icpc cmake .
+CC=icx CXX=icpx cmake .
 make clean
 make VERBOSE=1
 make install
 
 ###********** TB parameters diapason *********###
-num_th_arr=(192)
+num_th_arr=(128)
 th_x_arr=(1 2 4 8 16 32)
 th_y_arr=(1 2 4 8 16 32)
 th_z_arr=(1 2 4 8 16 32)
@@ -61,13 +70,6 @@ ny_arr=(  512  1024  2048  )
 nz_arr=(  512  512   512   )
 export NT_TB_1st=200
 export NT_TB_2nd=200
-
-##### COMPILATION #####
-mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
-CC=icc CXX=icpc cmake .
-make clean
-make VERBOSE=1
-make install
 
 ##### Logs directory #####
 mkdir ./logs
