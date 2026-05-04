@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
 #SBATCH --cpus-per-task=128
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --partition=amd  #
 #SBATCH --mem=200G
 #SBATCH --job-name=find_pars_TB
@@ -58,10 +58,11 @@ make install
 
 ###********** TB parameters diapason *********###
 num_th_arr=(128)
-th_x_arr=(1 2 4 8 16 32)
-th_y_arr=(1 2 4 8 16 32)
-th_z_arr=(1 2 4 8 16 32)
-num_wf_arr=(2 4 8 12 16 20 24 32 64 128 192)
+# th_x_arr=(1 2 4 8 16 32)
+th_x_arr=(2 4 8 16 32)
+th_y_arr=(1 2 4 8)
+th_z_arr=(1 2 4 8)
+num_wf_arr=(4 8 12 16 20 24 32 64 128)
 tdim_arr=(3 5 7 15) # suits for 512 domain size
 
 ###*********** Experiment setup ************###
@@ -75,7 +76,7 @@ export NT_TB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/test3_modeling.log"
+export logs_file="./logs/test3_modeling_rome.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
