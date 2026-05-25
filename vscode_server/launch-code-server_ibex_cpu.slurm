@@ -5,7 +5,7 @@
 #SBATCH --threads-per-core=1
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=200G
-#SBATCH --partition=amd
+#SBATCH --partition=rome
 #SBATCH --job-name=code-server
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out

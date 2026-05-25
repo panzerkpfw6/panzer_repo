@@ -7,9 +7,9 @@
 #SBATCH --threads-per-core=1
 #SBATCH --cpus-per-task=128
 #SBATCH --time=3:00:00
-#SBATCH --partition=amd  #
+#SBATCH --constraint=rome
 #SBATCH --mem=200G
-#SBATCH --job-name=test1_modeling
+#SBATCH --job-name=test1_modeling_rome
 #SBATCH --output=logs/test1_modeling.%J.out
 #SBATCH --error=logs/test1_modeling.%J.err
 #SBATCH --hint=nomultithread    # don't use hyperthreading
@@ -34,7 +34,7 @@ echo $hostname
 lscpu
 
 ####********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=192
+#export OMP_NUM_THREADS=128
 #export OMP_PROC_BIND=true
 #export OMP_PLACES=threads
 #export OMP_NESTED='True'
@@ -52,16 +52,13 @@ export OMP_PLACES=cores;
 export OMP_PROC_BIND=close;
 export OMP_STACKSIZE=64M;
 #export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-#export CXXFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-#export FFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
-
 # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
-# export CXXFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
-# export FFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+# export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+# export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-report=2"
 
-export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
+export CXXFLAGS="$CFLAGS"
+export FFLAGS="$CFLAGS"
 
 ###********** MODULES *********###
 module purge
@@ -125,16 +122,17 @@ make install
 
 ##### Logs directory #####
 mkdir ./logs
-export logs_path=./logs/test1_modeling
-export logs_filename="test1_fm_sbatch.log"
+export logs_path=./logs/tests_rome
+export logs_filename="test1.log"
 ######rm -rf $logs_path
 mkdir $logs_path
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-for i in $(seq 0 $len); do
 # for i in $(seq 2 $len); do
 # for i in $(seq 1 2); do
+# for i in $(seq 0 1); do
+for i in $(seq 0 $len); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
@@ -165,11 +163,13 @@ for i in $(seq 0 $len); do
   num_wf=${num_wf_arr_1st[$i]}
   tgs=$((th_x * th_y*th_z))
   echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
+  
+  # srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
+  # srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
 
-#  srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
   srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 numactl --interleave=all \
   ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
   --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
   --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-  --src_depth $src_depth --order 1 --fmax $fmax --dx $dx --rec_sismos 0 >> $logs_path/$logs_filename;
+  --src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 >> $logs_path/$logs_filename;
 done

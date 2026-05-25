@@ -6,10 +6,10 @@
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
 #SBATCH --cpus-per-task=128
-#SBATCH --time=48:00:00
-#SBATCH --partition=amd  #
+#SBATCH --time=64:00:00
+#SBATCH --constraint=rome
 #SBATCH --mem=200G
-#SBATCH --job-name=find_pars_TB
+#SBATCH --job-name=find_pars_TB_rome
 #SBATCH --output=logs/test3_.%J.out
 #SBATCH --error=logs/test3_.%J.err
 #SBATCH --hint=nomultithread    # don't use hyperthreading
@@ -32,10 +32,11 @@ lscpu
 export OMP_PLACES=cores;
 export OMP_PROC_BIND=close;
 export OMP_STACKSIZE=64M;
-export OMP_NUM_THREADS=192;
-export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export OMP_NUM_THREADS=128;
+
+export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
+export CXXFLAGS="$CFLAGS"
+export FFLAGS="$CFLAGS"
 
 
 ###********** MODULES *********###
@@ -59,9 +60,10 @@ make install
 ###********** TB parameters diapason *********###
 num_th_arr=(128)
 # th_x_arr=(1 2 4 8 16 32)
-th_x_arr=(2 4 8 16 32)
-th_y_arr=(1 2 4 8)
-th_z_arr=(1 2 4 8)
+# th_x_arr=(2 4 8 16 32)
+th_x_arr=(32 16 8 4 2)
+th_y_arr=(1 2 4 8 16)
+th_z_arr=(1 2 4 8 16)
 num_wf_arr=(4 8 12 16 20 24 32 64 128)
 tdim_arr=(3 5 7 15) # suits for 512 domain size
 
@@ -76,7 +78,7 @@ export NT_TB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/test3_modeling_rome.log"
+export logs_file="./logs/tests_rome/test3.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
