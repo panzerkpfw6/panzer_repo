@@ -3,10 +3,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
+#SBATCH --constraint=rome
 #SBATCH --cpus-per-task=128
 #SBATCH --mem=200G
-#SBATCH --partition=rome
-#SBATCH --job-name=code-server
+#SBATCH --job-name=cs_rome
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out
 #SBATCH --error=%x-%j-slurm.err

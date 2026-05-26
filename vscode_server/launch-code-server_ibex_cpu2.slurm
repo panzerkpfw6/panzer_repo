@@ -3,7 +3,9 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --job-name=code-server
+#SBATCH --constraint=turin
+#SBATCH --cpus-per-task=192
+#SBATCH --job-name=cs_turin
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out
 #SBATCH --error=%x-%j-slurm.err
@@ -22,6 +24,7 @@ PATH="$HOME/.local/bin:$PATH"
 module purge
 module load rl9-gpustack
 module load machine_learning
+
 
 # Or use the conda environment
 # source /ibex/scratch/$USER/miniconda3/bin/activate
