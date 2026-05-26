@@ -3125,7 +3125,8 @@ void wave_tb_forward_1st(tb_t* ctx,
     p->stencil_ctx.idzyx_sum = p->stencil_ctx.idz + p->stencil_ctx.idy + p->stencil_ctx.idx;
 
 //	p->stencil.stat_sched_func = stat_sched_iso_ref;
-    p->stencil.mwd_func = femwd_iso_ref_1st;
+    // p->stencil.mwd_func = femwd_iso_ref_1st;
+    p->stencil.mwd_func =femwd_iso_ref_1st_grok;
 
     // Allocate the wavefront profiling timers
 //	int num_thread_groups = get_ntg(*p);
