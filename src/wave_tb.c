@@ -959,18 +959,18 @@ void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, c
 
                                 #pragma omp simd aligned(vx0, vy0, vz0, pr, r: 64)
                                 for (int iz = zb; iz < ze; iz++) {
-                                    float div = coefx[0]/data->dx * (vx0[z]     - vx0[z - 1*nnyz]) +
-                                                coefy[0]/data->dy * (vy0[z]     - vy0[z - 1*nnz]) +
-                                                coefz[0]/data->dz * (vz0[z]     - vz0[z - 1]) +
-                                                coefx[1]/data->dx * (vx0[z + 1*nnyz] - vx0[z - 2*nnyz]) +
-                                                coefy[1]/data->dy * (vy0[z + 1*nnz] - vy0[z - 2*nnz]) +
-                                                coefz[1]/data->dz * (vz0[z + 1] - vz0[z - 2]) +
-                                                coefx[2]/data->dx * (vx0[z + 2*nnyz] - vx0[z - 3*nnyz]) +
-                                                coefy[2]/data->dy * (vy0[z + 2*nnz] - vy0[z - 3*nnz]) +
-                                                coefz[2]/data->dz * (vz0[z + 2] - vz0[z - 3]) +
-                                                coefx[3]/data->dx * (vx0[z + 3*nnyz] - vx0[z - 4*nnyz]) +
-                                                coefy[3]/data->dy * (vy0[z + 3*nnz] - vy0[z - 4*nnz]) +
-                                                coefz[3]/data->dz * (vz0[z + 3] - vz0[z - 4]);
+                                    float div = FDM_O1_8_2_A1/data->dx * (vx0[iz]     - vx0[iz - 1*nnyz]) +
+                                                FDM_O1_8_2_A1/data->dy * (vy0[iz]     - vy0[iz - 1*nnz]) +
+                                                FDM_O1_8_2_A1/data->dz * (vz0[iz]     - vz0[iz - 1]) +
+                                                FDM_O1_8_2_A2/data->dx * (vx0[iz + 1*nnyz] - vx0[iz - 2*nnyz]) +
+                                                FDM_O1_8_2_A2/data->dy * (vy0[iz + 1*nnz] - vy0[iz - 2*nnz]) +
+                                                FDM_O1_8_2_A2/data->dz * (vz0[iz + 1] - vz0[iz - 2]) +
+                                                FDM_O1_8_2_A3/data->dx * (vx0[iz + 2*nnyz] - vx0[iz - 3*nnyz]) +
+                                                FDM_O1_8_2_A3/data->dy * (vy0[iz + 2*nnz] - vy0[iz - 3*nnz]) +
+                                                FDM_O1_8_2_A3/data->dz * (vz0[iz + 2] - vz0[iz - 3]) +
+                                                FDM_O1_8_2_A4/data->dx * (vx0[iz + 3*nnyz] - vx0[iz - 4*nnyz]) +
+                                                FDM_O1_8_2_A4/data->dy * (vy0[iz + 3*nnz] - vy0[iz - 4*nnz]) +
+                                                FDM_O1_8_2_A4/data->dz * (vz0[iz + 3] - vz0[iz - 4]);
 
                                     pr[iz] += r[iz] * div;
                                     pr[iz] *= dampx[ix] * dampy[iy] * dampz[iz];
