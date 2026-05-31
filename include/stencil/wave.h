@@ -83,6 +83,14 @@ void wave_update_fields_block_1st(sismap_t *s,
                                   const float *restrict roc2,
 								  const float *restrict inv_rho);
 
+void wave_update_fields_block_1st_GROK(sismap_t *s,
+                                  float *restrict u0,
+                                  float *restrict vx,
+                                  float *restrict vy,
+                                  float *restrict vz,
+                                  const float *restrict roc2,
+								  const float *restrict inv_rho);                  
+
 /// @brief Adds an impulse to the grid point situated at the
 /// source location
 /// @param w is a pointer to the wave descriptor to be updated

@@ -363,6 +363,7 @@ static inline int get_t_coord(int y_coord) {
     return t_coord;
 }
 // Function definitions below
+
 void femwd_iso_ref_1st( const int shape[3], const int zb, const int yb_r0,
                         const int xb, const int ze, const int ye_r0, const int xe,
                     const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
@@ -860,136 +861,371 @@ num_threads(stencil_ctx.thread_group_size)
     }
 }
 
-
-void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, const int xb,
-                       const int ze, const int ye_r0, const int xe, const real_t *coef,
-                       hFloat *p11, hFloat *p12, hFloat *p13, hFloat *p21, hFloat *p22, hFloat *p23,
-                       const hFloat *roc2, const hFloat *inv_rho, float *dampx, float *dampy, float *dampz,
-                       int t_dim, int b_inc, int e_inc, int NHALO, int tb, int te, int t0, int ifwd,
-                       stencil_ctx stencil_ctx, int mtid, tb_data_t *data)
+void femwd_iso_ref_1st_grok2(const int shape[3], const int zb, const int yb_r0,
+                        const int xb, const int ze, const int ye_r0, const int xe,
+                    const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
+                    hFloat *  p21, hFloat *  p22, hFloat *  p23,
+					const hFloat * roc2, const hFloat * inv_rho,
+                    float * dampx,float * dampy,float * dampz,
+                    int t_dim, int b_inc, int e_inc,int NHALO,
+                    int tb, int te,int t0,int ifwd,
+					stencil_ctx stencil_ctx,int mtid,tb_data_t * data)
 {
-    #pragma omp parallel num_threads(stencil_ctx.thread_group_size) \
-    shared(shape, stencil_ctx, mtid, tb, te, t_dim, NHALO) \
-    firstprivate(b_inc, e_inc)
+#pragma omp parallel shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO) \
+firstprivate(b_inc, e_inc) \
+num_threads(stencil_ctx.thread_group_size)
     {
-        // Strong alignment for Zen 5 AVX-512
-        // __assume_aligned(p11, 64); __assume_aligned(p12, 64); __assume_aligned(p13, 64);
-        // __assume_aligned(p21, 64); __assume_aligned(p22, 64); __assume_aligned(p23, 64);
-        // __assume_aligned(inv_rho, 64);
-        // __assume_aligned(roc2, 64);
+        int lstencil=NHALO;
+        int tgs, nwf, th_nwf, tid, gtid, xi, yb, ye, ib, ie, kt, kte, t,  q, r, err;
+        double t_start;
 
-        const int nnx = shape[2], nny = shape[1], nnz = shape[0];
-        const unsigned long nnyz = (unsigned long)nnz * nny;
-        const unsigned long nnyz_v = (unsigned long)stencil_ctx.nz * stencil_ctx.ny;
+        const int nnx =shape[2];
+        const int nny =shape[1];
+        const int nnz =shape[0];
 
-        const Myfloat dt_inv_dx = stencil_ctx.dt / (stencil_ctx.dx);
-		const Myfloat dt_inv_dy = stencil_ctx.dt / (stencil_ctx.dy);
-		const Myfloat dt_inv_dz = stencil_ctx.dt / (stencil_ctx.dz);
+        const unsigned long nnzy = 1UL * nnz * nny;
+        const unsigned long nnyz = nnzy;
+        const int64_t nnxyz=1ULL*nnx * nny * nnz;
+        const int64_t nnxy=1ULL*nnx * nny;
+        const int64_t nnyz_grid=1ULL*nnx * nny;
 
-        int tid = omp_get_thread_num();
+        const int nnz_v=stencil_ctx.nz;
+        const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
+
+        float *restrict ux;
+        float *restrict vx;
+		float *restrict wx;
+		float *restrict imgx;
+		float *restrict ilmx;
+
+        int t_real=0;
+        int tb_real=(tb)/2+1;
+        int t0_real=(t0)/2+1;
+
+        tgs = stencil_ctx.thread_group_size;
+        nwf = stencil_ctx.num_wf;
+
+        tid = 0;
+        gtid = 0;
+#if defined(_OPENMP)
+        tid = omp_get_thread_num();
+		gtid = tid + mtid * tgs;
+#endif
+
+        if(stencil_ctx.use_manual_cpu_bind == 1){
+            err = sched_setaffinity(0, stencil_ctx.setsize, stencil_ctx.bind_masks[mtid*tgs+tid]);
+            if(err==-1) printf("WARNING: Could not set CPU Affinity\n");
+        }
+
+        hFloat *  u1 = p11;
+        hFloat *  u2 = p12;
+        hFloat *  u3 = p13;
+        hFloat *  v1 = p21;
+        hFloat *  v2 = p22;
+        hFloat *  v3 = p23;
+
+        int th_z = stencil_ctx.th_z;
+        int th_y = stencil_ctx.th_y;
         int th_x = stencil_ctx.th_x;
-        int nwf = stencil_ctx.num_wf;
-        int th_nwf = nwf / th_x;
 
-        int tid_x = tid / (stencil_ctx.th_z * stencil_ctx.th_y);
+        int tid_z = tid%th_z;
+        int tid_y = tid/th_z;
+        int tid_x = tid/(th_z*th_y);
 
-        for (int xi = xb; xi < xe; xi += nwf) {
-            int yb = yb_r0, ye = ye_r0;
-            int kt = xi, kte = kt + nwf;
+        int yb_r = yb_r0;
+        int ye_r = ye_r0;
 
-            for (int t = tb; t < te; t++) {
-                int mod = t % 2;
-
-                if (mod) {  // === VELOCITY UPDATE ===
-                    const float *restrict u = p11;
-                    float *restrict vx = p21;
-                    float *restrict vy = p22;
-                    float *restrict vz = p23;
-
-                    #pragma omp simd
-                    for (int ix = kt; ix < kte; ix++) {
-                        if (((ix / th_nwf) % th_x) == tid_x) {
-                            for (int iy = yb; iy < ye; iy++) {
-                                const float *restrict u_ptr = &u[ix*nnyz + iy*nnz];
-                                float *restrict vx_ptr = &vx[ix*nnyz + iy*nnz];
-                                float *restrict vy_ptr = &vy[ix*nnyz + iy*nnz];
-                                float *restrict vz_ptr = &vz[ix*nnyz + iy*nnz];
-                                const float *restrict irho = &inv_rho[(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz];
-
-                                #pragma omp simd aligned(u_ptr, vx_ptr, vy_ptr, vz_ptr, irho: 64)
-                                for (int iz = zb; iz < ze; iz++) {
-                                    float dx = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-nnyz]) +
-                                               FDM_O1_8_2_A2*(u_ptr[iz+nnyz] - u_ptr[iz-2*nnyz]) +
-                                               FDM_O1_8_2_A3*(u_ptr[iz+2*nnyz]-u_ptr[iz-3*nnyz]) +
-                                               FDM_O1_8_2_A4*(u_ptr[iz+3*nnyz]-u_ptr[iz-4*nnyz]);
-
-                                    float dy = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-nnz]) +
-                                               FDM_O1_8_2_A2*(u_ptr[iz+nnz] - u_ptr[iz-2*nnz]) +
-                                               FDM_O1_8_2_A3*(u_ptr[iz+2*nnz]-u_ptr[iz-3*nnz]) +
-                                               FDM_O1_8_2_A4*(u_ptr[iz+3*nnz]-u_ptr[iz-4*nnz]);
-
-                                    float dz = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-1]) +
-                                               FDM_O1_8_2_A2*(u_ptr[iz+1] - u_ptr[iz-2]) +
-                                               FDM_O1_8_2_A3*(u_ptr[iz+2]-u_ptr[iz-3]) +
-                                               FDM_O1_8_2_A4*(u_ptr[iz+3]-u_ptr[iz-4]);
-
-                                    vx_ptr[iz] += irho[iz] * dt_inv_dx * dx;
-                                    vy_ptr[iz] += irho[iz] * dt_inv_dy * dy;
-                                    vz_ptr[iz] += irho[iz] * dt_inv_dz * dz;
-                                }
-                            }
-                        }
-                    }
-                } else {  // === PRESSURE UPDATE ===
-                    const float *restrict vx_ptr = p21;
-                    const float *restrict vy_ptr = p22;
-                    const float *restrict vz_ptr = p23;
-                    float *restrict pr0 = p11;
-                    const float *restrict rx = roc2;
-
-                    #pragma omp simd
-                    for (int ix = kt; ix < kte; ix++) {
-                        if (((ix / th_nwf) % th_x) == tid_x) {
-                            for (int iy = yb; iy < ye; iy++) {
-                                const float *restrict vx0 = &vx_ptr[ix*nnyz + iy*nnz];
-                                const float *restrict vy0 = &vy_ptr[ix*nnyz + iy*nnz];
-                                const float *restrict vz0 = &vz_ptr[ix*nnyz + iy*nnz];
-                                float *restrict pr = &pr0[ix*nnyz + iy*nnz];
-                                const float *restrict r = &rx[(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz];
-
-                                #pragma omp simd aligned(vx0, vy0, vz0, pr, r: 64)
-                                for (int iz = zb; iz < ze; iz++) {
-                                    float div = FDM_O1_8_2_A1/data->dx * (vx0[iz]     - vx0[iz - 1*nnyz]) +
-                                                FDM_O1_8_2_A1/data->dy * (vy0[iz]     - vy0[iz - 1*nnz]) +
-                                                FDM_O1_8_2_A1/data->dz * (vz0[iz]     - vz0[iz - 1]) +
-                                                FDM_O1_8_2_A2/data->dx * (vx0[iz + 1*nnyz] - vx0[iz - 2*nnyz]) +
-                                                FDM_O1_8_2_A2/data->dy * (vy0[iz + 1*nnz] - vy0[iz - 2*nnz]) +
-                                                FDM_O1_8_2_A2/data->dz * (vz0[iz + 1] - vz0[iz - 2]) +
-                                                FDM_O1_8_2_A3/data->dx * (vx0[iz + 2*nnyz] - vx0[iz - 3*nnyz]) +
-                                                FDM_O1_8_2_A3/data->dy * (vy0[iz + 2*nnz] - vy0[iz - 3*nnz]) +
-                                                FDM_O1_8_2_A3/data->dz * (vz0[iz + 2] - vz0[iz - 3]) +
-                                                FDM_O1_8_2_A4/data->dx * (vx0[iz + 3*nnyz] - vx0[iz - 4*nnyz]) +
-                                                FDM_O1_8_2_A4/data->dy * (vy0[iz + 3*nnz] - vy0[iz - 4*nnz]) +
-                                                FDM_O1_8_2_A4/data->dz * (vz0[iz + 3] - vz0[iz - 4]);
-
-                                    pr[iz] += r[iz] * div;
-                                    pr[iz] *= dampx[ix] * dampy[iy] * dampz[iz];
-                                }
-                            }
-                        }
-                    }
+        if(stencil_ctx.th_y>1 ){
+            if(b_inc !=0 && e_inc!=0){
+                if (tid_y%2 == 0){
+                    ye_r = (yb_r + ye_r)/2;
+                    e_inc = 0;
+                } else{
+                    yb_r = (yb_r + ye_r)/2;
+                    b_inc = 0;
                 }
-
-                // Update diamond bounds
-                if (t < t_dim) {
-                    yb -= b_inc; ye += e_inc;
-                } else {
-                    yb += b_inc; ye -= e_inc;
-                }
+            }else{
+                th_x *= th_y;
+                tid_x = tid/th_z;
+                if (nwf < th_x) nwf = th_x;
             }
         }
+
+        int nbz = (ze-zb)/th_z;
+        q = (int)((ze-zb)/th_z);
+        r = (ze-zb)%th_z;
+        if(tid_z < r) {
+            ib = zb + tid_z * (q+1);
+            ie = ib + (q+1);
+        }else {
+            ib = zb + r * (q+1) + (tid_z - r) * q;
+            ie = ib + q;
+        }
+
+        th_nwf = nwf/th_x;
+
+        int printed = 0;
+        int iz_=data->rcv_depth;
+        int end=0;
+
+        const Myfloat dt_inv_dx = stencil_ctx.dt / stencil_ctx.dx;
+        const Myfloat dt_inv_dy = stencil_ctx.dt / stencil_ctx.dy;
+        const Myfloat dt_inv_dz = stencil_ctx.dt / stencil_ctx.dz;
+
+        const Myfloat inv_dx = 1.0f / stencil_ctx.dx;
+        const Myfloat inv_dy = 1.0f / stencil_ctx.dy;
+        const Myfloat inv_dz = 1.0f / stencil_ctx.dz;
+
+        // === BACKWARD PHASE ===
+        if ((data->flag_bwd == 1) && (data->fwd != NULL) && (ifwd != -1)) {
+        	yb = yb_r; ye = ye_r; kt = xb; kte=xe;
+        	hFloat *  v3=p13;
+        	for(int t=tb; t< te; t++){
+				int mod = (t)%2;
+				if(mod==0){
+					for(int ix=kt; ix<kte; ix++){
+						if( ((ix)/th_nwf)%th_x == tid_x ) {
+							for(int iy=yb; iy<ye; iy++) {
+								unsigned long int index=1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v;
+								vx=&(v3[1ULL*ix*nnyz+iy*nnz]);
+								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
+								imgx = &(data->img[ index ]);
+								ilmx = &(data->ilm[ index ]);
+#pragma ivdep
+								for(int iz=ib; iz<ie; iz++) {
+									imgx[iz] += vx[iz]*wx[iz];
+									ilmx[iz] += wx[iz]*wx[iz];
+								}
+							}
+						}
+					}
+				}
+				if(t< t_dim){ yb += -b_inc; ye += e_inc; }
+				else{ yb += b_inc; ye += -e_inc; }
+				kte=max(kte-NHALO,xb);
+				if (end==1) kte =xe;
+				kt=max(kt-NHALO,xb);
+			}
+        }
+
+        // === MAIN WAVEFIELD UPDATE ===
+        for(xi=xb; xi<xe; xi+=nwf) {
+            if(xe-xi <= nwf){ nwf = xe-xi; end =1; }
+            yb = yb_r; ye = ye_r;
+            kt = xi; kte=kt+nwf;
+
+            for(int t=tb; t< te; t++){
+                int mod = (t)%2;
+
+                if(mod){ // Velocity update: v from p
+                    u1 = p11; u2 = p12; u3 = p13;
+                    v1 = p21; v2 = p22; v3 = p23;
+
+                    for(int ix=kt; ix<kte; ix++){
+                        if( ((ix)/th_nwf)%th_x == tid_x ) {
+                            for(int iy=yb; iy<ye; iy++) {
+								float *restrict v1_v = &(v1[ix*nnyz+iy*nnz]);
+								float *restrict v2_v = &(v2[ix*nnyz+iy*nnz]);
+								float *restrict v3_v = &(v3[ix*nnyz+iy*nnz]);
+								const float *restrict u1_v = &(u1[ix*nnyz+iy*nnz]);
+								const float *restrict irho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz]);
+
+#pragma omp simd aligned(u1_v, v1_v, v2_v, v3_v, irho_v: 64)
+								for(int iz=ib; iz<ie; iz++) {
+									float dx = FDM_O1_8_2_A1*(u1_v[iz] - u1_v[iz-3*nnyz]) +
+                                               FDM_O1_8_2_A2*(u1_v[iz+nnyz] - u1_v[iz-2*nnyz]) +
+                                               FDM_O1_8_2_A3*(u1_v[iz+2*nnyz]- u1_v[iz-3*nnyz]) +
+                                               FDM_O1_8_2_A4*(u1_v[iz+3*nnyz]- u1_v[iz-4*nnyz]);
+
+									float dy = FDM_O1_8_2_A1*(u1_v[iz] - u1_v[iz-3*nnz]) +
+                                               FDM_O1_8_2_A2*(u1_v[iz+nnz] - u1_v[iz-2*nnz]) +
+                                               FDM_O1_8_2_A3*(u1_v[iz+2*nnz]- u1_v[iz-3*nnz]) +
+                                               FDM_O1_8_2_A4*(u1_v[iz+3*nnz]- u1_v[iz-4*nnz]);
+
+									float dz = FDM_O1_8_2_A1*(u1_v[iz] - u1_v[iz-3]) +
+                                               FDM_O1_8_2_A2*(u1_v[iz+1] - u1_v[iz-2]) +
+                                               FDM_O1_8_2_A3*(u1_v[iz+2]- u1_v[iz-3]) +
+                                               FDM_O1_8_2_A4*(u1_v[iz+3]- u1_v[iz-4]);
+
+									v1_v[iz] += irho_v[iz]*dt_inv_dx* dx;
+									v2_v[iz] += irho_v[iz]*dt_inv_dy* dy;
+									v3_v[iz] += irho_v[iz]*dt_inv_dz * dz;
+								}
+							}
+                        }
+                    }
+                } else{ // Pressure update: p from v
+                    u1=	p21 ; u2=	p22 ; u3=	p23 ;
+                    v1=	p11 ; v2=	p12 ; v3=	p13 ;
+
+                    for(int ix=kt; ix<kte; ix++){
+                        if( ((ix)/th_nwf)%th_x == tid_x ) {
+                            for(int iy=yb; iy<ye; iy++) {
+                                float *restrict v3_v = &(v3[ix*nnyz+iy*nnz]);
+                                const float *restrict u1_v = &(u1[ix*nnyz+iy*nnz]);
+                                const float *restrict u2_v = &(u2[ix*nnyz+iy*nnz]);
+                                const float *restrict u3_v = &(u3[ix*nnyz+iy*nnz]);
+                                const float *restrict coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz]);
+
+#pragma omp simd aligned(u1_v, u2_v, u3_v, v3_v, coef0_v: 64)
+                                for(int iz=ib; iz<ie; iz++) {
+                                    float dvx = FDM_O1_8_2_A1*(u1_v[iz] - u1_v[iz-4*nnyz]) +
+                                                FDM_O1_8_2_A2*(u1_v[iz+nnyz] - u1_v[iz-3*nnyz]) +
+                                                FDM_O1_8_2_A3*(u1_v[iz+2*nnyz] - u1_v[iz-2*nnyz]) +
+                                                FDM_O1_8_2_A4*(u1_v[iz+3*nnyz] - u1_v[iz-nnyz]);
+
+                                    float dvy = FDM_O1_8_2_A1*(u2_v[iz] - u2_v[iz-4*nnz]) +
+                                                FDM_O1_8_2_A2*(u2_v[iz+nnz] - u2_v[iz-3*nnz]) +
+                                                FDM_O1_8_2_A3*(u2_v[iz+2*nnz] - u2_v[iz-2*nnz]) +
+                                                FDM_O1_8_2_A4*(u2_v[iz+3*nnz] - u2_v[iz-nnz]);
+
+                                    float dvz = FDM_O1_8_2_A1*(u3_v[iz] - u3_v[iz-4]) +
+                                                FDM_O1_8_2_A2*(u3_v[iz+1] - u3_v[iz-3]) +
+                                                FDM_O1_8_2_A3*(u3_v[iz+2] - u3_v[iz-2]) +
+                                                FDM_O1_8_2_A4*(u3_v[iz+3] - u3_v[iz-1]);
+
+                                    v3_v[iz] += coef0_v[iz] * (dvx*inv_dx + dvy*inv_dy + dvz*inv_dz);
+                                    v3_v[iz] *= dampx[ix] * dampy[iy] * dampz[iz];
+                                }
+                                // keep your original sismos and source code here
+                                if (data->flag_bwd == 1) {
+									///////  add sismos
+									//////////////////////////////////////////
+									double time_term = t0_real - (t_real - tb_real);
+									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
+									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
+									int64_t sismos_ind = term1 + term2 + (iy - 4);
+									v3_v[iz_]+=data->sismos[sismos_ind];
+								}
+                                if (data->flag_fwd == 1 && data->src_depth!=-1 && data->rec_sismos==1 ) {
+//                                	MSG("recording sismos\n");
+									///////  save sismos
+									////////////////////////////////////////
+//////////									data->sismos[data->rcv_len*(t0_real+(t_real-tb_real))+(ix-4)*(nny-2*NHALO)+(iy-4)]=(v3_v[iz_]);
+									////////////////////////////////////////
+//									MSG("ix=%d,iy=%d,iz=%d \n",ix,iy,iz_);
+	//                                MSG("t0_real=%d,t_real=%d,tb_real=%d",t0_real,t_real,tb_real);
+									double time_term = t0_real + (t_real - tb_real);
+									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
+									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
+									int64_t sismos_ind=term1 + term2 + (iy - 4);
+	//								MSG("s_ind=%lld,term1=%lld,time_term=%f,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_]);
+									data->sismos[sismos_ind]=v3_v[iz_];
+                                }
+                            }
+                            if (data->flag_fwd == 1) {
+								///////  add source
+								if( (gp->source_point_enabled==1)
+									&& (gp->lsource_pt[2] >= ib ) //@KADIR
+									&& (gp->lsource_pt[2] <  ie ) //@KADIR
+									&& (gp->lsource_pt[1] >= yb ) //@KADIR
+									&& (gp->lsource_pt[1] <  ye ) //@KADIR
+									&& (gp->lsource_pt[0] == ix ) )
+								{
+/////									ux[data->src_x] += data->source[t0+(t-tb)];// original
+////									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] = F2H(H2F(gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))]) + gp->src_exc_coef[isrc_exc]);//@KADIR
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
+//									if(0)  printf("DIA\tts:%d idzU:-- valU:%.4f src_exc_coef:%.4f coef:%g %g %g %g %g\ti(%d-%d) %d/%d\n", isrc_exc, H2F(gp->U1[((1ULL)*((gp->lsource_pt[2])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[0]))]),  gp->src_exc_coef[isrc_exc], coef[0], coef[1], coef[2], coef[3], coef[4],
+//												  ib, ie, omp_get_thread_num(), omp_get_num_threads());
+
+//									int src_index=(t0+(t-tb))/2;
+//									MSG( "t0=%d,t=%d,tb=%d,src_index=%d,gp->src_exc_coef=%f",t0,t,tb,src_index,gp->src_exc_coef[ src_index ] );
+//									MSG("isrc_exc=%d",isrc_exc);
+									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+(gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] +=gp->src_exc_coef[isrc_exc];
+									isrc_exc++;
+								}
+                            }
+                        }
+                    }
+                }
+
+                if(t< t_dim){ yb += -b_inc; ye += e_inc; }
+                else{ yb += b_inc; ye += -e_inc; }
+                kte=max(kte-NHALO,xb);
+                if (end==1) kte =xe;
+                kt=max(kt-NHALO,xb);
+            }
+        }
+
+        // === FORWARD PHASE ===
+        
+        if ((data->flag_fwd == 1) && (data->fwd != NULL) && (ifwd != -1)) 
+        { // load fwd wavefield and compute IC
+//        	MSG("fwd phase, ifwd=%d",ifwd);
+			yb = yb_r;
+			ye = ye_r;
+			kt = xb;
+//			kte=kt+nwf;
+			kte=xe;
+			hFloat *v3=p13;
+			v3=p13;
+//			MSG("fwd, ifwd=%d",ifwd);
+			for(int t=tb; t< te; t++){ // Diamond blocking in time
+				hFloat* output_buffer = NULL;  //@KADIR
+				int mod = (t)%2;
+//                MSG("t=%d",t);
+				if(mod==0){// compute p from v
+					u1=	p21 ;
+////////////////////////
+					for(int ix=kt; ix<kte; ix++){
+						if( ((ix)/th_nwf)%th_x == tid_x ) {
+							for(int iy=yb; iy<ye; iy++) {
+								size_t index = 1ULL * ifwd * nnxyz + 1ULL * ix * nnyz + iy * nnz;
+								if (index + ie >= stencil_ctx.fwd_size) {
+									fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
+											omp_get_thread_num(),index,stencil_ctx.fwd_size);
+									exit(1);
+								}
+
+								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
+//								MSG("ifwd=%d",ifwd);
+//								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+								wx=&(data->fwd[1ULL*ifwd*nnxyz+1ULL*ix*nnyz+iy*nnz]);
+#pragma ivdep
+								for (int iz=ib; iz<ie; iz++) {
+//									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
+									wx[iz]=ux[iz];
+								}
+							}
+							if( (gp->source_point_enabled==1)
+								&& (gp->lsource_pt[2] >= ib ) //@KADIR
+								&& (gp->lsource_pt[2] <  ie ) //@KADIR
+								&& (gp->lsource_pt[1] >= yb ) //@KADIR
+								&& (gp->lsource_pt[1] <  ye ) //@KADIR
+								&& (gp->lsource_pt[0] == ix ) )	{
+////									wx[data->src_x]-=data->source[t0+(t-tb)];	// delete source
+
+//									gp->U1[((1ULL)*((gp->lsource_pt[0])*(gp->ldomain_shape[1])+( gp->lsource_pt[1]))*(gp->ldomain_shape[0])+(gp->lsource_pt[2]))] -= gp->src_exc_coef[isrc_exc2];
+//									wx[  gp->lsource_pt[2] ] -= gp->src_exc_coef[isrc_exc2];
+//								MSG("isrc_exc2=%d",isrc_exc2);
+								data->fwd[1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + gp->lsource_pt[1]*nnz+gp->lsource_pt[2]]-=gp->src_exc_coef[isrc_exc2];
+								isrc_exc2++;
+								//									gp->src_exc_coef[isrc_exc];
+							}
+						}
+					}
+
+////////////////////////
+				}
+				// Update block size in Y
+				if(t< t_dim){ // lower half of the diamond
+					yb += -b_inc;
+					ye += e_inc;
+				}else{ // upper half of the diamond
+					yb += b_inc;
+					ye += -e_inc;
+				}
+				kte=max(kte-NHALO,xb);
+				if (end==1) kte =xe;
+				kt=max(kt-NHALO,xb);
+			} // diamond blocking in time (time loop)
+
+        }
+
+
     }
 }
+
 
 void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc,int e_inc, int tb, int te, int tid,int t0,int ifwd){
 //	MSG("inside intra_diamond_mwd_comp_std t0=%d",t0);
@@ -3001,7 +3237,7 @@ void wave_tb_forward_1st(tb_t* ctx,
 
 //	p->stencil.stat_sched_func = stat_sched_iso_ref;
     // p->stencil.mwd_func = femwd_iso_ref_1st;
-    p->stencil.mwd_func =femwd_iso_ref_1st_grok;
+    p->stencil.mwd_func =femwd_iso_ref_1st_grok2;
 
     // Allocate the wavefront profiling timers
 //	int num_thread_groups = get_ntg(*p);

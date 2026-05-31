@@ -274,6 +274,15 @@ void femwd_iso_ref_1st_grok( const int shape[3], const int zb, const int yb_r0, 
                         int t_dim, int b_inc, int e_inc,int NHALO,
                         int tb, int te,int t0,int ifwd,
 						stencil_ctx stencil_ctx, int mtid,tb_data_t * data);
+void femwd_iso_ref_1st_grok2( const int shape[3], const int zb, const int yb_r0, const int xb,
+                        const int ze, const int ye_r0, const int xe,
+                        const real_t *  coef, hFloat *  p11, hFloat *  p12, hFloat *  p13,
+                        hFloat *  p21, hFloat *  p22, hFloat *  p23,
+						const hFloat *  roc2,const hFloat * inv_rho,
+                        float * dampx,float * dampy,float * dampz,
+                        int t_dim, int b_inc, int e_inc,int NHALO,
+                        int tb, int te,int t0,int ifwd,
+						stencil_ctx stencil_ctx, int mtid,tb_data_t * data);                        
 void intra_diamond_mwd_comp_std(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t_coord);
 void intra_diamond_mwd_comp(Parameters *p, int yb_r, int ye_r, int b_inc, int e_inc, int tb, int te, int tid,int t0,int ifwd);
 void dynamic_intra_diamond_ts_combined(Parameters *p);

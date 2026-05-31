@@ -42,10 +42,20 @@ lscpu
 #export KMP_HW_SUBSET=1t
 
 ######################################################
-export OMP_NUM_THREADS=128;
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
+# export OMP_NUM_THREADS=128;
+# export OMP_PLACES=cores;
+# export OMP_PROC_BIND=close;
+# export OMP_STACKSIZE=64M;
+######################################################
+export OMP_NUM_THREADS=128
+export OMP_PLACES=cores
+export OMP_PROC_BIND=close
+export OMP_WAIT_POLICY=active
+export KMP_BLOCKTIME=0
+export KMP_AFFINITY=granularity=core,compact=1,1
+export OMP_MAX_ACTIVE_LEVELS=1
+export OMP_DYNAMIC=false
+######################################################
 
 # #export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
 # # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
@@ -53,9 +63,11 @@ export OMP_STACKSIZE=64M;
 
 # export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-report=2"
 
-export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
-               -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
-               -fno-inline -qno-opt-dynamic-align"
+# export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
+#                -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
+#                -fno-inline -qno-opt-dynamic-align"
+
+export CFLAGS="-march=znver2 -O3 -ffast-math -qopenmp -qopt-report=2 -fno-inline"
 
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
@@ -120,14 +132,14 @@ make clean
 make VERBOSE=1
 make install
 
-exit 1
+# exit 1
 
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/test1_modeling
 export logs_filename="test1_interactive_old.log"
 export logs_filename="test1_interactive_ongoing_testing_rome.log"
-rm -rf $logs_path/$logs_filename;
+# rm -rf $logs_path/$logs_filename;
 mkdir $logs_path
 
 ###******** PROFILING SETUP ***********###
@@ -183,7 +195,7 @@ for i in $(seq 0 0); do
                   --tb_t_dim $t_dim --tb_num_wf $num_wf \
                   --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot \
                   --src_depth $src_depth --order 1 --fmax $fmax \
-                  --dx $dh --dy $dh --dz $dh >> $logs_path/$logs_filename;
+                  --dx $dh --dy $dh --dz $dh  -c >> $logs_path/$logs_filename;
   else
     numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
     --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
