@@ -1541,6 +1541,10 @@ void wave_update_fields_block_1st_GROK(sismap_t *s,
 
     const long int nnyz = (long int)nny * nnz;
 
+    const float inv_dx=1/s->dx;
+    const float inv_dy=1/s->dy;
+    const float inv_dz=1/s->dz;
+
     const float dt_inv_dx = s->dt / s->dx;
     const float dt_inv_dy = s->dt / s->dy;
     const float dt_inv_dz = s->dt / s->dz;

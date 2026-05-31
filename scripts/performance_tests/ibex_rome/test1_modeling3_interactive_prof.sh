@@ -51,10 +51,14 @@ export OMP_STACKSIZE=64M;
 # # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
 # # export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 
-export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-report=2"
+# export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-report=2"
+
+export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
+               -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
+               -fno-inline -qno-opt-dynamic-align"
+
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
-
 ###********** MODULES *********###
 module purge
 module load intel/2025.3
@@ -115,6 +119,8 @@ CC=icx CXX=icpx cmake .
 make clean
 make VERBOSE=1
 make install
+
+exit 1
 
 ##### Logs directory #####
 mkdir ./logs

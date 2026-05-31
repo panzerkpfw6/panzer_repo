@@ -882,6 +882,10 @@ void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, c
         const unsigned long nnyz = (unsigned long)nnz * nny;
         const unsigned long nnyz_v = (unsigned long)stencil_ctx.nz * stencil_ctx.ny;
 
+        const Myfloat dt_inv_dx = stencil_ctx.dt / (stencil_ctx.dx);
+		const Myfloat dt_inv_dy = stencil_ctx.dt / (stencil_ctx.dy);
+		const Myfloat dt_inv_dz = stencil_ctx.dt / (stencil_ctx.dz);
+
         int tid = omp_get_thread_num();
         int th_x = stencil_ctx.th_x;
         int nwf = stencil_ctx.num_wf;
