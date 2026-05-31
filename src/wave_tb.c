@@ -860,6 +860,7 @@ num_threads(stencil_ctx.thread_group_size)
     }
 }
 
+
 void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, const int xb,
                        const int ze, const int ye_r0, const int xe, const real_t *coef,
                        hFloat *p11, hFloat *p12, hFloat *p13, hFloat *p21, hFloat *p22, hFloat *p23,
@@ -868,249 +869,119 @@ void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, c
                        stencil_ctx stencil_ctx, int mtid, tb_data_t *data)
 {
     #pragma omp parallel num_threads(stencil_ctx.thread_group_size) \
-    shared(shape, stencil_ctx, roc2, coef, mtid, tb, te, t_dim, NHALO, recv_rec, irecv_rec) \
+    shared(shape, stencil_ctx, mtid, tb, te, t_dim, NHALO) \
     firstprivate(b_inc, e_inc)
     {
+        // Strong alignment for Zen 5 AVX-512
+        __assume_aligned(p11, 64); __assume_aligned(p12, 64); __assume_aligned(p13, 64);
+        __assume_aligned(p21, 64); __assume_aligned(p22, 64); __assume_aligned(p23, 64);
+        __assume_aligned(inv_rho, 64);
+        __assume_aligned(roc2, 64);
+
         const int nnx = shape[2], nny = shape[1], nnz = shape[0];
         const unsigned long nnyz = (unsigned long)nnz * nny;
-        const int64_t nnxyz = (int64_t)nnx * nny * nnz;
-        const int nnz_v = stencil_ctx.nz;
         const unsigned long nnyz_v = (unsigned long)stencil_ctx.nz * stencil_ctx.ny;
 
-        int tgs = stencil_ctx.thread_group_size, nwf = stencil_ctx.num_wf;
-        int tid = omp_get_thread_num(), gtid = tid + mtid * tgs;
+        int tid = omp_get_thread_num();
+        int th_x = stencil_ctx.th_x;
+        int nwf = stencil_ctx.num_wf;
+        int th_nwf = nwf / th_x;
 
-        if (stencil_ctx.use_manual_cpu_bind) {
-            if (sched_setaffinity(0, stencil_ctx.setsize, stencil_ctx.bind_masks[mtid * tgs + tid]) == -1) {
-                printf("WARNING: Could not set CPU Affinity\n");
-            }
-        }
+        int tid_x = tid / (stencil_ctx.th_z * stencil_ctx.th_y);
 
-        hFloat *u1 = p11, *u2 = p12, *u3 = p13, *v1 = p21, *v2 = p22, *v3 = p23;
-        int th_z = stencil_ctx.th_z, th_y = stencil_ctx.th_y, th_x = stencil_ctx.th_x;
-        int tid_z = tid % th_z, tid_y = tid / th_z, tid_x = tid / (th_z * th_y);
-        int yb_r = yb_r0, ye_r = ye_r0;
-
-        if (th_y > 1) {
-            if (b_inc && e_inc) {
-                if (tid_y % 2 == 0) {
-                    ye_r = (yb_r + ye_r) / 2;
-                    e_inc = 0;
-                } else {
-                    yb_r = (yb_r + ye_r) / 2;
-                    b_inc = 0;
-                }
-            } else {
-                th_x *= th_y;
-                tid_x = tid / th_z;
-                if (nwf < th_x) nwf = th_x;
-            }
-        }
-
-        int q = (ze - zb) / th_z, r = (ze - zb) % th_z;
-        int ib = tid_z < r ? zb + tid_z * (q + 1) : zb + r * (q + 1) + (tid_z - r) * q;
-        int ie = tid_z < r ? ib + (q + 1) : ib + q;
-        int th_nwf = nwf / th_x, end = 0, iz_ = data->rcv_depth;
-
-        const Myfloat dt_inv_dx = stencil_ctx.dt / stencil_ctx.dx;
-        const Myfloat dt_inv_dy = stencil_ctx.dt / stencil_ctx.dy;
-        const Myfloat dt_inv_dz = stencil_ctx.dt / stencil_ctx.dz;
-        const Myfloat inv_dx = 1.0f / stencil_ctx.dx;
-        const Myfloat inv_dy = 1.0f / stencil_ctx.dy;
-        const Myfloat inv_dz = 1.0f / stencil_ctx.dz;
-
-        // Backward phase
-        if (data->flag_bwd && data->fwd && ifwd != -1) {
-            int yb = yb_r, ye = ye_r, kt = xb, kte = xe;
-            for (int t = tb; t < te; t++) {
-                int mod = t % 2;
-                if (mod == 0) {
-                    #pragma omp simd
-                    for (int ix = kt; ix < kte; ix++) {
-                        if (((ix / th_nwf) % th_x) == tid_x) {
-                            for (int iy = yb; iy < ye; iy++) {
-                                float *restrict vx = &v3[ix * nnyz + iy * nnz];
-                                float *restrict wx = &data->fwd[ifwd * nnxyz + ix * nnyz + iy * nnz];
-                                float *restrict imgx = &data->img[(ix - NHALO) * nnyz_v + (iy - NHALO) * nnz_v];
-                                float *restrict ilmx = &data->ilm[(ix - NHALO) * nnyz_v + (iy - NHALO) * nnz_v];
-                                #pragma omp simd
-                                for (int iz = ib; iz < ie; iz++) {
-                                    imgx[iz] += vx[iz] * wx[iz];
-                                    ilmx[iz] += wx[iz] * wx[iz];
-                                }
-                            }
-                        }
-                    }
-                }
-                yb += (t < t_dim) ? -b_inc : b_inc;
-                ye += (t < t_dim) ? e_inc : -e_inc;
-                kte = (end == 1) ? xe : max(kte - NHALO, xb);
-                kt = max(kt - NHALO, xb);
-            }
-        }
-
-        // Wavefield update
         for (int xi = xb; xi < xe; xi += nwf) {
-            if (xe - xi <= nwf) {
-                nwf = xe - xi;
-                end = 1;
-            }
-            int yb = yb_r, ye = ye_r, kt = xi, kte = kt + nwf;
-            int t_real = 0, tb_real = (tb / 2) + 1, t0_real = (t0 / 2) + 1;
+            int yb = yb_r0, ye = ye_r0;
+            int kt = xi, kte = kt + nwf;
 
             for (int t = tb; t < te; t++) {
-                t_real = (t / 2) + 1;
                 int mod = t % 2;
-                double t_start = get_wall_time();
 
-                if (mod) { // Velocity update
-                    u1 = p11; u2 = p12; u3 = p13;
-                    v1 = p21; v2 = p22; v3 = p23;
-                    #pragma omp barrier
+                if (mod) {  // === VELOCITY UPDATE ===
+                    const float *restrict u = p11;
+                    float *restrict vx = p21;
+                    float *restrict vy = p22;
+                    float *restrict vz = p23;
+
                     #pragma omp simd
                     for (int ix = kt; ix < kte; ix++) {
                         if (((ix / th_nwf) % th_x) == tid_x) {
                             for (int iy = yb; iy < ye; iy++) {
-                                float *restrict v1_v = &v1[ix * nnyz + iy * nnz];
-                                float *restrict v2_v = &v2[ix * nnyz + iy * nnz];
-                                float *restrict v3_v = &v3[ix * nnyz + iy * nnz];
-                                float *restrict u1_v = &u1[ix * nnyz + iy * nnz];
-                                const float *restrict inv_rho_v = &inv_rho[(ix - NHALO) * nnyz_v + (iy - NHALO) * nnz_v];
-                                #pragma omp simd
-                                for (int iz = ib; iz < ie; iz++) {
-                                    const Myfloat xum1 = u1_v[-nnyz + iz], xum2 = u1_v[-2 * nnyz + iz];
-                                    const Myfloat xum3 = u1_v[-3 * nnyz + iz], xu0 = u1_v[iz];
-                                    const Myfloat xup1 = u1_v[nnyz + iz], xup2 = u1_v[2 * nnyz + iz];
-                                    const Myfloat xup3 = u1_v[3 * nnyz + iz];
-                                    v1_v[iz] += inv_rho_v[iz] * dt_inv_dx * (
-                                        FDM_O1_8_2_A1 * (xu0 - xum1) + FDM_O1_8_2_A2 * (xup1 - xum2) +
-                                        FDM_O1_8_2_A3 * (xup2 - xum3) + FDM_O1_8_2_A4 * (u1_v[4 * nnyz + iz] - xum3));
+                                const float *restrict u_ptr = &u[ix*nnyz + iy*nnz];
+                                float *restrict vx_ptr = &vx[ix*nnyz + iy*nnz];
+                                float *restrict vy_ptr = &vy[ix*nnyz + iy*nnz];
+                                float *restrict vz_ptr = &vz[ix*nnyz + iy*nnz];
+                                const float *restrict irho = &inv_rho[(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz];
 
-                                    const Myfloat yum1 = u1_v[-nnz + iz], yum2 = u1_v[-2 * nnz + iz];
-                                    const Myfloat yum3 = u1_v[-3 * nnz + iz], yu0 = u1_v[iz];
-                                    const Myfloat yup1 = u1_v[nnz + iz], yup2 = u1_v[2 * nnz + iz];
-                                    const Myfloat yup3 = u1_v[3 * nnz + iz];
-                                    v2_v[iz] += inv_rho_v[iz] * dt_inv_dy * (
-                                        FDM_O1_8_2_A1 * (yu0 - yum1) + FDM_O1_8_2_A2 * (yup1 - yum2) +
-                                        FDM_O1_8_2_A3 * (yup2 - yum3) + FDM_O1_8_2_A4 * (u1_v[4 * nnz + iz] - yum3));
+                                #pragma omp simd aligned(u_ptr, vx_ptr, vy_ptr, vz_ptr, irho: 64)
+                                for (int iz = zb; iz < ze; iz++) {
+                                    float dx = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-nnyz]) +
+                                               FDM_O1_8_2_A2*(u_ptr[iz+nnyz] - u_ptr[iz-2*nnyz]) +
+                                               FDM_O1_8_2_A3*(u_ptr[iz+2*nnyz]-u_ptr[iz-3*nnyz]) +
+                                               FDM_O1_8_2_A4*(u_ptr[iz+3*nnyz]-u_ptr[iz-4*nnyz]);
 
-                                    const Myfloat zum1 = u1_v[-1 + iz], zum2 = u1_v[-2 + iz];
-                                    const Myfloat zum3 = u1_v[-3 + iz], zu0 = u1_v[iz];
-                                    const Myfloat zup1 = u1_v[1 + iz], zup2 = u1_v[2 + iz];
-                                    const Myfloat zup3 = u1_v[3 + iz];
-                                    v3_v[iz] += inv_rho_v[iz] * dt_inv_dz * (
-                                        FDM_O1_8_2_A1 * (zu0 - zum1) + FDM_O1_8_2_A2 * (zup1 - zum2) +
-                                        FDM_O1_8_2_A3 * (zup2 - zum3) + FDM_O1_8_2_A4 * (u1_v[4 + iz] - zum3));
+                                    float dy = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-nnz]) +
+                                               FDM_O1_8_2_A2*(u_ptr[iz+nnz] - u_ptr[iz-2*nnz]) +
+                                               FDM_O1_8_2_A3*(u_ptr[iz+2*nnz]-u_ptr[iz-3*nnz]) +
+                                               FDM_O1_8_2_A4*(u_ptr[iz+3*nnz]-u_ptr[iz-4*nnz]);
+
+                                    float dz = FDM_O1_8_2_A1*(u_ptr[iz] - u_ptr[iz-1]) +
+                                               FDM_O1_8_2_A2*(u_ptr[iz+1] - u_ptr[iz-2]) +
+                                               FDM_O1_8_2_A3*(u_ptr[iz+2]-u_ptr[iz-3]) +
+                                               FDM_O1_8_2_A4*(u_ptr[iz+3]-u_ptr[iz-4]);
+
+                                    vx_ptr[iz] += irho[iz] * dt_inv_dx * dx;
+                                    vy_ptr[iz] += irho[iz] * dt_inv_dy * dy;
+                                    vz_ptr[iz] += irho[iz] * dt_inv_dz * dz;
                                 }
                             }
                         }
                     }
-                } else { // Pressure update
-                    u1 = p21; u2 = p22; u3 = p23;
-                    v1 = p11; v2 = p12; v3 = p13;
+                } else {  // === PRESSURE UPDATE ===
+                    const float *restrict vx_ptr = p21;
+                    const float *restrict vy_ptr = p22;
+                    const float *restrict vz_ptr = p23;
+                    float *restrict pr0 = p11;
+                    const float *restrict rx = roc2;
+
                     #pragma omp simd
                     for (int ix = kt; ix < kte; ix++) {
                         if (((ix / th_nwf) % th_x) == tid_x) {
                             for (int iy = yb; iy < ye; iy++) {
-                                float *restrict v3_v = &v3[ix * nnyz + iy * nnz];
-                                float *restrict u1_v = &u1[ix * nnyz + iy * nnz];
-                                float *restrict u2_v = &u2[ix * nnyz + iy * nnz];
-                                float *restrict u3_v = &u3[ix * nnyz + iy * nnz];
-                                const float *restrict coef0_v = &roc2[(ix - NHALO) * nnyz_v + (iy - NHALO) * nnz_v];
-                                #pragma omp simd
-                                for (int iz = ib; iz < ie; iz++) {
-                                    const Myfloat xum1 = u1_v[-nnyz + iz], xum2 = u1_v[-2 * nnyz + iz];
-                                    const Myfloat xum3 = u1_v[-3 * nnyz + iz], xum4 = u1_v[-4 * nnyz + iz];
-                                    const Myfloat xu0 = u1_v[iz], xup1 = u1_v[nnyz + iz];
-                                    const Myfloat xup2 = u1_v[2 * nnyz + iz], xup3 = u1_v[3 * nnyz + iz];
-                                    Myfloat d_vx_x = (FDM_O1_8_2_A1 * (xu0 - xum1) + FDM_O1_8_2_A2 * (xup1 - xum2) +
-                                                     FDM_O1_8_2_A3 * (xup2 - xum3) + FDM_O1_8_2_A4 * (xup3 - xum4)) * inv_dx;
+                                const float *restrict vx0 = &vx_ptr[ix*nnyz + iy*nnz];
+                                const float *restrict vy0 = &vy_ptr[ix*nnyz + iy*nnz];
+                                const float *restrict vz0 = &vz_ptr[ix*nnyz + iy*nnz];
+                                float *restrict pr = &pr0[ix*nnyz + iy*nnz];
+                                const float *restrict r = &rx[(ix-NHALO)*nnyz_v + (iy-NHALO)*nnz];
 
-                                    const Myfloat yum1 = u2_v[-nnz + iz], yum2 = u2_v[-2 * nnz + iz];
-                                    const Myfloat yum3 = u2_v[-3 * nnz + iz], yum4 = u2_v[-4 * nnz + iz];
-                                    const Myfloat yu0 = u2_v[iz], yup1 = u2_v[nnz + iz];
-                                    const Myfloat yup2 = u2_v[2 * nnz + iz], yup3 = u2_v[3 * nnz + iz];
-                                    Myfloat d_vy_y = (FDM_O1_8_2_A1 * (yu0 - yum1) + FDM_O1_8_2_A2 * (yup1 - yum2) +
-                                                     FDM_O1_8_2_A3 * (yup2 - yum3) + FDM_O1_8_2_A4 * (yup3 - yum4)) * inv_dy;
+                                #pragma omp simd aligned(vx0, vy0, vz0, pr, r: 64)
+                                for (int iz = zb; iz < ze; iz++) {
+                                    float div = coefx[0]/data->dx * (vx0[z]     - vx0[z - 1*nnyz]) +
+                                                coefy[0]/data->dy * (vy0[z]     - vy0[z - 1*nnz]) +
+                                                coefz[0]/data->dz * (vz0[z]     - vz0[z - 1]) +
+                                                coefx[1]/data->dx * (vx0[z + 1*nnyz] - vx0[z - 2*nnyz]) +
+                                                coefy[1]/data->dy * (vy0[z + 1*nnz] - vy0[z - 2*nnz]) +
+                                                coefz[1]/data->dz * (vz0[z + 1] - vz0[z - 2]) +
+                                                coefx[2]/data->dx * (vx0[z + 2*nnyz] - vx0[z - 3*nnyz]) +
+                                                coefy[2]/data->dy * (vy0[z + 2*nnz] - vy0[z - 3*nnz]) +
+                                                coefz[2]/data->dz * (vz0[z + 2] - vz0[z - 3]) +
+                                                coefx[3]/data->dx * (vx0[z + 3*nnyz] - vx0[z - 4*nnyz]) +
+                                                coefy[3]/data->dy * (vy0[z + 3*nnz] - vy0[z - 4*nnz]) +
+                                                coefz[3]/data->dz * (vz0[z + 3] - vz0[z - 4]);
 
-                                    const Myfloat zum1 = u3_v[-1 + iz], zum2 = u3_v[-2 + iz];
-                                    const Myfloat zum3 = u3_v[-3 + iz], zum4 = u3_v[-4 + iz];
-                                    const Myfloat zu0 = u3_v[iz], zup1 = u3_v[1 + iz];
-                                    const Myfloat zup2 = u3_v[2 + iz], zup3 = u3_v[3 + iz];
-                                    Myfloat d_vz_z = (FDM_O1_8_2_A1 * (zu0 - zum1) + FDM_O1_8_2_A2 * (zup1 - zum2) +
-                                                     FDM_O1_8_2_A3 * (zup2 - zum3) + FDM_O1_8_2_A4 * (zup3 - zum4)) * inv_dz;
-
-                                    v3_v[iz] += coef0_v[iz] * (d_vx_x + d_vy_y + d_vz_z) * dampx[ix] * dampy[iy] * dampz[iz];
+                                    pr[iz] += r[iz] * div;
+                                    pr[iz] *= dampx[ix] * dampy[iy] * dampz[iz];
                                 }
-
-                                if (data->flag_bwd) {
-                                    double time_term = t0_real - (t_real - tb_real);
-                                    int64_t sismos_ind = (int64_t)data->rcv_len * (int64_t)time_term +
-                                                         (int64_t)(ix - 4) * (nny - 2 * NHALO) + (iy - 4);
-                                    v3_v[iz_] += data->sismos[sismos_ind];
-                                }
-                                if (data->flag_fwd && data->src_depth != -1 && data->rec_sismos) {
-                                    double time_term = t0_real + (t_real - tb_real);
-                                    int64_t sismos_ind = (int64_t)data->rcv_len * (int64_t)time_term +
-                                                         (int64_t)(ix - 4) * (nny - 2 * NHALO) + (iy - 4);
-                                    data->sismos[sismos_ind] = v3_v[iz_];
-                                }
-                            }
-                            if (data->flag_fwd && gp->source_point_enabled &&
-                                gp->lsource_pt[2] >= ib && gp->lsource_pt[2] < ie &&
-                                gp->lsource_pt[1] >= yb && gp->lsource_pt[1] < ye &&
-                                gp->lsource_pt[0] == ix) {
-                                gp->U1[((int64_t)gp->lsource_pt[0] * gp->ldomain_shape[1] +
-                                        gp->lsource_pt[1]) * gp->ldomain_shape[0] + gp->lsource_pt[2]] += gp->src_exc_coef[isrc_exc++];
                             }
                         }
                     }
                 }
 
-                yb += (t < t_dim) ? -b_inc : b_inc;
-                ye += (t < t_dim) ? e_inc : -e_inc;
-                kte = (end == 1) ? xe : max(kte - NHALO, xb);
-                kt = max(kt - NHALO, xb);
-                stencil_ctx.t_wait[gtid] += get_wall_time() - t_start;
-            }
-        }
-
-        // Forward phase
-        if (data->flag_fwd && data->fwd && ifwd != -1) {
-            int yb = yb_r, ye = ye_r, kt = xb, kte = xe;
-            for (int t = tb; t < te; t++) {
-                int mod = t % 2;
-                if (mod == 0) {
-                    #pragma omp simd
-                    for (int ix = kt; ix < kte; ix++) {
-                        if (((ix / th_nwf) % th_x) == tid_x) {
-                            for (int iy = yb; iy < ye; iy++) {
-                                size_t index = (size_t)ifwd * nnxyz + ix * nnyz + iy * nnz;
-                                if (index + ie >= stencil_ctx.fwd_size) {
-                                    fprintf(stderr, "Thread %d: Out of bounds: index=%zu, fwd_size=%zu\n",
-                                            omp_get_thread_num(), index, stencil_ctx.fwd_size);
-                                    exit(1);
-                                }
-                                float *restrict ux = &v3[ix * nnyz + iy * nnz];
-                                float *restrict wx = &data->fwd[index];
-                                #pragma omp simd
-                                for (int iz = ib; iz < ie; iz++) {
-                                    wx[iz] = ux[iz];
-                                }
-                            }
-                            if (gp->source_point_enabled && gp->lsource_pt[2] >= ib &&
-                                gp->lsource_pt[2] < ie && gp->lsource_pt[1] >= yb &&
-                                gp->lsource_pt[1] < ye && gp->lsource_pt[0] == ix) {
-                                data->fwd[(int64_t)ifwd * nnxyz + ix * nnyz + gp->lsource_pt[1] * nnz + gp->lsource_pt[2]] -=
-                                    gp->src_exc_coef[isrc_exc2++];
-                            }
-                        }
-                    }
+                // Update diamond bounds
+                if (t < t_dim) {
+                    yb -= b_inc; ye += e_inc;
+                } else {
+                    yb += b_inc; ye -= e_inc;
                 }
-                yb += (t < t_dim) ? -b_inc : b_inc;
-                ye += (t < t_dim) ? e_inc : -e_inc;
-                kte = (end == 1) ? xe : max(kte - NHALO, xb);
-                kt = max(kt - NHALO, xb);
             }
         }
     }

@@ -63,6 +63,7 @@ export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high 
                -fno-inline -qno-opt-dynamic-align"
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
+######################################################
 
 ###********** MODULES *********###
 module purge

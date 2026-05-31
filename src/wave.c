@@ -1516,6 +1516,122 @@ void wave_update_fields_block_1st(sismap_t *s,
     }
 }
 
+void wave_update_fields_block_1st_GROK(sismap_t *s,
+                                 float *restrict u0,
+                                 float *restrict vx,
+                                 float *restrict vy,
+                                 float *restrict vz,
+                                 const float *restrict roc2,
+                                 const float *restrict inv_rho) 
+{
+    const int BLOCKX = s->blockx;
+    const int BLOCKY = s->blocky;
+    const int BLOCKZ = s->blockz;
+
+    const int dimx = s->dimx;
+    const int dimy = s->dimy;
+    const int dimz = s->dimz;
+    const int sx = s->sx;
+    const int sy = s->sy;
+    const int sz = s->sz;
+
+    const int nnx = dimx + 2 * sx;
+    const int nny = dimy + 2 * sy;
+    const int nnz = dimz + 2 * sz;
+
+    const long int nnyz = (long int)nny * nnz;
+
+    const float dt_inv_dx = s->dt / s->dx;
+    const float dt_inv_dy = s->dt / s->dy;
+    const float dt_inv_dz = s->dt / s->dz;
+
+    const float *restrict coefx = s->coefx;
+    const float *restrict coefy = s->coefy;
+    const float *restrict coefz = s->coefz;
+    const float *restrict dampx = s->dampx;
+    const float *restrict dampy = s->dampy;
+    const float *restrict dampz = s->dampz;
+
+    // ===================== VELOCITY UPDATE =====================
+    #pragma omp parallel for collapse(2) schedule(static) 
+    for (int xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (int ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            const int xmax = (xmin + BLOCKX > dimx) ? dimx : xmin + BLOCKX;
+            const int ymax = (ymin + BLOCKY > dimy) ? dimy : ymin + BLOCKY;
+
+            for (int x = xmin; x < xmax; x++) {
+                for (int y = ymin; y < ymax; y++) {
+                    float *restrict vx0 = &vx[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    float *restrict vy0 = &vy[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    float *restrict vz0 = &vz[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict pr0 = &u0[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict irho = &inv_rho[x * dimy * dimz + y * dimz];
+
+                    #pragma omp simd aligned(vx0,vy0,vz0,pr0,irho:64)
+                    for (int z = 0; z < dimz; z++) {
+                        float dx = coefx[0]*(pr0[z + 1*nnyz] - pr0[z]) +
+                                   coefx[1]*(pr0[z + 2*nnyz] - pr0[z - 1*nnyz]) +
+                                   coefx[2]*(pr0[z + 3*nnyz] - pr0[z - 2*nnyz]) +
+                                   coefx[3]*(pr0[z + 4*nnyz] - pr0[z - 3*nnyz]);
+
+                        float dy = coefy[0]*(pr0[z + 1*nnz] - pr0[z]) +
+                                   coefy[1]*(pr0[z + 2*nnz] - pr0[z - 1*nnz]) +
+                                   coefy[2]*(pr0[z + 3*nnz] - pr0[z - 2*nnz]) +
+                                   coefy[3]*(pr0[z + 4*nnz] - pr0[z - 3*nnz]);
+
+                        float dz = coefz[0]*(pr0[z + 1] - pr0[z]) +
+                                   coefz[1]*(pr0[z + 2] - pr0[z - 1]) +
+                                   coefz[2]*(pr0[z + 3] - pr0[z - 2]) +
+                                   coefz[3]*(pr0[z + 4] - pr0[z - 3]);
+
+                        vx0[z] += irho[z] * dt_inv_dx * dx;
+                        vy0[z] += irho[z] * dt_inv_dy * dy;
+                        vz0[z] += irho[z] * dt_inv_dz * dz;
+                    }
+                }
+            }
+        }
+    }
+
+    // ===================== PRESSURE UPDATE =====================
+    #pragma omp parallel for collapse(2) schedule(static)
+    for (int xmin = 0; xmin < dimx; xmin += BLOCKX) {
+        for (int ymin = 0; ymin < dimy; ymin += BLOCKY) {
+            const int xmax = (xmin + BLOCKX > dimx) ? dimx : xmin + BLOCKX;
+            const int ymax = (ymin + BLOCKY > dimy) ? dimy : ymin + BLOCKY;
+
+            for (int x = xmin; x < xmax; x++) {
+                for (int y = ymin; y < ymax; y++) {
+                    float *restrict pr0 = &u0[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict vx0 = &vx[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict vy0 = &vy[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict vz0 = &vz[(x + sx) * nnyz + (y + sy) * nnz + sz];
+                    const float *restrict rx  = &roc2[x * dimy * dimz + y * dimz];
+
+                    #pragma omp simd aligned(pr0, vx0, vy0, vz0, rx:64)
+                    for (int z = 0; z < dimz; z++) {
+                        float div = coefx[0]*inv_dx*(vx0[z]     - vx0[z - 1*nnyz]) +
+                                    coefy[0]*inv_dy*(vy0[z]     - vy0[z - 1*nnz]) +
+                                    coefz[0]*inv_dz*(vz0[z]     - vz0[z - 1]) +
+                                    coefx[1]*inv_dx*(vx0[z + 1*nnyz] - vx0[z - 2*nnyz]) +
+                                    coefy[1]*inv_dy*(vy0[z + 1*nnz] - vy0[z - 2*nnz]) +
+                                    coefz[1]*inv_dz*(vz0[z + 1] - vz0[z - 2]) +
+                                    coefx[2]*inv_dx*(vx0[z + 2*nnyz] - vx0[z - 3*nnyz]) +
+                                    coefy[2]*inv_dy*(vy0[z + 2*nnz] - vy0[z - 3*nnz]) +
+                                    coefz[2]*inv_dz*(vz0[z + 2] - vz0[z - 3]) +
+                                    coefx[3]*inv_dx*(vx0[z + 3*nnyz] - vx0[z - 4*nnyz]) +
+                                    coefy[3]*inv_dy*(vy0[z + 3*nnz] - vy0[z - 4*nnz]) +
+                                    coefz[3]*inv_dz*(vz0[z + 3] - vz0[z - 4]);
+
+                        pr0[z] += rx[z] * div;
+                        pr0[z] *= dampx[x + sx] * dampy[y + sy] * dampz[z + sz];
+                    }
+                }
+            }
+        }
+    }
+}
+
 void wave_update_source(sismap_t *s, shot_t *shot,float *u0,float sterm) {
 //    MSG("shot->srcidx=%d\n",shot->srcidx);
     const int nnz = s->dimz + 2 * s->sz;

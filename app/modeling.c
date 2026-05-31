@@ -216,7 +216,8 @@ void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, 
 //            MSG("t=%d",t);
 //            MSG("t=%d",t);
             t0=wtime();
-            wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
+            // wave_update_fields_block_1st(s,u0,vx,vy,vz,vel,inv_rho);
+            wave_update_fields_block_1st_GROK(s,u0,vx,vy,vz,vel,inv_rho);
 //            wave_update_fields_block_1st_orig(s,u0,vx,vy,vz, vel, pml_tmp, pml_tab);
             t_prop += wtime() - t0;
 

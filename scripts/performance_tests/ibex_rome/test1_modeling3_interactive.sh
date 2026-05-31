@@ -32,15 +32,6 @@
 echo $hostname
 lscpu
 
-####********** OPENMP PARAMETERS ***********###
-#export OMP_NUM_THREADS=192
-#export OMP_PROC_BIND=true
-#export OMP_PLACES=threads
-#export OMP_NESTED='True'
-#export granularity=fine
-#export KMP_AFFINITY=compact
-#export KMP_HW_SUBSET=1t
-
 ######################################################
 export OMP_NUM_THREADS=128;
 export OMP_PLACES=cores;

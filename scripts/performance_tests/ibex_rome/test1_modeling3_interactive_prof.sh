@@ -5,10 +5,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1
-#SBATCH --cpus-per-task=192
+#SBATCH --cpus-per-task=128
 #SBATCH --time=3:00:00
-#SBATCH --constraint=turin
-#SBATCH --job-name=test1_TUR
+####SBATCH --partition=amd  #
+#SBATCH --job-name=test1_modeling
 #SBATCH --output=logs/test1_modeling.%J.out
 #SBATCH --error=logs/test1_modeling.%J.err
 #SBATCH --hint=nomultithread    # don't use hyperthreading
@@ -33,34 +33,25 @@ echo $hostname
 lscpu
 
 ####********** OPENMP PARAMETERS ***********###
+#export OMP_NUM_THREADS=192
+#export OMP_PROC_BIND=true
+#export OMP_PLACES=threads
+#export OMP_NESTED='True'
+#export granularity=fine
+#export KMP_AFFINITY=compact
+#export KMP_HW_SUBSET=1t
 
 ######################################################
-export OMP_NUM_THREADS=192
+export OMP_NUM_THREADS=128;
+export OMP_PLACES=cores;
+export OMP_PROC_BIND=close;
+export OMP_STACKSIZE=64M;
 
-# Your main hot function (wave_update_fields_block_1st.extracted) dominates the runtime.
-# OpenMP runtime (libiomp5.so) is taking a very large portion (~20%+ of total CPU time) — this is a red flag (too much waiting / synchronization).
+# #export CFLAGS="-march=znver4 -dynamic -m64 -Ofast -ffast-math -fopenmp -O3"
+# # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
+# # export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 
-# Conclusion: Your Temporal Blocking has high overhead and the inner kernel is not efficient enough.
-export OMP_PLACES=cores
-export OMP_PROC_BIND=close
-export OMP_STACKSIZE=256M
-
-# Add these environment variables
-export OMP_WAIT_POLICY=active
-export KMP_BLOCKTIME=0
-export OMP_MAX_ACTIVE_LEVELS=1
-export OMP_DYNAMIC=false
-export KMP_AFFINITY=granularity=core,compact=1,1,verbose
-export OMP_SCHEDULE=static,1
-export KMP_HOT_TEAMS_MODE=1
-export KMP_HOT_TEAMS_MAX_LEVEL=1
-
-
-# export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-zmm-usage=high -mprefer-vector-width=512 -qopt-report=3"
-# export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
-export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
-               -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
-               -fno-inline -qno-opt-dynamic-align"
+export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-report=2"
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
 
@@ -88,18 +79,26 @@ cbx_arr=(16  16 16)
 cby_arr=(4  4  4)
 cbz_arr=(9999  9999  9999)
 
-th_x_arr_1st=(16 4 4)
+### My recent parameter search
+#th_x_arr_1st=(16 16 16)
+#th_y_arr_1st=(2 2 2)
+#th_z_arr_1st=(1 1 1)
+#tdim_arr_1st=(7 7 7)
+#num_wf_arr_1st=(192 192 192)
+
+# PASC paper results
+th_x_arr_1st=(8 4 4)
 th_y_arr_1st=(2 2 2)
 th_z_arr_1st=(1 1 1)
-num_wf_arr_1st=(192 20 4)
-tdim_arr_1st=(7 3 7)
+tdim_arr_1st=(7 7 7)
+num_wf_arr_1st=(64 20 20)
 
-# th_x_arr_1st=(1 1 1)
-# th_y_arr_1st=(1 1 1)
-# th_z_arr_1st=(16 16 16)
-# num_wf_arr_1st=(192 192 192)
-# tdim_arr_1st=(7 7 7)
-
+### PASC-based results, my guess
+#th_x_arr_1st=(8 2 2)
+#th_y_arr_1st=(1 2 2)
+#th_z_arr_1st=(1 1 1)
+#tdim_arr_1st=(3 7 7)
+#num_wf_arr_1st=(24 20 20)
 
 ###*********** Experiment setup ************###
 nx_arr=(  512  1024  2048  )
@@ -121,14 +120,13 @@ make install
 mkdir ./logs
 export logs_path=./logs/test1_modeling
 export logs_filename="test1_interactive_old.log"
-export logs_filename="test1_interactive_ongoing_testing.log"
-export logs_filename="test1_turin_profiling.log"
+export logs_filename="test1_interactive_ongoing_testing_rome.log"
 rm -rf $logs_path/$logs_filename;
 mkdir $logs_path
 
 ###******** PROFILING SETUP ***********###
 PROFILING=1                    # Set to 0 to disable profiling
-PROFILE_DIR="./logs/test1_modeling/profile_tb_turin"
+PROFILE_DIR="./logs/test1_modeling/profile_tb_rome"
 mkdir $PROFILE_DIR
 
 ##### Run tests #####
@@ -168,18 +166,18 @@ for i in $(seq 0 0); do
   echo "num_th=${OMP_NUM_THREADS},th_x=${th_x},th_y=${th_y},th_z=${th_z},num_wf=${num_wf},t_dim=${t_dim},tgs=${tgs}"
 
   if [ $PROFILING -eq 1 ]; then
-      # Create output directory first
-      mkdir -p ${PROFILE_DIR}_${nx}_${ny}_${nz}
-      echo "Starting AMD uProf profiling..."
-      AMDuProfCLI profile -o ${PROFILE_DIR}_${nx}_${ny}_${nz} -d 180 \
-                    numactl --interleave=all ./bin/modeling --verbose \
-                    --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st \
-                    --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) \
-                    --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
-                    --tb_t_dim $t_dim --tb_num_wf $num_wf \
-                    --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot \
-                    --src_depth $src_depth --order 1 --fmax $fmax \
-                    --dx $dh --dy $dh --dz $dh >> $logs_path/$logs_filename;
+    # Create output directory first
+    mkdir -p ${PROFILE_DIR}_${nx}_${ny}_${nz}
+    echo "Starting AMD uProf profiling..."
+    AMDuProfCLI profile -o ${PROFILE_DIR}_${nx}_${ny}_${nz} -d 180 \
+                  numactl --interleave=all ./bin/modeling --verbose \
+                  --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st \
+                  --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) \
+                  --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
+                  --tb_t_dim $t_dim --tb_num_wf $num_wf \
+                  --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot \
+                  --src_depth $src_depth --order 1 --fmax $fmax \
+                  --dx $dh --dy $dh --dz $dh >> $logs_path/$logs_filename;
   else
     numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
     --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
