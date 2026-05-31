@@ -873,10 +873,10 @@ void femwd_iso_ref_1st_grok(const int shape[3], const int zb, const int yb_r0, c
     firstprivate(b_inc, e_inc)
     {
         // Strong alignment for Zen 5 AVX-512
-        __assume_aligned(p11, 64); __assume_aligned(p12, 64); __assume_aligned(p13, 64);
-        __assume_aligned(p21, 64); __assume_aligned(p22, 64); __assume_aligned(p23, 64);
-        __assume_aligned(inv_rho, 64);
-        __assume_aligned(roc2, 64);
+        // __assume_aligned(p11, 64); __assume_aligned(p12, 64); __assume_aligned(p13, 64);
+        // __assume_aligned(p21, 64); __assume_aligned(p22, 64); __assume_aligned(p23, 64);
+        // __assume_aligned(inv_rho, 64);
+        // __assume_aligned(roc2, 64);
 
         const int nnx = shape[2], nny = shape[1], nnz = shape[0];
         const unsigned long nnyz = (unsigned long)nnz * nny;
