@@ -17,6 +17,7 @@
 //#include "stencil/wave_tb_extra.h"
 #include "stencil/wtime.h"
 // time measure
+#include <stddef.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -292,8 +293,17 @@ num_threads(stencil_ctx.thread_group_size)
         const unsigned long nnzy = 1UL * nnz * nny;
         const unsigned long nnyz = nnzy;
         const int64_t nnxyz=1ULL*nnx * nny * nnz;
-        const int64_t nnxy=1ULL*nnx * nny;
-        const int64_t nnyz_grid=1ULL*nnx * nny;
+
+    	const ptrdiff_t sx1 = nnyz;
+    	const ptrdiff_t sx2 = 2*nnyz;
+    	const ptrdiff_t sx3 = 3*nnyz;
+    	const ptrdiff_t sx4 = 4*nnyz;
+
+    	const ptrdiff_t sy1 = nnz;
+    	const ptrdiff_t sy2 = 2*nnz;
+    	const ptrdiff_t sy3 = 3*nnz;
+    	const ptrdiff_t sy4 = 4*nnz;
+
 
         // index notation for velocity array
         const int nnz_v=stencil_ctx.nz;
@@ -488,7 +498,6 @@ num_threads(stencil_ctx.thread_group_size)
                     v2 = p22 ; //vy
                     v3 = p23 ; //vz
 //#pragma omp barrier
-                    const Myfloat coef=stencil_ctx.dt;
                     for(int ix=kt; ix<kte; ix++){    // X
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
                             for(int iy=yb; iy<ye; iy++) {
@@ -501,6 +510,7 @@ num_threads(stencil_ctx.thread_group_size)
 								inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
 #pragma ivdep
 								for(int iz=ib; iz<ie; iz++) {
+									const float inv_rho = inv_rho_v[iz];
 									const Myfloat xum4 = u1_v[-3*nnyz + iz];
 									const Myfloat xum3 = u1_v[-2*nnyz + iz];
 									const Myfloat xum2 = u1_v[-1*nnyz + iz];
@@ -515,7 +525,7 @@ num_threads(stencil_ctx.thread_group_size)
 														  + FDM_O1_8_2_A3 * (xup2 - xum3)
 														  + FDM_O1_8_2_A4 * (xup3 - xum4)) ) ;
 
-									v1_v[iz] += inv_rho_v[iz]*dt_inv_dx* d_pr_x;
+									v1_v[iz] += inv_rho*dt_inv_dx* d_pr_x;
 
 									const Myfloat yum4 = u1_v[-3*nnz + iz];
 									const Myfloat yum3 = u1_v[-2*nnz + iz];
@@ -531,7 +541,7 @@ num_threads(stencil_ctx.thread_group_size)
 														  + FDM_O1_8_2_A3 * (yup2 - yum3)
 														  + FDM_O1_8_2_A4 * (yup3 - yum4)) ) ;
 
-									v2_v[iz] += inv_rho_v[iz]*dt_inv_dy* d_pr_y;
+									v2_v[iz] += inv_rho*dt_inv_dy* d_pr_y;
 
 									const Myfloat zum4 = u1_v[-3 + iz];
 									const Myfloat zum3 = u1_v[-2 + iz];
@@ -547,7 +557,7 @@ num_threads(stencil_ctx.thread_group_size)
 														  + FDM_O1_8_2_A3 * (zup2 - zum3)
 														  + FDM_O1_8_2_A4 * (zup3 - zum4)) ) ;
 
-									v3_v[iz] += inv_rho_v[iz]*dt_inv_dz * d_pr_z;
+									v3_v[iz] += inv_rho*dt_inv_dz * d_pr_z;
 								}
 							}
                         }
@@ -571,30 +581,31 @@ num_threads(stencil_ctx.thread_group_size)
                                 u3_v = &(u3[ix*nnyz+iy*nnz]);
 //                                coef0_v = &(roc2[ix*nnyz+iy*nnz]); original
                                 coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+                            	const float *restrict coef_ptr = coef0_v + ib;
 #pragma ivdep
                                 for(int iz=ib; iz<ie; iz++) {
-                                    const Myfloat xum4 = u1_v[-4*nnyz + iz];
-                                    const Myfloat xum3 = u1_v[-3*nnyz + iz];
-                                    const Myfloat xum2 = u1_v[-2*nnyz + iz];
-                                    const Myfloat xum1 = u1_v[-1*nnyz + iz];
-                                    const Myfloat xu0  = u1_v[ 0*nnyz + iz];
-                                    const Myfloat xup1 = u1_v[ 1*nnyz + iz];
-                                    const Myfloat xup2 = u1_v[ 2*nnyz + iz];
-                                    const Myfloat xup3 = u1_v[ 3*nnyz + iz];
+                                    const Myfloat xum4 = u1_v[-sx3 + iz];
+                                    const Myfloat xum3 = u1_v[-sx2 + iz];
+                                    const Myfloat xum2 = u1_v[-sx1 + iz];
+                                    const Myfloat xum1 = u1_v[iz];
+                                    const Myfloat xu0  = u1_v[ sx1 + iz];
+                                    const Myfloat xup1 = u1_v[ sx2 + iz];
+                                    const Myfloat xup2 = u1_v[ sx3 + iz];
+                                    const Myfloat xup3 = u1_v[ sx4 + iz];
 
                                     Myfloat d_vx_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
                                                           + FDM_O1_8_2_A2 * (xup1 - xum2)
                                                           + FDM_O1_8_2_A3 * (xup2 - xum3)
                                                           + FDM_O1_8_2_A4 * (xup3 - xum4)) * inv_dx) ;
 
-                                    const Myfloat yum4 = u2_v[-4*nnz + iz];
-                                    const Myfloat yum3 = u2_v[-3*nnz + iz];
-                                    const Myfloat yum2 = u2_v[-2*nnz + iz];
-                                    const Myfloat yum1 = u2_v[-1*nnz + iz];
-                                    const Myfloat yu0  = u2_v[ 0*nnz + iz];
-                                    const Myfloat yup1 = u2_v[ 1*nnz + iz];
-                                    const Myfloat yup2 = u2_v[ 2*nnz + iz];
-                                    const Myfloat yup3 = u2_v[ 3*nnz + iz];
+                                    const Myfloat yum4 = u2_v[-sy3 + iz];
+                                    const Myfloat yum3 = u2_v[-sy2 + iz];
+                                    const Myfloat yum2 = u2_v[-sy1 + iz];
+                                    const Myfloat yum1 = u2_v[ iz];
+                                    const Myfloat yu0  = u2_v[ sy1+iz];
+                                    const Myfloat yup1 = u2_v[ sy2 + iz];
+                                    const Myfloat yup2 = u2_v[ sy3 + iz];
+                                    const Myfloat yup3 = u2_v[ sy4 + iz];
 
                                     Myfloat d_vy_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
                                                           + FDM_O1_8_2_A2 * (yup1 - yum2)
@@ -614,7 +625,8 @@ num_threads(stencil_ctx.thread_group_size)
                                                           + FDM_O1_8_2_A2 * (zup1 - zum2)
                                                           + FDM_O1_8_2_A3 * (zup2 - zum3)
                                                           + FDM_O1_8_2_A4 * (zup3 - zum4)) * inv_dz);
-                                    v3_v[iz] += coef0_v[iz] * (d_vx_x + d_vy_y + d_vz_z);
+                                	float coef0 = coef_ptr[iz-ib];
+                                    v3_v[iz] += coef0* (d_vx_x + d_vy_y + d_vz_z);
                                     v3_v[iz]*=dampx[ix] * dampy[iy] * dampz[iz];
                                 }
                                 if (data->flag_bwd == 1) {
@@ -789,14 +801,19 @@ num_threads(stencil_ctx.thread_group_size)
         const unsigned long nnyz = nnzy;
         const int64_t nnxyz=1ULL*nnx * nny * nnz;
 
+    	const ptrdiff_t sx1 = nnyz;
+    	const ptrdiff_t sx2 = 2*nnyz;
+    	const ptrdiff_t sx3 = 3*nnyz;
+    	const ptrdiff_t sx4 = 4*nnyz;
+
+    	const ptrdiff_t sy1 = nnz;
+    	const ptrdiff_t sy2 = 2*nnz;
+    	const ptrdiff_t sy3 = 3*nnz;
+    	const ptrdiff_t sy4 = 4*nnz;
+
         // index notation for velocity array
         const int nnz_v=stencil_ctx.nz;
         const unsigned long nnyz_v=1UL*stencil_ctx.nz*stencil_ctx.ny;
-
-//        MSG("nnx=%d,nny=%d,nnz=%d",nnx,nny,nnz);
-//        MSG("stencil. nnx=%d,nny=%d,nnz=%d",stencil_ctx.nx,stencil_ctx.ny,stencil_ctx.nz);
-//        MSG("nnxy=%d",nnxy);
-//        exit(1);
 
         tgs = stencil_ctx.thread_group_size;
         nwf = stencil_ctx.num_wf;
@@ -891,39 +908,25 @@ num_threads(stencil_ctx.thread_group_size)
         	yb = yb_r;
         	ye = ye_r;
         	kt = xb;
-//        	kte=kt+nwf;
         	kte=xe;
         	hFloat *  v3=p13;
         	v3=	p13;
         	for(int t=tb; t< te; t++){ // Diamond blocking in time
 				hFloat* output_buffer = NULL;  //@KADIR
 				int mod = (t)%2;
-//                MSG("t=%d",t);
-//				MSG("bwd, ifwd=%d",ifwd);
 				if(mod==0){// compute p from v
-//					u1=	p21 ;
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
 								unsigned long int index=1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v;
-//								MSG("IMG rec: ix=%d, iy=%d",ix,iy);
 								vx=&(v3[1ULL*ix*nnyz+iy*nnz]);
 								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
 								imgx = &(data->img[ index ]);
 								ilmx = &(data->ilm[ index ]);
-
-//								coef0_v = &(roc2[1ULL*ix*nnyz+iy*nnz]); //// original
-//								coef0_v = &(roc2[1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-//								unsigned long int index=1ULL*ix*nnyz+iy*nnz;
-//								imgx = &(data->img[ index ]);
-//								ilmx = &(data->ilm[ index ]);
-
 #pragma ivdep
 								for(int iz=ib; iz<ie; iz++) {
 									imgx[iz] += vx[iz]*wx[iz];
 									ilmx[iz] += wx[iz]*wx[iz];
-//									imgx[iz] += 1;
-//									ilmx[iz] += 2;
 								}
 							}
 						}
@@ -981,7 +984,6 @@ num_threads(stencil_ctx.thread_group_size)
                     v2 = p22 ; //vy
                     v3 = p23 ; //vz
 //#pragma omp barrier
-                    const Myfloat coef=stencil_ctx.dt;
                     for(int ix=kt; ix<kte; ix++){    // X
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
                             for(int iy=yb; iy<ye; iy++) {
@@ -992,39 +994,40 @@ num_threads(stencil_ctx.thread_group_size)
 								u2_v = &(u2[ix*nnyz+iy*nnz]);
 								u3_v = &(u3[ix*nnyz+iy*nnz]);
 								inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-#pragma ivdep
+#pragma omp simd aligned(u1_v,v1_v,v2_v,v3_v,inv_rho_v:64)
 								for(int iz=ib; iz<ie; iz++) {
-									const Myfloat xum4 = u1_v[-3*nnyz + iz];
-									const Myfloat xum3 = u1_v[-2*nnyz + iz];
-									const Myfloat xum2 = u1_v[-1*nnyz + iz];
-									const Myfloat xum1 = u1_v[ 0*nnyz + iz];
-									const Myfloat xu0  = u1_v[ 1*nnyz + iz];
-									const Myfloat xup1 = u1_v[ 2*nnyz + iz];
-									const Myfloat xup2 = u1_v[ 3*nnyz + iz];
-									const Myfloat xup3 = u1_v[ 4*nnyz + iz];
+									const float rho = inv_rho_v[iz];
+									const Myfloat xum4 = u1_v[-sx3 + iz];
+									const Myfloat xum3 = u1_v[-sx2 + iz];
+									const Myfloat xum2 = u1_v[-sx1 + iz];
+									const Myfloat xum1 = u1_v[iz];
+									const Myfloat xu0  = u1_v[ sx1 + iz];
+									const Myfloat xup1 = u1_v[ sx2 + iz];
+									const Myfloat xup2 = u1_v[ sx3 + iz];
+									const Myfloat xup3 = u1_v[ sx4 + iz];
 
 									Myfloat d_pr_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
 														  + FDM_O1_8_2_A2 * (xup1 - xum2)
 														  + FDM_O1_8_2_A3 * (xup2 - xum3)
 														  + FDM_O1_8_2_A4 * (xup3 - xum4)) ) ;
 
-									v1_v[iz] += inv_rho_v[iz]*dt_inv_dx* d_pr_x;
+									v1_v[iz] += rho*dt_inv_dx* d_pr_x;
 
-									const Myfloat yum4 = u1_v[-3*nnz + iz];
-									const Myfloat yum3 = u1_v[-2*nnz + iz];
-									const Myfloat yum2 = u1_v[-1*nnz + iz];
-									const Myfloat yum1 = u1_v[ 0*nnz + iz];
-									const Myfloat yu0  = u1_v[ 1*nnz + iz];
-									const Myfloat yup1 = u1_v[ 2*nnz + iz];
-									const Myfloat yup2 = u1_v[ 3*nnz + iz];
-									const Myfloat yup3 = u1_v[ 4*nnz + iz];
+									const Myfloat yum4 = u1_v[-sy3 + iz];
+									const Myfloat yum3 = u1_v[-sy2 + iz];
+									const Myfloat yum2 = u1_v[-sy1 + iz];
+									const Myfloat yum1 = u1_v[iz];
+									const Myfloat yu0  = u1_v[ sy1 + iz];
+									const Myfloat yup1 = u1_v[ sy2 + iz];
+									const Myfloat yup2 = u1_v[ sy3 + iz];
+									const Myfloat yup3 = u1_v[ sy4 + iz];
 
 									Myfloat d_pr_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
 														  + FDM_O1_8_2_A2 * (yup1 - yum2)
 														  + FDM_O1_8_2_A3 * (yup2 - yum3)
 														  + FDM_O1_8_2_A4 * (yup3 - yum4)) ) ;
 
-									v2_v[iz] += inv_rho_v[iz]*dt_inv_dy* d_pr_y;
+									v2_v[iz] += rho*dt_inv_dy* d_pr_y;
 
 									const Myfloat zum4 = u1_v[-3 + iz];
 									const Myfloat zum3 = u1_v[-2 + iz];
@@ -1040,7 +1043,7 @@ num_threads(stencil_ctx.thread_group_size)
 														  + FDM_O1_8_2_A3 * (zup2 - zum3)
 														  + FDM_O1_8_2_A4 * (zup3 - zum4)) ) ;
 
-									v3_v[iz] += inv_rho_v[iz]*dt_inv_dz * d_pr_z;
+									v3_v[iz] += rho*dt_inv_dz * d_pr_z;
 								}
 							}
                         }
@@ -1054,6 +1057,7 @@ num_threads(stencil_ctx.thread_group_size)
                     v3=	p13 ;
                     for(int ix=kt; ix<kte; ix++){
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
+                        	const float damp_x = dampx[ix];
                             for(int iy=yb; iy<ye; iy++) {
 //                                printf("iy=%d\n",iy);
                                 v1_v = &(v1[ix*nnyz+iy*nnz]);
@@ -1064,30 +1068,34 @@ num_threads(stencil_ctx.thread_group_size)
                                 u3_v = &(u3[ix*nnyz+iy*nnz]);
 //                                coef0_v = &(roc2[ix*nnyz+iy*nnz]); original
                                 coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-#pragma ivdep
+                            	const float *restrict coef_ptr = coef0_v + ib;
+                            	const float *restrict dampz_v = dampz + ib;
+                            	const float damp_xy = damp_x * dampy[iy];
+#pragma omp simd aligned(u1_v,u2_v,u3_v,v3_v,coef0_v:64)
+
                                 for(int iz=ib; iz<ie; iz++) {
-                                    const Myfloat xum4 = u1_v[-4*nnyz + iz];
-                                    const Myfloat xum3 = u1_v[-3*nnyz + iz];
-                                    const Myfloat xum2 = u1_v[-2*nnyz + iz];
-                                    const Myfloat xum1 = u1_v[-1*nnyz + iz];
-                                    const Myfloat xu0  = u1_v[ 0*nnyz + iz];
-                                    const Myfloat xup1 = u1_v[ 1*nnyz + iz];
-                                    const Myfloat xup2 = u1_v[ 2*nnyz + iz];
-                                    const Myfloat xup3 = u1_v[ 3*nnyz + iz];
+                                    const Myfloat xum4 = u1_v[-sx3 + iz];
+                                    const Myfloat xum3 = u1_v[-sx2 + iz];
+                                    const Myfloat xum2 = u1_v[-sx1 + iz];
+                                    const Myfloat xum1 = u1_v[iz];
+                                    const Myfloat xu0  = u1_v[ sx1 + iz];
+                                    const Myfloat xup1 = u1_v[ sx2 + iz];
+                                    const Myfloat xup2 = u1_v[ sx3 + iz];
+                                    const Myfloat xup3 = u1_v[ sx4 + iz];
 
                                     Myfloat d_vx_x  = ( ( FDM_O1_8_2_A1 * (xu0  - xum1)
                                                           + FDM_O1_8_2_A2 * (xup1 - xum2)
                                                           + FDM_O1_8_2_A3 * (xup2 - xum3)
                                                           + FDM_O1_8_2_A4 * (xup3 - xum4)) * inv_dx) ;
 
-                                    const Myfloat yum4 = u2_v[-4*nnz + iz];
-                                    const Myfloat yum3 = u2_v[-3*nnz + iz];
-                                    const Myfloat yum2 = u2_v[-2*nnz + iz];
-                                    const Myfloat yum1 = u2_v[-1*nnz + iz];
-                                    const Myfloat yu0  = u2_v[ 0*nnz + iz];
-                                    const Myfloat yup1 = u2_v[ 1*nnz + iz];
-                                    const Myfloat yup2 = u2_v[ 2*nnz + iz];
-                                    const Myfloat yup3 = u2_v[ 3*nnz + iz];
+                                    const Myfloat yum4 = u2_v[-sy3 + iz];
+                                    const Myfloat yum3 = u2_v[-sy2 + iz];
+                                    const Myfloat yum2 = u2_v[-sy1 + iz];
+                                    const Myfloat yum1 = u2_v[ iz];
+                                    const Myfloat yu0  = u2_v[ sy1+iz];
+                                    const Myfloat yup1 = u2_v[ sy2 + iz];
+                                    const Myfloat yup2 = u2_v[ sy3 + iz];
+                                    const Myfloat yup3 = u2_v[ sy4 + iz];
 
                                     Myfloat d_vy_y  = ( ( FDM_O1_8_2_A1 * (yu0  - yum1)
                                                           + FDM_O1_8_2_A2 * (yup1 - yum2)
@@ -1107,12 +1115,12 @@ num_threads(stencil_ctx.thread_group_size)
                                                           + FDM_O1_8_2_A2 * (zup1 - zum2)
                                                           + FDM_O1_8_2_A3 * (zup2 - zum3)
                                                           + FDM_O1_8_2_A4 * (zup3 - zum4)) * inv_dz);
-                                    v3_v[iz] += coef0_v[iz] * (d_vx_x + d_vy_y + d_vz_z);
-                                    v3_v[iz]*=dampx[ix] * dampy[iy] * dampz[iz];
+                                	float coef0 = *coef_ptr;
+                                    v3_v[iz] += coef0 * (d_vx_x + d_vy_y + d_vz_z);
+                                    v3_v[iz]*=damp_xy * (*dampz_v);
                                 }
                                 if (data->flag_bwd == 1) {
-									///////  add sismos
-									//////////////////////////////////////////
+									///////  add sismos  ///////////
 									double time_term = t0_real - (t_real - tb_real);
 									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
 									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
@@ -1207,12 +1215,9 @@ num_threads(stencil_ctx.thread_group_size)
 								}
 
 								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
-//								MSG("ifwd=%d",ifwd);
-//								MSG("index=%d",1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
 								wx=&(data->fwd[1ULL*ifwd*nnxyz+1ULL*ix*nnyz+iy*nnz]);
 #pragma ivdep
 								for (int iz=ib; iz<ie; iz++) {
-//									MSG("ix=%d,iy=%d,iz=%d,index=%d",ix,iy,iz,1ULL*ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz);
 									wx[iz]=ux[iz];
 								}
 							}
