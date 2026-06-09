@@ -1008,8 +1008,8 @@ num_threads(stencil_ctx.thread_group_size)
 									v2_v[iz] += rho*dt_inv_dy* d_pr_y;
 
 									Myfloat d_pr_z  = ( ( FDM_O1_8_2_A1 *	(u1_v[ 1 + iz] - u1_v[ 0 + iz])
-														  + FDM_O1_8_2_A2 * (u1_v[ 2 + iz] - u1_v[ 2 + iz])
-														  + FDM_O1_8_2_A3 * (u1_v[ 2 + iz] - u1_v[-2 + iz])
+														  + FDM_O1_8_2_A2 * (u1_v[ 2 + iz] - u1_v[-1 + iz])
+														  + FDM_O1_8_2_A3 * (u1_v[ 3 + iz] - u1_v[-2 + iz])
 														  + FDM_O1_8_2_A4 * (u1_v[ 4 + iz] - u1_v[-3 + iz])) ) ;
 									v3_v[iz] += rho*dt_inv_dz * d_pr_z;
 								}
