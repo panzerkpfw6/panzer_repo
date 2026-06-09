@@ -1048,11 +1048,11 @@ num_threads(stencil_ctx.thread_group_size)
                                     Myfloat d_vy_y  = ( (	FDM_O1_8_2_A1 * (u2_v[ sy1+iz]  - u2_v[ iz])
                                                           + FDM_O1_8_2_A2 * (u2_v[ sy2 + iz] - u2_v[-sy1 + iz])
                                                           + FDM_O1_8_2_A3 * (u2_v[ sy3 + iz] - u2_v[-sy2 + iz])
-                                                          + FDM_O1_8_2_A4 * (u2_v[ sy3 + iz] - u2_v[-sy3 + iz])) * inv_dy) ;
+                                                          + FDM_O1_8_2_A4 * (u2_v[ sy4 + iz] - u2_v[-sy3 + iz])) * inv_dy) ;
 
                                     Myfloat d_vz_z  = ( (	FDM_O1_8_2_A1 * (u3_v[ 0 + iz]  - u3_v[-1 + iz])
                                                           + FDM_O1_8_2_A2 * (u3_v[ 1 + iz] - u3_v[-2 + iz])
-                                                          + FDM_O1_8_2_A3 * (u3_v[ 1 + iz] - u3_v[-3 + iz])
+                                                          + FDM_O1_8_2_A3 * (u3_v[ 2 + iz] - u3_v[-3 + iz])
                                                           + FDM_O1_8_2_A4 * (u3_v[ 3 + iz] - u3_v[-4 + iz])) * inv_dz);
 
                                 	float p =(v3_v[iz]+coef0_v[iz]*(d_vx_x + d_vy_y + d_vz_z))*damp_xy*dampz[iz];
