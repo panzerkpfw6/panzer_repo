@@ -883,14 +883,37 @@ num_threads(stencil_ctx.thread_group_size)
         int iz_=data->rcv_depth; //@pavel
         int end=0;
 
-        // Precompute coefficients with dt for velocity updates
-		const Myfloat dt_inv_dx = stencil_ctx.dt / (stencil_ctx.dx);
-		const Myfloat dt_inv_dy = stencil_ctx.dt / (stencil_ctx.dy);
-		const Myfloat dt_inv_dz = stencil_ctx.dt / (stencil_ctx.dz);
+        // Fold grid spacing and time step into the stencil coefficients.
+		const Myfloat inv_dx = 1.0f / stencil_ctx.dx;
+		const Myfloat inv_dy = 1.0f / stencil_ctx.dy;
+		const Myfloat inv_dz = 1.0f / stencil_ctx.dz;
+		const Myfloat pcoef_x1 = FDM_O1_8_2_A1 * inv_dx;
+		const Myfloat pcoef_x2 = FDM_O1_8_2_A2 * inv_dx;
+		const Myfloat pcoef_x3 = FDM_O1_8_2_A3 * inv_dx;
+		const Myfloat pcoef_x4 = FDM_O1_8_2_A4 * inv_dx;
+		const Myfloat pcoef_y1 = FDM_O1_8_2_A1 * inv_dy;
+		const Myfloat pcoef_y2 = FDM_O1_8_2_A2 * inv_dy;
+		const Myfloat pcoef_y3 = FDM_O1_8_2_A3 * inv_dy;
+		const Myfloat pcoef_y4 = FDM_O1_8_2_A4 * inv_dy;
+		const Myfloat pcoef_z1 = FDM_O1_8_2_A1 * inv_dz;
+		const Myfloat pcoef_z2 = FDM_O1_8_2_A2 * inv_dz;
+		const Myfloat pcoef_z3 = FDM_O1_8_2_A3 * inv_dz;
+		const Myfloat pcoef_z4 = FDM_O1_8_2_A4 * inv_dz;
 
-        const Myfloat inv_dx = 1./ (stencil_ctx.dx);
-        const Myfloat inv_dy = 1. / (stencil_ctx.dy);
-        const Myfloat inv_dz = 1. / (stencil_ctx.dz);
+		const Myfloat vcoef_x1 = pcoef_x1 * stencil_ctx.dt;
+		const Myfloat vcoef_x2 = pcoef_x2 * stencil_ctx.dt;
+		const Myfloat vcoef_x3 = pcoef_x3 * stencil_ctx.dt;
+		const Myfloat vcoef_x4 = pcoef_x4 * stencil_ctx.dt;
+		const Myfloat vcoef_y1 = pcoef_y1 * stencil_ctx.dt;
+		const Myfloat vcoef_y2 = pcoef_y2 * stencil_ctx.dt;
+		const Myfloat vcoef_y3 = pcoef_y3 * stencil_ctx.dt;
+		const Myfloat vcoef_y4 = pcoef_y4 * stencil_ctx.dt;
+		const Myfloat vcoef_z1 = pcoef_z1 * stencil_ctx.dt;
+		const Myfloat vcoef_z2 = pcoef_z2 * stencil_ctx.dt;
+		const Myfloat vcoef_z3 = pcoef_z3 * stencil_ctx.dt;
+		const Myfloat vcoef_z4 = pcoef_z4 * stencil_ctx.dt;
+        const int z_count = ie - ib;
+        const float * const restrict dampz_v = dampz + ib;
 
         // Load wavefield and imaging condition /////////////////////
         // RTM variables
@@ -918,15 +941,18 @@ num_threads(stencil_ctx.thread_group_size)
 					for(int ix=kt; ix<kte; ix++){
 						if( ((ix)/th_nwf)%th_x == tid_x ) {
 							for(int iy=yb; iy<ye; iy++) {
-								unsigned long int index=1ULL*(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v;
-								vx=&(v3[1ULL*ix*nnyz+iy*nnz]);
-								wx   = &(data->fwd[1ULL * ifwd*nnxyz + 1ULL*ix*nnyz + iy*nnz]);
-								imgx = &(data->img[ index ]);
-								ilmx = &(data->ilm[ index ]);
-#pragma ivdep
-								for(int iz=ib; iz<ie; iz++) {
-									imgx[iz] += vx[iz]*wx[iz];
-									ilmx[iz] += wx[iz]*wx[iz];
+								const size_t wave_offset = (size_t)ix * nnyz + (size_t)iy * nnz + ib;
+								const size_t image_offset = (size_t)(ix - NHALO) * nnyz_v
+														  + (size_t)(iy - NHALO) * nnz_v + ib;
+								vx = v3 + wave_offset;
+								wx = data->fwd + (size_t)ifwd * nnxyz + wave_offset;
+								imgx = data->img + image_offset;
+								ilmx = data->ilm + image_offset;
+#pragma omp simd
+								for(int iz=0; iz<z_count; iz++) {
+									const float fwd_value = wx[iz];
+									imgx[iz] += vx[iz] * fwd_value;
+									ilmx[iz] += fwd_value * fwd_value;
 								}
 							}
 						}
@@ -987,31 +1013,36 @@ num_threads(stencil_ctx.thread_group_size)
                     for(int ix=kt; ix<kte; ix++){    // X
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
                             for(int iy=yb; iy<ye; iy++) {
-								v1_v = &(v1[ix*nnyz+iy*nnz]);
-								v2_v = &(v2[ix*nnyz+iy*nnz]);
-								v3_v = &(v3[ix*nnyz+iy*nnz]);
-								u1_v = &(u1[ix*nnyz+iy*nnz]);
-								inv_rho_v = &(inv_rho[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
+								const size_t wave_offset = (size_t)ix * nnyz + (size_t)iy * nnz + ib;
+								const size_t model_offset = (size_t)(ix - NHALO) * nnyz_v
+														  + (size_t)(iy - NHALO) * nnz_v + ib;
+								v1_v = v1 + wave_offset;
+								v2_v = v2 + wave_offset;
+								v3_v = v3 + wave_offset;
+								u1_v = u1 + wave_offset;
+								inv_rho_v = inv_rho + model_offset;
 #pragma omp simd
-								for(int iz=ib; iz<ie; iz++) {
+								for(int iz=0; iz<z_count; iz++) {
 									const float rho = inv_rho_v[iz];
-									Myfloat d_pr_x  = ( ( FDM_O1_8_2_A1 *	(u1_v[ sx1 + iz]  - u1_v[iz])
-														  + FDM_O1_8_2_A2 * (u1_v[ sx2 + iz] - u1_v[-sx1 + iz])
-														  + FDM_O1_8_2_A3 * (u1_v[ sx3 + iz] - u1_v[-sx2 + iz])
-														  + FDM_O1_8_2_A4 * (u1_v[ sx4 + iz] - u1_v[-sx3 + iz])) ) ;
-									v1_v[iz] += rho*dt_inv_dx* d_pr_x;
+									const Myfloat d_pr_x =
+											vcoef_x1 * (u1_v[sx1 + iz] - u1_v[iz])
+										  + vcoef_x2 * (u1_v[sx2 + iz] - u1_v[-sx1 + iz])
+										  + vcoef_x3 * (u1_v[sx3 + iz] - u1_v[-sx2 + iz])
+										  + vcoef_x4 * (u1_v[sx4 + iz] - u1_v[-sx3 + iz]);
+									const Myfloat d_pr_y =
+											vcoef_y1 * (u1_v[sy1 + iz] - u1_v[iz])
+										  + vcoef_y2 * (u1_v[sy2 + iz] - u1_v[-sy1 + iz])
+										  + vcoef_y3 * (u1_v[sy3 + iz] - u1_v[-sy2 + iz])
+										  + vcoef_y4 * (u1_v[sy4 + iz] - u1_v[-sy3 + iz]);
+									const Myfloat d_pr_z =
+											vcoef_z1 * (u1_v[1 + iz] - u1_v[iz])
+										  + vcoef_z2 * (u1_v[2 + iz] - u1_v[-1 + iz])
+										  + vcoef_z3 * (u1_v[3 + iz] - u1_v[-2 + iz])
+										  + vcoef_z4 * (u1_v[4 + iz] - u1_v[-3 + iz]);
 
-									Myfloat d_pr_y  = ( ( FDM_O1_8_2_A1 * (u1_v[ sy1 + iz]  - u1_v[iz])
-														  + FDM_O1_8_2_A2 * (u1_v[ sy2 + iz] - u1_v[-sy1 + iz])
-														  + FDM_O1_8_2_A3 * (u1_v[ sy3 + iz] - u1_v[-sy2 + iz])
-														  + FDM_O1_8_2_A4 * (u1_v[ sy4 + iz] - u1_v[-sy3 + iz])) ) ;
-									v2_v[iz] += rho*dt_inv_dy* d_pr_y;
-
-									Myfloat d_pr_z  = ( ( FDM_O1_8_2_A1 *	(u1_v[ 1 + iz] - u1_v[ 0 + iz])
-														  + FDM_O1_8_2_A2 * (u1_v[ 2 + iz] - u1_v[-1 + iz])
-														  + FDM_O1_8_2_A3 * (u1_v[ 3 + iz] - u1_v[-2 + iz])
-														  + FDM_O1_8_2_A4 * (u1_v[ 4 + iz] - u1_v[-3 + iz])) ) ;
-									v3_v[iz] += rho*dt_inv_dz * d_pr_z;
+									v1_v[iz] += rho * d_pr_x;
+									v2_v[iz] += rho * d_pr_y;
+									v3_v[iz] += rho * d_pr_z;
 								}
 							}
                         }
@@ -1026,45 +1057,48 @@ num_threads(stencil_ctx.thread_group_size)
                     for(int ix=kt; ix<kte; ix++){
                         if( ((ix)/th_nwf)%th_x == tid_x ) {
                         	const float damp_x = dampx[ix];
+                        	const int64_t ix_rcv_base = (int64_t)(ix - NHALO) * (nny - 2 * NHALO);
                             for(int iy=yb; iy<ye; iy++) {
 //                                printf("iy=%d\n",iy);
-                                v3_v = &(v3[ix*nnyz+iy*nnz]);
-                                u1_v = &(u1[ix*nnyz+iy*nnz]);
-                                u2_v = &(u2[ix*nnyz+iy*nnz]);
-                                u3_v = &(u3[ix*nnyz+iy*nnz]);
+								const size_t wave_offset = (size_t)ix * nnyz + (size_t)iy * nnz + ib;
+								const size_t model_offset = (size_t)(ix - NHALO) * nnyz_v
+														  + (size_t)(iy - NHALO) * nnz_v + ib;
+                                v3_v = v3 + wave_offset;
+                                u1_v = u1 + wave_offset;
+                                u2_v = u2 + wave_offset;
+                                u3_v = u3 + wave_offset;
 //                                coef0_v = &(roc2[ix*nnyz+iy*nnz]); original
-                                coef0_v = &(roc2[(ix-NHALO)*nnyz_v+(iy-NHALO)*nnz_v]);
-                            	// const float *restrict coef_ptr = coef0_v + ib;
-                            	// const float *restrict dampz_v = dampz + ib;
+                                coef0_v = roc2 + model_offset;
                             	const float damp_xy = damp_x * dampy[iy];
 #pragma omp simd
 
-                                for(int iz=ib; iz<ie; iz++) {
-                                    Myfloat d_vx_x  = ( (	FDM_O1_8_2_A1 * (u1_v[ sx1 + iz] - u1_v[iz])
-                                                          + FDM_O1_8_2_A2 * (u1_v[ sx2 + iz] - u1_v[-sx1 + iz])
-                                                          + FDM_O1_8_2_A3 * (u1_v[ sx3 + iz] - u1_v[-sx2 + iz])
-                                                          + FDM_O1_8_2_A4 * (u1_v[ sx4 + iz] - u1_v[-sx3 + iz])) * inv_dx) ;
+                                for(int iz=0; iz<z_count; iz++) {
+                                    const Myfloat d_vx_x =
+											pcoef_x1 * (u1_v[iz] - u1_v[-sx1 + iz])
+										  + pcoef_x2 * (u1_v[sx1 + iz] - u1_v[-sx2 + iz])
+										  + pcoef_x3 * (u1_v[sx2 + iz] - u1_v[-sx3 + iz])
+										  + pcoef_x4 * (u1_v[sx3 + iz] - u1_v[-sx4 + iz]);
+                                    const Myfloat d_vy_y =
+											pcoef_y1 * (u2_v[iz] - u2_v[-sy1 + iz])
+										  + pcoef_y2 * (u2_v[sy1 + iz] - u2_v[-sy2 + iz])
+										  + pcoef_y3 * (u2_v[sy2 + iz] - u2_v[-sy3 + iz])
+										  + pcoef_y4 * (u2_v[sy3 + iz] - u2_v[-sy4 + iz]);
+                                    const Myfloat d_vz_z =
+											pcoef_z1 * (u3_v[iz] - u3_v[-1 + iz])
+										  + pcoef_z2 * (u3_v[1 + iz] - u3_v[-2 + iz])
+										  + pcoef_z3 * (u3_v[2 + iz] - u3_v[-3 + iz])
+										  + pcoef_z4 * (u3_v[3 + iz] - u3_v[-4 + iz]);
 
-                                    Myfloat d_vy_y  = ( (	FDM_O1_8_2_A1 * (u2_v[ sy1+iz]  - u2_v[ iz])
-                                                          + FDM_O1_8_2_A2 * (u2_v[ sy2 + iz] - u2_v[-sy1 + iz])
-                                                          + FDM_O1_8_2_A3 * (u2_v[ sy3 + iz] - u2_v[-sy2 + iz])
-                                                          + FDM_O1_8_2_A4 * (u2_v[ sy4 + iz] - u2_v[-sy3 + iz])) * inv_dy) ;
-
-                                    Myfloat d_vz_z  = ( (	FDM_O1_8_2_A1 * (u3_v[ 0 + iz]  - u3_v[-1 + iz])
-                                                          + FDM_O1_8_2_A2 * (u3_v[ 1 + iz] - u3_v[-2 + iz])
-                                                          + FDM_O1_8_2_A3 * (u3_v[ 2 + iz] - u3_v[-3 + iz])
-                                                          + FDM_O1_8_2_A4 * (u3_v[ 3 + iz] - u3_v[-4 + iz])) * inv_dz);
-
-                                	float p =(v3_v[iz]+coef0_v[iz]*(d_vx_x + d_vy_y + d_vz_z))*damp_xy*dampz[iz];
-                                	v3_v[iz] = p;
+									v3_v[iz] = (v3_v[iz] + coef0_v[iz] *
+											   (d_vx_x + d_vy_y + d_vz_z)) *
+											  damp_xy * dampz_v[iz];
                                 }
                                 if (data->flag_bwd == 1) {
 									///////  add sismos  ///////////
 									double time_term = t0_real - (t_real - tb_real);
 									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
-									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-									int64_t sismos_ind = term1 + term2 + (iy - 4);
-									v3_v[iz_]+=data->sismos[sismos_ind];
+									int64_t sismos_ind = term1 + ix_rcv_base + (iy - 4);
+									v3_v[iz_ - ib]+=data->sismos[sismos_ind];
 								}
 ////                                MSG("data->flag_fwd=%d \n",data->flag_fwd);
                                 if (data->flag_fwd == 1 && data->src_depth!=-1 && data->rec_sismos==1 ) {
@@ -1077,10 +1111,9 @@ num_threads(stencil_ctx.thread_group_size)
 	//                                MSG("t0_real=%d,t_real=%d,tb_real=%d",t0_real,t_real,tb_real);
 									double time_term = t0_real + (t_real - tb_real);
 									int64_t term1 = (int64_t)data->rcv_len * (int64_t)time_term;
-									int64_t term2 = (int64_t)(ix - 4) * (nny - 2 * NHALO);
-									int64_t sismos_ind=term1 + term2 + (iy - 4);
-	//								MSG("s_ind=%lld,term1=%lld,time_term=%f,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_]);
-									data->sismos[sismos_ind]=v3_v[iz_];
+									int64_t sismos_ind=term1 + ix_rcv_base + (iy - 4);
+	//								MSG("s_ind=%lld,term1=%lld,time_term=%f,v3_v[iz_]=%f \n",sismos_ind,term1,time_term,v3_v[iz_ - ib]);
+									data->sismos[sismos_ind]=v3_v[iz_ - ib];
                                 }
                             }
                             ///
@@ -1153,12 +1186,10 @@ num_threads(stencil_ctx.thread_group_size)
 									exit(1);
 								}
 
-								ux = &(v3[1ULL*ix*nnyz+iy*nnz]);
-								wx=&(data->fwd[1ULL*ifwd*nnxyz+1ULL*ix*nnyz+iy*nnz]);
-#pragma ivdep
-								for (int iz=ib; iz<ie; iz++) {
-									wx[iz]=ux[iz];
-								}
+								const size_t wave_offset = (size_t)ix * nnyz + (size_t)iy * nnz + ib;
+								ux = v3 + wave_offset;
+								wx = data->fwd + (size_t)ifwd * nnxyz + wave_offset;
+								memcpy(wx, ux, (size_t)z_count * sizeof(*wx));
 							}
 							if( (gp->source_point_enabled==1)
 								&& (gp->lsource_pt[2] >= ib ) //@KADIR
