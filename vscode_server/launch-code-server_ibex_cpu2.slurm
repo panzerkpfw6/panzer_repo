@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=04:30:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --threads-per-core=1

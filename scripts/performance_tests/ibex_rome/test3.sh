@@ -78,7 +78,7 @@ export NT_TB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/tests_rome/test3.log"
+export logs_file="./logs/tests_rome/test3_June.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
