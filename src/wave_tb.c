@@ -63,6 +63,10 @@ ux[i] = 2.0f * vx[i] - ux[i]                                                \
 }
 #endif
 
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 #define FUNC_BODY_1st_ord_Psweep()  {                            \
 ux[i] = ux[i] + rx[i] * (coefx[0]/data->dx * (vx_x[i] - vx_x[i-1])   \
                        + coefy[0]/data->dy * (vy_x[i] - vy_x[i-nnx])   \
