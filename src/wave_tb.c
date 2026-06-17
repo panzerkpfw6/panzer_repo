@@ -24,6 +24,10 @@
 volatile int wave_tb_head;
 volatile int wave_tb_tail;
 
+#ifndef MIN
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#endif
+
 #define NDAMP 20
 
 #if 1
@@ -61,10 +65,6 @@ ux[i] = 2.0f * vx[i] - ux[i]                                                \
                                + coefy[4] * (vx[i+4*nnx ] + vx[i-4*nnx ])   \
                                + coefz[4] * (vx[i+4*nnxy] + vx[i-4*nnxy])); \
 }
-#endif
-
-#ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
 #define FUNC_BODY_1st_ord_Psweep()  {                            \
@@ -1403,7 +1403,7 @@ num_threads(stencil_ctx.thread_group_size)
 				int mod = (t)%2;
 				if(mod==0){// compute p from v
 					for (int ix_blk = kt + tid_x * th_nwf; ix_blk < kte; ix_blk += wf_stride){
-						const int ix_end = min(ix_blk + th_nwf, kte);
+						const int ix_end = MIN(ix_blk + th_nwf, kte);
 
 						for ( int ix = ix_blk; ix < ix_end; ix++ ) {
 							for(int iy=yb; iy<ye; iy++) {
@@ -1442,7 +1442,7 @@ num_threads(stencil_ctx.thread_group_size)
         // calculate wavefield update
     	const int base_nwf = stencil_ctx.num_wf;
     	for(xi=xb; xi<xe; xi+=base_nwf) { // wavefront loop (x direction)
-    		const int cur_nwf = min(base_nwf, xe - xi);
+    		const int cur_nwf = MIN(base_nwf, xe - xi);
     		end = (xi + cur_nwf >= xe);
 
             yb = yb_r;
