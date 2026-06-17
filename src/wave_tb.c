@@ -1484,7 +1484,7 @@ num_threads(stencil_ctx.thread_group_size)
                     v3 = p23 ; //vz
 //#pragma omp barrier
                     for (int ix_blk = kt + tid_x * th_nwf; ix_blk < kte; ix_blk += wf_stride) {// X
-                    	const int ix_end = min(ix_blk + th_nwf, kte);
+                    	const int ix_end = MIN(ix_blk + th_nwf, kte);
                     	for (int ix = ix_blk; ix < ix_end; ix++) {
                             for(int iy=yb; iy<ye; iy++) {
 								const size_t wave_offset = (size_t)ix * nnyz + (size_t)iy * nnz + ib;
@@ -1529,7 +1529,7 @@ num_threads(stencil_ctx.thread_group_size)
                     v2=	p12 ;
                     v3=	p13 ;
                 	for (int ix_blk = kt + tid_x * th_nwf; ix_blk < kte; ix_blk += wf_stride) {
-                		const int ix_end = min(ix_blk + th_nwf, kte);
+                		const int ix_end = MIN(ix_blk + th_nwf, kte);
                 		for (int ix = ix_blk; ix < ix_end; ix++) {
                         	const float damp_x = dampx[ix];
                         	const int64_t ix_rcv_base = (int64_t)(ix - NHALO) * rcv_ny;
