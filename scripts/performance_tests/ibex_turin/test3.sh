@@ -29,15 +29,18 @@ echo $hostname
 lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
 export OMP_NUM_THREADS=192;
+export OMP_PLACES=cores
+export OMP_PROC_BIND=close
+export OMP_WAIT_POLICY=active
+export KMP_BLOCKTIME=0
+export KMP_AFFINITY=granularity=core,compact=1,1
+export OMP_MAX_ACTIVE_LEVELS=1
+export OMP_DYNAMIC=false
 
 export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
-
 
 ###********** MODULES *********###
 module purge
@@ -76,7 +79,7 @@ export NT_TB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/tests_turin/test3.log"
+export logs_file="./logs/tests_turin/test3_June_turin.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
