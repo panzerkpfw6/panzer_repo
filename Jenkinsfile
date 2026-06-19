@@ -54,7 +54,7 @@ pipeline {
         stage ('test_TB') {
             steps {
                 sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
 
                     nx=128
                     ny=256
