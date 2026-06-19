@@ -61,8 +61,7 @@ export OMP_DYNAMIC=false
 # # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
 # export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 
-# export CFLAGS="-march=znver2 -mtune=znver2 -O3 -ffast-math -qopenmp -mprefer-vector-width=256 -qopt-report=5 -qopt-report-phase=vec"
-export CFLAGS="-march=native -O3 -ffast-math -qopenmp -mprefer-vector-width=256 -qopt-report=5 -qopt-report-phase=vec"
+export CFLAGS="-march=znver2 -mtune=znver2 -O3 -ffast-math -qopenmp -mprefer-vector-width=256 -qopt-report=5 -qopt-report-phase=vec"
 
 # export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
 #                -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
@@ -188,7 +187,8 @@ for i in $(seq 0 0); do
     # Create output directory first
     mkdir -p ${PROFILE_DIR}_${nx}_${ny}_${nz}
     echo "Starting AMD uProf profiling..."
-    AMDuProfCLI profile -o ${PROFILE_DIR}_${nx}_${ny}_${nz} -d 180 \
+    # AMDuProfCLI profile -o ${PROFILE_DIR}_${nx}_${ny}_${nz} -d 180 \
+    AMDuProfCLI collect --config assess_ext -o ${PROFILE_DIR}_${nx}_${ny}_${nz} \
                   numactl --interleave=all ./bin/modeling --verbose \
                   --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st \
                   --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) \
