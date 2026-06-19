@@ -168,7 +168,7 @@ for i in $(seq 0 0); do
     mkdir -p ${PROFILE_DIR}_${nx}_${ny}_${nz}
     echo "Starting AMD uProf profiling..."
     AMDuProfCLI profile -o ${PROFILE_DIR}_${nx}_${ny}_${nz} -d 180 \
-                  numactl --interleave=all ./bin/modeling --verbose \
+                  ./bin/modeling --verbose \
                   --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st \
                   --tb_thread_group_size $tgs --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) \
                   --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
@@ -177,10 +177,11 @@ for i in $(seq 0 0); do
                   --src_depth $src_depth --order 1 --fmax $fmax \
                   --dx $dh --dy $dh --dz $dh  -c >> $logs_path/$logs_filename;
   else
-    numactl --interleave=all ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
+    ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $NT_TB_1st --tb_thread_group_size $tgs \
     --tb_nb_thread_groups $(expr $OMP_NUM_THREADS / $tgs) --tb_th_x $th_x --tb_th_y $th_y --tb_th_z $th_z \
     --tb_t_dim $t_dim --tb_num_wf $num_wf --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot -c \
-    --src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh >> $logs_path/$logs_filename;
+    --src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh;
+#    --src_depth $src_depth --order 1 --fmax $fmax --dx $dh --dy $dh --dz $dh >> $logs_path/$logs_filename;
   fi
 
   # srun --nodes=1 --cpus-per-task=$OMP_NUM_THREADS --hint=nomultithread --threads-per-core=1 --unbuffered numactl --interleave=all \
