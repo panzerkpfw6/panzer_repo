@@ -22,7 +22,7 @@ pipeline {
                     export OMP_NESTED='True'
                     export granularity=fine
                     export KMP_AFFINITY=compact
-                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij;
 
                     module load cmake
 
@@ -39,7 +39,7 @@ pipeline {
         stage ('test_SB') {
             steps {
                 sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij;
 
                     ## simulate one shot in the center of domain
                     nx=128;ny=256;nz=512;
@@ -54,7 +54,7 @@ pipeline {
         stage ('test_TB') {
             steps {
                 sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij;
 ;
                     nx=128;ny=256;nz=512;
                     nt=57; dt=0.001;
@@ -131,25 +131,6 @@ pipeline {
                     ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_2nd --mode 2 --dshot 1 \
                       --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
                     ./scripts_useful/diff_to ./snapshot_SB1st_520 ./snapshot_SB2nd_520
-                    '''
-            }
-        }
-        stage ('test_sismos_options_for_SB') {
-            steps {
-                sh  '''#!/bin/bash -le
-                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
-                    '''
-            }
-        }
-        stage ('test_sismos_options_for_TB') {
-            steps {
-                sh  '''#!/bin/bash -le
-                    '''
-            }
-        }
-        stage ('compare_sismos_for_SBabc_TBabc') {
-            steps {
-                sh  '''#!/bin/bash -le
                     '''
             }
         }
