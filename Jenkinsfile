@@ -22,7 +22,8 @@ pipeline {
                     export OMP_NESTED='True'
                     export granularity=fine
                     export KMP_AFFINITY=compact
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+
                     module load cmake
 
                     pwd
@@ -38,7 +39,8 @@ pipeline {
         stage ('test_SB') {
             steps {
                 sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+
                     ## simulate one shot in the center of domain
                     nx=128;ny=256;nz=512;
                     nt=10;  dt=0.001;
@@ -52,7 +54,8 @@ pipeline {
         stage ('test_TB') {
             steps {
                 sh '''#!/bin/bash -le
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5;
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
+;
                     nx=128;ny=256;nz=512;
                     nt=57; dt=0.001;
                     x=2; y=2; z=1; t=7; w=20; tgs=4;
@@ -134,7 +137,7 @@ pipeline {
         stage ('test_sismos_options_for_SB') {
             steps {
                 sh  '''#!/bin/bash -le
-                    module load intel-oneapi-compilers-2022.0.1-gcc-7.5.0-2lzufe5
+                    module load intel-oneapi-compilers/2022.2.1/gcc-11.3.0-k2f52ij
                     '''
             }
         }
