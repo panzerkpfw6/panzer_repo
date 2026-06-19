@@ -28,7 +28,7 @@ pipeline {
 
                     pwd
                     ls
-                    mv -f ./CMakeCache.txt ./CMakeCache-old.txt
+                    [ -f CMakeCache.txt ] && mv -f CMakeCache.txt CMakeCache-old.txt || true
                     CC=icc CXX=icpc cmake .
                     make clean
                     make VERBOSE=1
