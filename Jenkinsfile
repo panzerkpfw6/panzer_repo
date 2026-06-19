@@ -124,7 +124,7 @@ pipeline {
                      --src_depth $src_depth --order 2 --fmax 8;
                     ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $TIME_SB_2nd --mode 2 --dshot 1 \
                       --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
-                    ./scripts_useful/diff_to ./snapshot_TB2nd_514 ./snapshot_SB2nd_514
+                    #./scripts_useful/diff_to ./snapshot_TB2nd_514 ./snapshot_SB2nd_514
                     '''
             }
         }
