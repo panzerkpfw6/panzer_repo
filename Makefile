@@ -57,10 +57,10 @@ RM = /sw/rl9c/cmake/4.2.3/rl9.4_gnu11.4.1/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /ibex/user/x_plotnips/panzer_repo
+CMAKE_SOURCE_DIR = /ibex/scratch/x_plotnips/panzer_repo
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /ibex/user/x_plotnips/panzer_repo
+CMAKE_BINARY_DIR = /ibex/scratch/x_plotnips/panzer_repo
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,9 +132,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /ibex/user/x_plotnips/panzer_repo/CMakeFiles /ibex/user/x_plotnips/panzer_repo//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /ibex/scratch/x_plotnips/panzer_repo/CMakeFiles /ibex/scratch/x_plotnips/panzer_repo//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /ibex/user/x_plotnips/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /ibex/scratch/x_plotnips/panzer_repo/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

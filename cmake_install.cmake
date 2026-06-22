@@ -1,8 +1,8 @@
-# Install script for directory: /ibex/user/x_plotnips/panzer_repo
+# Install script for directory: /ibex/scratch/x_plotnips/panzer_repo
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/ibex/user/x_plotnips/panzer_repo")
+  set(CMAKE_INSTALL_PREFIX "/ibex/scratch/x_plotnips/panzer_repo")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,15 +44,15 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/ibex/user/x_plotnips/panzer_repo/src/cmake_install.cmake")
-  include("/ibex/user/x_plotnips/panzer_repo/app/cmake_install.cmake")
+  include("/ibex/scratch/x_plotnips/panzer_repo/src/cmake_install.cmake")
+  include("/ibex/scratch/x_plotnips/panzer_repo/app/cmake_install.cmake")
 
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/ibex/user/x_plotnips/panzer_repo/install_local_manifest.txt"
+  file(WRITE "/ibex/scratch/x_plotnips/panzer_repo/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
 if(CMAKE_INSTALL_COMPONENT)
@@ -68,6 +68,6 @@ else()
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/ibex/user/x_plotnips/panzer_repo/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "/ibex/scratch/x_plotnips/panzer_repo/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()
