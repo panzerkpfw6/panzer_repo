@@ -61,7 +61,9 @@ export OMP_DYNAMIC=false
 # # export CFLAGS="-march=znver4 -Ofast -fopenmp -fvectorize -floop-nest-optimize -floop-interchange -fno-math-errno -flto -mamdlibm"
 # export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
 
-export CFLAGS="-march=znver2 -mtune=znver2 -O3 -ffast-math -qopenmp -mprefer-vector-width=256 -qopt-report=5 -qopt-report-phase=vec"
+# export CFLAGS="-march=znver2 -mtune=znver2 -O3 -ffast-math -qopenmp -mprefer-vector-width=256 -qopt-report=5 -qopt-report-phase=vec"
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+
 
 # export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
 #                -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
@@ -138,12 +140,13 @@ make install
 mkdir ./logs
 export logs_path=./logs/test1_modeling
 export logs_filename="test1_interactive_old.log"
-export logs_filename="test1_interactive_ongoing_testing_rome.log"
-# rm -rf $logs_path/$logs_filename;
+export logs_filename="test1_June26_rome_orig_kernel.log"
+export logs_filename="test1_June26_rome_grok_kernel3.log"
+rm -rf $logs_path/$logs_filename;
 mkdir $logs_path
 
 ###******** PROFILING SETUP ***********###
-PROFILING=1                    # Set to 0 to disable profiling
+PROFILING=0                    # Set to 0 to disable profiling
 PROFILE_DIR="./logs/test1_modeling/profile_tb_rome"
 mkdir $PROFILE_DIR
 
