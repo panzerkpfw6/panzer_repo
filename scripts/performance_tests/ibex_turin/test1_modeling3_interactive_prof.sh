@@ -40,27 +40,37 @@ export OMP_NUM_THREADS=192
 # Your main hot function (wave_update_fields_block_1st.extracted) dominates the runtime.
 # OpenMP runtime (libiomp5.so) is taking a very large portion (~20%+ of total CPU time) — this is a red flag (too much waiting / synchronization).
 
-# Conclusion: Your Temporal Blocking has high overhead and the inner kernel is not efficient enough.
+# # Conclusion: Your Temporal Blocking has high overhead and the inner kernel is not efficient enough.
+# export OMP_PLACES=cores
+# export OMP_PROC_BIND=close
+# export OMP_STACKSIZE=256M
+
+# # Add these environment variables
+# export OMP_WAIT_POLICY=active
+# export KMP_BLOCKTIME=0
+# export OMP_MAX_ACTIVE_LEVELS=1
+# export OMP_DYNAMIC=false
+# export KMP_AFFINITY=granularity=core,compact=1,1,verbose
+# export OMP_SCHEDULE=static,1
+# export KMP_HOT_TEAMS_MODE=1
+# export KMP_HOT_TEAMS_MAX_LEVEL=1
+
+######################################################
 export OMP_PLACES=cores
 export OMP_PROC_BIND=close
-export OMP_STACKSIZE=256M
-
-# Add these environment variables
 export OMP_WAIT_POLICY=active
 export KMP_BLOCKTIME=0
+export KMP_AFFINITY=granularity=core,compact=1,1
 export OMP_MAX_ACTIVE_LEVELS=1
 export OMP_DYNAMIC=false
-export KMP_AFFINITY=granularity=core,compact=1,1,verbose
-export OMP_SCHEDULE=static,1
-export KMP_HOT_TEAMS_MODE=1
-export KMP_HOT_TEAMS_MAX_LEVEL=1
+######################################################
 
 
 # export CFLAGS="-march=native -O3 -ffast-math -qopenmp -qopt-zmm-usage=high -mprefer-vector-width=512 -qopt-report=3"
-# export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
-export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
-               -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
-               -fno-inline -qno-opt-dynamic-align"
+export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
+# export CFLAGS="-march=native -O3 -ffast-math -qopenmp -ipo -qopt-zmm-usage=high \
+#                -mprefer-vector-width=512 -qopt-report=3 -fno-inline-functions \
+#                -fno-inline -qno-opt-dynamic-align"
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
 ######################################################
@@ -128,15 +138,15 @@ rm -rf $logs_path/$logs_filename;
 mkdir $logs_path
 
 ###******** PROFILING SETUP ***********###
-PROFILING=1                    # Set to 0 to disable profiling
+PROFILING=0                    # Set to 0 to disable profiling
 PROFILE_DIR="./logs/test1_modeling/profile_tb_turin"
 mkdir $PROFILE_DIR
 
 ##### Run tests #####
 len=${#nx_arr[@]}
-# for i in $(seq 0 $len); do
+for i in $(seq 0 $len); do
 # for i in $(seq 2 $len); do
-for i in $(seq 0 0); do
+# for i in $(seq 0 0); do
   echo $i
   nx=${nx_arr[$i]}
   ny=${ny_arr[$i]}
