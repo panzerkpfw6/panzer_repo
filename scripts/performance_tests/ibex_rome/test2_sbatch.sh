@@ -29,13 +29,18 @@ echo $hostname
 lscpu
 
 ###********** OPENMP PARAMETERS ***********###
-export OMP_NUM_THREADS=128;
-export OMP_PLACES=cores;
-export OMP_PROC_BIND=close;
-export OMP_STACKSIZE=64M;
-export CFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export CXXFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
-export FFLAGS="-march=znver2 -m64 -Ofast -ffast-math -qopenmp -O3"
+export OMP_NUM_THREADS=128
+export OMP_PLACES=cores
+export OMP_PROC_BIND=close
+export OMP_WAIT_POLICY=active
+export KMP_BLOCKTIME=0
+export KMP_AFFINITY=granularity=core,compact=1,1
+export OMP_MAX_ACTIVE_LEVELS=1
+export OMP_DYNAMIC=false
+
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+export CXXFLAGS="$CFLAGS"
+export FFLAGS="$CFLAGS"
 
 ###********** MODULES *********###
 module purge
@@ -71,8 +76,8 @@ export NT_SB_2nd=200
 
 ##### Logs directory #####
 mkdir ./logs
-export logs_file="./logs/test2_modeling_sbatch.log"
-# rm $logs_file
+export logs_file="./logs/tests_rome/test2_rome_June_best.log"
+rm $logs_file
 lscpu >> logs_file
 echo $hostname
 

@@ -38,8 +38,10 @@ export KMP_AFFINITY=granularity=core,compact=1,1
 export OMP_MAX_ACTIVE_LEVELS=1
 export OMP_DYNAMIC=false
 
-export CFLAGS="-O3 -qopenmp -march=znver2 -mtune=znver2 -mprefer-vector-width=256 -ffast-math -funroll-loops -fno-math-errno"
+# export CFLAGS="-O3 -qopenmp -march=znver2 -mtune=znver2 -mprefer-vector-width=256 -ffast-math -funroll-loops -fno-math-errno"
 #export CFLAGS="-march=native -O3 -ffast-math -qopenmp"
+export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3"
+
 export CXXFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
 
@@ -82,7 +84,7 @@ export NT_TB_2nd=200
 mkdir ./logs
 
 ######### create log
-export logs_file="./logs/tests_rome/test3_June3rd_attempt.log"
+export logs_file="./logs/tests_rome/test3_rome_June_best.log"
 rm $logs_file
 lscpu >> logs_file
 echo $hostname
