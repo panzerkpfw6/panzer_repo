@@ -535,7 +535,7 @@ int main(int argc, char* argv[]) {
             MSG("run 1st order TB modeling");
             run_modeling_1st_tb_cpu(s,vel,inv_rho,source,p);
         } else {
-            MSG("run 2nd order TB modeling, deprecated.");
+            MSG("not running 2nd order TB modeling. Please modify the implementation.");
 //            run_modeling_tb_cpu(s, vel, source, p);
         }
     } else {
