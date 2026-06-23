@@ -53,10 +53,10 @@ RM = /sw/workstations/apps/linux-ubuntu22.04-ivybridge/cmake/3.24.3/gcc-11.3.0/i
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 # Include any dependencies generated for this target.
 include app/CMakeFiles/modeling.dir/depend.make
@@ -72,16 +72,16 @@ include app/CMakeFiles/modeling.dir/flags.make
 app/CMakeFiles/modeling.dir/modeling.c.o: app/CMakeFiles/modeling.dir/flags.make
 app/CMakeFiles/modeling.dir/modeling.c.o: app/modeling.c
 app/CMakeFiles/modeling.dir/modeling.c.o: app/CMakeFiles/modeling.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object app/CMakeFiles/modeling.dir/modeling.c.o"
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app/modeling.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object app/CMakeFiles/modeling.dir/modeling.c.o"
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT app/CMakeFiles/modeling.dir/modeling.c.o -MF CMakeFiles/modeling.dir/modeling.c.o.d -o CMakeFiles/modeling.dir/modeling.c.o -c /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app/modeling.c
 
 app/CMakeFiles/modeling.dir/modeling.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/modeling.dir/modeling.c.i"
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app/modeling.c > CMakeFiles/modeling.dir/modeling.c.i
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app/modeling.c > CMakeFiles/modeling.dir/modeling.c.i
 
 app/CMakeFiles/modeling.dir/modeling.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/modeling.dir/modeling.c.s"
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app/modeling.c -o CMakeFiles/modeling.dir/modeling.c.s
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app && /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/icc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app/modeling.c -o CMakeFiles/modeling.dir/modeling.c.s
 
 # Object files for target modeling
 modeling_OBJECTS = \
@@ -96,18 +96,18 @@ app/modeling: src/libstencil.a
 app/modeling: /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so
 app/modeling: /usr/lib/x86_64-linux-gnu/libpthread.a
 app/modeling: app/CMakeFiles/modeling.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable modeling"
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable modeling"
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/modeling.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 app/CMakeFiles/modeling.dir/build: app/modeling
 .PHONY : app/CMakeFiles/modeling.dir/build
 
 app/CMakeFiles/modeling.dir/clean:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app && $(CMAKE_COMMAND) -P CMakeFiles/modeling.dir/cmake_clean.cmake
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app && $(CMAKE_COMMAND) -P CMakeFiles/modeling.dir/cmake_clean.cmake
 .PHONY : app/CMakeFiles/modeling.dir/clean
 
 app/CMakeFiles/modeling.dir/depend:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=$(COLOR)
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app/CMakeFiles/modeling.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : app/CMakeFiles/modeling.dir/depend
 

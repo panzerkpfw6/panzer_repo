@@ -98,6 +98,7 @@ typedef struct __sismap_t {
     int mode;
     int order;
     int rec_sismos;
+    char *method;
 } sismap_t;
 
 #endif // __STENCIL_WAVE_H_

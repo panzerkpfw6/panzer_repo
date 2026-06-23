@@ -1,5 +1,5 @@
 src/CMakeFiles/stencil.dir/parser.c.o: \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/src/parser.c \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/src/parser.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -27,7 +27,7 @@ src/CMakeFiles/stencil.dir/parser.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h /usr/include/strings.h \
  /usr/include/ctype.h /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endianness.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/parser.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/parser.h \
  /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \

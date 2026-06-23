@@ -54,10 +54,10 @@ RM = /sw/workstations/apps/linux-ubuntu22.04-ivybridge/cmake/3.24.3/gcc-11.3.0/i
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -119,14 +119,14 @@ src/clean: src/CMakeFiles/stencil.dir/clean
 src/CMakeFiles/stencil.dir/all:
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/depend
 	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=7,8,9,10,11,12,13,14,15,16,17,18 "Built target stencil"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=7,8,9,10,11,12,13,14,15,16,17,18 "Built target stencil"
 .PHONY : src/CMakeFiles/stencil.dir/all
 
 # Build rule for subdir invocation for target.
 src/CMakeFiles/stencil.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/stencil.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : src/CMakeFiles/stencil.dir/rule
 
 # Convenience name for target.
@@ -147,14 +147,14 @@ app/CMakeFiles/stencil_apps.dir/all: app/CMakeFiles/modeling.dir/all
 app/CMakeFiles/stencil_apps.dir/all: app/CMakeFiles/rtm.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/stencil_apps.dir/build.make app/CMakeFiles/stencil_apps.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/stencil_apps.dir/build.make app/CMakeFiles/stencil_apps.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num= "Built target stencil_apps"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num= "Built target stencil_apps"
 .PHONY : app/CMakeFiles/stencil_apps.dir/all
 
 # Build rule for subdir invocation for target.
 app/CMakeFiles/stencil_apps.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 18
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 18
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/stencil_apps.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : app/CMakeFiles/stencil_apps.dir/rule
 
 # Convenience name for target.
@@ -173,14 +173,14 @@ app/CMakeFiles/stencil_apps.dir/clean:
 app/CMakeFiles/gather.dir/all: src/CMakeFiles/stencil.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=1,2 "Built target gather"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=1,2 "Built target gather"
 .PHONY : app/CMakeFiles/gather.dir/all
 
 # Build rule for subdir invocation for target.
 app/CMakeFiles/gather.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 14
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/gather.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : app/CMakeFiles/gather.dir/rule
 
 # Convenience name for target.
@@ -199,14 +199,14 @@ app/CMakeFiles/gather.dir/clean:
 app/CMakeFiles/modeling.dir/all: src/CMakeFiles/stencil.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=3,4 "Built target modeling"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=3,4 "Built target modeling"
 .PHONY : app/CMakeFiles/modeling.dir/all
 
 # Build rule for subdir invocation for target.
 app/CMakeFiles/modeling.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 14
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/modeling.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : app/CMakeFiles/modeling.dir/rule
 
 # Convenience name for target.
@@ -225,14 +225,14 @@ app/CMakeFiles/modeling.dir/clean:
 app/CMakeFiles/rtm.dir/all: src/CMakeFiles/stencil.dir/all
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/depend
 	$(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles --progress-num=5,6 "Built target rtm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles --progress-num=5,6 "Built target rtm"
 .PHONY : app/CMakeFiles/rtm.dir/all
 
 # Build rule for subdir invocation for target.
 app/CMakeFiles/rtm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 14
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/rtm.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : app/CMakeFiles/rtm.dir/rule
 
 # Convenience name for target.

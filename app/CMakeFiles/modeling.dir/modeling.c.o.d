@@ -1,5 +1,5 @@
 app/CMakeFiles/modeling.dir/modeling.c.o: \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app/modeling.c \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app/modeling.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -47,7 +47,7 @@ app/CMakeFiles/modeling.dir/modeling.c.o: \
  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/parser.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/parser.h \
  /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/../../compiler/include/icc/stdbool.h \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
@@ -75,29 +75,29 @@ app/CMakeFiles/modeling.dir/modeling.c.o: \
  /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h /usr/include/alloca.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/stencil.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/config.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/stencil.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/config.h \
  /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/../../compiler/include/omp.h \
  /sw/workstations/apps/linux-ubuntu22.04-ivybridge/intel-oneapi-compilers/2022.2.1/gcc-11.3.0/k2f52ijqkzvd4hct7ccykcnys7eym6t3/compiler/2022.2.1/linux/bin/intel64/../../compiler/include/icc/stdint.h \
  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/macros.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/sismap.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/shot.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/source.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/velocity.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/pml.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/wave.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/gpu_wave.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/wave_tb.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/macros.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/sismap.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/shot.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/source.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/velocity.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/pml.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/wave.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/gpu_wave.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/wave_tb.h \
  /usr/include/sched.h /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/mlbs.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/bwriter.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/mlbs.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/bwriter.h \
  /usr/include/assert.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/wtime.h \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/wtime.h \
  /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h

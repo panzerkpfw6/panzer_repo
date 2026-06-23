@@ -57,10 +57,10 @@ RM = /sw/workstations/apps/linux-ubuntu22.04-ivybridge/cmake/3.24.3/gcc-11.3.0/i
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_SOURCE_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo
+CMAKE_BINARY_DIR = /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -132,14 +132,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/app//CMakeFiles/progress.marks
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/CMakeFiles 0
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/app//CMakeFiles/progress.marks
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/clean
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/clean
 .PHONY : clean
 
 # The main clean target
@@ -148,22 +148,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/preinstall
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/preinstall
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 app/CMakeFiles/stencil_apps.dir/rule:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/stencil_apps.dir/rule
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/stencil_apps.dir/rule
 .PHONY : app/CMakeFiles/stencil_apps.dir/rule
 
 # Convenience name for target.
@@ -172,12 +172,12 @@ stencil_apps: app/CMakeFiles/stencil_apps.dir/rule
 
 # fast build rule for target.
 stencil_apps/fast:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/stencil_apps.dir/build.make app/CMakeFiles/stencil_apps.dir/build
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/stencil_apps.dir/build.make app/CMakeFiles/stencil_apps.dir/build
 .PHONY : stencil_apps/fast
 
 # Convenience name for target.
 app/CMakeFiles/gather.dir/rule:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/gather.dir/rule
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/gather.dir/rule
 .PHONY : app/CMakeFiles/gather.dir/rule
 
 # Convenience name for target.
@@ -186,12 +186,12 @@ gather: app/CMakeFiles/gather.dir/rule
 
 # fast build rule for target.
 gather/fast:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/build
 .PHONY : gather/fast
 
 # Convenience name for target.
 app/CMakeFiles/modeling.dir/rule:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/modeling.dir/rule
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/modeling.dir/rule
 .PHONY : app/CMakeFiles/modeling.dir/rule
 
 # Convenience name for target.
@@ -200,12 +200,12 @@ modeling: app/CMakeFiles/modeling.dir/rule
 
 # fast build rule for target.
 modeling/fast:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/build
 .PHONY : modeling/fast
 
 # Convenience name for target.
 app/CMakeFiles/rtm.dir/rule:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/rtm.dir/rule
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 app/CMakeFiles/rtm.dir/rule
 .PHONY : app/CMakeFiles/rtm.dir/rule
 
 # Convenience name for target.
@@ -214,7 +214,7 @@ rtm: app/CMakeFiles/rtm.dir/rule
 
 # fast build rule for target.
 rtm/fast:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/build
 .PHONY : rtm/fast
 
 gather.o: gather.c.o
@@ -222,7 +222,7 @@ gather.o: gather.c.o
 
 # target to build an object file
 gather.c.o:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.o
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.o
 .PHONY : gather.c.o
 
 gather.i: gather.c.i
@@ -230,7 +230,7 @@ gather.i: gather.c.i
 
 # target to preprocess a source file
 gather.c.i:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.i
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.i
 .PHONY : gather.c.i
 
 gather.s: gather.c.s
@@ -238,7 +238,7 @@ gather.s: gather.c.s
 
 # target to generate assembly for a file
 gather.c.s:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.s
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/gather.dir/build.make app/CMakeFiles/gather.dir/gather.c.s
 .PHONY : gather.c.s
 
 modeling.o: modeling.c.o
@@ -246,7 +246,7 @@ modeling.o: modeling.c.o
 
 # target to build an object file
 modeling.c.o:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.o
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.o
 .PHONY : modeling.c.o
 
 modeling.i: modeling.c.i
@@ -254,7 +254,7 @@ modeling.i: modeling.c.i
 
 # target to preprocess a source file
 modeling.c.i:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.i
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.i
 .PHONY : modeling.c.i
 
 modeling.s: modeling.c.s
@@ -262,7 +262,7 @@ modeling.s: modeling.c.s
 
 # target to generate assembly for a file
 modeling.c.s:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.s
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/modeling.dir/build.make app/CMakeFiles/modeling.dir/modeling.c.s
 .PHONY : modeling.c.s
 
 rtm.o: rtm.c.o
@@ -270,7 +270,7 @@ rtm.o: rtm.c.o
 
 # target to build an object file
 rtm.c.o:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.o
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.o
 .PHONY : rtm.c.o
 
 rtm.i: rtm.c.i
@@ -278,7 +278,7 @@ rtm.i: rtm.c.i
 
 # target to preprocess a source file
 rtm.c.i:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.i
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.i
 .PHONY : rtm.c.i
 
 rtm.s: rtm.c.s
@@ -286,7 +286,7 @@ rtm.s: rtm.c.s
 
 # target to generate assembly for a file
 rtm.c.s:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.s
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(MAKE) $(MAKESILENT) -f app/CMakeFiles/rtm.dir/build.make app/CMakeFiles/rtm.dir/rtm.c.s
 .PHONY : rtm.c.s
 
 # Help Target
@@ -325,6 +325,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

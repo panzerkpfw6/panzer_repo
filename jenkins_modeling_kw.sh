@@ -101,6 +101,7 @@ export rcv_depth=4;
 #  --first $shot --last $shot --src_depth $src_depth --rcv_depth $rcv_depth --drcv 1 --order 1 --fmax 8 --rec_sismos 1;
 #mv ./data/sismos_${shot}.raw ./data/sismos_sb/sismos_${shot}.raw
 
+exit 1
   
 mkdir ./data/sismos_tb
 rm ./data/sismos_tb/*

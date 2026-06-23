@@ -1,5 +1,5 @@
 src/CMakeFiles/stencil.dir/wtime.c.o: \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/src/wtime.c \
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/src/wtime.c \
  /usr/include/stdc-predef.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h /usr/include/features.h \
  /usr/include/features-time64.h /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -55,4 +55,4 @@ src/CMakeFiles/stencil.dir/wtime.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/include/stencil/wtime.h
+ /media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo_gpu/include/stencil/wtime.h
