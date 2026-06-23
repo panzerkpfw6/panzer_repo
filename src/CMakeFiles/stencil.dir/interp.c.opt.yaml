@@ -1,0 +1,388 @@
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 14, Column: 13 }
+Function:        bilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          linearinterp
+    DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          bilinearinterp
+    DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          bilinearinterp
+  - String:          ':'
+  - Line:            '2'
+  - String:          ':'
+  - Column:          '13'
+  - String:          ';'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 15, Column: 13 }
+Function:        bilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          linearinterp
+    DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          bilinearinterp
+    DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          bilinearinterp
+  - String:          ':'
+  - Line:            '3'
+  - String:          ':'
+  - Column:          '13'
+  - String:          ';'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 16, Column: 10 }
+Function:        bilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          linearinterp
+    DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          bilinearinterp
+    DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          bilinearinterp
+  - String:          ':'
+  - Line:            '4'
+  - String:          ':'
+  - Column:          '10'
+  - String:          ';'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 24, Column: 13 }
+Function:        trilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          bilinearinterp
+    DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          trilinearinterp
+    DebugLoc:        { File: interp.c, Line: 23, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-15'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          trilinearinterp
+  - String:          ':'
+  - Line:            '5'
+  - String:          ':'
+  - Column:          '13'
+  - String:          ';'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 25, Column: 13 }
+Function:        trilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          bilinearinterp
+    DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          trilinearinterp
+    DebugLoc:        { File: interp.c, Line: 23, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-15'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          trilinearinterp
+  - String:          ':'
+  - Line:            '6'
+  - String:          ':'
+  - Column:          '13'
+  - String:          ';'
+...
+--- !Passed
+Pass:            inline
+Name:            Inlined
+DebugLoc:        { File: interp.c, Line: 26, Column: 10 }
+Function:        trilinearinterp
+Args:
+  - String:          ''''
+  - Callee:          linearinterp
+    DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+  - String:          ''' inlined into '''
+  - Caller:          trilinearinterp
+    DebugLoc:        { File: interp.c, Line: 23, Column: 0 }
+  - String:          ''''
+  - String:          ' with '
+  - String:          '(cost='
+  - Cost:            '-30'
+  - String:          ', threshold='
+  - Threshold:       '375'
+  - String:          ')'
+  - String:          ' at callsite '
+  - String:          trilinearinterp
+  - String:          ':'
+  - Line:            '7'
+  - String:          ':'
+  - Column:          '10'
+  - String:          ';'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        bilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotBeneficial
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        bilinearinterp
+Args:
+  - String:          'List vectorization was possible but not beneficial with cost '
+  - Cost:            '0'
+  - String:          ' >= '
+  - Treshold:        '0'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Passed
+Pass:            slp-vectorizer
+Name:            VectorizedList
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'SLP vectorized with cost '
+  - Cost:            '-2'
+  - String:          ' and with tree size '
+  - TreeSize:        '18'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+Function:        linearinterp
+Args:
+  - NumStackBytes:   '0'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionMix
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        linearinterp
+Args:
+  - String:          'BasicBlock: '
+  - BasicBlock:      ''
+  - String:          "\n"
+  - String:          ''
+  - String:          ': '
+  - INST_:           '3'
+  - String:          "\n"
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: interp.c, Line: 8, Column: 0 }
+Function:        linearinterp
+Args:
+  - NumInstructions: '3'
+  - String:          ' instructions in function'
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+Function:        bilinearinterp
+Args:
+  - NumStackBytes:   '0'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionMix
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        bilinearinterp
+Args:
+  - String:          'BasicBlock: '
+  - BasicBlock:      ''
+  - String:          "\n"
+  - String:          ''
+  - String:          ': '
+  - INST_:           '7'
+  - String:          "\n"
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: interp.c, Line: 13, Column: 0 }
+Function:        bilinearinterp
+Args:
+  - NumInstructions: '7'
+  - String:          ' instructions in function'
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: interp.c, Line: 23, Column: 0 }
+Function:        trilinearinterp
+Args:
+  - NumStackBytes:   '0'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionMix
+DebugLoc:        { File: interp.c, Line: 9, Column: 16 }
+Function:        trilinearinterp
+Args:
+  - String:          'BasicBlock: '
+  - BasicBlock:      ''
+  - String:          "\n"
+  - String:          ''
+  - String:          ': '
+  - INST_:           '16'
+  - String:          "\n"
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: interp.c, Line: 23, Column: 0 }
+Function:        trilinearinterp
+Args:
+  - NumInstructions: '16'
+  - String:          ' instructions in function'
+...

@@ -1,0 +1,112 @@
+Program started at: 2026-06-15 18:46:22 [Thread 0]
+ncpus : 48
+# THREADS : 44
+[STENCIL MSG]:before velocity_query_model
+[STENCIL MSG]:wave_init_numerics. point1
+[STENCIL MSG]:initialize 1st order scheme coefs
+[STENCIL MSG]:!!!coefx:0=1.196289,1=-0.079753,2=0.009570,3=-0.000698
+
+[STENCIL MSG]:... setting nb_snap = Nyquist sampling: 63
+
+Folder 'data' created successfully.
+[STENCIL MSG]: s->rcv_len, 262144
+
+[STENCIL MSG]:number of receivers in y direction, 512
+
+data/acquisition.txt
+data/shots.txt
+[STENCIL MSG]:... !before source! ...
+[STENCIL MSG]:s->dt=0.001000,s->dx=14
+[STENCIL MSG]: 
+[STENCIL MSG]:... stencil information:
+[STENCIL MSG]:... velocity size       = 512 x 512 x 512
+[STENCIL MSG]:... velocity min/max    = 1500.000000 - 4500.000000
+[STENCIL MSG]:... compute domain size = 512 x 512 x 512 (134.094238 MB)
+[STENCIL MSG]:... imaging domain size = 512 x 512 x 512 (128.000000 MB)
+[STENCIL MSG]:... cdp,line,depth      = 10 x 10 x 10
+[STENCIL MSG]:... dx*dy*dz            = 10.000000 x 10.000000 x 10.000000
+[STENCIL MSG]:... dtrp                = 1 x 1 x 1
+[STENCIL MSG]:... dt                  = 0.001
+[STENCIL MSG]:... stencil size        = 9 x 9 x 9
+[STENCIL MSG]:... pml damping         = 0 x 0 x 0
+[STENCIL MSG]:... source depth        = 256 
+[STENCIL MSG]:... coefx               = 0 -0.000697545 0.00957031 -0.0797526 1.19629 -0.0797526 0.00957031 -0.000697545 0 
+[STENCIL MSG]:... coefy               = 0 -0.000697545 0.00957031 -0.0797526 1.19629 -0.0797526 0.00957031 -0.000697545 0 
+[STENCIL MSG]:... coefz               = 0 -0.000697545 0.00957031 -0.0797526 1.19629 -0.0797526 0.00957031 -0.000697545 0 
+[STENCIL MSG]:... hdx2, hdy2, hdz2    = 0.002500, 0.002500, 0.002500
+[STENCIL MSG]:... time steps          = 505
+[STENCIL MSG]:... acquisition geometry:
+[STENCIL MSG]:... number of receivers              = 262144
+[STENCIL MSG]:... depth of the receivers           = 5
+[STENCIL MSG]:... space between 2 receivers        = 1
+[STENCIL MSG]:... number of shots                  = 262144
+[STENCIL MSG]: 
+[STENCIL MSG]:Exiting velocity_const_model2
+
+[STENCIL MSG]:... dump velocity ...
+[STENCIL MSG]:... dump density ...
+[STENCIL MSG]:entering fill_coef_matrix
+
+[STENCIL MSG]:order=1,vtab
+
+[STENCIL MSG]:... dump coefficient matrix ...
+[STENCIL MSG]:source 1st order
+[STENCIL MSG]:run 1st order TB modeling
+ncpus : 48
+errno001 : Success
+errno001 : Success
+ntg 2, tgs 16 
+Threads binding (tid->OS tid): 0->0 1->1 2->2 3->3 4->4 5->5 6->6 7->7 8->8 9->9 10->10 11->11 12->12 13->13 14->14 15->15 16->16 17->17 18->18 19->19 20->20 21->21 22->22 23->23 24->24 25->25 26->26 27->27 28->28 29->29 30->30 31->31
+[STENCIL MSG]: 
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:wave temporal blocking info
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:thread group : (8,2,1)
+[STENCIL MSG]:group size: 16 num_group : 2
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:temporal blocking
+[STENCIL MSG]:t_dim : 7, num_wf : 64, diam_width : 64
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:scheduling info
+[STENCIL MSG]:t_len : 61, y_len_l : 8, y_lenr : 9
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:grid info
+[STENCIL MSG]:stride       : (520,520,520)
+[STENCIL MSG]:stencil grid : (512,512,512)
+[STENCIL MSG]:halo : 4
+[STENCIL MSG]:rtm info
+[STENCIL MSG]:fwd_steps : 1
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:mode info
+[STENCIL MSG]:MODE (2) : SEPARATE MODE
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:loop over the shots
+rcv_len 262144, time_steps 505
+[STENCIL MSG]:Start of Shot (32896)
+[STENCIL MSG]:OUTDIR=data
+[STENCIL MSG]:breakpoint 0
+[STENCIL MSG]:tmp in shot_init=data/snap_32896.raw
+[STENCIL MSG]:... dealing with shot number 32896 (source @ 35492).
+[STENCIL MSG]:SRC: ix=68,iy=132,iz=260
+
+[STENCIL MSG]:data->rcv_depth=9,s->rcv_depth=5
+[STENCIL MSG]: 
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:wave data info
+[STENCIL MSG]:src_depth : 260
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:src_depth : 260
+[STENCIL MSG]:src_idx   : 35492
+[STENCIL MSG]:position  : (68,132,260)
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:rcv_depth : 9
+[STENCIL MSG]:rcv_len   : 262144
+[STENCIL MSG]:-------------------------------------------
+[STENCIL MSG]:isrc_exc=0
+[STENCIL MSG]:p->nt=1010
+[STENCIL MSG]:nelm=134217728
+[STENCIL MSG]:ctx->nb_stencils_main=134217728000
+[STENCIL MSG]:ctx->nb_stencils_total_fwd=135559905280
+[STENCIL MSG]:ctx->nb_stencils_total_bwd=135559905280
+nthreads 44 cannot be dividable by thread group size 16. The remainder is 12
+. Exiting...

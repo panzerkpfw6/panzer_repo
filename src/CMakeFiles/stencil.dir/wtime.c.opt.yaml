@@ -1,0 +1,290 @@
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 30, Column: 4 }
+Function:        wtime_init
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime_init
+    DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 30, Column: 4 }
+Function:        wtime_init
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime_init
+    DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+Function:        wtime
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime
+    DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+Function:        wtime
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime
+    DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 30, Column: 4 }
+Function:        wtime_init
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime_init
+    DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 30, Column: 4 }
+Function:        wtime_init
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime_init
+    DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+Function:        wtime
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime
+    DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            inline
+Name:            NoDefinition
+DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+Function:        wtime
+Args:
+  - Callee:          clock_gettime
+  - String:          ' will not be inlined into '
+  - Caller:          wtime
+    DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+  - String:          ' because its definition is unavailable'
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 38, Column: 25 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 38, Column: 40 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 39, Column: 20 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 39, Column: 36 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 38, Column: 25 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 38, Column: 40 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 39, Column: 20 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            gvn
+Name:            LoadClobbered
+DebugLoc:        { File: wtime.c, Line: 39, Column: 36 }
+Function:        wtime
+Args:
+  - String:          'load of type '
+  - Type:            ''
+  - String:          ' not eliminated'
+  - String:          ' because it is clobbered by '
+  - ClobberedBy:     call
+    DebugLoc:        { File: wtime.c, Line: 36, Column: 3 }
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: wtime.c, Line: 38, Column: 25 }
+Function:        wtime
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: wtime.c, Line: 39, Column: 20 }
+Function:        wtime
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Missed
+Pass:            slp-vectorizer
+Name:            NotPossible
+DebugLoc:        { File: wtime.c, Line: 39, Column: 20 }
+Function:        wtime
+Args:
+  - String:          'Cannot SLP vectorize list: vectorization was impossible'
+  - String:          ' with available vectorization factors'
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+Function:        wtime_init
+Args:
+  - NumStackBytes:   '0'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionMix
+DebugLoc:        { File: wtime.c, Line: 30, Column: 4 }
+Function:        wtime_init
+Args:
+  - String:          'BasicBlock: '
+  - BasicBlock:      ''
+  - String:          "\n"
+  - String:          ''
+  - String:          ': '
+  - INST_:           '3'
+  - String:          "\n"
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: wtime.c, Line: 29, Column: 0 }
+Function:        wtime_init
+Args:
+  - NumInstructions: '3'
+  - String:          ' instructions in function'
+...
+--- !Analysis
+Pass:            prologepilog
+Name:            StackSize
+DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+Function:        wtime
+Args:
+  - NumStackBytes:   '24'
+  - String:          ' stack bytes in function'
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionMix
+Function:        wtime
+Args:
+  - String:          'BasicBlock: '
+  - BasicBlock:      ''
+  - String:          "\n"
+  - String:          ''
+  - String:          ': '
+  - INST_:           '18'
+  - String:          "\n"
+...
+--- !Analysis
+Pass:            asm-printer
+Name:            InstructionCount
+DebugLoc:        { File: wtime.c, Line: 33, Column: 0 }
+Function:        wtime
+Args:
+  - NumInstructions: '18'
+  - String:          ' instructions in function'
+...

@@ -528,7 +528,7 @@ int main(int argc, char* argv[]) {
     }
     source[s->time_steps]=0.0f; // an extra time step for girih.
 
-    /// run RTM on CPU or GPU.
+    /// run RTM on CPU.
     if (s->cpu) {
 //        run_modeling_tb_cpu(s, vel, source, p);
         if (s->order==1) {
