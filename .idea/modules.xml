@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/panzer_repo.iml" filepath="$PROJECT_DIR$/.idea/panzer_repo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/panzer_repo_gpu.iml" filepath="$PROJECT_DIR$/.idea/panzer_repo_gpu.iml" />
     </modules>
   </component>
 </project>

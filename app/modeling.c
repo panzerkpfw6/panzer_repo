@@ -532,7 +532,7 @@ int main(int argc, char* argv[]) {
     source[s->time_steps]=0.0f; // an extra time step for girih.
 
     /// run modeling.
-    if (s->method=="TB") {
+    if (strcmp(s->method, "TB") == 0) {
 //        run_modeling_tb_cpu(s, vel, source, p);
         if (s->order==1) {
             MSG("run 1st order TB modeling");
@@ -540,7 +540,7 @@ int main(int argc, char* argv[]) {
         } else {
             MSG("not running 2nd order TB modeling. Please modify the implementation.");
         }
-    } elif (s->method=="TB") {
+    } else if (strcmp(s->method, "SB") == 0) {
 //        run_modeling_SB(s, vel, source, pml_tab);
 ////      run_modeling_cpu(s, vel, source, pml_tab);
         if (s->order==1) {
