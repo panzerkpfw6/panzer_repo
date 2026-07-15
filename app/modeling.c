@@ -15,6 +15,9 @@
 #include <time.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
+#ifdef USE_CUDA
+#include <cuda_runtime.h>
+#endif
 
 ///
 void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  {

@@ -2,7 +2,7 @@
 ##
 cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 
-project (stencil_distribution LANGUAGES C)
+project (stencil_distribution LANGUAGES C CXX CUDA)
 
 ## overwrite the install prefix.
 set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
