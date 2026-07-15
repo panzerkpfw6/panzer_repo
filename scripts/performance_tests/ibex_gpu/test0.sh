@@ -14,11 +14,17 @@ export KMP_AFFINITY=granularity=core,compact=1,1
 export OMP_MAX_ACTIVE_LEVELS=1
 export OMP_DYNAMIC=false
 
-export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -DUSE_CUDA"
-export CXXFLAGS="$CFLAGS"
-export FFLAGS="$CFLAGS"
+# export CFLAGS="-march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -DUSE_CUDA"
+# export CXXFLAGS="$CFLAGS"
+# export FFLAGS="$CFLAGS"
+
 
 ########### GPU OPTIONS ####################
+unset CFLAGS
+unset CXXFLAGS
+unset FFLAGS
+unset CUDAFLAGS
+unset NVCCFLAGS
 
 ######################################################
 ######################################################
@@ -42,9 +48,10 @@ icx --version
 # GPU version
 rm -rf CMakeFiles CMakeCache.txt
 cmake \
-  -DCMAKE_C_COMPILER=icx \
-  -DCMAKE_CXX_COMPILER=icpx \
-  -DCMAKE_CUDA_COMPILER=nvcc \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER="$(which icx)" \
+  -DCMAKE_CXX_COMPILER="$(which icpx)" \
+  -DCMAKE_CUDA_COMPILER="$(which nvcc)" \
   -DCMAKE_CUDA_ARCHITECTURES=70 \
   -DUSE_CUDA=ON \
   .

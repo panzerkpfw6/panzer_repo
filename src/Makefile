@@ -158,6 +158,7 @@ preinstall/fast:
 
 # clear depends
 depend:
+	cd /ibex/scratch/samonio/panzer_repo && $(CMAKE_COMMAND) -P /ibex/scratch/samonio/panzer_repo/CMakeFiles/VerifyGlobs.cmake
 	cd /ibex/scratch/samonio/panzer_repo && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
@@ -198,6 +199,30 @@ bwriter.s: bwriter.c.s
 bwriter.c.s:
 	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/bwriter.c.s
 .PHONY : bwriter.c.s
+
+gpu_wave.o: gpu_wave.cu.o
+.PHONY : gpu_wave.o
+
+# target to build an object file
+gpu_wave.cu.o:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.o
+.PHONY : gpu_wave.cu.o
+
+gpu_wave.i: gpu_wave.cu.i
+.PHONY : gpu_wave.i
+
+# target to preprocess a source file
+gpu_wave.cu.i:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.i
+.PHONY : gpu_wave.cu.i
+
+gpu_wave.s: gpu_wave.cu.s
+.PHONY : gpu_wave.s
+
+# target to generate assembly for a file
+gpu_wave.cu.s:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.s
+.PHONY : gpu_wave.cu.s
 
 interp.o: interp.c.o
 .PHONY : interp.o
@@ -455,6 +480,9 @@ help:
 	@echo "... bwriter.o"
 	@echo "... bwriter.i"
 	@echo "... bwriter.s"
+	@echo "... gpu_wave.o"
+	@echo "... gpu_wave.i"
+	@echo "... gpu_wave.s"
 	@echo "... interp.o"
 	@echo "... interp.i"
 	@echo "... interp.s"
@@ -496,6 +524,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	cd /ibex/scratch/samonio/panzer_repo && $(CMAKE_COMMAND) -P /ibex/scratch/samonio/panzer_repo/CMakeFiles/VerifyGlobs.cmake
 	cd /ibex/scratch/samonio/panzer_repo && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

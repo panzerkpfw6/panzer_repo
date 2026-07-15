@@ -19,6 +19,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/ibex/scratch/samonio/panzer_repo/src/wave.c" "src/CMakeFiles/stencil.dir/wave.c.o" "gcc" "src/CMakeFiles/stencil.dir/wave.c.o.d"
   "/ibex/scratch/samonio/panzer_repo/src/wave_tb.c" "src/CMakeFiles/stencil.dir/wave_tb.c.o" "gcc" "src/CMakeFiles/stencil.dir/wave_tb.c.o.d"
   "/ibex/scratch/samonio/panzer_repo/src/wtime.c" "src/CMakeFiles/stencil.dir/wtime.c.o" "gcc" "src/CMakeFiles/stencil.dir/wtime.c.o.d"
+  "/ibex/scratch/samonio/panzer_repo/src/gpu_wave.cu" "src/CMakeFiles/stencil.dir/gpu_wave.cu.o" "gcc" "src/CMakeFiles/stencil.dir/gpu_wave.cu.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

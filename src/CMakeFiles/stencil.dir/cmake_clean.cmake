@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/stencil.dir/bwriter.c.o"
   "CMakeFiles/stencil.dir/bwriter.c.o.d"
+  "CMakeFiles/stencil.dir/gpu_wave.cu.o"
+  "CMakeFiles/stencil.dir/gpu_wave.cu.o.d"
   "CMakeFiles/stencil.dir/interp.c.o"
   "CMakeFiles/stencil.dir/interp.c.o.d"
   "CMakeFiles/stencil.dir/mlbs.c.o"
@@ -26,6 +28,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang C CUDA)
   include(CMakeFiles/stencil.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

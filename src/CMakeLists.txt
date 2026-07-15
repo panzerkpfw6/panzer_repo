@@ -21,25 +21,59 @@
 ##
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-project(stencil LANGUAGES C)
+project(stencil LANGUAGES C CXX CUDA)
 
-## Check whether CUDA is detected:
-## - The CUDA library queered in usual directories
-## - This behavior can be changed with environment setting:
-##   CUDA_INCLUDE_DIRS  : contains the CUDA headers
-##   CUDA_LIBRARIES_DIR : contains the CUDA runtime libraries
+find_package(CUDAToolkit REQUIRED)
 #find_package (CUDA REQUIRED)
+find_package(OpenMP REQUIRED)
+
+option(USE_CUDA "Enable CUDA support" ON)
 
 ## include headers.
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 ## compile C and CUDA files.
-file(GLOB SRCS "*.c")
+file(GLOB C_SRCS CONFIGURE_DEPENDS "*.c")
+file(GLOB CUDA_SRCS CONFIGURE_DEPENDS "*.cu")
 
 #message ("CMAKE_CUDA_FLAGS : " ${CMAKE_CUDA_FLAGS})
 
-add_library(stencil ${SRCS})
-#set_target_properties(stencil PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+add_library(stencil
+    ${C_SRCS}
+    ${CUDA_SRCS}
+)
 
-## install the library.
+if(USE_CUDA)
+    target_compile_definitions(stencil PUBLIC USE_CUDA)
+
+    set_target_properties(stencil PROPERTIES
+        CUDA_ARCHITECTURES 70
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_STANDARD 14
+        CUDA_STANDARD_REQUIRED ON
+    )
+
+    target_link_libraries(stencil PUBLIC CUDA::cudart)
+endif()
+
+target_link_libraries(stencil PUBLIC
+    OpenMP::OpenMP_C
+)
+
+target_compile_options(stencil PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-O3;-march=core-avx2;-mtune=core-avx2>
+    $<$<COMPILE_LANGUAGE:CXX>:-O3;-march=core-avx2;-mtune=core-avx2>
+    $<$<COMPILE_LANGUAGE:CUDA>:-O3>
+)
+
+# add_compile_options(
+#     $<$<COMPILE_LANGUAGE:C>:-qopenmp>
+#     $<$<COMPILE_LANGUAGE:C>:-march=core-avx2>
+#     $<$<COMPILE_LANGUAGE:C>:-mtune=core-avx2>
+
+#     $<$<COMPILE_LANGUAGE:CXX>:-qopenmp>
+#     $<$<COMPILE_LANGUAGE:CXX>:-march=core-avx2>
+#     $<$<COMPILE_LANGUAGE:CXX>:-mtune=core-avx2>
+# )
+
 install(TARGETS stencil ARCHIVE DESTINATION lib)

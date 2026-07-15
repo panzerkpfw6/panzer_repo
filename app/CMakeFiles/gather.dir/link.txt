@@ -1,1 +1,1 @@
-/sw/rl9g/intel/2022/compiler/2022.2.1/linux/bin/icx -march=core-avx2 -mtune=core-avx2 -qopenmp -O3 -DUSE_CUDA -fiopenmp -O3 -DNDEBUG CMakeFiles/gather.dir/gather.c.o -o gather  ../src/libstencil.a -lm -lstdc++ -fiopenmp -fiopenmp 
+/usr/bin/g++ -fiopenmp @CMakeFiles/gather.dir/objects1.rsp CMakeFiles/gather.dir/cmake_device_link.o -o gather @CMakeFiles/gather.dir/linkLibs.rsp -L"/sw/rl9g/cuda/12.4.1/rl9_binary/targets/x86_64-linux/lib/stubs" -L"/sw/rl9g/cuda/12.4.1/rl9_binary/targets/x86_64-linux/lib"
