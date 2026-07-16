@@ -59,9 +59,12 @@ make clean
 make VERBOSE=1
 make install
 
-# we need also change this in CMakeLists.txt:
-# project(panzer_repo LANGUAGES C CXX CUDA)
-exit 1
+##### Logs directory #####
+mkdir ./logs
+export logs_path=./logs/tests_gpu
+mkdir $logs_path
+export logs_filename="test0.log"
+rm -rf $logs_path/$logs_filename;
 
 ##### Shot information #####
 export shot=32896;  # position of the source in x,y coordinates.check ./data/acquisition.txt
@@ -83,16 +86,25 @@ export NT_TB_1st=505
 export NT_SB_1st=505
 #export NT_TB_1st=4001
 #export NT_SB_1st=4001
-
+export cbx=16
+export cby=4
+export cbz=9999
 ###############################
-#echo "test_SB"
-#nx=128;ny=256;nz=512;
-#nt=10;  dt=0.001;
-#export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
-#export src_depth=256;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
-#./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode 2  --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 2 --fmax 8;
+echo "test_SB"
+nx=128;ny=256;nz=512;
+nt=10;  dt=0.001;
+export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
+export src_depth=256;
+export fmax=8;
 
+# ./bin/modeling --verbose --n1 $nx --n2 $ny --n3 $nz --iter $nt --mode 2 --dshot 1 --first $shot --last $shot --src_depth $src_depth --drcv 1 --order 1 --fmax 8;
+
+./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+--dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+--cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/$logs_filename;
+
+exit 1
 ###############################
 #echo "test_TB"
 #nx=128;ny=256;nz=512;
