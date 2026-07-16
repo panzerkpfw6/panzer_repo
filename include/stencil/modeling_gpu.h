@@ -9,10 +9,9 @@ extern "C" {
 
 void run_modeling_1st_sb_gpu(
     sismap_t *s,
-    const float *vel,
-    const float *inv_rho,
-    const float *source,
-    const float *pml_tab
+    float *vel,
+    float *source,
+    float *pml_tab
 );
 
 #ifdef __cplusplus

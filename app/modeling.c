@@ -11,12 +11,14 @@
 #include <stencil/wtime.h>
 #include <stencil/macros.h>
 #include <stencil/velocity.h>
+// #include <modeling_gpu.cu>
 // #include <stencil/dump.h>
 #include <time.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
 #ifdef USE_CUDA
 #include <cuda_runtime.h>
+#include <stencil/modeling_gpu.h>
 #endif
 
 ///
@@ -557,7 +559,6 @@ int main(int argc, char* argv[]) {
         }
     } else {
         run_modeling_1st_sb_gpu(s,vel,source,pml_tab);
-        ss=1;
     }
     /// free the simulation buffers.
     DELETE_BUFFER(vel);

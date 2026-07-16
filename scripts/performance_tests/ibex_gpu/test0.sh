@@ -59,6 +59,7 @@ make clean
 make VERBOSE=1
 make install
 
+exit 1
 ##### Logs directory #####
 mkdir ./logs
 export logs_path=./logs/tests_gpu

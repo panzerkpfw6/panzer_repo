@@ -40,8 +40,7 @@ install(
 if(USE_CUDA)
     add_library(stencil_cuda STATIC
         gpu_wave.cu
-        # Add this after creating it:
-        # modeling_gpu.cu
+        modeling_gpu.cu
     )
 
     target_include_directories(stencil_cuda

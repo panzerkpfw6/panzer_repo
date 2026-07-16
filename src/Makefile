@@ -286,6 +286,30 @@ mlbs.c.s:
 	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/mlbs.c.s
 .PHONY : mlbs.c.s
 
+modeling_gpu.o: modeling_gpu.cu.o
+.PHONY : modeling_gpu.o
+
+# target to build an object file
+modeling_gpu.cu.o:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_gpu.cu.o
+.PHONY : modeling_gpu.cu.o
+
+modeling_gpu.i: modeling_gpu.cu.i
+.PHONY : modeling_gpu.i
+
+# target to preprocess a source file
+modeling_gpu.cu.i:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_gpu.cu.i
+.PHONY : modeling_gpu.cu.i
+
+modeling_gpu.s: modeling_gpu.cu.s
+.PHONY : modeling_gpu.s
+
+# target to generate assembly for a file
+modeling_gpu.cu.s:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_gpu.cu.s
+.PHONY : modeling_gpu.cu.s
+
 parser.o: parser.c.o
 .PHONY : parser.o
 
@@ -504,6 +528,9 @@ help:
 	@echo "... mlbs.o"
 	@echo "... mlbs.i"
 	@echo "... mlbs.s"
+	@echo "... modeling_gpu.o"
+	@echo "... modeling_gpu.i"
+	@echo "... modeling_gpu.s"
 	@echo "... parser.o"
 	@echo "... parser.i"
 	@echo "... parser.s"
