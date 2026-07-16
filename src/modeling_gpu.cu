@@ -1,11 +1,19 @@
+#ifdef __cplusplus
+#ifndef restrict
+#define restrict __restrict__
+#endif
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
+
 #include <stencil/config.h>
 #include <stencil/macros.h>
 #include <stencil/sismap.h>
 #include <stencil/shot.h>
-#include <stencil/stencil.h>
+#include <stencil/gpu_wave.h>
+#include <stencil/modeling_gpu.h>
 /// Modeling on GPU.
 extern "C" void run_modeling_1st_sb_gpu(sismap_t *s,float* vel,float* inv_rho,float *source, float *pml_tab) {
   /// seismic traces for a given shot.
