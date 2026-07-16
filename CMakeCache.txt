@@ -476,18 +476,6 @@ PROJECT_DEBUG:BOOL=OFF
 USE_CUDA:BOOL=ON
 
 //Value Computed by CMake
-stencil_BINARY_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/src
-
-//Value Computed by CMake
-stencil_IS_TOP_LEVEL:STATIC=OFF
-
-//Dependencies for the target
-stencil_LIB_DEPENDS:STATIC=general;CUDA::cudart;
-
-//Value Computed by CMake
-stencil_SOURCE_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/src
-
-//Value Computed by CMake
 stencil_apps_BINARY_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/app
 
 //Value Computed by CMake

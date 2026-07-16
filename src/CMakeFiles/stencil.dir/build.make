@@ -223,21 +223,6 @@ src/CMakeFiles/stencil.dir/wtime.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/stencil.dir/wtime.c.s"
 	cd /ibex/scratch/samonio/panzer_repo/src && /sw/rl9g/intel/2022/compiler/2022.2.1/linux/bin/icx $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /ibex/scratch/samonio/panzer_repo/src/wtime.c -o CMakeFiles/stencil.dir/wtime.c.s
 
-src/CMakeFiles/stencil.dir/gpu_wave.cu.o: src/CMakeFiles/stencil.dir/flags.make
-src/CMakeFiles/stencil.dir/gpu_wave.cu.o: src/CMakeFiles/stencil.dir/includes_CUDA.rsp
-src/CMakeFiles/stencil.dir/gpu_wave.cu.o: src/gpu_wave.cu
-src/CMakeFiles/stencil.dir/gpu_wave.cu.o: src/CMakeFiles/stencil.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/ibex/scratch/samonio/panzer_repo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CUDA object src/CMakeFiles/stencil.dir/gpu_wave.cu.o"
-	cd /ibex/scratch/samonio/panzer_repo/src && /sw/rl9g/cuda/12.4.1/rl9_binary/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT src/CMakeFiles/stencil.dir/gpu_wave.cu.o -MF CMakeFiles/stencil.dir/gpu_wave.cu.o.d -x cu -rdc=true -c /ibex/scratch/samonio/panzer_repo/src/gpu_wave.cu -o CMakeFiles/stencil.dir/gpu_wave.cu.o
-
-src/CMakeFiles/stencil.dir/gpu_wave.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/stencil.dir/gpu_wave.cu.i"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
-
-src/CMakeFiles/stencil.dir/gpu_wave.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/stencil.dir/gpu_wave.cu.s"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
-
 # Object files for target stencil
 stencil_OBJECTS = \
 "CMakeFiles/stencil.dir/bwriter.c.o" \
@@ -250,8 +235,7 @@ stencil_OBJECTS = \
 "CMakeFiles/stencil.dir/velocity.c.o" \
 "CMakeFiles/stencil.dir/wave.c.o" \
 "CMakeFiles/stencil.dir/wave_tb.c.o" \
-"CMakeFiles/stencil.dir/wtime.c.o" \
-"CMakeFiles/stencil.dir/gpu_wave.cu.o"
+"CMakeFiles/stencil.dir/wtime.c.o"
 
 # External object files for target stencil
 stencil_EXTERNAL_OBJECTS =
@@ -267,10 +251,9 @@ src/libstencil.a: src/CMakeFiles/stencil.dir/velocity.c.o
 src/libstencil.a: src/CMakeFiles/stencil.dir/wave.c.o
 src/libstencil.a: src/CMakeFiles/stencil.dir/wave_tb.c.o
 src/libstencil.a: src/CMakeFiles/stencil.dir/wtime.c.o
-src/libstencil.a: src/CMakeFiles/stencil.dir/gpu_wave.cu.o
 src/libstencil.a: src/CMakeFiles/stencil.dir/build.make
 src/libstencil.a: src/CMakeFiles/stencil.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/ibex/scratch/samonio/panzer_repo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CUDA static library libstencil.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/ibex/scratch/samonio/panzer_repo/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking C static library libstencil.a"
 	cd /ibex/scratch/samonio/panzer_repo/src && $(CMAKE_COMMAND) -P CMakeFiles/stencil.dir/cmake_clean_target.cmake
 	cd /ibex/scratch/samonio/panzer_repo/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/stencil.dir/link.txt --verbose=$(VERBOSE)
 

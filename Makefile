@@ -176,6 +176,19 @@ stencil/fast:
 .PHONY : stencil/fast
 
 #=============================================================================
+# Target rules for targets named stencil_cuda
+
+# Build rule for target.
+stencil_cuda: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 stencil_cuda
+.PHONY : stencil_cuda
+
+# fast build rule for target.
+stencil_cuda/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/build
+.PHONY : stencil_cuda/fast
+
+#=============================================================================
 # Target rules for targets named stencil_apps
 
 # Build rule for target.
@@ -244,6 +257,7 @@ help:
 	@echo "... modeling"
 	@echo "... rtm"
 	@echo "... stencil"
+	@echo "... stencil_cuda"
 .PHONY : help
 
 

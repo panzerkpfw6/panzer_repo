@@ -5,6 +5,7 @@
 /ibex/scratch/samonio/panzer_repo/CMakeFiles/install/local.dir
 /ibex/scratch/samonio/panzer_repo/CMakeFiles/install/strip.dir
 /ibex/scratch/samonio/panzer_repo/src/CMakeFiles/stencil.dir
+/ibex/scratch/samonio/panzer_repo/src/CMakeFiles/stencil_cuda.dir
 /ibex/scratch/samonio/panzer_repo/src/CMakeFiles/edit_cache.dir
 /ibex/scratch/samonio/panzer_repo/src/CMakeFiles/rebuild_cache.dir
 /ibex/scratch/samonio/panzer_repo/src/CMakeFiles/list_install_components.dir

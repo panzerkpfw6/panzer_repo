@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/gather.dir/cmake_device_link.o"
   "CMakeFiles/gather.dir/gather.c.o"
   "CMakeFiles/gather.dir/gather.c.o.d"
   "gather"

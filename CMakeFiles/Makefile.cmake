@@ -159,6 +159,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "src/CMakeFiles/stencil.dir/DependInfo.cmake"
+  "src/CMakeFiles/stencil_cuda.dir/DependInfo.cmake"
   "app/CMakeFiles/stencil_apps.dir/DependInfo.cmake"
   "app/CMakeFiles/gather.dir/DependInfo.cmake"
   "app/CMakeFiles/modeling.dir/DependInfo.cmake"

@@ -17,63 +17,84 @@
 ##
 ## @file src/CMakeLists.txt
 ## @author Pavel Plotnitskii
-## @brief CMake build script for the stencil executable.
+## @brief CMake build script for the stencil libraries.
 ##
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-project(stencil LANGUAGES C CXX CUDA)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
-find_package(CUDAToolkit REQUIRED)
-#find_package (CUDA REQUIRED)
 find_package(OpenMP REQUIRED)
 
-option(USE_CUDA "Enable CUDA support" ON)
-
-## include headers.
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-## compile C and CUDA files.
-file(GLOB C_SRCS CONFIGURE_DEPENDS "*.c")
-file(GLOB CUDA_SRCS CONFIGURE_DEPENDS "*.cu")
-
-#message ("CMAKE_CUDA_FLAGS : " ${CMAKE_CUDA_FLAGS})
-
-add_library(stencil
-    ${C_SRCS}
-    ${CUDA_SRCS}
+## CPU sources only.
+file(GLOB C_SRCS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.c"
 )
 
-if(USE_CUDA)
-    target_compile_definitions(stencil PUBLIC USE_CUDA)
+## Main CPU stencil library.
+add_library(stencil STATIC
+    ${C_SRCS}
+)
 
-    set_target_properties(stencil PROPERTIES
-        CUDA_ARCHITECTURES 70
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_STANDARD 14
-        CUDA_STANDARD_REQUIRED ON
+target_include_directories(stencil
+    PUBLIC
+        "${CMAKE_SOURCE_DIR}/include"
+)
+
+target_compile_options(stencil
+    PRIVATE
+        $<$<COMPILE_LANGUAGE:C>:-O3>
+        $<$<COMPILE_LANGUAGE:C>:-march=core-avx2>
+        $<$<COMPILE_LANGUAGE:C>:-mtune=core-avx2>
+)
+
+target_link_libraries(stencil
+    PUBLIC
+        OpenMP::OpenMP_C
+        m
+)
+
+install(
+    TARGETS stencil
+    ARCHIVE DESTINATION lib
+)
+
+## Separate CUDA library.
+if(USE_CUDA)
+    find_package(CUDAToolkit REQUIRED)
+
+    add_library(stencil_cuda STATIC
+        gpu_wave.cu
     )
 
-    target_link_libraries(stencil PUBLIC CUDA::cudart)
+    target_include_directories(stencil_cuda
+        PUBLIC
+            "${CMAKE_SOURCE_DIR}/include"
+    )
+
+    target_compile_definitions(stencil_cuda
+        PRIVATE
+            USE_CUDA
+    )
+
+    target_compile_options(stencil_cuda
+        PRIVATE
+            $<$<COMPILE_LANGUAGE:CUDA>:-O3>
+    )
+
+    set_target_properties(stencil_cuda PROPERTIES
+        CUDA_ARCHITECTURES 70
+        CUDA_STANDARD 14
+        CUDA_STANDARD_REQUIRED ON
+        CUDA_SEPARABLE_COMPILATION ON
+        POSITION_INDEPENDENT_CODE ON
+    )
+
+    target_link_libraries(stencil_cuda
+        PRIVATE
+            CUDA::cudart
+    )
+
+    install(
+        TARGETS stencil_cuda
+        ARCHIVE DESTINATION lib
+    )
 endif()
-
-target_link_libraries(stencil PUBLIC
-    OpenMP::OpenMP_C
-)
-
-target_compile_options(stencil PRIVATE
-    $<$<COMPILE_LANGUAGE:C>:-O3;-march=core-avx2;-mtune=core-avx2>
-    $<$<COMPILE_LANGUAGE:CXX>:-O3;-march=core-avx2;-mtune=core-avx2>
-    $<$<COMPILE_LANGUAGE:CUDA>:-O3>
-)
-
-# add_compile_options(
-#     $<$<COMPILE_LANGUAGE:C>:-qopenmp>
-#     $<$<COMPILE_LANGUAGE:C>:-march=core-avx2>
-#     $<$<COMPILE_LANGUAGE:C>:-mtune=core-avx2>
-
-#     $<$<COMPILE_LANGUAGE:CXX>:-qopenmp>
-#     $<$<COMPILE_LANGUAGE:CXX>:-march=core-avx2>
-#     $<$<COMPILE_LANGUAGE:CXX>:-mtune=core-avx2>
-# )
-
-install(TARGETS stencil ARCHIVE DESTINATION lib)

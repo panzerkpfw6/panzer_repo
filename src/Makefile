@@ -176,6 +176,20 @@ stencil/fast:
 	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/build
 .PHONY : stencil/fast
 
+# Convenience name for target.
+src/CMakeFiles/stencil_cuda.dir/rule:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/CMakeFiles/stencil_cuda.dir/rule
+.PHONY : src/CMakeFiles/stencil_cuda.dir/rule
+
+# Convenience name for target.
+stencil_cuda: src/CMakeFiles/stencil_cuda.dir/rule
+.PHONY : stencil_cuda
+
+# fast build rule for target.
+stencil_cuda/fast:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/build
+.PHONY : stencil_cuda/fast
+
 bwriter.o: bwriter.c.o
 .PHONY : bwriter.o
 
@@ -205,7 +219,7 @@ gpu_wave.o: gpu_wave.cu.o
 
 # target to build an object file
 gpu_wave.cu.o:
-	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.o
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave.cu.o
 .PHONY : gpu_wave.cu.o
 
 gpu_wave.i: gpu_wave.cu.i
@@ -213,7 +227,7 @@ gpu_wave.i: gpu_wave.cu.i
 
 # target to preprocess a source file
 gpu_wave.cu.i:
-	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.i
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave.cu.i
 .PHONY : gpu_wave.cu.i
 
 gpu_wave.s: gpu_wave.cu.s
@@ -221,7 +235,7 @@ gpu_wave.s: gpu_wave.cu.s
 
 # target to generate assembly for a file
 gpu_wave.cu.s:
-	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil.dir/build.make src/CMakeFiles/stencil.dir/gpu_wave.cu.s
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave.cu.s
 .PHONY : gpu_wave.cu.s
 
 interp.o: interp.c.o
@@ -477,6 +491,7 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... stencil"
+	@echo "... stencil_cuda"
 	@echo "... bwriter.o"
 	@echo "... bwriter.i"
 	@echo "... bwriter.s"
