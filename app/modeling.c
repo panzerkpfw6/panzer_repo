@@ -445,7 +445,7 @@ int main(int argc, char* argv[]) {
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
     s->rec_sismos= parser_get_int(p, "rec_sismos");
-    s->method=parser_get_string(p,"SB"); // method,SB/TB
+    s->method=parser_get_string(p,"method"); // method,SB/TB
 
 
     // Read cache blocking parameters for SB method //

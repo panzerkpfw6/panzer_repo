@@ -222,7 +222,7 @@ void  parser_get_vect_string(parser* p,
 /// to see the possible options
 #define PARSER_BOOTSTRAP(p)                                             \
 parser_put(p, BOOL,'v', "verbose", "false", "enable verbose mode");             \
-parser_put(p, BOOL,'c', "cpu", "false", "run serial code on the CPU");          \
+parser_put(p, BOOL,'c', "cpu", "true", "run code on CPU(true)/GPU(false)");          \
 parser_put(p, VECT_INT,'l', "local", "16,4", "set the GPU block dimensions");       \
 parser_put(p, INT,'d', "device", "0", "select the GPU device");                \
 parser_put(p, BOOL,'o', "one", "false", "use only one GPU kernel");             \
@@ -268,4 +268,5 @@ parser_put(p, INT,0, "cby", "22", "SB cache blocking in y");                    
 parser_put(p, INT,0, "cbz", "9999", "SB cache blocking in z");                               \
 parser_put(p, INT,0, "rec_sismos", "1", "1 if record seismograms, 0 if not");                               \
 parser_put(p, INT,0,"order", "1","solve acoustic wave equation of 1st or 2nd order, choose int 1 or 2");
+parser_put(p, STRING,0, "method", "SB", "method options (SB/TB)");
 #endif //  __STENCIL_PARSER_H_
