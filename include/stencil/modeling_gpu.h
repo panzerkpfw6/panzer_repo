@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void run_modeling_gpu_sb(
+void run_modeling_1st_sb_gpu(
     sismap_t *s,
     const float *vel,
     const float *inv_rho,

@@ -1,6 +1,6 @@
 
 /// Modeling on GPU.
-void run_modeling_1st_gpu_SB(sismap_t *s,float* vel,float* inv_rho,float *source, float *pml_tab) {
+void run_modeling_1st_sb_gpu(sismap_t *s,float* vel,float* inv_rho,float *source, float *pml_tab) {
   /// seismic traces for a given shot.
   float *sismos;
   /// An image for @ref u0 on the GPU.

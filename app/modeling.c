@@ -142,7 +142,7 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
 }
 
 ///
-void run_modeling_1st_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, float *pml_tab)  {
+void run_modeling_1st_sb_cpu(sismap_t *s, float* vel,float* inv_rho,float *source, float *pml_tab)  {
     /// contains the fields pressure value at time step t.
     float* u0;
     /// contains the fields (particle velocity across x direction) value at time step t.
@@ -417,7 +417,7 @@ int main(int argc, char* argv[]) {
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);
     s->verbose = parser_get_bool(p, "verbose");
-    s->cpu = parser_get_bool(p,"cpu");
+    s->cpu = parser_get_bool(p,"cpu"); // cpu/gpu
     s->time_steps = parser_get_int(p,"iter");
     s->dt = parser_get_float(p, "dt");
     s->cfl = parser_get_float(p, "cfl");
@@ -445,8 +445,8 @@ int main(int argc, char* argv[]) {
     s->mode = parser_get_int(p, "mode");
     s->order = parser_get_int(p, "order");
     s->rec_sismos= parser_get_int(p, "rec_sismos");
-    /// method,CPU/GPU
-    s->method=parser_get_string(p,"SB");
+    s->method=parser_get_string(p,"SB"); // method,SB/TB
+
 
     // Read cache blocking parameters for SB method //
 	s->blockx=parser_get_int(p,"cbx");
@@ -535,25 +535,29 @@ int main(int argc, char* argv[]) {
     source[s->time_steps]=0.0f; // an extra time step for girih.
 
     /// run modeling.
-    if (strcmp(s->method, "TB") == 0) {
-//        run_modeling_tb_cpu(s, vel, source, p);
-        if (s->order==1) {
-            MSG("run 1st order TB modeling");
-            run_modeling_1st_tb_cpu(s,vel,inv_rho,source,p);
-        } else {
-            MSG("not running 2nd order TB modeling. Please modify the implementation.");
+    if (s->cpu==1) {
+        if (strcmp(s->method, "TB") == 0) {
+    //        run_modeling_tb_cpu(s, vel, source, p);
+            if (s->order==1) {
+                MSG("run 1st order TB modeling on CPU");
+                run_modeling_1st_tb_cpu(s,vel,inv_rho,source,p);
+            } else {
+                MSG("not running 2nd order TB modeling on CPU. Please modify the implementation.");
+            }
+        } else if (strcmp(s->method, "SB") == 0) {
+    //        run_modeling_SB(s, vel, source, pml_tab);
+    ////      run_modeling_cpu(s, vel, source, pml_tab);
+            if (s->order==1) {
+                MSG("run 1st order SB modeling on CPU");
+                run_modeling_1st_sb_cpu(s,vel,inv_rho,source,pml_tab);
+            } else {
+                MSG("run 2nd order SB modeling on CPU");
+                run_modeling_cpu(s, vel, source, pml_tab);
+            }
         }
-    } else if (strcmp(s->method, "SB") == 0) {
-//        run_modeling_SB(s, vel, source, pml_tab);
-////      run_modeling_cpu(s, vel, source, pml_tab);
-        if (s->order==1) {
-            MSG("run 1st order SB modeling");
-            run_modeling_1st_cpu(s,vel,inv_rho,source,pml_tab);
-        } else {
-            MSG("run 2nd order SB modeling");
-            run_modeling_cpu(s, vel, source, pml_tab);
-        }
-////        run_modeling_gpu(s, vel, source, pml_tab);
+    } else {
+        run_modeling_1st_sb_gpu(s,vel,source,pml_tab);
+        ss=1;
     }
     /// free the simulation buffers.
     DELETE_BUFFER(vel);

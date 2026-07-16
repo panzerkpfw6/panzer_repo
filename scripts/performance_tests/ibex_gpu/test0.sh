@@ -102,7 +102,7 @@ export fmax=8;
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
 --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
---cbx $cbx --cby $cby --cbz $cbz  >> $logs_path/$logs_filename;
+--cbx $cbx --cby $cby --cbz $cbz >> $logs_path/$logs_filename;
 
 exit 1
 ###############################
