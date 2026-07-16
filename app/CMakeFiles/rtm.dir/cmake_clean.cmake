@@ -1,5 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/rtm.dir/cmake_device_link.o"
   "CMakeFiles/rtm.dir/rtm.c.o"
   "CMakeFiles/rtm.dir/rtm.c.o.d"
   "rtm"

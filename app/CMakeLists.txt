@@ -1,22 +1,17 @@
 ##
 ## @file app/CMakeLists.txt
-## @brief CMake build script for applications based on stencil_rtm.
+## @brief Build applications based on stencil.
 ##
 
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
-project(stencil_apps LANGUAGES C CXX)
+include_directories("${CMAKE_SOURCE_DIR}/include")
 
-## Include project headers.
-include_directories(${CMAKE_SOURCE_DIR}/include)
-
-## Convenience target that builds all applications.
 add_custom_target(stencil_apps)
 
-# ============================================================
-# gather: CPU-only application
-# ============================================================
-
+# ------------------------------------------------------------
+# gather: CPU only
+# ------------------------------------------------------------
 add_executable(gather
     gather.c
 )
@@ -29,16 +24,11 @@ target_link_libraries(gather
 )
 
 add_dependencies(stencil_apps gather)
+install(TARGETS gather RUNTIME DESTINATION bin)
 
-install(
-    TARGETS gather
-    RUNTIME DESTINATION bin
-)
-
-# ============================================================
-# modeling: CPU + optional CUDA application
-# ============================================================
-
+# ------------------------------------------------------------
+# modeling: CPU plus optional CUDA
+# ------------------------------------------------------------
 add_executable(modeling
     modeling.c
 )
@@ -61,19 +51,19 @@ if(USE_CUDA)
             stencil_cuda
             CUDA::cudart
     )
+
+    set_target_properties(modeling PROPERTIES
+        LINKER_LANGUAGE C
+        CUDA_RESOLVE_DEVICE_SYMBOLS OFF
+    )
 endif()
 
 add_dependencies(stencil_apps modeling)
+install(TARGETS modeling RUNTIME DESTINATION bin)
 
-install(
-    TARGETS modeling
-    RUNTIME DESTINATION bin
-)
-
-# ============================================================
-# rtm: CPU + optional CUDA application
-# ============================================================
-
+# ------------------------------------------------------------
+# rtm: initially CPU only
+# ------------------------------------------------------------
 add_executable(rtm
     rtm.c
 )
@@ -85,22 +75,12 @@ target_link_libraries(rtm
         m
 )
 
-if(USE_CUDA)
-    target_compile_definitions(rtm
-        PRIVATE
-            USE_CUDA
-    )
-
-    target_link_libraries(rtm
-        PRIVATE
-            stencil_cuda
-            CUDA::cudart
-    )
-endif()
+# Add stencil_cuda here only when rtm actually uses GPU functions.
+#
+# if(USE_CUDA)
+#     target_compile_definitions(rtm PRIVATE USE_CUDA)
+#     target_link_libraries(rtm PRIVATE stencil_cuda CUDA::cudart)
+# endif()
 
 add_dependencies(stencil_apps rtm)
-
-install(
-    TARGETS rtm
-    RUNTIME DESTINATION bin
-)
+install(TARGETS rtm RUNTIME DESTINATION bin)

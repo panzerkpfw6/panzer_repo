@@ -1,4 +1,5 @@
-/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/lib/libstencil.a
-/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/bin/gather
-/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/bin/modeling
-/media/x_plotnips/sdd1/Dropbox/PhD_proposal/work_with_david/Exawave_3_handover/panzer_repo/bin/rtm
+/ibex/scratch/samonio/panzer_repo/lib/libstencil.a
+/ibex/scratch/samonio/panzer_repo/lib/libstencil_cuda.a
+/ibex/scratch/samonio/panzer_repo/bin/gather
+/ibex/scratch/samonio/panzer_repo/bin/modeling
+/ibex/scratch/samonio/panzer_repo/bin/rtm

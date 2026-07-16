@@ -476,15 +476,6 @@ PROJECT_DEBUG:BOOL=OFF
 USE_CUDA:BOOL=ON
 
 //Value Computed by CMake
-stencil_apps_BINARY_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/app
-
-//Value Computed by CMake
-stencil_apps_IS_TOP_LEVEL:STATIC=OFF
-
-//Value Computed by CMake
-stencil_apps_SOURCE_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/app
-
-//Value Computed by CMake
 stencil_distribution_BINARY_DIR:STATIC=/ibex/scratch/samonio/panzer_repo
 
 //Value Computed by CMake
@@ -810,9 +801,9 @@ FIND_PACKAGE_MESSAGE_DETAILS_CUDAToolkit:INTERNAL=[/sw/rl9g/cuda/12.4.1/rl9_bina
 //Details about finding OpenMP
 FIND_PACKAGE_MESSAGE_DETAILS_OpenMP:INTERNAL=[TRUE][TRUE][c ][v5.0()]
 //Details about finding OpenMP_C
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-fiopenmp][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][v5.0()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_C:INTERNAL=[-fiopenmp][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][v5.0()]
 //Details about finding OpenMP_CXX
-FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX:INTERNAL=[-fiopenmp][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][v5.0()]
+FIND_PACKAGE_MESSAGE_DETAILS_OpenMP_CXX:INTERNAL=[-fiopenmp][/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compiler/lib/intel64_lin/libiomp5.so][/lib64/libpthread.a][v5.0()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Result of TRY_COMPILE

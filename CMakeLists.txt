@@ -44,7 +44,13 @@ if(USE_CUDA)
         set(CMAKE_CUDA_ARCHITECTURES 70)
     endif()
 
-    add_compile_definitions(USE_CUDA)
+    if(USE_CUDA)
+    find_package(CUDAToolkit REQUIRED)
+
+    if(NOT CMAKE_CUDA_ARCHITECTURES)
+        set(CMAKE_CUDA_ARCHITECTURES 70)
+    endif()
+endif()
 endif()
 
 ## Build CPU/GPU library.
