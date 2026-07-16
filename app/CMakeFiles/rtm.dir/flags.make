@@ -6,5 +6,5 @@ C_DEFINES = -DUSE_CUDA
 
 C_INCLUDES = -I/ibex/scratch/samonio/panzer_repo/include -isystem /sw/rl9g/cuda/12.4.1/rl9_binary/targets/x86_64-linux/include
 
-C_FLAGS =  -fiopenmp -O3 -DNDEBUG -qopenmp -march=core-avx2 -mtune=core-avx2 -fiopenmp
+C_FLAGS = -O3 -DNDEBUG -fiopenmp
 

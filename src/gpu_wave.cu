@@ -412,7 +412,9 @@ extern "C" void gpu_wave_update_fields(sismap_t *s,
                                       float* d_u0, float *d_u1, 
                                       float *d_roc2,
                                       float* phi, float* eta) {
-  cu_wave_update_fields<<<s->g, s->l>>>(d_u0, d_u1, d_roc2,eta,
+  const dim3 grid(s->g.x, s->g.y, s->g.z);
+  const dim3 block(s->l.x, s->l.y, s->l.z);
+  cu_wave_update_fields<<<grid, block>>>(d_u0, d_u1, d_roc2,eta,
                                                            phi,
                                                            s->d_coefx,
                                                            s->d_coefy,
@@ -434,7 +436,8 @@ extern "C" void gpu_wave_update_fields(sismap_t *s,
 
 extern "C" void gpu_wave_update_source(sismap_t *s, 
                                        shot_t *shot, float *d_u0, float sterm) {
-  cu_wave_update_source<<<s->o, s->o>>>(d_u0, sterm,
+  const dim3 one(s->o.x, s->o.y, s->o.z);
+  cu_wave_update_source<<<one, one>>>(d_u0, sterm,
                                         s->dimx,
                                         s->dimy,
                                         s->sx,
@@ -480,7 +483,15 @@ extern "C" void gpu_wave_image_condition(sismap_t* s,
                                          float *d_img, 
                                          float *d_ilm, unsigned int t) {
   if(t%s->nb_snap==0) {
-    cu_wave_img_cond<<<s->g_img, s->l>>>(d_u1,
+    const dim3 image_grid(
+      s->g_img.x,
+      s->g_img.y,
+      s->g_img.z);
+    const dim3 block(
+      s->l.x,
+      s->l.y,
+      s->l.z);
+    cu_wave_img_cond<<< image_grid,block >>>(d_u1,
                                          d_fwd,
                                          d_img,
                                          d_ilm,
@@ -501,7 +512,17 @@ extern "C" void gpu_wave_image_condition(sismap_t* s,
 extern "C" void gpu_wave_image_gather(sismap_t* s, 
                                       float *d_img, 
                                       float *d_ilm, float *gimg) {
-  cu_wave_img_gather<<<s->g_img, s->l>>>(gimg,
+  const dim3 image_grid(
+    s->g_img.x,
+    s->g_img.y,
+    s->g_img.z
+  );  
+  const dim3 block(
+      s->l.x,
+      s->l.y,
+      s->l.z
+  );                                        
+  cu_wave_img_gather<<<image_grid, block>>>(gimg,
                                          d_img,
                                          d_ilm,
                                          s->img_dimx,

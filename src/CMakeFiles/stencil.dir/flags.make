@@ -7,11 +7,11 @@ C_DEFINES = -DUSE_CUDA
 
 C_INCLUDES = -I/ibex/scratch/samonio/panzer_repo/include -isystem /sw/rl9g/cuda/12.4.1/rl9_binary/targets/x86_64-linux/include
 
-C_FLAGS =  -fiopenmp -O3 -DNDEBUG -qopenmp -march=core-avx2 -mtune=core-avx2 -O3 -fiopenmp
+C_FLAGS = -O3 -DNDEBUG -O3 -march=core-avx2 -mtune=core-avx2 -fiopenmp
 
 CUDA_DEFINES = -DUSE_CUDA
 
 CUDA_INCLUDES = --options-file CMakeFiles/stencil.dir/includes_CUDA.rsp
 
-CUDA_FLAGS = -O3 -DNDEBUG -std=c++14 "--generate-code=arch=compute_70,code=[compute_70,sm_70]" -qopenmp -march=core-avx2 -mtune=core-avx2 -O3
+CUDA_FLAGS = -O3 -DNDEBUG -std=c++14 "--generate-code=arch=compute_70,code=[compute_70,sm_70]" -O3
 

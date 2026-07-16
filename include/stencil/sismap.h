@@ -29,6 +29,11 @@
 #include <stencil/config.h>
 #include <stencil/shot.h>
 
+typedef struct {
+    unsigned int x;
+    unsigned int y;
+    unsigned int z;
+} gpu_dim3_t;
 /// @brief A data structure that contains fields related to the physics.
 typedef struct __sismap_t {
     ///
@@ -85,7 +90,7 @@ typedef struct __sismap_t {
     /// GPUs meta-data:
     ///
     int device;
-    //dim3 g, g_img, o, l;
+    gpu_dim3_t g, g_img, o, l;
     float *d_coefx, *d_coefy, *d_coefz;
     /// receivers.
     unsigned int *d_rcv;

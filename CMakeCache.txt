@@ -120,8 +120,8 @@ CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=
 //Value Computed by CMake.
 CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=/ibex/scratch/samonio/panzer_repo/CMakeFiles/pkgRedirects
 
-//Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=/usr/local
+//Install path prefix
+CMAKE_INSTALL_PREFIX:PATH=/ibex/scratch/samonio/panzer_repo
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=/usr/bin/ld
@@ -468,6 +468,9 @@ OpenMP_iomp5_LIBRARY:FILEPATH=/sw/rl9g/intel/2022/compiler/2022.2.1/linux/compil
 
 //Path to the pthread library for OpenMP
 OpenMP_pthread_LIBRARY:FILEPATH=/lib64/libpthread.a
+
+//Build project in debug mode
+PROJECT_DEBUG:BOOL=OFF
 
 //Enable CUDA support
 USE_CUDA:BOOL=ON
