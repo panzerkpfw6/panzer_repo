@@ -40,8 +40,16 @@ typedef struct __shot_t {
 //	#endif // __DEBUG
 } shot_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void shot_init(shot_t *, bool, bool);
 
 void shot_release(shot_t *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __STENCIL_SHOT_H_

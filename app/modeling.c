@@ -558,7 +558,7 @@ int main(int argc, char* argv[]) {
             }
         }
     } else {
-        run_modeling_1st_sb_gpu(s,vel,source,pml_tab);
+        run_modeling_1st_sb_gpu(s,vel,inv_rho,source,pml_tab);
     }
     /// free the simulation buffers.
     DELETE_BUFFER(vel);

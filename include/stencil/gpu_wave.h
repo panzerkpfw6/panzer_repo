@@ -22,58 +22,64 @@
 /// @file stencil/gpu_wave.h
 /// @brief A \em reflection-less wave (\b wave) handler on the GPU.
 ///
-/// Contains all the routines necessary for a wave simulation, with 
+/// Contains all the routines necessary for a wave simulation, with
 /// application of absorbing boundary conditions
 /// (using the <b>Perfectly Matched Layer</b> method)
-/// on the GPU side. We call the new wave \b gpu_wave for sake of clarity. 
+/// on the GPU side. We call the new wave \b gpu_wave for sake of clarity.
 ///
 #include <stencil/sismap.h>
 #include <stencil/shot.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Computes the pressure on each element of the domain
 /// using an OpenCL kernel on the GPU
-/// @param gpu_w is a pointer to the wave descriptor to be updated 
-void gpu_wave_update_fields(sismap_t *s, float*, 
+/// @param gpu_w is a pointer to the wave descriptor to be updated
+void gpu_wave_update_fields(sismap_t *s, float*,
                             float*, float*, float*, float* );
 
 /// @brief Adds an impulse to the grid point situated at the
-/// source location using an OpenCL kernel on the GPUn 
-/// @param gpu_w is a pointer to the wave descriptor to be updated 
+/// source location using an OpenCL kernel on the GPUn
+/// @param gpu_w is a pointer to the wave descriptor to be updated
 /// @param sterm is the source term to add at the current time step.
 void gpu_wave_update_source(sismap_t *s, shot_t *shot, float *, float);
 
-void gpu_wave_image_condition(sismap_t* s, float *d_u1, 
+void gpu_wave_image_condition(sismap_t* s, float *d_u1,
                               float *d_fwd,
                               float *d_img, float *d_ilm, unsigned int t);
-void gpu_wave_image_gather(sismap_t* s, float *d_img_shot, 
+void gpu_wave_image_gather(sismap_t* s, float *d_img_shot,
                            float *d_ilm_shot, float *d_img);
-/// @brief Switches the @ref gpu_wave_t::d_u0 and @ref gpu_wave_t::d_u1 pointers 
-/// @param gpu_w is a pointer to the wave descriptor to be updated 
+
+/// @brief Switches the @ref gpu_wave_t::d_u0 and @ref gpu_wave_t::d_u1 pointers
+/// @param gpu_w is a pointer to the wave descriptor to be updated
 #define GPU_WAVE_SWAP_POINTERS(u0, u1) \
   float* tmp = u0;                     \
   u0 = u1;                             \
-  u1 = tmp       
+  u1 = tmp
 
-/// @brief Retrieves data from the GPU and saves a snapshot of the 
+/// @brief Retrieves data from the GPU and saves a snapshot of the
 /// wave fields. This can be improved by using asynchronous communications
 /// @param gpu_w is a pointer to the wave descriptor to be save
 void gpu_wave_save_snapshot(sismap_t *s, shot_t *shot,
                             float *, float *, unsigned int t);
 
-void gpu_wave_read_snapshot(sismap_t* s, shot_t *shot, 
+void gpu_wave_read_snapshot(sismap_t* s, shot_t *shot,
                             float *d_fwd, float *fwd, unsigned int t);
 
-/// @brief Retrieves the sismos from the GPU and saves them on disk.  
-void gpu_wave_save_sismos(sismap_t* s, shot_t *shot, 
-	                        float *d_sismos, float *sismos);
-/// @brief read the sismos and send to the GPU.  
-void gpu_wave_read_sismos(sismap_t* s, shot_t *shot, 
-	                        float *d_sismos, float *sismos);
+/// @brief Retrieves the sismos from the GPU and saves them on disk.
+void gpu_wave_save_sismos(sismap_t* s, shot_t *shot,
+                          float *d_sismos, float *sismos);
 
-void gpu_wave_extract_sismos(sismap_t* s, 
+/// @brief read the sismos and send to the GPU.
+void gpu_wave_read_sismos(sismap_t* s, shot_t *shot,
+                          float *d_sismos, float *sismos);
+
+void gpu_wave_extract_sismos(sismap_t* s,
                              float *d_u1, unsigned int t, float *d_sismos);
 
-void gpu_wave_inject_sismos(sismap_t* s, 
+void gpu_wave_inject_sismos(sismap_t* s,
                             float *d_u1, unsigned int t, float *d_sismos);
 
 /// @brief Creates a GPU resources descriptor
@@ -90,13 +96,18 @@ void gpu_wave_release(sismap_t *s);
 /// @brief Prints informations about the used OpenCL resources
 void gpu_wave_info(sismap_t *s);
 
-void gpu_wave_save_fwd_dbg(sismap_t* s, 
-                           shot_t *shot, 
+void gpu_wave_save_fwd_dbg(sismap_t* s,
+                           shot_t *shot,
                            float *d_u1, float* u1, unsigned int t);
-void gpu_wave_save_bwd_dbg(sismap_t* s, 
-                           shot_t *shot, 
+void gpu_wave_save_bwd_dbg(sismap_t* s,
+                           shot_t *shot,
                            float *d_u1, float* u1, unsigned int t);
-void gpu_wave_save_img(sismap_t* s, 
-                       shot_t *shot, 
+void gpu_wave_save_img(sismap_t* s,
+                       shot_t *shot,
                        float *d_img, float *d_ilm, float *tmp);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif //  __STENCIL_GPU_WAVE_H_

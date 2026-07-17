@@ -10,6 +10,7 @@ extern "C" {
 void run_modeling_1st_sb_gpu(
     sismap_t *s,
     float *vel,
+    float* inv_rho,
     float *source,
     float *pml_tab
 );
