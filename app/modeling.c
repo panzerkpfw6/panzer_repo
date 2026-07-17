@@ -419,7 +419,7 @@ int main(int argc, char* argv[]) {
     PARSER_BOOTSTRAP(p);
     parser_parse(p, argc, argv);
     s->verbose = parser_get_bool(p, "verbose");
-    s->cpu = parser_get_bool(p,"cpu"); // cpu/gpu
+    s->cpu = parser_get_int(p,"cpu"); // cpu/gpu
     s->time_steps = parser_get_int(p,"iter");
     s->dt = parser_get_float(p, "dt");
     s->cfl = parser_get_float(p, "cfl");

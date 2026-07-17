@@ -28,23 +28,25 @@ extern "C" void run_modeling_1st_sb_gpu(sismap_t *s,float* vel,float* inv_rho,fl
   float *d_sismos;
   /// PML GPU arrays.
   float *d_pml_tab, *d_pml_tmp;
+
+  /** CUDA profiling events. cudaEventElapsedTime() returns milliseconds.*/
+  cudaEvent_t event_start;
+  cudaEvent_t event_stop;
+
+  GPU_CHK(cudaEventCreate(&event_start));
+  GPU_CHK(cudaEventCreate(&event_stop));
+
   gpu_wave_set(s->device);
 
   GPU_CHK(cudaMalloc((void**)&d_u0, s->size*sizeof(float)));
   GPU_CHK(cudaMalloc((void**)&d_u1, s->size*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_sismos,
-                     s->rcv_len*s->time_steps*sizeof(float)));
+  
+  GPU_CHK(cudaMalloc((void**)&d_sismos,s->rcv_len*s->time_steps*sizeof(float)));
   GPU_CHK(cudaMalloc((void**)&d_vel, s->size_eff*sizeof(float)));
-  GPU_CHK(cudaMemcpy(d_vel, vel,
-                     s->dimx*s->dimy*s->dimz*sizeof(float),
-                     cudaMemcpyHostToDevice));
-  GPU_CHK(cudaMalloc((void**)&d_pml_tab, (s->dimx+2)*(s->dimy+2)*
-                                         (s->dimz+2)*sizeof(float)));
-  GPU_CHK(cudaMalloc((void**)&d_pml_tmp,
-                             s->dimx*s->dimy*s->dimz*sizeof(float)));
-  GPU_CHK(cudaMemcpy(d_pml_tab, pml_tab,
-                    (s->dimx+2)*(s->dimy+2)*(s->dimz+2)*sizeof(float),
-                    cudaMemcpyHostToDevice));
+  GPU_CHK(cudaMemcpy(d_vel, vel,s->dimx*s->dimy*s->dimz*sizeof(float),cudaMemcpyHostToDevice));
+  GPU_CHK(cudaMalloc((void**)&d_pml_tab, (s->dimx+2)*(s->dimy+2)*(s->dimz+2)*sizeof(float)));
+  GPU_CHK(cudaMalloc((void**)&d_pml_tmp,s->dimx*s->dimy*s->dimz*sizeof(float)));
+  GPU_CHK(cudaMemcpy(d_pml_tab, pml_tab,(s->dimx+2)*(s->dimy+2)*(s->dimz+2)*sizeof(float),cudaMemcpyHostToDevice));
   CREATE_BUFFER(sismos, s->rcv_len*s->time_steps);
 
   #ifdef __DEBUG

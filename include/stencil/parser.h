@@ -222,7 +222,7 @@ void  parser_get_vect_string(parser* p,
 /// to see the possible options
 #define PARSER_BOOTSTRAP(p)                                             \
 parser_put(p, BOOL,'v', "verbose", "false", "enable verbose mode");             \
-parser_put(p, BOOL,'c', "cpu", "true", "run code on CPU(true)/GPU(false)");          \
+parser_put(p, INT,'c', "cpu", "true", "run code on CPU(true)/GPU(false)");          \
 parser_put(p, VECT_INT,'l', "local", "16,4", "set the GPU block dimensions");       \
 parser_put(p, INT,'d', "device", "0", "select the GPU device");                \
 parser_put(p, BOOL,'o', "one", "false", "use only one GPU kernel");             \
