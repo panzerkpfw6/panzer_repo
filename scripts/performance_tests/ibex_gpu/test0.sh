@@ -128,6 +128,7 @@ export cbz=9999
 # exit 1
 
 ###############################
+exit 1
 echo "test_TB_on_GPU"
 nx=128;ny=256;nz=512;
 nt=10;  dt=0.001;

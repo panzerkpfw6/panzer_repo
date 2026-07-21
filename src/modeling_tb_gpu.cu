@@ -35,28 +35,6 @@ extern "C" void run_modeling_1st_tb_gpu(
     float *source,
     parser *p)
 {
-    CHK(
-        s == NULL,
-        "run_modeling_1st_tb_gpu received a NULL sismap pointer");
-
-    CHK(
-        vel == NULL,
-        "run_modeling_1st_tb_gpu received a NULL velocity pointer");
-
-    CHK(
-        inv_rho == NULL,
-        "run_modeling_1st_tb_gpu received a NULL inverse-density pointer");
-
-    CHK(
-        source == NULL,
-        "run_modeling_1st_tb_gpu received a NULL source pointer");
-
-    CHK(
-        p == NULL,
-        "run_modeling_1st_tb_gpu received a NULL parser pointer");
-
-    MSG("... entering 1st-order TB GPU driver");
-
     /*
      * Select the GPU requested by the existing sismap configuration.
      *
@@ -67,10 +45,13 @@ extern "C" void run_modeling_1st_tb_gpu(
      */
     gpu_wave_set(s->device);
 
-    /*
-     * Stage 1 initialization.
-     */
-    gpu_wave_tb_init(s);
+    gpu_tb_ctx_t ctx;
+    memset(&ctx, 0, sizeof(ctx));
+
+    gpu_wave_tb_init(&ctx, s, coef_count);
+    gpu_wave_tb_allocate(&ctx);
+    gpu_wave_tb_zero(&ctx);
+
 
     if (s->verbose) {
         gpu_wave_tb_info(s);
@@ -90,10 +71,7 @@ extern "C" void run_modeling_1st_tb_gpu(
         MSG("... GPU TB numerical propagation is not implemented yet");
     }
 
-    /*
-     * Stage 1 cleanup.
-     */
-    gpu_wave_tb_release();
+    gpu_wave_tb_release(&ctx);
 
     /*
      * Keep this call last.
