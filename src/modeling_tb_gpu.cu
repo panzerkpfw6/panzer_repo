@@ -47,6 +47,7 @@ extern "C" void run_modeling_1st_tb_gpu(
 
     gpu_tb_ctx_t ctx;
     memset(&ctx, 0, sizeof(ctx));
+    const int coef_count = 9;
 
     gpu_wave_tb_init(&ctx, s, coef_count);
     gpu_wave_tb_allocate(&ctx);
@@ -54,7 +55,7 @@ extern "C" void run_modeling_1st_tb_gpu(
 
 
     if (s->verbose) {
-        gpu_wave_tb_info(s);
+        gpu_wave_tb_info(&ctx,s);
 
         MSG("... GPU TB model dimensions: %u x %u x %u",
             s->dimx,
@@ -79,6 +80,7 @@ extern "C" void run_modeling_1st_tb_gpu(
      * The existing implementation of gpu_wave_unset() calls
      * cudaDeviceReset(), so no CUDA work should follow it.
      */
+     
     gpu_wave_unset();
 
     MSG("... leaving 1st-order TB GPU driver");

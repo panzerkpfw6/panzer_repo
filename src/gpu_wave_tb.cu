@@ -66,7 +66,7 @@ extern "C" int gpu_wave_tb_init(
     ctx->ny = s->dimy;
     ctx->nz = s->dimz;
 
-    ctx->nt = s->iter;
+    ctx->nt = s->time_steps;
     ctx->nrcv = s->rcv_len;
 
     CHK(
