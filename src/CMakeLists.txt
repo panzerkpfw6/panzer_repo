@@ -61,15 +61,10 @@ if(USE_CUDA)
     )
 
     set_target_properties(stencil_cuda PROPERTIES
-        CUDA_ARCHITECTURES 70
         CUDA_STANDARD 14
         CUDA_STANDARD_REQUIRED ON
-
-        # Important: no separate device-link phase is needed
-        # for the current gpu_wave.cu implementation.
-        CUDA_SEPARABLE_COMPILATION OFF
-        CUDA_RESOLVE_DEVICE_SYMBOLS OFF
-
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON
         POSITION_INDEPENDENT_CODE ON
     )
 
