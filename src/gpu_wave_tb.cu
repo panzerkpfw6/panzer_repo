@@ -56,12 +56,6 @@ extern "C" int gpu_wave_tb_init(
 
     ctx->device_id = s->device;
 
-    /*
-     * Check these names against sismap.h.
-     *
-     * Based on your current code and output, the computational dimensions
-     * are expected to be stored in dimx, dimy and dimz.
-     */
     ctx->nx = s->dimx;
     ctx->ny = s->dimy;
     ctx->nz = s->dimz;
@@ -79,6 +73,10 @@ extern "C" int gpu_wave_tb_init(
         ctx->nt <= 0,
         "gpu_wave_tb_init received an invalid number of time steps");
 
+    /*
+     * If nrcv is unsigned in gpu_tb_ctx_t, this check is unnecessary.
+     * It is harmless only when nrcv is signed.
+     */
     CHK(
         ctx->nrcv < 0,
         "gpu_wave_tb_init received an invalid number of receivers");
@@ -90,6 +88,9 @@ extern "C" int gpu_wave_tb_init(
 
     ctx->field_bytes =
         ctx->nxyz * sizeof(float);
+
+    ctx->source_bytes =
+        (size_t)ctx->nt * sizeof(float);
 
     ctx->coef_count = coef_count;
 
@@ -103,8 +104,8 @@ extern "C" int gpu_wave_tb_init(
     /*
      * Store one float for every receiver and every time step.
      *
-     * If your working SB implementation records fewer time samples,
-     * replace ctx->nt here with the exact SB output-sample count.
+     * If the final solver records only decimated output samples,
+     * replace ctx->nt with the actual number of recorded samples.
      */
     ctx->sismos_bytes =
         (size_t)ctx->nrcv *
@@ -116,11 +117,13 @@ extern "C" int gpu_wave_tb_init(
     if (s->verbose)
     {
         MSG("... GPU TB numerical subsystem initialized");
+
         MSG(
             "... GPU TB context dimensions: %d x %d x %d",
             ctx->nx,
             ctx->ny,
             ctx->nz);
+
         MSG(
             "... GPU TB grid points: %zu",
             ctx->nxyz);
@@ -140,6 +143,10 @@ extern "C" int gpu_wave_tb_allocate(
     CHK(
         ctx->field_bytes == 0,
         "gpu_wave_tb_allocate received an uninitialized context");
+
+    CHK(
+        ctx->source_bytes == 0,
+        "gpu_wave_tb_allocate received an invalid source size");
 
     MSG("... allocating GPU TB arrays");
 
@@ -161,6 +168,13 @@ extern "C" int gpu_wave_tb_allocate(
     GPU_CHK(cudaMalloc(
         reinterpret_cast<void **>(&ctx->d_roc2),
         ctx->field_bytes));
+
+    /*
+     * Source time function.
+     */
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_source),
+        ctx->source_bytes));
 
     /*
      * First-order acoustic wavefields.
@@ -219,14 +233,18 @@ extern "C" int gpu_wave_tb_allocate(
     }
 
     /*
-     * Four model arrays:
+     * Four full model arrays:
      *   vel, rho, inv_rho, roc2
      *
-     * Six wavefield arrays:
+     * Six full wavefield arrays:
      *   p1, p2, p3, v1, v2, v3
+     *
+     * Plus:
+     *   source, coefficients, receiver indices and seismograms.
      */
     ctx->allocated_bytes =
         (size_t)10 * ctx->field_bytes +
+        ctx->source_bytes +
         (size_t)3 * ctx->coef_bytes +
         ctx->receiver_index_bytes +
         ctx->sismos_bytes;
@@ -236,6 +254,7 @@ extern "C" int gpu_wave_tb_allocate(
     return 0;
 }
 
+
 extern "C" int gpu_wave_tb_copy_static_data(
     gpu_tb_ctx_t *ctx,
     const float *vel,
@@ -243,65 +262,90 @@ extern "C" int gpu_wave_tb_copy_static_data(
     const float *source,
     const unsigned int *rcv)
 {
-    if (ctx == NULL ||
-        vel == NULL ||
-        inv_rho == NULL ||
-        source == NULL) {
-        return -1;
+    CHK(
+        ctx == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL context pointer");
+
+    CHK(
+        vel == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL velocity pointer");
+
+    CHK(
+        inv_rho == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL inverse-density pointer");
+
+    CHK(
+        source == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL source pointer");
+
+    CHK(
+        ctx->d_vel == NULL,
+        "gpu_wave_tb_copy_static_data received an unallocated d_vel");
+
+    CHK(
+        ctx->d_inv_rho == NULL,
+        "gpu_wave_tb_copy_static_data received an unallocated d_inv_rho");
+
+    CHK(
+        ctx->d_source == NULL,
+        "gpu_wave_tb_copy_static_data received an unallocated d_source");
+
+    CHK(
+        ctx->field_bytes == 0,
+        "gpu_wave_tb_copy_static_data received an invalid field size");
+
+    CHK(
+        ctx->source_bytes == 0,
+        "gpu_wave_tb_copy_static_data received an invalid source size");
+
+    if (ctx->nrcv > 0)
+    {
+        CHK(
+            rcv == NULL,
+            "gpu_wave_tb_copy_static_data received a NULL receiver array");
+
+        CHK(
+            ctx->d_rcv == NULL,
+            "gpu_wave_tb_copy_static_data received an unallocated d_rcv");
     }
 
-    cudaError_t err;
+    MSG(
+        "... copying GPU TB static arrays: field=%zu bytes, source=%zu bytes",
+        ctx->field_bytes,
+        ctx->source_bytes);
 
-    err = cudaMemcpy(
+    GPU_CHK(cudaMemcpy(
         ctx->d_vel,
         vel,
         ctx->field_bytes,
-        cudaMemcpyHostToDevice);
+        cudaMemcpyHostToDevice));
 
-    if (err != cudaSuccess) {
-        MSG("... copy d_vel failed: %s", cudaGetErrorString(err));
-        return -1;
-    }
-
-    err = cudaMemcpy(
+    GPU_CHK(cudaMemcpy(
         ctx->d_inv_rho,
         inv_rho,
         ctx->field_bytes,
-        cudaMemcpyHostToDevice);
+        cudaMemcpyHostToDevice));
 
-    if (err != cudaSuccess) {
-        MSG("... copy d_inv_rho failed: %s", cudaGetErrorString(err));
-        return -1;
-    }
-
-    err = cudaMemcpy(
+    GPU_CHK(cudaMemcpy(
         ctx->d_source,
         source,
-        (size_t)ctx->nt * sizeof(float),
-        cudaMemcpyHostToDevice);
+        ctx->source_bytes,
+        cudaMemcpyHostToDevice));
 
-    if (err != cudaSuccess) {
-        MSG("... copy d_source failed: %s", cudaGetErrorString(err));
-        return -1;
-    }
-
-    if (ctx->nrcv > 0) {
-        if (rcv == NULL) {
-            MSG("... receiver array is NULL");
-            return -1;
-        }
-
-        err = cudaMemcpy(
+    if (ctx->nrcv > 0)
+    {
+        GPU_CHK(cudaMemcpy(
             ctx->d_rcv,
             rcv,
-            (size_t)ctx->nrcv * sizeof(unsigned int),
-            cudaMemcpyHostToDevice);
-
-        if (err != cudaSuccess) {
-            MSG("... copy d_rcv failed: %s", cudaGetErrorString(err));
-            return -1;
-        }
+            ctx->receiver_index_bytes,
+            cudaMemcpyHostToDevice));
     }
+
+    /*
+     * cudaMemcpy is synchronous for ordinary pageable host memory,
+     * but this also exposes any previous CUDA runtime error here.
+     */
+    GPU_CHK(cudaDeviceSynchronize());
 
     MSG("... GPU TB static arrays copied to the device");
 
@@ -326,7 +370,10 @@ extern "C" int gpu_wave_tb_zero(
         "gpu_wave_tb_zero received unallocated wavefield pointers");
 
     /*
-     * Initialize all first-order wavefields to zero.
+     * Initialize all dynamic first-order wavefields to zero.
+     *
+     * Do not clear d_vel, d_inv_rho, d_source or d_rcv here because
+     * they already contain copied static data.
      */
     GPU_CHK(cudaMemset(
         ctx->d_p1,
@@ -358,7 +405,8 @@ extern "C" int gpu_wave_tb_zero(
         0,
         ctx->field_bytes));
 
-    if (ctx->d_sismos != NULL)
+    if (ctx->d_sismos != NULL &&
+        ctx->sismos_bytes > 0)
     {
         GPU_CHK(cudaMemset(
             ctx->d_sismos,
@@ -366,9 +414,6 @@ extern "C" int gpu_wave_tb_zero(
             ctx->sismos_bytes));
     }
 
-    /*
-     * Detect asynchronous CUDA errors before returning.
-     */
     GPU_CHK(cudaDeviceSynchronize());
 
     MSG("... GPU TB wavefields initialized to zero");
@@ -435,6 +480,11 @@ extern "C" void gpu_wave_tb_info(
         (1024.0 * 1024.0));
 
     MSG(
+        "... GPU TB source size: %.6f MiB",
+        (double)ctx->source_bytes /
+        (1024.0 * 1024.0));
+
+    MSG(
         "... GPU TB receiver output size: %.3f MiB",
         (double)ctx->sismos_bytes /
         (1024.0 * 1024.0));
@@ -476,6 +526,11 @@ extern "C" void gpu_wave_tb_release(
     GPU_TB_FREE(ctx->d_rho);
     GPU_TB_FREE(ctx->d_inv_rho);
     GPU_TB_FREE(ctx->d_roc2);
+
+    /*
+     * Source time function.
+     */
+    GPU_TB_FREE(ctx->d_source);
 
     /*
      * Wavefield arrays.

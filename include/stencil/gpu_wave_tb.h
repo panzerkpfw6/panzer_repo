@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+
 typedef struct gpu_tb_ctx
 {
     int device_id;
@@ -15,22 +16,28 @@ typedef struct gpu_tb_ctx
     int nx;
     int ny;
     int nz;
+
     int nt;
+    int nrcv;
 
     size_t nxyz;
-    size_t field_bytes;
 
-    int nrcv;
+    size_t field_bytes;
+    size_t source_bytes;
+    size_t coef_bytes;
     size_t receiver_index_bytes;
     size_t sismos_bytes;
+    size_t allocated_bytes;
 
-    /* Static model arrays */
+    int coef_count;
+
     float *d_vel;
     float *d_rho;
     float *d_inv_rho;
     float *d_roc2;
 
-    /* First-order acoustic wavefields */
+    float *d_source;
+
     float *d_p1;
     float *d_p2;
     float *d_p3;
@@ -39,20 +46,12 @@ typedef struct gpu_tb_ctx
     float *d_v2;
     float *d_v3;
 
-    /* Finite-difference coefficients */
     float *d_coefx;
     float *d_coefy;
     float *d_coefz;
 
-    int coef_count;
-    size_t coef_bytes;
-
-    /* Receiver geometry and output */
     unsigned int *d_rcv;
     float *d_sismos;
-    float *d_source;
-
-    size_t allocated_bytes;
 
 } gpu_tb_ctx_t;
 
