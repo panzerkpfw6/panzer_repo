@@ -22,7 +22,7 @@ PROJECT_DIR="$PWD"
 ENV_PREFIX="$PROJECT_DIR"/env
 PATH="$HOME/.local/bin:$PATH"
 
-# use the machine learning modelue from Ibex
+# use the machine learning module from Ibex
 module purge
 module load rl9-gpustack
 module load machine_learning
