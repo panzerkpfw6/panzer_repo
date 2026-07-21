@@ -563,7 +563,7 @@ int main(int argc, char* argv[]) {
 		if (strcmp(s->method, "TB") == 0) {
         	run_modeling_1st_tb_gpu(s,vel,inv_rho,source,pml_tab);
 		} else if (strcmp(s->method, "SB") == 0) {
-			run_modeling_1st_sb_gpu(s, vel, source, pml_tab);
+			run_modeling_1st_sb_gpu(s, vel,inv_rho, source, pml_tab);
 		}
     }
 #else

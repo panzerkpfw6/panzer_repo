@@ -238,6 +238,30 @@ gpu_wave.cu.s:
 	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave.cu.s
 .PHONY : gpu_wave.cu.s
 
+gpu_wave_tb.o: gpu_wave_tb.cu.o
+.PHONY : gpu_wave_tb.o
+
+# target to build an object file
+gpu_wave_tb.cu.o:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave_tb.cu.o
+.PHONY : gpu_wave_tb.cu.o
+
+gpu_wave_tb.i: gpu_wave_tb.cu.i
+.PHONY : gpu_wave_tb.i
+
+# target to preprocess a source file
+gpu_wave_tb.cu.i:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave_tb.cu.i
+.PHONY : gpu_wave_tb.cu.i
+
+gpu_wave_tb.s: gpu_wave_tb.cu.s
+.PHONY : gpu_wave_tb.s
+
+# target to generate assembly for a file
+gpu_wave_tb.cu.s:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/gpu_wave_tb.cu.s
+.PHONY : gpu_wave_tb.cu.s
+
 interp.o: interp.c.o
 .PHONY : interp.o
 
@@ -309,6 +333,30 @@ modeling_gpu.s: modeling_gpu.cu.s
 modeling_gpu.cu.s:
 	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_gpu.cu.s
 .PHONY : modeling_gpu.cu.s
+
+modeling_tb_gpu.o: modeling_tb_gpu.cu.o
+.PHONY : modeling_tb_gpu.o
+
+# target to build an object file
+modeling_tb_gpu.cu.o:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_tb_gpu.cu.o
+.PHONY : modeling_tb_gpu.cu.o
+
+modeling_tb_gpu.i: modeling_tb_gpu.cu.i
+.PHONY : modeling_tb_gpu.i
+
+# target to preprocess a source file
+modeling_tb_gpu.cu.i:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_tb_gpu.cu.i
+.PHONY : modeling_tb_gpu.cu.i
+
+modeling_tb_gpu.s: modeling_tb_gpu.cu.s
+.PHONY : modeling_tb_gpu.s
+
+# target to generate assembly for a file
+modeling_tb_gpu.cu.s:
+	cd /ibex/scratch/samonio/panzer_repo && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/stencil_cuda.dir/build.make src/CMakeFiles/stencil_cuda.dir/modeling_tb_gpu.cu.s
+.PHONY : modeling_tb_gpu.cu.s
 
 parser.o: parser.c.o
 .PHONY : parser.o
@@ -522,6 +570,9 @@ help:
 	@echo "... gpu_wave.o"
 	@echo "... gpu_wave.i"
 	@echo "... gpu_wave.s"
+	@echo "... gpu_wave_tb.o"
+	@echo "... gpu_wave_tb.i"
+	@echo "... gpu_wave_tb.s"
 	@echo "... interp.o"
 	@echo "... interp.i"
 	@echo "... interp.s"
@@ -531,6 +582,9 @@ help:
 	@echo "... modeling_gpu.o"
 	@echo "... modeling_gpu.i"
 	@echo "... modeling_gpu.s"
+	@echo "... modeling_tb_gpu.o"
+	@echo "... modeling_tb_gpu.i"
+	@echo "... modeling_tb_gpu.s"
 	@echo "... parser.o"
 	@echo "... parser.i"
 	@echo "... parser.s"
