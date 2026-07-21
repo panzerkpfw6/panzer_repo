@@ -41,6 +41,8 @@ if(USE_CUDA)
     add_library(stencil_cuda STATIC
         gpu_wave.cu
         modeling_gpu.cu
+        gpu_wave_tb.cu
+        modeling_tb_gpu.cu
     )
 
     target_include_directories(stencil_cuda

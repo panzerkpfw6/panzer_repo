@@ -19,6 +19,7 @@
 #ifdef USE_CUDA
 #include <cuda_runtime.h>
 #include <stencil/modeling_gpu.h>
+#include <stencil/modeling_tb_gpu.h>
 #endif
 
 ///
