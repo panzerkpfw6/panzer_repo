@@ -565,6 +565,9 @@ int main(int argc, char* argv[]) {
 			run_modeling_1st_sb_gpu(s, vel, source, pml_tab);
 		}
     }
+#else
+    MSG("GPU requested, but CUDA support is disabled");
+#endif
     /// free the simulation buffers.
     DELETE_BUFFER(vel);
     DELETE_BUFFER(rho);
