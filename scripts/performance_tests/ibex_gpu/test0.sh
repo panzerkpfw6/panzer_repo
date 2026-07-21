@@ -115,7 +115,20 @@ export cbz=9999
 # --method "TB";
 # exit 1
 ###############################
-echo "test_SB_on_GPU"
+#echo "test_SB_on_GPU"
+#nx=128;ny=256;nz=512;
+#nt=10;  dt=0.001;
+#export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
+#export src_depth=256;
+#export fmax=8;
+#
+#./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
+#--mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
+#--dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
+#--cbx $cbx --cby $cby --cbz $cbz --cpu 0 # >> $logs_path/$logs_filename;
+
+###############################
+echo "test_TB_on_GPU"
 nx=128;ny=256;nz=512;
 nt=10;  dt=0.001;
 export shot=16447;  # position of the source in x,y coordinates.check ./data/acquisition.txt
@@ -125,8 +138,7 @@ export fmax=8;
 ./bin/modeling --verbose --n1 $nx  --n2 $ny --n3 $nz --iter $NT_SB_1st \
 --mode 2 --drcv 1 --dshot 1 --first $shot --last $shot --src_depth $src_depth --order 1 --fmax $fmax \
 --dx $dh --dy $dh --dz $dh --dt $dt --rec_sismos 0 \
---cbx $cbx --cby $cby --cbz $cbz --cpu 0 # >> $logs_path/$logs_filename;
-
+--cbx $cbx --cby $cby --cbz $cbz --cpu 1 # >> $logs_path/$logs_filename;
 exit 1
 ################################
 #echo "compare_wavefields_for_SB_TB"
