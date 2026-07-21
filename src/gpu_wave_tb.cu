@@ -236,110 +236,71 @@ extern "C" int gpu_wave_tb_allocate(
     return 0;
 }
 
-
 extern "C" int gpu_wave_tb_copy_static_data(
     gpu_tb_ctx_t *ctx,
     const float *vel,
-    const float *rho,
     const float *inv_rho,
-    const float *roc2,
-    const float *coefx,
-    const float *coefy,
-    const float *coefz,
+    const float *source,
     const unsigned int *rcv)
 {
-    CHK(
-        ctx == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL context pointer");
+    if (ctx == NULL ||
+        vel == NULL ||
+        inv_rho == NULL ||
+        source == NULL) {
+        return -1;
+    }
 
-    CHK(
-        vel == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL velocity pointer");
+    cudaError_t err;
 
-    CHK(
-        rho == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL density pointer");
-
-    CHK(
-        inv_rho == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL inverse-density pointer");
-
-    CHK(
-        roc2 == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL roc2 pointer");
-
-    CHK(
-        coefx == NULL ||
-        coefy == NULL ||
-        coefz == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL coefficient pointer");
-
-    CHK(
-        ctx->d_vel == NULL,
-        "GPU TB arrays have not been allocated");
-
-    /*
-     * Copy static model arrays.
-     */
-    GPU_CHK(cudaMemcpy(
+    err = cudaMemcpy(
         ctx->d_vel,
         vel,
         ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+        cudaMemcpyHostToDevice);
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_rho,
-        rho,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    if (err != cudaSuccess) {
+        MSG("... copy d_vel failed: %s", cudaGetErrorString(err));
+        return -1;
+    }
 
-    GPU_CHK(cudaMemcpy(
+    err = cudaMemcpy(
         ctx->d_inv_rho,
         inv_rho,
         ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+        cudaMemcpyHostToDevice);
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_roc2,
-        roc2,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    if (err != cudaSuccess) {
+        MSG("... copy d_inv_rho failed: %s", cudaGetErrorString(err));
+        return -1;
+    }
 
-    /*
-     * Copy finite-difference coefficients.
-     */
-    GPU_CHK(cudaMemcpy(
-        ctx->d_coefx,
-        coefx,
-        ctx->coef_bytes,
-        cudaMemcpyHostToDevice));
+    err = cudaMemcpy(
+        ctx->d_source,
+        source,
+        (size_t)ctx->nt * sizeof(float),
+        cudaMemcpyHostToDevice);
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_coefy,
-        coefy,
-        ctx->coef_bytes,
-        cudaMemcpyHostToDevice));
+    if (err != cudaSuccess) {
+        MSG("... copy d_source failed: %s", cudaGetErrorString(err));
+        return -1;
+    }
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_coefz,
-        coefz,
-        ctx->coef_bytes,
-        cudaMemcpyHostToDevice));
+    if (ctx->nrcv > 0) {
+        if (rcv == NULL) {
+            MSG("... receiver array is NULL");
+            return -1;
+        }
 
-    /*
-     * Copy receiver indices only when receivers exist.
-     */
-    if (ctx->nrcv > 0)
-    {
-        CHK(
-            rcv == NULL,
-            "gpu_wave_tb_copy_static_data received a NULL receiver pointer");
-
-        GPU_CHK(cudaMemcpy(
+        err = cudaMemcpy(
             ctx->d_rcv,
             rcv,
-            ctx->receiver_index_bytes,
-            cudaMemcpyHostToDevice));
+            (size_t)ctx->nrcv * sizeof(unsigned int),
+            cudaMemcpyHostToDevice);
+
+        if (err != cudaSuccess) {
+            MSG("... copy d_rcv failed: %s", cudaGetErrorString(err));
+            return -1;
+        }
     }
 
     MSG("... GPU TB static arrays copied to the device");

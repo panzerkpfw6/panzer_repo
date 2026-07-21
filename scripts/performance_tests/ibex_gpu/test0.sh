@@ -5,7 +5,7 @@ echo $hostname
 lscpu
 nvidia-smi
 ########### CPU OPTIONS ####################
-export OMP_NUM_THREADS=128
+# export OMP_NUM_THREADS=128
 export OMP_PLACES=cores
 export OMP_PROC_BIND=close
 export OMP_WAIT_POLICY=active
@@ -128,7 +128,7 @@ export cbz=9999
 # exit 1
 
 ###############################
-exit 1
+# exit 1
 echo "test_TB_on_GPU"
 nx=128;ny=256;nz=512;
 nt=10;  dt=0.001;

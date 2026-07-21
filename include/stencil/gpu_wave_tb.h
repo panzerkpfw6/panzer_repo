@@ -50,6 +50,7 @@ typedef struct gpu_tb_ctx
     /* Receiver geometry and output */
     unsigned int *d_rcv;
     float *d_sismos;
+    float *d_source;
 
     size_t allocated_bytes;
 
@@ -66,12 +67,8 @@ int gpu_wave_tb_allocate(
 int gpu_wave_tb_copy_static_data(
     gpu_tb_ctx_t *ctx,
     const float *vel,
-    const float *rho,
     const float *inv_rho,
-    const float *roc2,
-    const float *coefx,
-    const float *coefy,
-    const float *coefz,
+    const float *source,
     const unsigned int *rcv);
 
 int gpu_wave_tb_zero(

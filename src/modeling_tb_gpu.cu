@@ -5,6 +5,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <cuda_runtime.h>
 
 #include <stencil/config.h>
@@ -19,15 +20,17 @@
 /**
  * First-order MWD-TB modeling on GPU.
  *
- * Stage 1 purpose:
+ * Stage 2:
+ *   - select and validate the CUDA device;
+ *   - initialize the GPU-TB context;
+ *   - allocate GPU buffers;
+ *   - initialize wavefields and receiver output;
+ *   - report allocation information;
+ *   - release GPU resources.
  *
- *   1. Validate CPU-to-CUDA function linkage.
- *   2. Validate GPU runtime selection.
- *   3. Validate that the new CUDA files are included in libstencil_cuda.
- *   4. Establish the initialization/release lifecycle.
- *
- * No wavefield allocation or numerical propagation is performed yet.
+ * Static model transfer and numerical propagation are not yet complete.
  */
+ 
 extern "C" void run_modeling_1st_tb_gpu(
     sismap_t *s,
     float *vel,
@@ -35,52 +38,114 @@ extern "C" void run_modeling_1st_tb_gpu(
     float *source,
     parser *p)
 {
+    CHK(
+        s == NULL,
+        "run_modeling_1st_tb_gpu received a NULL sismap pointer");
+
+    CHK(
+        vel == NULL,
+        "run_modeling_1st_tb_gpu received a NULL velocity pointer");
+
+    CHK(
+        inv_rho == NULL,
+        "run_modeling_1st_tb_gpu received a NULL inverse-density pointer");
+
+    CHK(
+        source == NULL,
+        "run_modeling_1st_tb_gpu received a NULL source pointer");
+
     /*
-     * Select the GPU requested by the existing sismap configuration.
-     *
-     * gpu_wave_set() already checks:
-     *
-     *   - whether CUDA devices exist;
-     *   - whether s->device is a valid device index.
+     * Parser is currently unused by Stage 2.
+     */
+    (void)p;
+
+    enum {
+        GPU_TB_COEF_COUNT = 9
+    };
+
+    gpu_tb_ctx_t ctx;
+    int status = 0;
+
+    memset(&ctx, 0, sizeof(ctx));
+
+    MSG("... entering 1st-order TB GPU driver");
+
+    /*
+     * Select and validate the CUDA device.
      */
     gpu_wave_set(s->device);
 
-    gpu_tb_ctx_t ctx;
-    memset(&ctx, 0, sizeof(ctx));
-    const int coef_count = 9;
+    /*
+     * Initialize GPU context.
+     */
+    status = gpu_wave_tb_init(
+        &ctx,
+        s,
+        GPU_TB_COEF_COUNT);
 
-    gpu_wave_tb_init(&ctx, s, coef_count);
-    gpu_wave_tb_allocate(&ctx);
-    gpu_wave_tb_zero(&ctx);
+    if (status != 0) {
+        MSG("... GPU TB context initialization failed");
+        goto cleanup;
+    }
 
+    /*
+     * Allocate GPU memory.
+     */
+    status = gpu_wave_tb_allocate(&ctx);
 
+    if (status != 0) {
+        MSG("... GPU TB memory allocation failed");
+        goto cleanup;
+    }
+
+    /*
+     * Copy all static model data to the GPU.
+     */
+    status = gpu_wave_tb_copy_static_data(
+        &ctx,
+        vel,
+        inv_rho,
+        source,
+        s->rcv);
+
+    if (status != 0) {
+        MSG("... GPU TB static-data transfer failed");
+        goto cleanup;
+    }
+
+    /*
+     * Zero only dynamic wavefields and receiver output.
+     *
+     * This function must NOT overwrite:
+     *
+     *   d_vel
+     *   d_inv_rho
+     *   d_source
+     *   d_rcv
+     */
+    status = gpu_wave_tb_zero(&ctx);
+
+    if (status != 0) {
+        MSG("... GPU TB wavefield initialization failed");
+        goto cleanup;
+    }
+
+    /*
+     * Print GPU information.
+     */
     if (s->verbose) {
-        gpu_wave_tb_info(&ctx,s);
-
-        MSG("... GPU TB model dimensions: %u x %u x %u",
-            s->dimx,
-            s->dimy,
-            s->dimz);
-
-        MSG("... GPU TB time steps: %u",
-            s->time_steps);
-
-        MSG("... GPU TB number of shots: first=%d last=%d",
-            s->first,
-            s->last);
+        gpu_wave_tb_info(&ctx, s);
 
         MSG("... GPU TB numerical propagation is not implemented yet");
     }
 
+cleanup:
+
     gpu_wave_tb_release(&ctx);
 
     /*
-     * Keep this call last.
-     *
-     * The existing implementation of gpu_wave_unset() calls
-     * cudaDeviceReset(), so no CUDA work should follow it.
+     * Release CUDA context.
      */
-     
     gpu_wave_unset();
 
     MSG("... leaving 1st-order TB GPU driver");
