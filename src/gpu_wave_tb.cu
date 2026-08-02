@@ -184,39 +184,6 @@ extern "C" int gpu_wave_tb_copy_static_data(
     const float *source,
     const unsigned int *rcv)
 {
-    CHK(
-        ctx == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL context pointer");
-
-    CHK(
-        s == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL sismap pointer");
-
-    CHK(
-        roc2 == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL roc2 pointer");
-
-    CHK(
-        inv_rho == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL inv_rho pointer");
-
-    CHK(
-        source == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL source pointer");
-
-    CHK(
-        s->dampx == NULL ||
-        s->dampy == NULL ||
-        s->dampz == NULL,
-        "gpu_wave_tb_copy_static_data received NULL damping arrays");
-
-    if (ctx->nrcv > 0)
-    {
-        CHK(
-            rcv == NULL,
-            "gpu_wave_tb_copy_static_data received a NULL receiver array");
-    }
-
     MSG("... copying GPU TB static numerical arrays");
 
     GPU_CHK(cudaMemcpy(
@@ -401,8 +368,7 @@ extern "C" void gpu_wave_tb_info(
 }
 
 
-extern "C" void gpu_wave_tb_release(
-    gpu_tb_ctx_t *ctx)
+extern "C" void gpu_wave_tb_release(gpu_tb_ctx_t *ctx)
 {
     if (ctx == NULL)
     {

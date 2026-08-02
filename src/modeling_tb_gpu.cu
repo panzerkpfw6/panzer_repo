@@ -79,16 +79,7 @@ extern "C" void run_modeling_1st_tb_gpu(
         goto cleanup;
     }
 
-    /*
-     * Zero only dynamic wavefields and receiver output.
-     *
-     * This function must NOT overwrite:
-     *
-     *   d_vel
-     *   d_inv_rho
-     *   d_source
-     *   d_rcv
-     */
+    // Zero only dynamic wavefields and receiver output.
     status = gpu_wave_tb_zero(&ctx);
 
     if (status != 0) {
@@ -96,22 +87,15 @@ extern "C" void run_modeling_1st_tb_gpu(
         goto cleanup;
     }
 
-    /*
-     * Print GPU information.
-     */
+    // Print GPU information.
     if (s->verbose) {
         gpu_wave_tb_info(&ctx, s);
-
-        MSG("... GPU TB numerical propagation is not implemented yet");
     }
 
-cleanup:
 
     gpu_wave_tb_release(&ctx);
 
-    /*
-     * Release CUDA context.
-     */
+    // Release CUDA context.
     gpu_wave_unset();
 
     MSG("... leaving 1st-order TB GPU driver");
