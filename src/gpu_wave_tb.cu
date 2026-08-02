@@ -13,12 +13,6 @@
 #include <stencil/gpu_wave_tb.h>
 
 
-/*
- * Free a CUDA pointer and reset it to NULL.
- *
- * cudaFree(NULL) is legal, but checking the pointer makes cleanup
- * easier to inspect and avoids unnecessary runtime calls.
- */
 #define GPU_TB_FREE(pointer)            \
     do                                  \
     {                                   \
@@ -32,8 +26,7 @@
 
 extern "C" int gpu_wave_tb_init(
     gpu_tb_ctx_t *ctx,
-    const sismap_t *s,
-    int coef_count)
+    const sismap_t *s)
 {
     CHK(
         ctx == NULL,
@@ -43,72 +36,62 @@ extern "C" int gpu_wave_tb_init(
         s == NULL,
         "gpu_wave_tb_init received a NULL sismap pointer");
 
-    CHK(
-        coef_count <= 0,
-        "gpu_wave_tb_init received an invalid coefficient count");
-
-    /*
-     * Make every device pointer NULL before any allocation occurs.
-     * This guarantees that gpu_wave_tb_release() is safe after a
-     * partially successful allocation.
-     */
     memset(ctx, 0, sizeof(*ctx));
 
     ctx->device_id = s->device;
 
-    /*
-     * Check these names against sismap.h.
-     *
-     * Based on your current code and output, the computational dimensions
-     * are expected to be stored in dimx, dimy and dimz.
-     */
-    ctx->nx = s->dimx;
-    ctx->ny = s->dimy;
-    ctx->nz = s->dimz;
+    ctx->nx = (int)s->dimx;
+    ctx->ny = (int)s->dimy;
+    ctx->nz = (int)s->dimz;
 
-    ctx->nt = s->iter;
-    ctx->nrcv = s->rcv_len;
+    ctx->nt = s->time_steps;
+    ctx->nrcv = (int)s->rcv_len;
+
+    /*
+     * The active first-order stencil uses four coefficients
+     * on either side of the staggered derivative.
+     */
+    ctx->stencil_radius = 4;
 
     CHK(
         ctx->nx <= 0 ||
         ctx->ny <= 0 ||
         ctx->nz <= 0,
-        "gpu_wave_tb_init received invalid model dimensions");
+        "gpu_wave_tb_init received invalid dimensions");
 
     CHK(
         ctx->nt <= 0,
-        "gpu_wave_tb_init received an invalid number of time steps");
+        "gpu_wave_tb_init received an invalid time-step count");
 
     CHK(
         ctx->nrcv < 0,
-        "gpu_wave_tb_init received an invalid number of receivers");
+        "gpu_wave_tb_init received an invalid receiver count");
 
     ctx->nxyz =
         (size_t)ctx->nx *
         (size_t)ctx->ny *
         (size_t)ctx->nz;
 
+    /*
+     * Keep this aligned with the host arrays passed to
+     * run_modeling_1st_tb_cpu().
+     *
+     * The CPU driver allocates u0/vx/vy/vz using s->size.
+     * Therefore, use s->size rather than nx*ny*nz when they differ.
+     */
     ctx->field_bytes =
-        ctx->nxyz * sizeof(float);
+        (size_t)s->size * sizeof(float);
 
-    ctx->coef_count = coef_count;
-
-    ctx->coef_bytes =
-        (size_t)ctx->coef_count * sizeof(float);
+    ctx->source_bytes =
+        (size_t)ctx->nt * sizeof(float);
 
     ctx->receiver_index_bytes =
         (size_t)ctx->nrcv *
         sizeof(unsigned int);
 
-    /*
-     * Store one float for every receiver and every time step.
-     *
-     * If your working SB implementation records fewer time samples,
-     * replace ctx->nt here with the exact SB output-sample count.
-     */
     ctx->sismos_bytes =
         (size_t)ctx->nrcv *
-        (size_t)ctx->nt *
+        (size_t)(ctx->nt + 1) *
         sizeof(float);
 
     GPU_CHK(cudaSetDevice(ctx->device_id));
@@ -116,14 +99,16 @@ extern "C" int gpu_wave_tb_init(
     if (s->verbose)
     {
         MSG("... GPU TB numerical subsystem initialized");
+
         MSG(
-            "... GPU TB context dimensions: %d x %d x %d",
+            "... GPU TB physical dimensions: %d x %d x %d",
             ctx->nx,
             ctx->ny,
             ctx->nz);
+
         MSG(
-            "... GPU TB grid points: %zu",
-            ctx->nxyz);
+            "... GPU TB allocated field elements: %zu",
+            (size_t)s->size);
     }
 
     return 0;
@@ -139,74 +124,66 @@ extern "C" int gpu_wave_tb_allocate(
 
     CHK(
         ctx->field_bytes == 0,
-        "gpu_wave_tb_allocate received an uninitialized context");
+        "gpu_wave_tb_allocate received an invalid field size");
 
     MSG("... allocating GPU TB arrays");
 
     /*
-     * Static model arrays.
+     * Four dynamic first-order fields.
      */
     GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_vel),
+        reinterpret_cast<void **>(&ctx->d_u0),
         ctx->field_bytes));
 
     GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_rho),
+        reinterpret_cast<void **>(&ctx->d_vx),
+        ctx->field_bytes));
+
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_vy),
+        ctx->field_bytes));
+
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_vz),
+        ctx->field_bytes));
+
+    /*
+     * Static physical parameters.
+     */
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_roc2),
         ctx->field_bytes));
 
     GPU_CHK(cudaMalloc(
         reinterpret_cast<void **>(&ctx->d_inv_rho),
         ctx->field_bytes));
 
+    /*
+     * Damping arrays.
+     *
+     * We initially allocate full-field arrays because that is the
+     * simplest safe representation. This can be reduced later if
+     * ctx->dampx/dampy/dampz are one-dimensional arrays.
+     */
     GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_roc2),
+        reinterpret_cast<void **>(&ctx->d_dampx),
+        ctx->field_bytes));
+
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_dampy),
+        ctx->field_bytes));
+
+    GPU_CHK(cudaMalloc(
+        reinterpret_cast<void **>(&ctx->d_dampz),
         ctx->field_bytes));
 
     /*
-     * First-order acoustic wavefields.
+     * Source and receivers.
      */
     GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_p1),
-        ctx->field_bytes));
+        reinterpret_cast<void **>(&ctx->d_source),
+        ctx->source_bytes));
 
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_p2),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_p3),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_v1),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_v2),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_v3),
-        ctx->field_bytes));
-
-    /*
-     * Finite-difference coefficients.
-     */
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_coefx),
-        ctx->coef_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_coefy),
-        ctx->coef_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_coefz),
-        ctx->coef_bytes));
-
-    /*
-     * Receiver geometry and seismogram output.
-     */
     if (ctx->nrcv > 0)
     {
         GPU_CHK(cudaMalloc(
@@ -219,15 +196,15 @@ extern "C" int gpu_wave_tb_allocate(
     }
 
     /*
-     * Four model arrays:
-     *   vel, rho, inv_rho, roc2
+     * Nine full fields:
      *
-     * Six wavefield arrays:
-     *   p1, p2, p3, v1, v2, v3
+     *   u0, vx, vy, vz
+     *   roc2, inv_rho
+     *   dampx, dampy, dampz
      */
     ctx->allocated_bytes =
-        (size_t)10 * ctx->field_bytes +
-        (size_t)3 * ctx->coef_bytes +
+        (size_t)9 * ctx->field_bytes +
+        ctx->source_bytes +
         ctx->receiver_index_bytes +
         ctx->sismos_bytes;
 
@@ -239,13 +216,10 @@ extern "C" int gpu_wave_tb_allocate(
 
 extern "C" int gpu_wave_tb_copy_static_data(
     gpu_tb_ctx_t *ctx,
-    const float *vel,
-    const float *rho,
-    const float *inv_rho,
+    const sismap_t *s,
     const float *roc2,
-    const float *coefx,
-    const float *coefy,
-    const float *coefz,
+    const float *inv_rho,
+    const float *source,
     const unsigned int *rcv)
 {
     CHK(
@@ -253,43 +227,39 @@ extern "C" int gpu_wave_tb_copy_static_data(
         "gpu_wave_tb_copy_static_data received a NULL context pointer");
 
     CHK(
-        vel == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL velocity pointer");
-
-    CHK(
-        rho == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL density pointer");
-
-    CHK(
-        inv_rho == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL inverse-density pointer");
+        s == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL sismap pointer");
 
     CHK(
         roc2 == NULL,
         "gpu_wave_tb_copy_static_data received a NULL roc2 pointer");
 
     CHK(
-        coefx == NULL ||
-        coefy == NULL ||
-        coefz == NULL,
-        "gpu_wave_tb_copy_static_data received a NULL coefficient pointer");
+        inv_rho == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL inv_rho pointer");
 
     CHK(
-        ctx->d_vel == NULL,
-        "GPU TB arrays have not been allocated");
+        source == NULL,
+        "gpu_wave_tb_copy_static_data received a NULL source pointer");
 
-    /*
-     * Copy static model arrays.
-     */
-    GPU_CHK(cudaMemcpy(
-        ctx->d_vel,
-        vel,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    CHK(
+        s->dampx == NULL ||
+        s->dampy == NULL ||
+        s->dampz == NULL,
+        "gpu_wave_tb_copy_static_data received NULL damping arrays");
+
+    if (ctx->nrcv > 0)
+    {
+        CHK(
+            rcv == NULL,
+            "gpu_wave_tb_copy_static_data received a NULL receiver array");
+    }
+
+    MSG("... copying GPU TB static numerical arrays");
 
     GPU_CHK(cudaMemcpy(
-        ctx->d_rho,
-        rho,
+        ctx->d_roc2,
+        roc2,
         ctx->field_bytes,
         cudaMemcpyHostToDevice));
 
@@ -299,42 +269,36 @@ extern "C" int gpu_wave_tb_copy_static_data(
         ctx->field_bytes,
         cudaMemcpyHostToDevice));
 
+    /*
+     * This assumes s->dampx, dampy and dampz each contain s->size
+     * elements. Verify their actual allocation before running kernels.
+     */
     GPU_CHK(cudaMemcpy(
-        ctx->d_roc2,
-        roc2,
+        ctx->d_dampx,
+        s->dampx,
         ctx->field_bytes,
         cudaMemcpyHostToDevice));
 
-    /*
-     * Copy finite-difference coefficients.
-     */
     GPU_CHK(cudaMemcpy(
-        ctx->d_coefx,
-        coefx,
-        ctx->coef_bytes,
+        ctx->d_dampy,
+        s->dampy,
+        ctx->field_bytes,
         cudaMemcpyHostToDevice));
 
     GPU_CHK(cudaMemcpy(
-        ctx->d_coefy,
-        coefy,
-        ctx->coef_bytes,
+        ctx->d_dampz,
+        s->dampz,
+        ctx->field_bytes,
         cudaMemcpyHostToDevice));
 
     GPU_CHK(cudaMemcpy(
-        ctx->d_coefz,
-        coefz,
-        ctx->coef_bytes,
+        ctx->d_source,
+        source,
+        ctx->source_bytes,
         cudaMemcpyHostToDevice));
 
-    /*
-     * Copy receiver indices only when receivers exist.
-     */
     if (ctx->nrcv > 0)
     {
-        CHK(
-            rcv == NULL,
-            "gpu_wave_tb_copy_static_data received a NULL receiver pointer");
-
         GPU_CHK(cudaMemcpy(
             ctx->d_rcv,
             rcv,
@@ -342,7 +306,9 @@ extern "C" int gpu_wave_tb_copy_static_data(
             cudaMemcpyHostToDevice));
     }
 
-    MSG("... GPU TB static arrays copied to the device");
+    GPU_CHK(cudaDeviceSynchronize());
+
+    MSG("... GPU TB static numerical arrays copied");
 
     return 0;
 }
@@ -356,44 +322,29 @@ extern "C" int gpu_wave_tb_zero(
         "gpu_wave_tb_zero received a NULL context pointer");
 
     CHK(
-        ctx->d_p1 == NULL ||
-        ctx->d_p2 == NULL ||
-        ctx->d_p3 == NULL ||
-        ctx->d_v1 == NULL ||
-        ctx->d_v2 == NULL ||
-        ctx->d_v3 == NULL,
-        "gpu_wave_tb_zero received unallocated wavefield pointers");
+        ctx->d_u0 == NULL ||
+        ctx->d_vx == NULL ||
+        ctx->d_vy == NULL ||
+        ctx->d_vz == NULL,
+        "gpu_wave_tb_zero received unallocated dynamic fields");
 
-    /*
-     * Initialize all first-order wavefields to zero.
-     */
     GPU_CHK(cudaMemset(
-        ctx->d_p1,
+        ctx->d_u0,
         0,
         ctx->field_bytes));
 
     GPU_CHK(cudaMemset(
-        ctx->d_p2,
+        ctx->d_vx,
         0,
         ctx->field_bytes));
 
     GPU_CHK(cudaMemset(
-        ctx->d_p3,
+        ctx->d_vy,
         0,
         ctx->field_bytes));
 
     GPU_CHK(cudaMemset(
-        ctx->d_v1,
-        0,
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMemset(
-        ctx->d_v2,
-        0,
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMemset(
-        ctx->d_v3,
+        ctx->d_vz,
         0,
         ctx->field_bytes));
 
@@ -405,9 +356,6 @@ extern "C" int gpu_wave_tb_zero(
             ctx->sismos_bytes));
     }
 
-    /*
-     * Detect asynchronous CUDA errors before returning.
-     */
     GPU_CHK(cudaDeviceSynchronize());
 
     MSG("... GPU TB wavefields initialized to zero");
@@ -441,7 +389,7 @@ extern "C" void gpu_wave_tb_info(
         &free_bytes,
         &total_bytes));
 
-    MSG("... GPU TB implementation: Stage 2 memory setup");
+    MSG("... GPU TB implementation: Stage 3A numerical data setup");
     MSG("... GPU TB device: %s", props.name);
     MSG("... GPU TB device index: %d", ctx->device_id);
 
@@ -451,30 +399,23 @@ extern "C" void gpu_wave_tb_info(
         props.minor);
 
     MSG(
-        "... GPU TB model dimensions: %d x %d x %d",
+        "... GPU TB dimensions: %d x %d x %d",
         ctx->nx,
         ctx->ny,
         ctx->nz);
 
     MSG(
-        "... GPU TB grid points: %zu",
-        ctx->nxyz);
-
-    MSG(
-        "... GPU TB time steps: %d",
-        ctx->nt);
-
-    MSG(
-        "... GPU TB receivers: %d",
-        ctx->nrcv);
-
-    MSG(
-        "... GPU TB one-field size: %.3f MiB",
+        "... GPU TB field allocation: %.3f MiB",
         (double)ctx->field_bytes /
         (1024.0 * 1024.0));
 
     MSG(
-        "... GPU TB receiver output size: %.3f MiB",
+        "... GPU TB source allocation: %.6f MiB",
+        (double)ctx->source_bytes /
+        (1024.0 * 1024.0));
+
+    MSG(
+        "... GPU TB receiver output: %.3f MiB",
         (double)ctx->sismos_bytes /
         (1024.0 * 1024.0));
 
@@ -490,13 +431,10 @@ extern "C" void gpu_wave_tb_info(
         (double)total_bytes /
         (1024.0 * 1024.0));
 
-    if (s->verbose)
-    {
-        MSG(
-            "... GPU TB number of shots: first=%u last=%u",
-            s->first,
-            s->last);
-    }
+    MSG(
+        "... GPU TB number of shots: first=%d last=%d",
+        s->first,
+        s->last);
 }
 
 
@@ -508,35 +446,20 @@ extern "C" void gpu_wave_tb_release(
         return;
     }
 
-    /*
-     * Static model arrays.
-     */
-    GPU_TB_FREE(ctx->d_vel);
-    GPU_TB_FREE(ctx->d_rho);
-    GPU_TB_FREE(ctx->d_inv_rho);
+    GPU_TB_FREE(ctx->d_u0);
+    GPU_TB_FREE(ctx->d_vx);
+    GPU_TB_FREE(ctx->d_vy);
+    GPU_TB_FREE(ctx->d_vz);
+
     GPU_TB_FREE(ctx->d_roc2);
+    GPU_TB_FREE(ctx->d_inv_rho);
 
-    /*
-     * Wavefield arrays.
-     */
-    GPU_TB_FREE(ctx->d_p1);
-    GPU_TB_FREE(ctx->d_p2);
-    GPU_TB_FREE(ctx->d_p3);
+    GPU_TB_FREE(ctx->d_dampx);
+    GPU_TB_FREE(ctx->d_dampy);
+    GPU_TB_FREE(ctx->d_dampz);
 
-    GPU_TB_FREE(ctx->d_v1);
-    GPU_TB_FREE(ctx->d_v2);
-    GPU_TB_FREE(ctx->d_v3);
+    GPU_TB_FREE(ctx->d_source);
 
-    /*
-     * Coefficient arrays.
-     */
-    GPU_TB_FREE(ctx->d_coefx);
-    GPU_TB_FREE(ctx->d_coefy);
-    GPU_TB_FREE(ctx->d_coefz);
-
-    /*
-     * Receiver arrays.
-     */
     GPU_TB_FREE(ctx->d_rcv);
     GPU_TB_FREE(ctx->d_sismos);
 

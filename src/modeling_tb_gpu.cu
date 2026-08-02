@@ -48,7 +48,7 @@ extern "C" void run_modeling_1st_tb_gpu(
     gpu_tb_ctx_t ctx;
     memset(&ctx, 0, sizeof(ctx));
 
-    gpu_wave_tb_init(&ctx, s, coef_count);
+    gpu_wave_tb_init(&ctx, s);
     gpu_wave_tb_allocate(&ctx);
     gpu_wave_tb_zero(&ctx);
 

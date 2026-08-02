@@ -15,43 +15,57 @@ typedef struct gpu_tb_ctx
     int nx;
     int ny;
     int nz;
+
     int nt;
+    int nrcv;
+
+    int stencil_radius;
 
     size_t nxyz;
     size_t field_bytes;
 
-    int nrcv;
+    size_t source_bytes;
     size_t receiver_index_bytes;
     size_t sismos_bytes;
+    size_t allocated_bytes;
 
-    /* Static model arrays */
-    float *d_vel;
-    float *d_rho;
-    float *d_inv_rho;
+    /*
+     * Dynamic first-order fields.
+     *
+     * These correspond exactly to:
+     *
+     *   U1 = pressure
+     *   U2 = vx
+     *   U3 = vy
+     *   U4 = vz
+     */
+    float *d_u0;
+    float *d_vx;
+    float *d_vy;
+    float *d_vz;
+
+    /*
+     * Static physical parameters.
+     *
+     * U5 = roc2
+     * U6 = inv_rho
+     */
     float *d_roc2;
+    float *d_inv_rho;
 
-    /* First-order acoustic wavefields */
-    float *d_p1;
-    float *d_p2;
-    float *d_p3;
+    /*
+     * Absorbing-boundary damping arrays.
+     */
+    float *d_dampx;
+    float *d_dampy;
+    float *d_dampz;
 
-    float *d_v1;
-    float *d_v2;
-    float *d_v3;
-
-    /* Finite-difference coefficients */
-    float *d_coefx;
-    float *d_coefy;
-    float *d_coefz;
-
-    int coef_count;
-    size_t coef_bytes;
-
-    /* Receiver geometry and output */
+    /*
+     * Source and receiver data.
+     */
+    float *d_source;
     unsigned int *d_rcv;
     float *d_sismos;
-
-    size_t allocated_bytes;
 
 } gpu_tb_ctx_t;
 
