@@ -180,6 +180,7 @@ extern "C" int gpu_wave_tb_copy_static_data(
     gpu_tb_ctx_t *ctx,
     const sismap_t *s,
     const float *roc2,
+    const float *vel,
     const float *inv_rho,
     const float *source,
     const unsigned int *rcv)
