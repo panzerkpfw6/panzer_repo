@@ -64,26 +64,22 @@ extern "C" void run_modeling_1st_tb_gpu(
         goto cleanup;
     }
     
-    gpu_wave_tb_zero(&ctx);
+    // Zero only dynamic wavefields and receiver output.
+    status = gpu_wave_tb_zero(&ctx);
+    if (status != 0) {
+        MSG("... GPU TB wavefield initialization failed");
+        goto cleanup;
+    }
 
     // Copy all static model data to the GPU.
     status = gpu_wave_tb_copy_static_data(
         &ctx,
-        vel,
+        s,
         inv_rho,
         source,
         s->rcv);
-
     if (status != 0) {
         MSG("... GPU TB static-data transfer failed");
-        goto cleanup;
-    }
-
-    // Zero only dynamic wavefields and receiver output.
-    status = gpu_wave_tb_zero(&ctx);
-
-    if (status != 0) {
-        MSG("... GPU TB wavefield initialization failed");
         goto cleanup;
     }
 
