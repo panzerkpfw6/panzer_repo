@@ -47,36 +47,26 @@ extern "C" void run_modeling_1st_tb_gpu(
 
     MSG("... entering 1st-order TB GPU driver");
 
-    /*
-     * Select and validate the CUDA device.
-     */
+    /* Select and validate the CUDA device.*/
     gpu_wave_set(s->device);
 
-    /*
-     * Initialize GPU context.
-     */
+    /* Initialize GPU context.*/
     status = gpu_wave_tb_init(&ctx,s);
-
-    gpu_wave_tb_allocate(&ctx);
-    gpu_wave_tb_zero(&ctx);
     if (status != 0) {
         MSG("... GPU TB context initialization failed");
         goto cleanup;
     }
 
-    /*
-     * Allocate GPU memory.
-     */
+    // Allocate GPU memory.
     status = gpu_wave_tb_allocate(&ctx);
-
     if (status != 0) {
         MSG("... GPU TB memory allocation failed");
         goto cleanup;
     }
+    
+    gpu_wave_tb_zero(&ctx);
 
-    /*
-     * Copy all static model data to the GPU.
-     */
+    // Copy all static model data to the GPU.
     status = gpu_wave_tb_copy_static_data(
         &ctx,
         vel,
