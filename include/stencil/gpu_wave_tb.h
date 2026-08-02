@@ -106,8 +106,7 @@ typedef struct gpu_tb_ctx
 
 int gpu_wave_tb_init(
     gpu_tb_ctx_t *ctx,
-    const sismap_t *s,
-    int coef_count);
+    const sismap_t *s;
 
 int gpu_wave_tb_allocate(
     gpu_tb_ctx_t *ctx);

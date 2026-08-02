@@ -28,14 +28,6 @@ extern "C" int gpu_wave_tb_init(
     gpu_tb_ctx_t *ctx,
     const sismap_t *s)
 {
-    CHK(
-        ctx == NULL,
-        "gpu_wave_tb_init received a NULL context pointer");
-
-    CHK(
-        s == NULL,
-        "gpu_wave_tb_init received a NULL sismap pointer");
-
     memset(ctx, 0, sizeof(*ctx));
 
     ctx->device_id = s->device;
@@ -52,25 +44,6 @@ extern "C" int gpu_wave_tb_init(
      * on either side of the staggered derivative.
      */
     ctx->stencil_radius = 4;
-
-    CHK(
-        ctx->nx <= 0 ||
-        ctx->ny <= 0 ||
-        ctx->nz <= 0,
-        "gpu_wave_tb_init received invalid dimensions");
-
-    CHK(
-        ctx->nt <= 0,
-        "gpu_wave_tb_init received an invalid time-step count");
-
-    /*
-     * If nrcv is unsigned in gpu_tb_ctx_t, this check is unnecessary.
-     * It is harmless only when nrcv is signed.
-     */
-    CHK(
-        ctx->nrcv < 0,
-        "gpu_wave_tb_init received an invalid receiver count");
-
     ctx->nxyz =
         (size_t)ctx->nx *
         (size_t)ctx->ny *
@@ -83,38 +56,19 @@ extern "C" int gpu_wave_tb_init(
      * The CPU driver allocates u0/vx/vy/vz using s->size.
      * Therefore, use s->size rather than nx*ny*nz when they differ.
      */
-    ctx->field_bytes =
-        (size_t)s->size * sizeof(float);
+    ctx->field_bytes =(size_t)s->size * sizeof(float);
+    ctx->source_bytes =(size_t)ctx->nt * sizeof(float);
+    ctx->receiver_index_bytes =(size_t)ctx->nrcv *sizeof(unsigned int);
 
-    ctx->source_bytes =
-        (size_t)ctx->nt * sizeof(float);
-
-    ctx->receiver_index_bytes =
-        (size_t)ctx->nrcv *
-        sizeof(unsigned int);
-
-    ctx->sismos_bytes =
-        (size_t)ctx->nrcv *
-        (size_t)(ctx->nt + 1) *
-        sizeof(float);
+    ctx->sismos_bytes =(size_t)ctx->nrcv *(size_t)(ctx->nt + 1)*sizeof(float);
 
     GPU_CHK(cudaSetDevice(ctx->device_id));
 
     if (s->verbose)
     {
         MSG("... GPU TB numerical subsystem initialized");
-
-        MSG(
-            "... GPU TB physical dimensions: %d x %d x %d",
-            ctx->nx,
-            ctx->ny,
-            ctx->nz);
-
-        MSG(
-            "... GPU TB allocated field elements: %zu",
-            (size_t)s->size);
+        MSG("... GPU TB allocated field elements: %zu",(size_t)s->size);
     }
-
     return 0;
 }
 

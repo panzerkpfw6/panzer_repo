@@ -38,30 +38,7 @@ extern "C" void run_modeling_1st_tb_gpu(
     float *source,
     parser *p)
 {
-    CHK(
-        s == NULL,
-        "run_modeling_1st_tb_gpu received a NULL sismap pointer");
-
-    CHK(
-        vel == NULL,
-        "run_modeling_1st_tb_gpu received a NULL velocity pointer");
-
-    CHK(
-        inv_rho == NULL,
-        "run_modeling_1st_tb_gpu received a NULL inverse-density pointer");
-
-    CHK(
-        source == NULL,
-        "run_modeling_1st_tb_gpu received a NULL source pointer");
-
-    /*
-     * Parser is currently unused by Stage 2.
-     */
     (void)p;
-
-    enum {
-        GPU_TB_COEF_COUNT = 9
-    };
 
     gpu_tb_ctx_t ctx;
     int status = 0;
@@ -78,12 +55,8 @@ extern "C" void run_modeling_1st_tb_gpu(
     /*
      * Initialize GPU context.
      */
-    status = gpu_wave_tb_init(
-        &ctx,
-        s,
-        GPU_TB_COEF_COUNT);
+    status = gpu_wave_tb_init(&ctx,s);
 
-    gpu_wave_tb_init(&ctx, s);
     gpu_wave_tb_allocate(&ctx);
     gpu_wave_tb_zero(&ctx);
     if (status != 0) {
