@@ -83,16 +83,13 @@ extern "C" void run_modeling_1st_tb_gpu(
         s,
         GPU_TB_COEF_COUNT);
 
-<<<<<<< HEAD
     gpu_wave_tb_init(&ctx, s);
     gpu_wave_tb_allocate(&ctx);
     gpu_wave_tb_zero(&ctx);
-=======
     if (status != 0) {
         MSG("... GPU TB context initialization failed");
         goto cleanup;
     }
->>>>>>> d61c5e3146b8862ad57e002cfcde2472247c2fb1
 
     /*
      * Allocate GPU memory.
