@@ -68,14 +68,14 @@ extern "C" void run_modeling_1st_tb_gpu(
     // Copy all static model data to the GPU.
     status = gpu_wave_tb_copy_static_data(
         &ctx,
-        s,
+        s,vel,
         inv_rho,
         source,
         s->rcv);
-        if (status != 0) {
-            MSG("... GPU TB static-data transfer failed");
-            goto cleanup;
-        }
+    if (status != 0) {
+        MSG("... GPU TB static-data transfer failed");
+        goto cleanup;
+    }
         
     // Zero only dynamic wavefields and receiver output.
     status = gpu_wave_tb_zero(&ctx);
@@ -89,6 +89,7 @@ extern "C" void run_modeling_1st_tb_gpu(
         gpu_wave_tb_info(&ctx, s);
     }
 
+    cleanup:
     gpu_wave_tb_release(&ctx);
 
     // Release CUDA context.
