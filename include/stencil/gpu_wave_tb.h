@@ -19,15 +19,11 @@ typedef struct gpu_tb_ctx
 
     int nt;
     int nrcv;
-<<<<<<< HEAD
 
     int stencil_radius;
-=======
->>>>>>> d61c5e3146b8862ad57e002cfcde2472247c2fb1
 
     size_t nxyz;
 
-<<<<<<< HEAD
     size_t source_bytes;
     size_t receiver_index_bytes;
     size_t sismos_bytes;
@@ -54,36 +50,9 @@ typedef struct gpu_tb_ctx
      * U5 = roc2
      * U6 = inv_rho
      */
-=======
-    size_t field_bytes;
-    size_t source_bytes;
-    size_t coef_bytes;
-    size_t receiver_index_bytes;
-    size_t sismos_bytes;
-    size_t allocated_bytes;
-
-    int coef_count;
-
-    float *d_vel;
-    float *d_rho;
-    float *d_inv_rho;
->>>>>>> d61c5e3146b8862ad57e002cfcde2472247c2fb1
     float *d_roc2;
     float *d_inv_rho;
 
-<<<<<<< HEAD
-    /*
-     * Absorbing-boundary damping arrays.
-     */
-    float *d_dampx;
-    float *d_dampy;
-    float *d_dampz;
-
-    /*
-     * Source and receiver data.
-     */
-    float *d_source;
-=======
     float *d_source;
 
     float *d_p1;
@@ -98,7 +67,6 @@ typedef struct gpu_tb_ctx
     float *d_coefy;
     float *d_coefz;
 
->>>>>>> d61c5e3146b8862ad57e002cfcde2472247c2fb1
     unsigned int *d_rcv;
     float *d_sismos;
 
