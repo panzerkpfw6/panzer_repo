@@ -24,6 +24,7 @@ typedef struct gpu_tb_ctx
 
     size_t nxyz;
 
+    size_t field_bytes;
     size_t source_bytes;
     size_t receiver_index_bytes;
     size_t sismos_bytes;
@@ -74,7 +75,7 @@ typedef struct gpu_tb_ctx
 
 int gpu_wave_tb_init(
     gpu_tb_ctx_t *ctx,
-    const sismap_t *s;
+    const sismap_t *s);
 
 int gpu_wave_tb_allocate(
     gpu_tb_ctx_t *ctx);

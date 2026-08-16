@@ -8,7 +8,6 @@
 #SBATCH --constraint=v100
 #SBATCH --cpus-per-task=8
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=pavel.plotnitskii@kaust.edu.sa
 #SBATCH --output=%x-%j-slurm.out
 #SBATCH --error=%x-%j-slurm.err
 

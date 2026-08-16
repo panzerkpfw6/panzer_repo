@@ -28,6 +28,7 @@ unset NVCCFLAGS
 ######################################################
 ###********** MODULES *********###
 module purge
+# module clear all
 module load cuda/12.4.1
 module load intel/2022.3
 # source /sw/rl9c/intel/2025/compiler/2025.3/env/vars.sh --force   # or the correct path
@@ -58,6 +59,8 @@ cmake \
 make clean
 make VERBOSE=1
 make install
+
+exit 1
 
 ##### Logs directory #####
 mkdir ./logs

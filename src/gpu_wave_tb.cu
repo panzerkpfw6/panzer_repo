@@ -121,25 +121,6 @@ extern "C" int gpu_wave_tb_allocate(
         ctx->field_bytes));
 
     /*
-     * Damping arrays.
-     *
-     * We initially allocate full-field arrays because that is the
-     * simplest safe representation. This can be reduced later if
-     * ctx->dampx/dampy/dampz are one-dimensional arrays.
-     */
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_dampx),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_dampy),
-        ctx->field_bytes));
-
-    GPU_CHK(cudaMalloc(
-        reinterpret_cast<void **>(&ctx->d_dampz),
-        ctx->field_bytes));
-
-    /*
      * Source and receivers.
      */
     GPU_CHK(cudaMalloc(
@@ -202,23 +183,23 @@ extern "C" int gpu_wave_tb_copy_static_data(
      * This assumes s->dampx, dampy and dampz each contain s->size
      * elements. Verify their actual allocation before running kernels.
      */
-    GPU_CHK(cudaMemcpy(
-        ctx->d_dampx,
-        s->dampx,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    // GPU_CHK(cudaMemcpy(
+    //     ctx->d_dampx,
+    //     s->dampx,
+    //     ctx->field_bytes,
+    //     cudaMemcpyHostToDevice));
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_dampy,
-        s->dampy,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    // GPU_CHK(cudaMemcpy(
+    //     ctx->d_dampy,
+    //     s->dampy,
+    //     ctx->field_bytes,
+    //     cudaMemcpyHostToDevice));
 
-    GPU_CHK(cudaMemcpy(
-        ctx->d_dampz,
-        s->dampz,
-        ctx->field_bytes,
-        cudaMemcpyHostToDevice));
+    // GPU_CHK(cudaMemcpy(
+    //     ctx->d_dampz,
+    //     s->dampz,
+    //     ctx->field_bytes,
+    //     cudaMemcpyHostToDevice));
 
     GPU_CHK(cudaMemcpy(
         ctx->d_source,
@@ -383,9 +364,9 @@ extern "C" void gpu_wave_tb_release(gpu_tb_ctx_t *ctx)
     GPU_TB_FREE(ctx->d_roc2);
     GPU_TB_FREE(ctx->d_inv_rho);
 
-    GPU_TB_FREE(ctx->d_dampx);
-    GPU_TB_FREE(ctx->d_dampy);
-    GPU_TB_FREE(ctx->d_dampz);
+    // GPU_TB_FREE(ctx->d_dampx);
+    // GPU_TB_FREE(ctx->d_dampy);
+    // GPU_TB_FREE(ctx->d_dampz);
 
     GPU_TB_FREE(ctx->d_source);
 
