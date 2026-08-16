@@ -38,14 +38,45 @@ extern "C" void run_modeling_1st_tb_gpu(
     float *source,
     parser *p)
 {
+    /*
+     * Host-side output buffer.
+     *
+     * The actual wavefields live on the GPU in gctx.
+     */
+    float *sismos = NULL;
+
+    /*
+     * Host TB descriptors.
+     *
+     * We keep these because they contain:
+     *   - diamond geometry
+     *   - thread/wavefront parameters
+     *   - source metadata
+     *   - receiver metadata
+     *   - timing information
+     */
+    tb_t *ctx = NULL;
+    tb_data_t *data = NULL;
+    tb_timer_t *timer = NULL;
+
+    shot_t *shot = NULL;
+
     (void)p;
 
-    gpu_tb_ctx_t ctx;
+    gpu_tb_ctx_t gctx;
     int status = 0;
+    int gpu_selected = 0;
 
-    memset(&ctx, 0, sizeof(ctx));
+    memset(&gctx, 0, sizeof(gctx));
 
     MSG("... entering 1st-order TB GPU driver");
+
+    /*
+     * ------------------------------------------------------------
+     * 1. Initialize normal CPU-side TB metadata.
+     * ------------------------------------------------------------
+    */
+    wtime_init();
 
     /* Select and validate the CUDA device.*/
     gpu_wave_set(s->device);
