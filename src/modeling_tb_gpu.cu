@@ -15,6 +15,7 @@
 #include <stencil/shot.h>
 #include <stencil/gpu_wave.h>
 #include <stencil/gpu_wave_tb.h>
+#include <stencil/wave_tb.h>
 #include <stencil/modeling_tb_gpu.h>
 
 /**

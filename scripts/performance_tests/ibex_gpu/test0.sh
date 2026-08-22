@@ -47,6 +47,7 @@ icx --version
 # GPU version
 # rm -rf CMakeFiles CMakeCache.txt
 
+rm ./bin/modeling
 mv -f ./CMakeCache.txt ./CMakeCache-old.txt    #Last CMakeCache.txt is saved
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
