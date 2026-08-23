@@ -44,33 +44,11 @@ typedef struct gpu_tb_ctx
     float *d_vx;
     float *d_vy;
     float *d_vz;
-
-    /*
-     * Static physical parameters.
-     *
-     * U5 = roc2
-     * U6 = inv_rho
-     */
     float *d_roc2;
     float *d_inv_rho;
-
     float *d_source;
-
-    float *d_p1;
-    float *d_p2;
-    float *d_p3;
-
-    float *d_v1;
-    float *d_v2;
-    float *d_v3;
-
-    float *d_coefx;
-    float *d_coefy;
-    float *d_coefz;
-
     unsigned int *d_rcv;
     float *d_sismos;
-
 } gpu_tb_ctx_t;
 
 int gpu_wave_tb_init(

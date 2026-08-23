@@ -139,14 +139,13 @@ extern "C" int gpu_wave_tb_allocate(
     }
 
     /*
-     * Nine full fields:
+     * Six full fields:
      *
      *   u0, vx, vy, vz
      *   roc2, inv_rho
-     *   dampx, dampy, dampz
      */
     ctx->allocated_bytes =
-        (size_t)9 * ctx->field_bytes +
+        (size_t)6 * ctx->field_bytes +
         ctx->source_bytes +
         ctx->receiver_index_bytes +
         ctx->sismos_bytes;
