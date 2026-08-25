@@ -17,6 +17,7 @@
 #include <stencil/gpu_wave_tb.h>
 #include <stencil/wave_tb.h>
 #include <stencil/modeling_tb_gpu.h>
+#include <stencil/wtime.h>
 
 /**
  * First-order MWD-TB modeling on GPU.

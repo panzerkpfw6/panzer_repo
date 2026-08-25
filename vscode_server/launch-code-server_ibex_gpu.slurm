@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --time=04:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus=1
 #SBATCH --gpus-per-node=1
+#SBATCH --partition=debug
 #SBATCH --constraint=v100
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=200G
 #SBATCH --mail-type=ALL
 #SBATCH --output=%x-%j-slurm.out
 #SBATCH --error=%x-%j-slurm.err

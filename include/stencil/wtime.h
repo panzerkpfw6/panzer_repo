@@ -1,7 +1,15 @@
-#ifndef _MYWTIME_H_
-#define _MYWTIME_H_
+#ifndef __STENCIL_WTIME_H_
+#define __STENCIL_WTIME_H_
 
-void wtime_init();
-double wtime();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void wtime_init(void);
+double wtime(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
