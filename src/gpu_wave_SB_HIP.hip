@@ -9,6 +9,7 @@
 #include <stencil/macros.h>
 #include <stencil/sismap.h>
 #include <stencil/shot.h>
+#include <stencil/gpu_wave_SB_HIP.h>
 
 __global__ void hip_test_kernel(float *data, int n)
 {

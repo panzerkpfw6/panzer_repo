@@ -1,5 +1,6 @@
-#ifndef STENCIL_GPU_WAVE_TB_H
-#define STENCIL_GPU_WAVE_TB_H
+
+#ifndef STENCIL_GPU_WAVE_SB_HIP_H
+#define STENCIL_GPU_WAVE_SB_HIP_H
 
 #include <stencil/sismap.h>
 #include <stencil/shot.h>
@@ -8,77 +9,62 @@
 extern "C" {
 #endif
 
+/* HIP execution test */
+int hip_test(void);
 
-typedef struct gpu_tb_ctx
-{
-    int device_id;
+/* Device management */
+void gpu_wave_set(int device);
+void gpu_wave_unset(void);
+void gpu_wave_init(sismap_t *s);
+void gpu_wave_release(sismap_t *s);
+void gpu_wave_info(sismap_t *s);
 
-    int nx;
-    int ny;
-    int nz;
+/* Wave propagation */
+void gpu_wave_update_fields(sismap_t *s, float *d_u0, float *d_u1,
+                            float *d_roc2, float *phi, float *eta);
+void gpu_wave_update_source(sismap_t *s, shot_t *shot, float *d_u0,
+                            float sterm);
 
-    int nt;
-    int nrcv;
+/* Seismic traces */
+void gpu_wave_extract_sismos(sismap_t *s, float *d_u0, unsigned int t,
+                             float *d_sismos);
+void gpu_wave_inject_sismos(sismap_t *s, float *d_u0, unsigned int t,
+                            float *d_sismos);
 
-    int stencil_radius;
+/* Imaging */
+void gpu_wave_image_condition(sismap_t *s, float *d_u1, float *d_fwd,
+                              float *d_img, float *d_ilm, unsigned int t);
+void gpu_wave_image_gather(sismap_t *s, float *d_img, float *d_ilm,
+                           float *gimg);
 
-    size_t nxyz;
+/* Snapshots */
+void gpu_wave_save_snapshot(sismap_t *s, shot_t *shot, float *d_u1,
+                            float *u1, unsigned int t);
+void gpu_wave_read_snapshot(sismap_t *s, shot_t *shot, float *d_fwd,
+                            float *fwd, unsigned int t);
 
-    size_t field_bytes;
-    size_t source_bytes;
-    size_t receiver_index_bytes;
-    size_t sismos_bytes;
-    size_t allocated_bytes;
+/* Numerical validation */
+unsigned int gpu_wave_check_fields(sismap_t *s, float *d_u0, float *u1,
+                                   float *u0, float e);
 
-    /*
-     * Dynamic first-order fields.
-     *
-     * These correspond exactly to:
-     *
-     *   U1 = pressure
-     *   U2 = vx
-     *   U3 = vy
-     *   U4 = vz
-     */
-    float *d_u0;
-    float *d_vx;
-    float *d_vy;
-    float *d_vz;
-    float *d_roc2;
-    float *d_inv_rho;
-    float *d_source;
-    unsigned int *d_rcv;
-    float *d_sismos;
-} gpu_tb_ctx_t;
+/* Seismogram I/O */
+void gpu_wave_save_sismos(sismap_t *s, shot_t *shot, float *d_sismos,
+                          float *sismos);
+void gpu_wave_read_sismos(sismap_t *s, shot_t *shot, float *d_sismos,
+                          float *sismos);
 
-int gpu_wave_tb_init(
-    gpu_tb_ctx_t *ctx,
-    const sismap_t *s);
+/* Debug output */
+void gpu_wave_save_fwd_dbg(sismap_t *s, shot_t *shot, float *d_u1,
+                           float *u1, unsigned int t);
+void gpu_wave_save_bwd_dbg(sismap_t *s, shot_t *shot, float *d_u1,
+                           float *u1, unsigned int t);
 
-int gpu_wave_tb_allocate(
-    gpu_tb_ctx_t *ctx);
-
-int gpu_wave_tb_copy_static_data(
-    gpu_tb_ctx_t *ctx,
-    const sismap_t *s,
-    const float *roc2,
-    const float *inv_rho,
-    const float *source,
-    const unsigned int *rcv);
-
-int gpu_wave_tb_zero(
-    gpu_tb_ctx_t *ctx);
-
-void gpu_wave_tb_info(
-    const gpu_tb_ctx_t *ctx,
-    const sismap_t *s);
-
-void gpu_wave_tb_release(
-    gpu_tb_ctx_t *ctx);
-
+/* Image output */
+void gpu_wave_save_img(sismap_t *s, shot_t *shot, float *d_img,
+                       float *d_ilm, float *tmp);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* STENCIL_GPU_WAVE_SB_HIP_H */
