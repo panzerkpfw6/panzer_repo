@@ -36,6 +36,36 @@ install(
     ARCHIVE DESTINATION lib
 )
 
+# ------------------------------------------------------------
+# AMD HIP implementation
+# ------------------------------------------------------------
+if(USE_HIP)
+    add_library(stencil_hip STATIC
+        gpu_wave_tb.hip
+    )
+
+    target_include_directories(stencil_hip
+        PUBLIC
+            "${CMAKE_SOURCE_DIR}/include"
+    )
+
+    target_compile_definitions(stencil_hip
+        PRIVATE USE_HIP
+    )
+
+    set_target_properties(stencil_hip PROPERTIES
+        HIP_STANDARD 17
+        HIP_STANDARD_REQUIRED ON
+        HIP_ARCHITECTURES gfx942
+        POSITION_INDEPENDENT_CODE ON
+    )
+
+    install(
+        TARGETS stencil_hip
+        ARCHIVE DESTINATION lib
+    )
+endif()
+
 ## CUDA implementation in a separate library.
 if(USE_CUDA)
     add_library(stencil_cuda STATIC
