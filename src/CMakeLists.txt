@@ -41,7 +41,6 @@ install(
 # ------------------------------------------------------------
 if(USE_HIP)
     add_library(stencil_hip STATIC
-        gpu_wave_tb.hip
         gpu_wave_SB_HIP.hip
     )
 
