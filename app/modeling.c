@@ -11,15 +11,16 @@
 #include <stencil/wtime.h>
 #include <stencil/macros.h>
 #include <stencil/velocity.h>
-// #include <modeling_gpu.cu>
 // #include <stencil/dump.h>
 #include <time.h>
 //#include <nccl.h>
 //#include <cuda_runtime.h>
 #ifdef USE_CUDA
 #include <cuda_runtime.h>
-#include <stencil/modeling_gpu.h>
-#include <stencil/modeling_tb_gpu.h>
+// #include <stencil/gpu_wave.h>
+// #include <stencil/modeling_gpu.h>
+// #include <stencil/modeling_tb_gpu.h>
+#include <stencil/gpu_wave_SB_HIP.h>
 #endif
 #ifdef USE_HIP
 extern int hip_test(void);
@@ -574,7 +575,7 @@ int main(int argc, char* argv[]) {
             run_modeling_1st_sb_gpu(s, vel,inv_rho, source, pml_tab);
         }
     #elif USE_HIP
-        ss=1
+        run_modeling_1st_sb_hip(s, vel,inv_rho, source, pml_tab);
     #else
         MSG("GPU requested, but CUDA support is disabled");
     #endif
