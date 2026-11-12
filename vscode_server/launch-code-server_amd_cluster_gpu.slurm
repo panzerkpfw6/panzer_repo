@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #SBATCH --job-name=cs_mi300a
 #SBATCH --partition=MI300A_SPX
