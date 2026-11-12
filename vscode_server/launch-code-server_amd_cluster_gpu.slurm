@@ -15,7 +15,8 @@ set -euo pipefail
 # Environment
 module load rocm
 
-export PATH="$HOME/.local/bin:$PATH"
+export AAC6_HOME=/shared/prerelease/home/saudi_hpc_ai_2026/paplotnitskii
+export PATH="$AAC6_HOME/.local/bin:$PATH"
 export CODE_SERVER_EXTENSIONS="$HOME/code-server/extensions"
 export XDG_CONFIG_HOME="$HOME/.config"
 
@@ -59,7 +60,7 @@ echo "============================================"
 # Use password authentication because the server
 # listens on the compute-node network interface.
 # Configure your password in ~/.config/code-server/config.yaml
-exec code-server \
+exec "$AAC6_HOME/.local/bin/code-server" \
     --auth password \
     --bind-addr "${COMPUTE_NODE}:${CODE_SERVER_PORT}" \
     --extensions-dir "$CODE_SERVER_EXTENSIONS" \
