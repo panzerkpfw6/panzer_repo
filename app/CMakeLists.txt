@@ -58,6 +58,20 @@ if(USE_CUDA)
     )
 endif()
 
+if(USE_HIP)
+    target_compile_definitions(modeling
+        PRIVATE USE_HIP
+    )
+
+    target_link_libraries(modeling
+        PRIVATE stencil_hip
+    )
+
+    set_target_properties(modeling PROPERTIES
+        LINKER_LANGUAGE HIP
+    )
+endif()
+
 add_dependencies(stencil_apps modeling)
 install(TARGETS modeling RUNTIME DESTINATION bin)
 

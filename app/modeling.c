@@ -21,6 +21,9 @@
 #include <stencil/modeling_gpu.h>
 #include <stencil/modeling_tb_gpu.h>
 #endif
+#ifdef USE_HIP
+extern int hip_test(void);
+#endif
 
 ///
 void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  {
@@ -402,7 +405,13 @@ int main(int argc, char* argv[]) {
     time_t rawtime;
     struct tm timeinfo;
     char buffer[180];
+    
     // Start of program
+    #ifdef USE_HIP
+        return hip_test();
+    #endif
+    // exit(1);
+
     time(&rawtime);
     localtime_r(&rawtime, &timeinfo);  // Reentrant version of localtime()
 	#pragma omp critical
@@ -564,6 +573,8 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(s->method, "SB") == 0) {
             run_modeling_1st_sb_gpu(s, vel,inv_rho, source, pml_tab);
         }
+    #elif USE_HIP
+        ss=1
     #else
         MSG("GPU requested, but CUDA support is disabled");
     #endif
