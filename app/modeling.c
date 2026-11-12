@@ -88,18 +88,16 @@ void run_modeling_cpu(sismap_t *s, float* vel,  float *source, float *pml_tab)  
         if ((t+1) == snap_freq) {   //((t+1) % snap_freq == 0)
             MSG("SNAPSHOT CUSTOM");
             FILE *snap_fd;
-            char *snap_fd_name=(char*)malloc(20*sizeof(char));
-            sprintf(snap_fd_name,"snapshot_SB2nd_%u",t+1);
+
+            char snap_fd_name[64];
+            snprintf(snap_fd_name, sizeof(snap_fd_name),"snapshot_SB2nd_%d", t+1);
 
             snap_fd = fopen(snap_fd_name,"wb+");
 
             CHK(snap_fd == NULL, "failed to open custom snapshot file");
-            CHK(fwrite(u0,sizeof(float), s->size, snap_fd
-            ) != s->size,
-                "failed to write custom snapshot");
+            CHK(fwrite(u0,sizeof(float), s->size, snap_fd) != s->size,"failed to write custom snapshot");
             CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
             if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
-            free(snap_fd_name);
         }
 //        MSG("... !before wave_update_source! ...");
         wave_update_source(s,shot,u0,source[t]);
@@ -205,8 +203,11 @@ void run_modeling_1st_sb_cpu(sismap_t *s, float* vel,float* inv_rho,float *sourc
             if ((t+1) ==snap_freq) {
                 MSG("SNAPSHOT CUSTOM");
                 FILE *snap_fd;
-                char *snap_fd_name = (char*)malloc(20*sizeof(char));
-                sprintf(snap_fd_name, "snapshot_SB1st_%u",t+1);
+                
+                char snap_fd_name[64];
+                snprintf(snap_fd_name, sizeof(snap_fd_name),"snapshot_SB1st_%d", t+1);
+
+            
                 snap_fd = fopen(snap_fd_name, "wb+");
 
                 CHK(snap_fd == NULL, "failed to open custom snapshot file");
@@ -214,8 +215,6 @@ void run_modeling_1st_sb_cpu(sismap_t *s, float* vel,float* inv_rho,float *sourc
                 CHK(fclose(snap_fd) != 0, "failed to close custom snapshot file");
 
                 if (s->verbose) MSG("... saving snapshot n°%u (size %d)", t+1, s->size);
-
-                free(snap_fd_name);
             }
 
             wave_update_source(s,shot,u0,source[t]);
